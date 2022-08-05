@@ -18,9 +18,9 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserVO {
 
-  private String userId;
-  private String nickname;
-  private String name;
-  private String email;
-  private String phone;
+    private String userId;
+    private String nickname;
+    private String name;
+    private String email;
+    private String phone;
 }

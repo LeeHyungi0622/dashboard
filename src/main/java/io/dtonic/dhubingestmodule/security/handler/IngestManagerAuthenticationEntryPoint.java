@@ -20,30 +20,23 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * @Author Elvin
  */
 @Slf4j
-public class IngestManagerAuthenticationEntryPoint
-  implements AuthenticationEntryPoint {
+public class IngestManagerAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-  /**
-   * Authentication commence
-   */
-  @Override
-  public void commence(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    AuthenticationException authException
-  )
-    throws IOException, ServletException {
-    log.warn("Auth Failed", authException);
-    if (authException instanceof JwtAuthentioncationException) {
-      response.sendError(
-        HttpServletResponse.SC_UNAUTHORIZED,
-        authException.getMessage()
-      );
-    } else if (authException instanceof JwtAuthorizationException) {
-      response.sendError(
-        HttpServletResponse.SC_FORBIDDEN,
-        authException.getMessage()
-      );
+    /**
+     * Authentication commence
+     */
+    @Override
+    public void commence(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        AuthenticationException authException
+    )
+        throws IOException, ServletException {
+        log.warn("Auth Failed", authException);
+        if (authException instanceof JwtAuthentioncationException) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+        } else if (authException instanceof JwtAuthorizationException) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, authException.getMessage());
+        }
     }
-  }
 }

@@ -8,6 +8,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("dev")
 class DHubIngestModuleApplicationTests {
 
-  @Test
-  void contextLoads() {}
+    @Test
+    void contextLoads() {}
 }

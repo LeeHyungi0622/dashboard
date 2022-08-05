@@ -13,20 +13,20 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class JwtExpiredException extends AuthenticationException {
 
-  /**
-   * Constructor of JwtExpiredException(message)
-   * @param msg	Error message
-   */
-  public JwtExpiredException(String msg) {
-    super(msg);
-  }
+    /**
+     * Constructor of JwtExpiredException(message)
+     * @param msg	Error message
+     */
+    public JwtExpiredException(String msg) {
+        super(msg);
+    }
 
-  /**
-   * Constructor of JwtExpiredException(message)
-   * @param msg	Error message
-   * @param t		Throwable
-   */
-  public JwtExpiredException(String msg, Throwable t) {
-    super(msg, t);
-  }
+    /**
+     * Constructor of JwtExpiredException(message)
+     * @param msg	Error message
+     * @param t		Throwable
+     */
+    public JwtExpiredException(String msg, Throwable t) {
+        super(msg, t);
+    }
 }

@@ -21,26 +21,25 @@ import org.springframework.util.StopWatch;
 @Aspect
 public class LogAspect {
 
-  Logger logger = LoggerFactory.getLogger(LogAspect.class);
+    Logger logger = LoggerFactory.getLogger(LogAspect.class);
 
-  /**
-   * Get log with execute time.
-   * @param proceedingJoinPoint
-   * @return
-   * @throws Throwable
-   */
-  @Around("@annotation(io.dtonic.dhubingestmodule.util.LogExecutionTime)")
-  public Object logExecuceTime(ProceedingJoinPoint proceedingJoinPoint)
-    throws Throwable {
-    StopWatch stopWatch = new StopWatch();
-    stopWatch.start();
+    /**
+     * Get log with execute time.
+     * @param proceedingJoinPoint
+     * @return
+     * @throws Throwable
+     */
+    @Around("@annotation(io.dtonic.dhubingestmodule.util.LogExecutionTime)")
+    public Object logExecuceTime(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
-    Object proceed = proceedingJoinPoint.proceed();
+        Object proceed = proceedingJoinPoint.proceed();
 
-    stopWatch.stop();
+        stopWatch.stop();
 
-    logger.info("Running time : {} s", stopWatch.getTotalTimeSeconds());
+        logger.info("Running time : {} s", stopWatch.getTotalTimeSeconds());
 
-    return proceed;
-  }
+        return proceed;
+    }
 }

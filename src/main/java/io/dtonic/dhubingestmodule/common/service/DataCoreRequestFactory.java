@@ -20,62 +20,56 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class DataCoreRequestFactory {
 
-  private RestTemplate restTemplate = new RestTemplate();
-
-  /**
-   * Constructor of DataCoreRequestFactory
-   */
-  public DataCoreRequestFactory() {
-    this.restTemplate.setRequestFactory(
-        new HttpComponentsClientHttpRequestWithBodyFactory()
-      );
-  }
-
-  /**
-   * HttpComponents HttpClient to create requests with body
-   */
-  private static final class HttpComponentsClientHttpRequestWithBodyFactory
-    extends HttpComponentsClientHttpRequestFactory {
+    private RestTemplate restTemplate = new RestTemplate();
 
     /**
-     * Create http uri request
+     * Constructor of DataCoreRequestFactory
      */
-    @Override
-    protected HttpUriRequest createHttpUriRequest(
-      HttpMethod httpMethod,
-      URI uri
-    ) {
-      if (httpMethod == HttpMethod.GET) {
-        return new HttpGetRequestWithEntity(uri);
-      }
-      return super.createHttpUriRequest(httpMethod, uri);
-    }
-  }
-
-  /**
-   * Http get request with entity
-   */
-  private static final class HttpGetRequestWithEntity
-    extends HttpEntityEnclosingRequestBase {
-
-    public HttpGetRequestWithEntity(final URI uri) {
-      super.setURI(uri);
+    public DataCoreRequestFactory() {
+        this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestWithBodyFactory());
     }
 
     /**
-     * Get http method
+     * HttpComponents HttpClient to create requests with body
      */
-    @Override
-    public String getMethod() {
-      return HttpMethod.GET.name();
-    }
-  }
+    private static final class HttpComponentsClientHttpRequestWithBodyFactory
+        extends HttpComponentsClientHttpRequestFactory {
 
-  /**
-   * Get Rest template
-   * @return
-   */
-  public RestTemplate getRestTemplate() {
-    return restTemplate;
-  }
+        /**
+         * Create http uri request
+         */
+        @Override
+        protected HttpUriRequest createHttpUriRequest(HttpMethod httpMethod, URI uri) {
+            if (httpMethod == HttpMethod.GET) {
+                return new HttpGetRequestWithEntity(uri);
+            }
+            return super.createHttpUriRequest(httpMethod, uri);
+        }
+    }
+
+    /**
+     * Http get request with entity
+     */
+    private static final class HttpGetRequestWithEntity extends HttpEntityEnclosingRequestBase {
+
+        public HttpGetRequestWithEntity(final URI uri) {
+            super.setURI(uri);
+        }
+
+        /**
+         * Get http method
+         */
+        @Override
+        public String getMethod() {
+            return HttpMethod.GET.name();
+        }
+    }
+
+    /**
+     * Get Rest template
+     * @return
+     */
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
 }

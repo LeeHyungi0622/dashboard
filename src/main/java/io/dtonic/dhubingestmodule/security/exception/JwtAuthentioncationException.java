@@ -13,20 +13,20 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class JwtAuthentioncationException extends AuthenticationException {
 
-  /**
-   * Constructor of JwtAuthentioncationException(message)
-   * @param msg	Error message
-   */
-  public JwtAuthentioncationException(String msg) {
-    super(msg);
-  }
+    /**
+     * Constructor of JwtAuthentioncationException(message)
+     * @param msg	Error message
+     */
+    public JwtAuthentioncationException(String msg) {
+        super(msg);
+    }
 
-  /**
-   * Constructor of JwtAuthentioncationException(message, throwable)
-   * @param msg	Error message
-   * @param t		Throwable
-   */
-  public JwtAuthentioncationException(String msg, Throwable t) {
-    super(msg, t);
-  }
+    /**
+     * Constructor of JwtAuthentioncationException(message, throwable)
+     * @param msg	Error message
+     * @param t		Throwable
+     */
+    public JwtAuthentioncationException(String msg, Throwable t) {
+        super(msg, t);
+    }
 }

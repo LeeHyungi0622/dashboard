@@ -16,6 +16,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RefreshTokenFormVO {
 
-  private String grant_type;
-  private String refresh_token;
+    private String grant_type;
+    private String refresh_token;
 }

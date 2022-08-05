@@ -16,9 +16,9 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AccessTokenFormVO {
 
-  private String grant_type;
-  private String code;
-  private String redirect_uri;
-  private String client_id;
-  private String client_secret;
+    private String grant_type;
+    private String code;
+    private String redirect_uri;
+    private String client_id;
+    private String client_secret;
 }

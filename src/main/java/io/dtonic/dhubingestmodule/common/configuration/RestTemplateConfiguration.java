@@ -1,6 +1,7 @@
 package io.dtonic.dhubingestmodule.common.configuration;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
@@ -30,68 +31,68 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestTemplateConfiguration {
 
-  @Value("${http.pool.max.total}")
-  private Integer maxTotal;
+    @Value("${http.pool.max.total}")
+    private Integer maxTotal;
 
-  @Value("${http.pool.defaultMaxPerRoute}")
-  private Integer defaultMaxPerRoute;
+    @Value("${http.pool.defaultMaxPerRoute}")
+    private Integer defaultMaxPerRoute;
 
-  @Value("${http.pool.connection.timeout}")
-  private Integer connectionTimeout;
+    @Value("${http.pool.connection.timeout}")
+    private Integer connectionTimeout;
 
-  @Value("${http.pool.connection.request.timeout}")
-  private Integer connectionRequestTimeout;
+    @Value("${http.pool.connection.request.timeout}")
+    private Integer connectionRequestTimeout;
 
-  @Value("${http.pool.read.timeout}")
-  private Integer readTimeout;
+    @Value("${http.pool.read.timeout}")
+    private Integer readTimeout;
 
-  @Value("${http.pool.validate.after.inactivity}")
-  private Integer validateAfterInactivity;
+    @Value("${http.pool.validate.after.inactivity}")
+    private Integer validateAfterInactivity;
 
-  @Bean
-  public RestTemplate restTemplate() {
-    RestTemplate restTemplate = new RestTemplate(httpRequestFactory());
-    restTemplate
-      .getMessageConverters()
-      .add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
-    return restTemplate;
-  }
+    @Bean
+    public RestTemplate restTemplate() {
+        RestTemplate restTemplate = new RestTemplate(httpRequestFactory());
+        restTemplate
+            .getMessageConverters()
+            .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        return restTemplate;
+    }
 
-  @Bean
-  public ClientHttpRequestFactory httpRequestFactory() {
-    return new HttpComponentsClientHttpRequestFactory(httpClient());
-  }
+    @Bean
+    public ClientHttpRequestFactory httpRequestFactory() {
+        return new HttpComponentsClientHttpRequestFactory(httpClient());
+    }
 
-  @Bean
-  public HttpClient httpClient() {
-    Registry<ConnectionSocketFactory> registry = RegistryBuilder
-      .<ConnectionSocketFactory>create()
-      .register("http", PlainConnectionSocketFactory.getSocketFactory())
-      .register("https", SSLConnectionSocketFactory.getSocketFactory())
-      .build();
+    @Bean
+    public HttpClient httpClient() {
+        Registry<ConnectionSocketFactory> registry = RegistryBuilder
+            .<ConnectionSocketFactory>create()
+            .register("http", PlainConnectionSocketFactory.getSocketFactory())
+            .register("https", SSLConnectionSocketFactory.getSocketFactory())
+            .build();
 
-    PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
-      registry
-    );
-    connectionManager.setMaxTotal(maxTotal);
-    connectionManager.setDefaultMaxPerRoute(defaultMaxPerRoute);
-    connectionManager.setValidateAfterInactivity(validateAfterInactivity);
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
+            registry
+        );
+        connectionManager.setMaxTotal(maxTotal);
+        connectionManager.setDefaultMaxPerRoute(defaultMaxPerRoute);
+        connectionManager.setValidateAfterInactivity(validateAfterInactivity);
 
-    RequestConfig requestConfig = RequestConfig
-      .custom()
-      //The time for the server to return data (response) exceeds the throw of read timeout
-      .setSocketTimeout(readTimeout)
-      //The time to connect to the server (handshake succeeded) exceeds the throw connect timeout
-      .setConnectTimeout(connectionTimeout)
-      //The timeout to get the connection from the connection pool. If the connection is not available after the timeout, the following exception will be thrown
-      // org.apache.http.conn.ConnectionPoolTimeoutException: Timeout waiting for connection from pool
-      .setConnectionRequestTimeout(connectionRequestTimeout)
-      .build();
+        RequestConfig requestConfig = RequestConfig
+            .custom()
+            //The time for the server to return data (response) exceeds the throw of read timeout
+            .setSocketTimeout(readTimeout)
+            //The time to connect to the server (handshake succeeded) exceeds the throw connect timeout
+            .setConnectTimeout(connectionTimeout)
+            //The timeout to get the connection from the connection pool. If the connection is not available after the timeout, the following exception will be thrown
+            // org.apache.http.conn.ConnectionPoolTimeoutException: Timeout waiting for connection from pool
+            .setConnectionRequestTimeout(connectionRequestTimeout)
+            .build();
 
-    return HttpClientBuilder
-      .create()
-      .setDefaultRequestConfig(requestConfig)
-      .setConnectionManager(connectionManager)
-      .build();
-  }
+        return HttpClientBuilder
+            .create()
+            .setDefaultRequestConfig(requestConfig)
+            .setConnectionManager(connectionManager)
+            .build();
+    }
 }

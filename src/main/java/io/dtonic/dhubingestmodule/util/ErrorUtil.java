@@ -23,108 +23,107 @@ import org.springframework.web.servlet.NoHandlerFoundException;
  */
 public class ErrorUtil {
 
-  /**
-   * Returns the DB Column name and type of Attribute.
-   * ex) NAME::text
-   *
-   * @param reqAttrName
-   * @return
-   */
-  public static String getColumnNameWithType(String reqAttrName) {
-    String reqRootAttrName = "";
-    String reqChildAttributeName = "";
-    String columnName;
-    if (reqAttrName.contains("[")) {
-      reqRootAttrName = reqAttrName.split("\\[")[0];
-      reqChildAttributeName =
-        StringUtils.substringBetween(reqAttrName, "[", "]");
+    /**
+     * Returns the DB Column name and type of Attribute.
+     * ex) NAME::text
+     *
+     * @param reqAttrName
+     * @return
+     */
+    public static String getColumnNameWithType(String reqAttrName) {
+        String reqRootAttrName = "";
+        String reqChildAttributeName = "";
+        String columnName;
+        if (reqAttrName.contains("[")) {
+            reqRootAttrName = reqAttrName.split("\\[")[0];
+            reqChildAttributeName = StringUtils.substringBetween(reqAttrName, "[", "]");
 
-      columnName = reqRootAttrName + "_" + reqChildAttributeName;
-    } else {
-      reqRootAttrName = reqAttrName;
+            columnName = reqRootAttrName + "_" + reqChildAttributeName;
+        } else {
+            reqRootAttrName = reqAttrName;
 
-      columnName = reqRootAttrName;
+            columnName = reqRootAttrName;
+        }
+
+        columnName = columnName.replace(".", "_");
+
+        return columnName;
     }
 
-    columnName = columnName.replace(".", "_");
+    /**
+     * Change Exception to ErrorPayload
+     * @param e
+     * @return
+     */
+    public static ErrorPayload convertExceptionToErrorPayload(Exception e) {
+        ErrorPayload errorPayload = null;
 
-    return columnName;
-  }
+        if (e instanceof NoHandlerFoundException) {
+            errorPayload =
+                new ErrorPayload(
+                    ResponseCode.METHOD_NOT_ALLOWED.getDetailType(),
+                    ResponseCode.METHOD_NOT_ALLOWED.getReasonPhrase(),
+                    e.getMessage()
+                );
+        } else if (e instanceof BadRequestException) {
+            BadRequestException exception = (BadRequestException) e;
+            String errorCode = exception.getErrorCode();
+            if (errorCode.equals(DataCoreUiCode.ErrorCode.ALREADY_EXISTS.getCode())) {
+                // Common handling of errors when there are duplicate ids during CREATE (409)
+                errorPayload =
+                    new ErrorPayload(
+                        ResponseCode.CONFLICT.getDetailType(),
+                        ResponseCode.CONFLICT.getReasonPhrase(),
+                        e.getMessage()
+                    );
+            } else {
+                // Error Common Handling for Bad Requests (400)
+                errorPayload =
+                    new ErrorPayload(
+                        ResponseCode.BAD_REQUEST_DATA.getDetailType(),
+                        ResponseCode.BAD_REQUEST_DATA.getReasonPhrase(),
+                        e.getMessage()
+                    );
+            }
+        } else if (e instanceof HttpRequestMethodNotSupportedException) {
+            errorPayload =
+                new ErrorPayload(
+                    ResponseCode.METHOD_NOT_ALLOWED.getDetailType(),
+                    ResponseCode.METHOD_NOT_ALLOWED.getReasonPhrase(),
+                    e.getMessage()
+                );
+        } else if (e instanceof HttpMediaTypeNotSupportedException) {
+            errorPayload =
+                new ErrorPayload(
+                    ResponseCode.UNSUPPORTED_MEDIA_TYPE.getDetailType(),
+                    ResponseCode.UNSUPPORTED_MEDIA_TYPE.getReasonPhrase(),
+                    e.getMessage()
+                );
+        } else if (e instanceof HttpMessageNotReadableException) {
+            errorPayload =
+                new ErrorPayload(
+                    ResponseCode.BAD_REQUEST_DATA.getDetailType(),
+                    ResponseCode.BAD_REQUEST_DATA.getReasonPhrase(),
+                    "No HttpInputMessage available"
+                );
+        } else if (e instanceof java.sql.SQLException) {
+            errorPayload =
+                new ErrorPayload(
+                    ResponseCode.BAD_REQUEST_DATA.getDetailType(),
+                    ResponseCode.BAD_REQUEST_DATA.getReasonPhrase(),
+                    "query error"
+                );
+        } else if (e instanceof JsonProcessingException) {
+            errorPayload =
+                new ErrorPayload(
+                    ResponseCode.BAD_REQUEST_DATA.getDetailType(),
+                    ResponseCode.INVALID_REQUEST.getReasonPhrase(),
+                    "json parsing error"
+                );
+            // } else if (e instanceof JSONException) {
+            //     errorPayload = new ErrorPayload(ResponseCode.BAD_REQUEST_DATA.getDetailType(), ResponseCode.INVALID_REQUEST.getReasonPhrase(), "json parsing error");
+        }
 
-  /**
-   * Change Exception to ErrorPayload
-   * @param e
-   * @return
-   */
-  public static ErrorPayload convertExceptionToErrorPayload(Exception e) {
-    ErrorPayload errorPayload = null;
-
-    if (e instanceof NoHandlerFoundException) {
-      errorPayload =
-        new ErrorPayload(
-          ResponseCode.METHOD_NOT_ALLOWED.getDetailType(),
-          ResponseCode.METHOD_NOT_ALLOWED.getReasonPhrase(),
-          e.getMessage()
-        );
-    } else if (e instanceof BadRequestException) {
-      BadRequestException exception = (BadRequestException) e;
-      String errorCode = exception.getErrorCode();
-      if (errorCode.equals(DataCoreUiCode.ErrorCode.ALREADY_EXISTS.getCode())) {
-        // Common handling of errors when there are duplicate ids during CREATE (409)
-        errorPayload =
-          new ErrorPayload(
-            ResponseCode.CONFLICT.getDetailType(),
-            ResponseCode.CONFLICT.getReasonPhrase(),
-            e.getMessage()
-          );
-      } else {
-        // Error Common Handling for Bad Requests (400)
-        errorPayload =
-          new ErrorPayload(
-            ResponseCode.BAD_REQUEST_DATA.getDetailType(),
-            ResponseCode.BAD_REQUEST_DATA.getReasonPhrase(),
-            e.getMessage()
-          );
-      }
-    } else if (e instanceof HttpRequestMethodNotSupportedException) {
-      errorPayload =
-        new ErrorPayload(
-          ResponseCode.METHOD_NOT_ALLOWED.getDetailType(),
-          ResponseCode.METHOD_NOT_ALLOWED.getReasonPhrase(),
-          e.getMessage()
-        );
-    } else if (e instanceof HttpMediaTypeNotSupportedException) {
-      errorPayload =
-        new ErrorPayload(
-          ResponseCode.UNSUPPORTED_MEDIA_TYPE.getDetailType(),
-          ResponseCode.UNSUPPORTED_MEDIA_TYPE.getReasonPhrase(),
-          e.getMessage()
-        );
-    } else if (e instanceof HttpMessageNotReadableException) {
-      errorPayload =
-        new ErrorPayload(
-          ResponseCode.BAD_REQUEST_DATA.getDetailType(),
-          ResponseCode.BAD_REQUEST_DATA.getReasonPhrase(),
-          "No HttpInputMessage available"
-        );
-    } else if (e instanceof java.sql.SQLException) {
-      errorPayload =
-        new ErrorPayload(
-          ResponseCode.BAD_REQUEST_DATA.getDetailType(),
-          ResponseCode.BAD_REQUEST_DATA.getReasonPhrase(),
-          "query error"
-        );
-    } else if (e instanceof JsonProcessingException) {
-      errorPayload =
-        new ErrorPayload(
-          ResponseCode.BAD_REQUEST_DATA.getDetailType(),
-          ResponseCode.INVALID_REQUEST.getReasonPhrase(),
-          "json parsing error"
-        );
-      // } else if (e instanceof JSONException) {
-      //     errorPayload = new ErrorPayload(ResponseCode.BAD_REQUEST_DATA.getDetailType(), ResponseCode.INVALID_REQUEST.getReasonPhrase(), "json parsing error");
+        return errorPayload;
     }
-
-    return errorPayload;
-  }
 }

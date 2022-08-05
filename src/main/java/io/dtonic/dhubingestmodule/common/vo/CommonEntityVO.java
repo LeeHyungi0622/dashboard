@@ -24,54 +24,41 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CommonEntityVO extends HashMap<String, Object> {
 
-  @Override
-  public String toString() {
-    return ToStringBuilder.reflectionToString(
-      this,
-      ToStringStyle.DEFAULT_STYLE
-    );
-  }
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE);
+    }
 
-  @SuppressWarnings("unchecked")
-  public List<String> getContext() {
-    return (List<String>) super.get(DefaultAttributeKey.CONTEXT.getCode());
-  }
+    @SuppressWarnings("unchecked")
+    public List<String> getContext() {
+        return (List<String>) super.get(DefaultAttributeKey.CONTEXT.getCode());
+    }
 
-  public void setContext(List<String> context) {
-    super.put(DefaultAttributeKey.CONTEXT.getCode(), context);
-  }
+    public void setContext(List<String> context) {
+        super.put(DefaultAttributeKey.CONTEXT.getCode(), context);
+    }
 
-  public String getId() {
-    return (String) super.get(DataCoreUiCode.DefaultAttributeKey.ID.getCode());
-  }
+    public String getId() {
+        return (String) super.get(DataCoreUiCode.DefaultAttributeKey.ID.getCode());
+    }
 
-  public void setId(String id) {
-    super.put(DataCoreUiCode.DefaultAttributeKey.ID.getCode(), id);
-  }
+    public void setId(String id) {
+        super.put(DataCoreUiCode.DefaultAttributeKey.ID.getCode(), id);
+    }
 
-  public Date getCreatedAt() {
-    return (Date) super.get(
-      DataCoreUiCode.DefaultAttributeKey.CREATED_AT.getCode()
-    );
-  }
+    public Date getCreatedAt() {
+        return (Date) super.get(DataCoreUiCode.DefaultAttributeKey.CREATED_AT.getCode());
+    }
 
-  public void setCreatedAt(Date createdAt) {
-    super.put(
-      DataCoreUiCode.DefaultAttributeKey.CREATED_AT.getCode(),
-      createdAt
-    );
-  }
+    public void setCreatedAt(Date createdAt) {
+        super.put(DataCoreUiCode.DefaultAttributeKey.CREATED_AT.getCode(), createdAt);
+    }
 
-  public Date getModifiedAt() {
-    return (Date) super.get(
-      DataCoreUiCode.DefaultAttributeKey.MODIFIED_AT.getCode()
-    );
-  }
+    public Date getModifiedAt() {
+        return (Date) super.get(DataCoreUiCode.DefaultAttributeKey.MODIFIED_AT.getCode());
+    }
 
-  public void setModifiedAt(Date modifiedAt) {
-    super.put(
-      DataCoreUiCode.DefaultAttributeKey.MODIFIED_AT.getCode(),
-      modifiedAt
-    );
-  }
+    public void setModifiedAt(Date modifiedAt) {
+        super.put(DataCoreUiCode.DefaultAttributeKey.MODIFIED_AT.getCode(), modifiedAt);
+    }
 }

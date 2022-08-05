@@ -30,73 +30,67 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-  private AuthenticationEntryPoint entryPoint;
+    private AuthenticationEntryPoint entryPoint;
 
-  private IngestManagerSVC ingestManagerSVC;
+    private IngestManagerSVC ingestManagerSVC;
 
-  /**
-   * Constructor of JwtAuthorizationFilter class
-   * @param entryPoint		AuthenticationEntryPoint
-   * @param menuSVC			MenuSVC class
-   * @param dataCoreUiSVC		DataCoreUiSVC class
-   */
-  public JwtAuthorizationFilter(
-    AuthenticationEntryPoint entryPoint,
-    IngestManagerSVC ingestManagerSVC
-  ) {
-    this.entryPoint = entryPoint;
-    this.ingestManagerSVC = ingestManagerSVC;
-  }
-
-  /**
-   * Check authentication
-   */
-  @Override
-  protected void doFilterInternal(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    FilterChain chain
-  )
-    throws ServletException, IOException {
-    try {
-      Authentication authentication = SecurityContextHolder
-        .getContext()
-        .getAuthentication();
-      if (authentication == null) {
-        throw new JwtAuthentioncationException(
-          "JwtAuthorizationFilter : No Authentication Exist"
-        );
-      }
-
-      if (!isAccessible(authentication.getAuthorities(), request, response)) {
-        ingestManagerSVC.logout(
-          request,
-          response,
-          authentication.getPrincipal()
-        );
-        throw new JwtAuthorizationException(
-          authentication.getPrincipal() + " has not role about the request"
-        );
-      }
-
-      chain.doFilter(request, response);
-    } catch (AuthenticationException e) {
-      entryPoint.commence(request, response, e);
-      // } catch (JSONException e) {
-      //   log.error("Logout failed.", e);
+    /**
+     * Constructor of JwtAuthorizationFilter class
+     * @param entryPoint		AuthenticationEntryPoint
+     * @param menuSVC			MenuSVC class
+     * @param dataCoreUiSVC		DataCoreUiSVC class
+     */
+    public JwtAuthorizationFilter(
+        AuthenticationEntryPoint entryPoint,
+        IngestManagerSVC ingestManagerSVC
+    ) {
+        this.entryPoint = entryPoint;
+        this.ingestManagerSVC = ingestManagerSVC;
     }
-  }
 
-  /**
-   * Check whether the user has access.
-   * @param roles		GrantedAuthority
-   * @return			accessible: true, no accessible: false
-   */
-  private boolean isAccessible(
-    Collection<? extends GrantedAuthority> roles,
-    HttpServletRequest request,
-    HttpServletResponse response
-  ) {
-    return roles != null && !roles.isEmpty();
-  }
+    /**
+     * Check authentication
+     */
+    @Override
+    protected void doFilterInternal(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain chain
+    )
+        throws ServletException, IOException {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null) {
+                throw new JwtAuthentioncationException(
+                    "JwtAuthorizationFilter : No Authentication Exist"
+                );
+            }
+
+            if (!isAccessible(authentication.getAuthorities(), request, response)) {
+                ingestManagerSVC.logout(request, response, authentication.getPrincipal());
+                throw new JwtAuthorizationException(
+                    authentication.getPrincipal() + " has not role about the request"
+                );
+            }
+
+            chain.doFilter(request, response);
+        } catch (AuthenticationException e) {
+            entryPoint.commence(request, response, e);
+            // } catch (JSONException e) {
+            //   log.error("Logout failed.", e);
+        }
+    }
+
+    /**
+     * Check whether the user has access.
+     * @param roles		GrantedAuthority
+     * @return			accessible: true, no accessible: false
+     */
+    private boolean isAccessible(
+        Collection<? extends GrantedAuthority> roles,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        return roles != null && !roles.isEmpty();
+    }
 }
