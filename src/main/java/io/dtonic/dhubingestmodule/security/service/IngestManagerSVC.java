@@ -54,6 +54,7 @@ public class IngestManagerSVC {
     @Autowired
     private Properties properties;
 
+    @Autowired
     private DataCoreRestSVC dataCoreRestSVC;
 
     /**
