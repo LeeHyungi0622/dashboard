@@ -11,18 +11,18 @@ spring:
 
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://10.12.0.11:5432/datacore
-    username: keti_datacore
-    password: keti123
+    url: jdbc:postgresql://110.45.181.70:5432/ingestmanager
+    username: datacore
+    password: datacore
 
     retrieve:
-      use.yn: Y
+      use.yn: N
       driverClassName: org.postgresql.Driver
       url: jdbc:postgresql://10.12.0.11:5432/datacore
       username: keti_datacore
       password: keti123
 server:
-  port: 8080
+  port: 8099
   servlet:
     context-path: /
     session.timeout: 60m
@@ -46,14 +46,14 @@ datacore:
 
 cityhub:
   client:
-    clientId: FGppHOCNp8LC69pZnjSN
-    clientSecret: fV83KX75CRXJNTF81F7QWHuG0OFhfh5u
-    userAuthorizationUri: http://203.253.128.181:30084/oauth2.0/authorize
-    accessTokenUri: http://10.7.0.22:30000/oauth2.0/token
-    publicKeyUri: http://10.7.0.22:30000/security/publickey
-    logoutUri: http://10.7.0.22:30000/security/logout
-    userInfoUri: http://10.7.0.22:30000/security/users
-    redirectUri: http://203.253.128.181:16608/accesstoken
+    clientId: U5p67XCeZxRdCZMc5Dv4
+    clientSecret: dNond2b5TC3afAXE0dGle6CPtybZuWsR
+    userAuthorizationUri: http://110.45.181.72:30000/oauth2.0/authorize
+    accessTokenUri: http://110.45.181.72:30000/oauth2.0/token
+    publicKeyUri: http://110.45.181.72:30000/security/publickey
+    logoutUri: http://110.45.181.72:30000/security/logout
+    userInfoUri: http://110.45.181.72:30000/security/users
+    redirectUri: http://localhost:8099/accesstoken
 
 http.pool:
   max.total: 200
