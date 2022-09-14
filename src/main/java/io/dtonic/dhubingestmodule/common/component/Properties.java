@@ -41,20 +41,11 @@ public class Properties {
     @Value("${cityhub.client.redirectUri}")
     private String redirectUri;
 
-    @Value("${cityhub.client.datacoreManagerUrl}")
+    @Value("${cityhub.datacore.manager.url}")
     private String datacoreManagerUrl;
 
-    @Value("${cityhub.client.securityRole}")
-    private String securityRole;
-
-    @Value("${nifi.url}")
-    private String nifiUrl;
-
-    @Value("${nifi.user}")
-    private String nifiUser;
-
-    @Value("${nifi.password}")
-    private String nifiPassword;
+    @Value("${cityhub.security.accessRole.user}")
+    private String accessRoleUser;
 
     @Value("${spring.security.enabled}")
     private Boolean springSecurityEnabled;

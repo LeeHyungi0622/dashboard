@@ -54,9 +54,12 @@ cityhub:
     logoutUri: http://110.45.181.72:30000/security/logout
     userInfoUri: http://110.45.181.72:30000/security/users
     redirectUri: http://localhost:8099/accesstoken
-    datacoreManagerUrl : http://110.45.181.71:8080
-    securityRole : Dhub_Admin
-
+  security:
+    accessRole:
+      user: Dhub_Admin
+  datacore:
+    manager:
+      url: http://110.45.181.71:8080
 
 http.pool:
   max.total: 200

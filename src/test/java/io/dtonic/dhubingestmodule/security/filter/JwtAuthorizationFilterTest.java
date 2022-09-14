@@ -20,7 +20,7 @@ public class JwtAuthorizationFilterTest {
     @BeforeEach
     void init() {
         properties = new Properties();
-        properties.setSecurityRole("DHUB_ADMIN");
+        properties.setAccessRoleUser("DHUB_ADMIN");
 
         grantedAuthorities = new LinkedList<>();
         // grantedAuthorities.add(new SimpleGrantedAuthority("DHUB_ADMIN"));
@@ -40,15 +40,16 @@ public class JwtAuthorizationFilterTest {
     }
 
     private boolean isAccessible(Collection<? extends GrantedAuthority> roles) {
-        for (GrantedAuthority role : roles) {
-            if (role.getAuthority().equals(properties.getSecurityRole())) {
-                return true;
-            } else if (properties.getSecurityRole() == null) {
-                log.info("not Set up Access Role on ingestManager");
+        if (roles != null && !roles.isEmpty()) {
+            if (properties.getAccessRoleUser() == null) {
+                log.warn("not Set up Access Role on ingestManager");
                 return false;
             } else {
-                log.info("{} is not Role name to access in ingestManager", role.getAuthority());
-                return false;
+                for (GrantedAuthority role : roles) {
+                    if (role.getAuthority().equals(properties.getAccessRoleUser())) {
+                        return true;
+                    }
+                }
             }
         }
         return false;

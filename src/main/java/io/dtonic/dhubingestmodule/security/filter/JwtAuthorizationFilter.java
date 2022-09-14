@@ -11,7 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 // import org.codehaus.jettison.json.JSONException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -72,7 +71,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 );
             }
 
-            if (!isAccessible(authentication.getAuthorities(), request, response)) {
+            if (!isAccessible(authentication.getAuthorities())) {
                 ingestManagerSVC.logout(request, response, authentication.getPrincipal());
                 throw new JwtAuthorizationException(
                     authentication.getPrincipal() + " has not role about the request"
@@ -92,20 +91,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      * @param roles		GrantedAuthority
      * @return			accessible: true, no accessible: false
      */
-    private boolean isAccessible(
-        Collection<? extends GrantedAuthority> roles,
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) {
-        for (GrantedAuthority role : roles) {
-            if (role.getAuthority().equals(properties.getSecurityRole())) {
-                return true;
-            } else if (properties.getSecurityRole() == null) {
-                log.info("not Set up Access Role on ingestManager");
+    private boolean isAccessible(Collection<? extends GrantedAuthority> roles) {
+        if (roles != null && !roles.isEmpty()) {
+            if (properties.getAccessRoleUser() == null) {
+                log.warn("not Set up Access Role on ingestManager");
                 return false;
             } else {
-                log.info("{} is not Role name to access in ingestManager", role.getAuthority());
-                return false;
+                for (GrantedAuthority role : roles) {
+                    if (role.getAuthority().equals(properties.getAccessRoleUser())) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
