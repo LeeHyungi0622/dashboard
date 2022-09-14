@@ -2,7 +2,9 @@ package io.dtonic.dhubingestmodule.pipeline.vo;
 
 import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import java.util.Date;
+import lombok.Data;
 
+@Data
 public class PipelineVO {
 
     private String id;

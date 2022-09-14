@@ -1,0 +1,18 @@
+<mapper namespace="io.dtonic.dhubingestmodule.pipeline">
+    <select id="getMetasetDetail" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO">
+    select
+      creator,
+      name,
+      detail,
+      status,
+      processor_group_id,
+      data_set,
+      collector,
+      fillter,
+      converter,
+      created_at as createdAt,
+      modified_at as modifiedAt
+    from pipeline
+    where id = #{id}
+  </select>
+</mapper>
