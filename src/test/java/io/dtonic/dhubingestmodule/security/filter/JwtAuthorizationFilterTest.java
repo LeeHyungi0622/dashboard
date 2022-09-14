@@ -1,5 +1,6 @@
 package io.dtonic.dhubingestmodule.security.filter;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.dtonic.dhubingestmodule.common.component.Properties;
@@ -37,6 +38,14 @@ public class JwtAuthorizationFilterTest {
         grantedAuthorities.addFirst(new SimpleGrantedAuthority("DHUB_ADMIN0"));
         grantedAuthorities.addFirst(new SimpleGrantedAuthority("DHUB_ADMIN1"));
         assertTrue(isAccessible(grantedAuthorities));
+
+        // accessRole 설정 안한 경우
+        properties.setAccessRoleUser(null);
+        assertFalse(isAccessible(grantedAuthorities));
+
+        // sso를 통해 넘어온 role이 없을 경우
+        grantedAuthorities.clear();
+        assertFalse(isAccessible(grantedAuthorities));
     }
 
     private boolean isAccessible(Collection<? extends GrantedAuthority> roles) {
