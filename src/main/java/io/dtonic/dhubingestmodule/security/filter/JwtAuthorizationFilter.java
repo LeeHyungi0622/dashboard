@@ -1,5 +1,6 @@
 package io.dtonic.dhubingestmodule.security.filter;
 
+import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.security.exception.JwtAuthentioncationException;
 import io.dtonic.dhubingestmodule.security.exception.JwtAuthorizationException;
 import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
@@ -10,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 // import org.codehaus.jettison.json.JSONException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -30,6 +32,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
+    private Properties properties;
+
     private AuthenticationEntryPoint entryPoint;
 
     private IngestManagerSVC ingestManagerSVC;
@@ -42,10 +46,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      */
     public JwtAuthorizationFilter(
         AuthenticationEntryPoint entryPoint,
-        IngestManagerSVC ingestManagerSVC
+        IngestManagerSVC ingestManagerSVC,
+        Properties properties
     ) {
         this.entryPoint = entryPoint;
         this.ingestManagerSVC = ingestManagerSVC;
+        this.properties = properties;
     }
 
     /**
@@ -91,6 +97,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         HttpServletRequest request,
         HttpServletResponse response
     ) {
-        return roles != null && !roles.isEmpty();
+        for (GrantedAuthority role : roles) {
+            if (role.getAuthority().equals(properties.getSecurityRole())) {
+                return true;
+            } else if (properties.getSecurityRole() == null) {
+                log.info("not Set up Access Role on ingestManager");
+                return false;
+            } else {
+                log.info("{} is not Role name to access in ingestManager", role.getAuthority());
+                return false;
+            }
+        }
+        return false;
     }
 }
