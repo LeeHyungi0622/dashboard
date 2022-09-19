@@ -53,6 +53,9 @@ select {
 .mgL12 {
   margin-left: 12px;
 }
+.mgR12 {
+  margin-left: 12px;
+}
 
 .mgL16 {
   margin-left: 16px;
@@ -72,6 +75,9 @@ select {
 
 .mgT20 {
   margin-top: 20px;
+}
+.disf {
+  display: flex;
 }
 
 .appTitle {
@@ -130,68 +136,68 @@ select {
   width: 100%;
   margin: 3%;
 }
-.v-data-table__wrapper  .text-start {
+.pipelineTable >.v-data-table__wrapper  .text-start {
   text-align: center !important;
 }
 
-.v-data-table__wrapper tr:hover{
+.pipelineTable >.v-data-table__wrapper tr:hover{
   background-color: rgba( 220 , 233, 255, 0.2) !important;
   
 }
 
-.v-data-table__wrapper th {
+.pipelineTable >.v-data-table__wrapper th {
   color:black;
   background-color: #f8f8f8;
   border-radius: 0;
 }
 
-.v-data-table__wrapper td {
+.pipelineTable >.v-data-table__wrapper td {
   display: table-cell;
   vertical-align: inherit;
   border-top: 1px solid#DFDFDF;
   border-right: 1px solid#DFDFDF;
 }
-.v-data-table__wrapper th:nth-of-type(1),
-.v-data-table__wrapper td:nth-of-type(1) {
+.pipelineTable >.v-data-table__wrapper th:nth-of-type(1),
+.pipelineTable >.v-data-table__wrapper td:nth-of-type(1) {
   width: 5%;
 }
-.v-data-table__wrapper th:nth-of-type(2),
-.v-data-table__wrapper td:nth-of-type(2) {
+.pipelineTable >.v-data-table__wrapper th:nth-of-type(2),
+.pipelineTable >.v-data-table__wrapper td:nth-of-type(2) {
   width: 12%;
 }
-.v-data-table__wrapper th:nth-of-type(3),
-.v-data-table__wrapper td:nth-of-type(3) {
+.pipelineTable >.v-data-table__wrapper th:nth-of-type(3),
+.pipelineTable >.v-data-table__wrapper td:nth-of-type(3) {
   width: 12%;
 }
-.v-data-table__wrapper th:nth-of-type(4),
-.v-data-table__wrapper td:nth-of-type(4) {
-  width: 12%;
+.pipelineTable >.v-data-table__wrapper th:nth-of-type(4),
+.pipelineTable >.v-data-table__wrapper td:nth-of-type(4) {
+  width: 15%;
 }
-.v-data-table__wrapper th:nth-of-type(5),
-.v-data-table__wrapper td:nth-of-type(5) {
-  width: 20%;
+.pipelineTable >.v-data-table__wrapper th:nth-of-type(5),
+.pipelineTable >.v-data-table__wrapper td:nth-of-type(5) {
+  width: 15%;
 }
-.v-data-table__wrapper th:nth-of-type(6),
-.v-data-table__wrapper td:nth-of-type(6) {
-  width: 12%;
+.pipelineTable >.v-data-table__wrapper th:nth-of-type(6),
+.pipelineTable >.v-data-table__wrapper td:nth-of-type(6) {
+  width: 13%;
 }
-.v-data-table__wrapper th:nth-of-type(7),
-.v-data-table__wrapper td:nth-of-type(7) {
-  width: 12%;
+.pipelineTable >.v-data-table__wrapper th:nth-of-type(7),
+.pipelineTable >.v-data-table__wrapper td:nth-of-type(7) {
+  width: 13%;
 }
-.v-data-table__wrapper th:nth-of-type(8),
-.v-data-table__wrapper td:nth-of-type(8) {
-  width: 14%;
+.pipelineTable >.v-data-table__wrapper th:nth-of-type(8),
+.pipelineTable >.v-data-table__wrapper td:nth-of-type(8) {
+  width: 15%;
 }
 
 
-.v-data-table__wrapper button {
+.pipelineTable >.v-data-table__wrapper button {
   background-color: #2B4F8C;
   color: #ffffff;
   width: 100%;
   height: 60%;
 }
-.v-data-table__wrapper button:disabled {
+.pipelineTable >.v-data-table__wrapper button:disabled {
   background-color: #C9C9C9;
   color: #ffffff;
   width: 100%;
@@ -407,4 +413,154 @@ select {
   color: black !important;
 }
 
+/* pipelineUpdate */
+.pipelineUpdateSubTitle{
+  color: #2b4f8c;
+  margin-top: 20px;
+}
+.pipelineUpdateMainTitle{
+  color: #2b4f8c;
+}
 
+/* customTable */
+.customTableBox {
+  border: 1px solid #DFDFDF;
+  border-top: 2px solid #2b4f8c; 
+  margin-top: 1%; 
+  width: 100%;
+  height: 45px;
+  padding-left: 20px;
+  line-height: 40px;
+}
+.customTableMainArea {
+  border-top: 2px solid #2b4f8c;
+  margin-top: 1%; 
+  width: 100%;
+}
+.customTable {
+  display: flex;
+}
+
+
+.customTable > .header {
+  width: 40%;
+  height: 45px;
+  display: flex;
+  line-height: 40px;
+  padding-left: 20px;
+  background-color: #FBFBFB;
+  border: 1px solid #DFDFDF;
+  justify-content :space-between
+}
+
+
+.customTable > .value {
+  width: 60%;
+  height: 45px;
+  line-height: 40px;
+  border: 1px solid #DFDFDF;
+}
+.customTable > .value div{
+  width: 100%;
+  padding-left: 20px;
+}
+.customTable > .value input {
+  width: 70%;
+  padding-left: 20px;
+  border: 1px solid #DFDFDF;
+}
+.customTable > .value input[type=radio] {
+  width: 70%;
+  border: 1px solid #DFDFDF;
+  width:15px;
+  height: 40px;
+  accent-color: #2b4f8c;
+}
+
+.pipelineUpdateConvertVFT {
+  margin-top: 20px;
+}
+.pipelineUpdateConvertVFT  th.text-start{
+  text-align: center !important;
+}
+.pipelineUpdateConvertVFT  td.text-start{
+  text-align: center !important;
+  padding:0 !important
+}
+.pipelineUpdateConvertVFT input {
+  width: 100%;
+  padding-left: 10px;
+  height: 100%;
+  border: 1px solid #dfdfdf;
+  width: 100%;
+}
+.pipelineUpdateConvertVFT th{
+  border-top: 2px solid #2b4f8c;
+  background-color: #FBFBFB;
+}
+.pipelineUpdateConvertVFT >.v-data-table__wrapper th:nth-of-type(1),
+.pipelineUpdateConvertVFT >.v-data-table__wrapper td:nth-of-type(1) {
+  width: 50%;
+  border-left: 1px solid #DFDFDF;
+  border-right: 1px solid #DFDFDF;
+  border-bottom: 1px solid #DFDFDF;
+  background-color: white;
+}
+.pipelineUpdateConvertVFT >.v-data-table__wrapper th:nth-of-type(2),
+.pipelineUpdateConvertVFT >.v-data-table__wrapper td:nth-of-type(2) {
+  width: 50%;
+  border-right: 1px solid #DFDFDF;
+  border-bottom: 1px solid #DFDFDF;
+  background-color: white;
+  text-align: left !important;
+}
+
+.pipelineUpdateIdVFT {
+  margin-top: 20px;
+  text-align: center !important;
+}
+
+.pipelineUpdateIdVFT th.text-start{
+  text-align: center !important;
+}
+.pipelineUpdateIdVFT td.text-start {
+  text-align: center !important;
+  padding: 0 !important;
+}
+
+.pipelineUpdateIdVFT input {
+  width: 100%;
+  padding-left: 10px;
+  height: 100%;
+  border: 1px solid #dfdfdf;
+  width: 100%;
+}
+
+.pipelineUpdateIdVFT th{
+  border-top: 2px solid #2b4f8c;
+  background-color: #FBFBFB;
+}
+.pipelineUpdateIdVFT >.v-data-table__wrapper th:nth-of-type(1),
+.pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(1) {
+  width: 30%;
+  border-left: 1px solid #DFDFDF;
+  border-right: 1px solid #DFDFDF;
+  border-bottom: 1px solid #DFDFDF;
+  background-color: #FBFBFB;
+}
+.pipelineUpdateIdVFT >.v-data-table__wrapper th:nth-of-type(2),
+.pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(2) {
+  width: 70%;
+  border-right: 1px solid #DFDFDF;
+  border-bottom: 1px solid #DFDFDF;
+  background-color: white;
+  text-align: left !important;
+}
+
+.pipelineUpdateButton { 
+  background-color: #2B4F8C;
+  color: white;
+  font-weight: normal !important;
+  width: 180px;
+  height: 35px
+}

@@ -1,6 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import CustomTable from "@/components/table/CustomTable.vue";
+import pipelineList from "../views/pipelineList/PipelineList.vue";
+import pipelineUpdate from "../views/pipelineUpdate/PipelineUpdate.vue";
+import pipelineCreate from "../views/pipelineCreate/PipelineCreate.vue";
 
 Vue.use(VueRouter);
 
@@ -8,17 +10,18 @@ const routes = [
   {
     path: "/",
     name: "pipelineList",
-    component: CustomTable,
+    component: pipelineList,
   },
   {
     path: "/pipelineCreate",
     name: "pipelineCreate",
-    component: CustomTable,
+    component: pipelineCreate,
   },
   {
     path: "/pipelineUpdate",
     name: "pipelineUpdate",
-    component: CustomTable,
+    component: pipelineUpdate,
+    props: true,
   },
 ];
 
