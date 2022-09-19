@@ -12,7 +12,12 @@
           class="disf"
           v-if="content.key == `Base64 Decoder` && mode == `UPDATE`"
         >
-          <input type="radio" v-model="content.value" value="On" />On
+          <input
+            class="mgL12"
+            type="radio"
+            v-model="content.value"
+            value="On"
+          />On
           <input
             type="radio"
             class="mgL12"
@@ -20,12 +25,20 @@
             value="Off"
           />Off
         </div>
+        <div v-else-if="mode == `UPDATE`">
+          <input type="text" v-model="content.value" />
+        </div>
         <div class="disf" v-else-if="content.key == `Base64 Decoder`">
-          <input type="radio" v-model="content.value" :value="content.value" />
+          <input
+            class="mgL12"
+            type="radio"
+            v-model="content.value"
+            :value="content.value"
+          />
           {{ content.value }}
         </div>
 
-        <div v-else>{{ content.value }}</div>
+        <div style="padding-left: 20px" v-else>{{ content.value }}</div>
       </div>
     </div>
   </div>

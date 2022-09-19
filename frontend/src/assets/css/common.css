@@ -454,13 +454,13 @@ select {
 }
 
 
-.customTable > .value {
+.customTable .value {
   width: 60%;
   height: 45px;
   line-height: 40px;
   border: 1px solid #DFDFDF;
 }
-.customTable > .value div{
+.customTable > .disf > .value div{
   width: 100%;
   padding-left: 20px;
 }
@@ -469,8 +469,9 @@ select {
   padding-left: 20px;
   border: 1px solid #DFDFDF;
 }
-.customTable > .value input[type=radio] {
+.customTable  > .value input[type=radio] {
   width: 70%;
+  padding-left: 20px;
   border: 1px solid #DFDFDF;
   width:15px;
   height: 40px;
@@ -563,4 +564,14 @@ select {
   font-weight: normal !important;
   width: 180px;
   height: 35px
+}
+.pipelineUpdateContentBox{
+  width: 95%; 
+  margin-top: 5%;
+}
+
+.pipelineUpdateBtnBox {
+  width: 95%;
+  display: flex; 
+  justify-content: flex-end;
 }
