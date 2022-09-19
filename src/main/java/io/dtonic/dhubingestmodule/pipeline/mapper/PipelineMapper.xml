@@ -1,0 +1,30 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dtonic.dhubingestmodule.pipeline">
+  <select id="getPipelineDraftsList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO">
+    select
+      creator,
+      name,
+      detail,
+      data_set,
+      collector,
+      fillter,
+      converter,
+      created_at as createdAt,
+      modified_at as modifiedAt
+    from temp_pipeline
+  </select>
+  <select id="getPipelineDraftsById" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO">
+    select
+      creator,
+      name,
+      detail,
+      data_set,
+      collector,
+      fillter,
+      converter,
+      created_at as createdAt,
+      modified_at as modifiedAt
+    from temp_pipeline
+    where id = #{id}
+  </select>
+</mapper>
