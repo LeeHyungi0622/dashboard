@@ -29,27 +29,29 @@
     FROM pipeline
     WHERE id = #{id}
   </select>
-  <select id="getPipelineDraftsList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO">
+  <select id="getPipelineDraftsList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO" resultMap="pipeline">
     select
+      id,
       creator,
       name,
       detail,
       data_set,
       collector,
-      fillter,
+      filter,
       converter,
       created_at as createdAt,
       modified_at as modifiedAt
     from temp_pipeline
   </select>
-  <select id="getPipelineDraftsById" parameterType="Integer" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO">
+  <select id="getPipelineDraftsById" parameterType="Integer" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO" resultMap="pipeline">
     select
+      id,
       creator,
       name,
       detail,
       data_set,
       collector,
-      fillter,
+      filter,
       converter,
       created_at as createdAt,
       modified_at as modifiedAt
