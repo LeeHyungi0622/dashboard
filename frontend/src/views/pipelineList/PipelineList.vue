@@ -18,7 +18,7 @@
           <div class="search">
             <select style="width: 10%">
               <option
-                v-for="(item, index) in activationStatusList"
+                v-for="(item, index) in pipelineListFilterList"
                 :key="index"
               >
                 {{ item }}
@@ -102,7 +102,9 @@
 
         <div class="pipelineBtnBox mgT12">
           <button class="pipelineButton">임시저장 파이프라인</button>
-          <button class="pipelineButton mgL12">파이프라인 등록</button>
+          <button class="pipelineButton mgL12" @click="goPipelineRegister">
+            파이프라인 등록
+          </button>
         </div>
       </div>
     </div>
@@ -127,6 +129,12 @@ export default {
         "STARTING",
         "STOPPING",
         "STOPPED",
+      ],
+      pipelineListFilterList: [
+        "전체",
+        "파이프라인 이름",
+        "파이프라인 정의",
+        "적재Dataset",
       ],
 
       headers: [
@@ -330,6 +338,11 @@ export default {
       this.$router.push({
         name: "pipelineUpdate",
         query: { id: item.NO },
+      });
+    },
+    goPipelineRegister() {
+      this.$router.push({
+        name: "pipelineCreate",
       });
     },
   },
