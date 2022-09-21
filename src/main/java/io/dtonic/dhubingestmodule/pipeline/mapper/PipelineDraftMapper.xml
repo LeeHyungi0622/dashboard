@@ -1,0 +1,69 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper">
+  <resultMap id="pipeline" type="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO">
+    <id property="id" column="id" />
+    <result property="creator" column="creator" />
+    <result property="name" column="name" />
+    <result property="detail" column="detail" />
+    <result property="status" column="status" />
+    <result property="data_set" column="data_set" />
+    <result property="collector" column="collector" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
+    <result property="filter" column="filter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
+    <result property="converter" column="converter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
+    <result property="createdAt" column="created_at" />
+    <result property="modifiedAt" column="modified_at" />
+  </resultMap>
+  <select id="getPipelineDraftsList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO" resultMap="pipeline">
+    select
+      id,
+      creator,
+      name,
+      detail,
+      data_set,
+      collector,
+      filter,
+      converter,
+      created_at,
+      modified_at
+    from temp_pipeline
+    <if test="searchObject != null and searchValue != null">
+      where ${searchObject} like '%${searchValue}%' 
+    </if>
+  </select>
+  <select id="getPipelineDrafts" parameterType="Integer" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO" resultMap="pipeline">
+    select
+      id,
+      creator,
+      name,
+      detail,
+      data_set,
+      collector,
+      filter,
+      converter,
+      created_at,
+      modified_at
+    from temp_pipeline
+      where id = #{id} 
+  </select>
+  <insert id="createPipelineDrafts" parameterType="String">
+    INSERT INTO temp_pipeline(name, creator, detail, created_at, modified_at) VALUES ('${name}', '${creator}', '${detail}', now(), now())
+  </insert>
+  <update id="updatePipelineDrafts">
+    UPDATE temp_pipeline
+    <if test="'collector'.equals(nifiFlowType)">SET collector = '${flowJsonString}',</if>
+    <if test="'filter'.equals(nifiFlowType)">SET filter = '${flowJsonString}',</if>
+    <if test="'converter'.equals(nifiFlowType)">SET converter = '${flowJsonString}',</if>
+    name = '${name}', detail = '${detail}', modified_at = now()
+    WHERE id = #{id}
+  </update>
+  <delete id="deletePipelineDrafts" parameterType="Integer">
+      DELETE FROM temp_pipeline
+      WHERE id = #{id}
+  </delete>
+  <select id="isExistsDrafts" parameterType="Integer" resultType="boolean">
+    SELECT
+    EXISTS
+    (SELECT * 
+    FROM temp_pipeline where id = #{id})
+  </select>
+</mapper>
