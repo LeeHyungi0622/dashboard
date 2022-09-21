@@ -9,14 +9,7 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface PipelineMapper {
-    List<PipelineResponseVO> getPipelineDraftsList(
-        @Param("searchObject") String searchObject,
-        @Param("searchValue") String searchValue
-    );
-
     PipelineResponseVO getPipeline(@Param("id") Integer id);
-
-    PipelineResponseVO getPipelineDrafts(@Param("id") Integer id);
 
     void startPipeline(@Param("id") Integer id);
 
@@ -42,16 +35,4 @@ public interface PipelineMapper {
     //     @Param("modifiedAt") Date modifiedAt
     // );
 
-    void createPipelineDrafts(
-        @Param("name") String name,
-        @Param("creator") String creator,
-        @Param("detail") String detail
-    );
-    void updatePipelineDrafts(
-        @Param("id") Integer id,
-        @Param("name") String name,
-        @Param("detail") String detail,
-        @Param("flowJsonString") String flowJsonString,
-        @Param("nifiFlowType") String nifiFlowType
-    );
 }

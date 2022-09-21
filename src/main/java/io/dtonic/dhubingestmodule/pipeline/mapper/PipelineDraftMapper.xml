@@ -1,5 +1,5 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper">
+<mapper namespace="io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper">
   <resultMap id="pipeline" type="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO">
     <id property="id" column="id" />
     <result property="creator" column="creator" />
@@ -26,7 +26,7 @@
       created_at,
       modified_at
     from temp_pipeline
-    <if test="searchObject != null and searchValue != null">
+    <if test="!searchObject.equals('') and !searchValue.equals('')">
       where ${searchObject} like '%${searchValue}%' 
     </if>
   </select>
