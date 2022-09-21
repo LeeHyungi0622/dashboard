@@ -5,6 +5,7 @@ import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.common.service.DataCoreRestSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListBaseInfoVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListResponseVO;
+import io.dtonic.dhubingestmodule.dataset.vo.DataSetPropertiesResponseVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetResponseVO;
 import java.util.ArrayList;
 import java.util.HashMap;
