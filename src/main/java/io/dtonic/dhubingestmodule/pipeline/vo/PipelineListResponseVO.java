@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class PipelineListResponseVO {
 
-    private String id;
+    private Integer id;
     private String name;
     private String detail;
     private String data_set;

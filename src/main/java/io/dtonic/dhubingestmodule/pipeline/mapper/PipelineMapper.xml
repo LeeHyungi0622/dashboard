@@ -29,14 +29,9 @@
     FROM pipeline
     WHERE id = #{id}
   </select>
-  <update id="startPipeline" parameterType="Integer">
+  <update id="changePipelineStatus">
     UPDATE pipeline 
-    SET status = 'Starting', modified_at = now() 
-    WHERE id = #{id}
-  </update>
-  <update id="stopPipeline" parameterType="Integer">
-    UPDATE pipeline 
-    SET status = 'Stopping', modified_at = now() 
+    SET status = #{status}, modified_at = now() 
     WHERE id = #{id}
   </update>
   <delete id="deletePipeline" parameterType="Integer">
@@ -49,4 +44,27 @@
     (SELECT * 
     FROM pipeline where id = #{id})
   </select>
+  <insert id="createPipeline">
+    INSERT INTO pipeline (id, creator, name, detail, status, processor_group_id, data_set, collector, filter, converter, created_at, modified_at)
+    VALUES (#{id},#{creator},#{name},#{detail},#{status},#{data_set},#{collector},#{filter},#{converter},#{createdAt},#{modifiedAt})
+    </insert>
+  <select id="getPipelineList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO">
+      SELECT
+       id,
+       name,
+       detail,
+       data_set,
+       status,
+       created_at as createdAt,
+       modified_at as modifiedAt
+      FROM pipeline
+      WHERE 1=1
+      <if test="status != null">
+      and status like '%#{status}%'
+      </if>
+      <if test="searchObject != null and searchValue != null">
+       and #{searchObject} like '%#{searchValue}%'
+      </if>
+      ORDER BY id ASC
+    </select>
 </mapper>

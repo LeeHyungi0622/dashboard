@@ -49,4 +49,7 @@ public class Properties {
 
     @Value("${spring.security.enabled}")
     private Boolean springSecurityEnabled;
+
+    @Value("${cityhub.datacore.manager.url}")
+	private String datasetUrl;
 }

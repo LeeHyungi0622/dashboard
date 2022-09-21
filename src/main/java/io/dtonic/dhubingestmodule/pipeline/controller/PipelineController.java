@@ -6,10 +6,14 @@ import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,7 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -31,142 +35,124 @@ public class PipelineController {
     @Autowired
     private PipelineSVC pipelineSVC;
 
-    /**
-     * @param request HttpServletRequest
-     * @param response HttpServletResponse
-     * @param accept request accept header
-     * @param pipelineVO create pipeline object
-     * @return
-     */
-    // @Transactional
-    // @PostMapping("/pipeline/{id}")
-    // public @ResponseBody void createPipeline(
-    //     HttpServletRequest request,
-    //     HttpServletResponse response,
-    //     @RequestHeader(HttpHeaders.ACCEPT) String accept,
-    //     @RequestBody PipelineCreateVO pipelineVO
-    // ) {
-    //     //1. validation check
-    //     pipelineSVC.createPipeline(
-    //         pipelineVO.getCreator(),
-    //         pipelineVO.getName(),
-    //         pipelineVO.getDetail(),
-    //         pipelineVO.getStatus(),
-    //         pipelineVO.getData_set(),
-    //         pipelineVO.getCollector(),
-    //         pipelineVO.getCollector(),
-    //         pipelineVO.getConverter(),
-    //         pipelineVO.getCreatedAt(),
-    //         pipelineVO.getModifiedAt()
-    //     );
-    //     response.setStatus(HttpStatus.CREATED.value());
-    // }
-
-    /**
-     * Retrieve Pipeline
-     * @param request HttpServletRequest
-     * @param response HttpServletResponse
-     * @param accept request accept header
-     * @param id retrieve Pipeline id
-     * @return Pipeline object
-     */
-    @GetMapping("/pipeline/{id}")
-    public @ResponseBody PipelineResponseVO getPipelineById(
+    @GetMapping("/pipeline/complete/list") // PipeLine List 조회
+    public List<PipelineListResponseVO> getPipelineList(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @PathVariable Integer id
+        PipelineListRetrieveVO pipelineListRetrieveVO
     ) {
-        //validation check
-        PipelineResponseVO pipelineVO = pipelineSVC.getPipelineVOById(id);
-        return pipelineVO;
+        return pipelineSVC.getPipelineList(
+            pipelineListRetrieveVO.getSearchObject(),
+            pipelineListRetrieveVO.getSearchValue(),
+            pipelineListRetrieveVO.getStatus()
+        );
     }
 
     /**
-     * Start Pipeline
-     * @param request HttpServletRequest
-     * @param response HttpServletResponse
-     * @param accept request accept header
-     * @param id retrieve Pipeline id
+     * @param request    HttpServletRequest
+     * @param response   HttpServletResponse
+     * @param accept     request accept header
+     * @param pipelineVO create pipeline object
+     * @param id         to delete temporary Pipeline
      * @return
      */
-    @PutMapping("/pipeline/{id}/start")
-    public @ResponseBody void startPipeline(
+    @Transactional
+    @PostMapping("/pipeline/complete") // PipeLine 등록
+    public void createPipeline(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestHeader(HttpHeaders.ACCEPT) String accept,
+        @RequestBody PipelineCreateVO pipelineVO
+    ) {
+        // 1. validation check
+        pipelineSVC.createPipeline(
+            pipelineVO.getCreator(),
+            pipelineVO.getName(),
+            pipelineVO.getDetail(),
+            pipelineVO.getStatus(),
+            pipelineVO.getData_set(),
+            pipelineVO.getCollector(),
+            pipelineVO.getFilter(),
+            pipelineVO.getConverter(),
+            pipelineVO.getCreatedAt(),
+            pipelineVO.getModifiedAt()
+        );
+        pipelineSVC.deletePipeline(pipelineVO.getId());
+        response.setStatus(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Retrieve Pipeline
+     *
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @param accept   request accept header
+     * @param id       retrieve Pipeline id
+     * @return Pipeline object
+     */
+    @GetMapping("/pipeline/complete/{id}") // PipeLine 상세 조회
+    public PipelineResponseVO getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
     ) {
-        //validation check
-        PipelineResponseVO pipelineVO = pipelineSVC.getPipelineVOById(id);
-
-        if (!pipelineSVC.isExists(id)) {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
-                "Pipeline is not Exist"
-            );
-        }
-
-        //start pipeline
-        pipelineSVC.startPipeline(id);
-
-        response.setStatus(HttpStatus.OK.value());
+        return pipelineSVC.getPipelineVOById(id);
     }
 
     /**
      * Stop Pipeline
-     * @param request HttpServletRequest
+     *
+     * @param request  HttpServletRequest
      * @param response HttpServletResponse
-     * @param accept request accept header
-     * @param id retrieve Pipeline id
+     * @param accept   request accept header
+     * @param id       retrieve Pipeline id
      * @return
      */
-    @PutMapping("/pipeline/{id}/stop")
-    public @ResponseBody void stopPipeline(
+    @PutMapping("/pipeline/run-status/{id}") // PipeLine status 업데이트
+    public void stopPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @PathVariable Integer id
+        @PathVariable Integer id,
+        @RequestParam(value = "status") String status
     ) {
-        //validation check
-        PipelineResponseVO pipelineVO = pipelineSVC.getPipelineVOById(id);
-
+        // validation check
         if (!pipelineSVC.isExists(id)) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
                 "Pipeline is not Exist"
             );
         }
-        //stop pipeline
-        pipelineSVC.stopPipeline(id);
+        // stop pipeline
+        pipelineSVC.changePipelineStatus(id, "Stopping");
         response.setStatus(HttpStatus.OK.value());
     }
 
     /**
      * Delete Pipeline
-     * @param request HttpServletRequest
+     *
+     * @param request  HttpServletRequest
      * @param response HttpServletResponse
-     * @param accept request accept header
-     * @param id retrieve Pipeline id
+     * @param accept   request accept header
+     * @param id       retrieve Pipeline id
      * @return
      */
-    @DeleteMapping("/pipeline/{id}")
-    public @ResponseBody void deletePipeline(
+    @DeleteMapping("/pipeline/complete/{id}") // PipeLine 삭제
+    public void deletePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
     ) {
-        //validation check
-        PipelineResponseVO pipelineVO = pipelineSVC.getPipelineVOById(id);
-
         if (!pipelineSVC.isExists(id)) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
                 "Pipeline is not Exist"
             );
         }
-        //delete pipeline
+        // delete pipeline
         pipelineSVC.deletePipeline(id);
         response.setStatus(HttpStatus.OK.value());
     }
