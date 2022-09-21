@@ -50,9 +50,12 @@
   </insert>
   <update id="updatePipelineDrafts">
     UPDATE temp_pipeline
-    <if test="'collector'.equals(nifiFlowType)">SET collector = '${flowJsonString}',</if>
-    <if test="'filter'.equals(nifiFlowType)">SET filter = '${flowJsonString}',</if>
-    <if test="'converter'.equals(nifiFlowType)">SET converter = '${flowJsonString}',</if>
+    <if test="'collector'.equals(nifiFlowType) and flowJsonString != null">SET collector = '${flowJsonString}',</if>
+    <if test="'collector'.equals(nifiFlowType) and flowJsonString == null">SET collector = null,</if>
+    <if test="'filter'.equals(nifiFlowType) and flowJsonString != null">SET filter = '${flowJsonString}',</if>
+    <if test="'filter'.equals(nifiFlowType) and flowJsonString == null">SET filter = null,</if>
+    <if test="'converter'.equals(nifiFlowType) and flowJsonString != null">SET converter = '${flowJsonString}',</if>
+    <if test="'converter'.equals(nifiFlowType) and flowJsonString == null">SET converter = null,</if>
     name = '${name}', detail = '${detail}', modified_at = now()
     WHERE id = #{id}
   </update>

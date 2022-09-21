@@ -89,8 +89,8 @@ public class PipelineDraftSVC {
 
             log.info("Cnt : " + completeCnt);
             if (completeCnt == nifiComponentLength) {
-                jsonObject.getJSONObject(nifiFlowType).remove("completed");
-                jsonObject.getJSONObject(nifiFlowType).put("completed", true);
+                jsonObject.getJSONObject(nifiFlowType).remove("isCompleted");
+                jsonObject.getJSONObject(nifiFlowType).put("isCompleted", true);
                 flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
             }
 

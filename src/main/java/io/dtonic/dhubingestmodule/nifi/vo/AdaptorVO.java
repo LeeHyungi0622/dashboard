@@ -9,7 +9,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AdaptorVO {
 
-    private String type;
-    private boolean completed;
+    private String name;
+    private boolean isCompleted;
     private List<NiFiComponentVO> NifiComponents = new ArrayList<>();
 }
