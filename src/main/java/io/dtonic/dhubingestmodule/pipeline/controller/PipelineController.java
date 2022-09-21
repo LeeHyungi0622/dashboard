@@ -42,45 +42,75 @@ public class PipelineController {
      * @return Pipeline object
      */
 
-    @GetMapping("/pipeline/drafts/list")
-    public @ResponseBody PipelineResponseVO getPipelineDraftsList(
+    @GetMapping("/pipeline/drafts/{id}")
+    public @ResponseBody PipelineResponseVO getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        PipelineListRetrieveVO pipelineListRetrieveVO
+        @PathVariable Integer id
     ) {
-        PipelineResponseVO pipelineVO = pipelineSVC.getPipelineDraftsList();
+        PipelineResponseVO pipelineVO = pipelineSVC.getPipelineDrafts(id);
         return pipelineVO;
     }
 
-    @GetMapping("/pipeline/drafts/{id}")
-    public @ResponseBody PipelineResponseVO getPipelineDraftsById(
+    @GetMapping("/pipeline/drafts/list")
+    public @ResponseBody List<PipelineResponseVO> getPipelineDraftsList(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        PipelineListRetrieveVO pipelineListRetrieveVO
+    ) {
+        List<PipelineResponseVO> pipelineVO = pipelineSVC.getPipelineDraftsList(
+            pipelineListRetrieveVO.getSearchObject(),
+            pipelineListRetrieveVO.getSearchValue()
+        );
+        return pipelineVO;
+    }
+
+    @Transactional
+    @PostMapping("/pipeline/drafts")
+    public void createPipelineDrafts(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestBody PipelineResponseVO pipelineCreateVO
+    )
+        throws Exception {
+        pipelineSVC.createPipelineDrafts(
+            pipelineCreateVO.getName(),
+            pipelineCreateVO.getCreator(),
+            pipelineCreateVO.getDetail()
+        );
+    }
+
+    @Transactional
+    @PutMapping("/pipeline/drafts")
+    public @ResponseBody void updatePipelineDrafts(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestBody String requestBody
+    )
+        throws Exception {
+        pipelineSVC.updatePipelineDrafts(requestBody);
+    }
+
+    @Transactional
+    @DeleteMapping("/pipeline/drafts/{id}")
+    public @ResponseBody void deletePipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
     ) {
-        PipelineResponseVO pipelineVO = pipelineSVC.getPipelineDraftsVOById(id);
-        return pipelineVO;
+        //validation check
+
+        if (!pipelineSVC.isExistsDrafts(id)) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
+                "PipelineDrafts is not Exist"
+            );
+        }
+        //delete pipeline
+        pipelineSVC.deletePipelineDrafts(id);
+        response.setStatus(HttpStatus.OK.value());
     }
-
-    @Transactional
-    @PostMapping("/pipeline/drafts/create")
-    public void createPipelineDrafts(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestBody List<String> selectedMetaSets
-    )
-        throws Exception {}
-
-    @Transactional
-    @PutMapping("/pipeline/drafts/update")
-    public @ResponseBody void updatePipelineDrafts(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestBody List<String> metaSetUpsertVO
-    )
-        throws Exception {}
 
     @GetMapping("/pipeline/{id}")
     public @ResponseBody PipelineResponseVO getPipelineById(

@@ -8,6 +8,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PipelineCreateVO {
 
+    private Integer id;
     private String creator;
     private String name;
     private String detail;
