@@ -103,12 +103,12 @@ public class PipelineDraftSVC {
 
             // converter 단계에서 dataSet을 설정한다.
             // converter 단계가 아니면 dataSet 값은 null로 처리
-            if (nifiFlowType.equals("converter")) {
+            if (jsonObject.isNull("dataSet")) {
                 pipelineMapper.updatePipelineDrafts(
                     jsonObject.getInt("id"),
                     jsonObject.getString("name"),
                     jsonObject.getString("detail"),
-                    jsonObject.getString("dataSet"),
+                    null,
                     flowJsonString,
                     nifiFlowType
                 );
@@ -117,7 +117,7 @@ public class PipelineDraftSVC {
                     jsonObject.getInt("id"),
                     jsonObject.getString("name"),
                     jsonObject.getString("detail"),
-                    null,
+                    jsonObject.getString("dataSet"),
                     flowJsonString,
                     nifiFlowType
                 );
