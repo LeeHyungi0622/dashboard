@@ -26,8 +26,9 @@
       created_at,
       modified_at
     from temp_pipeline
-    <if test="!searchObject.equals('') and !searchValue.equals('')">
-      where ${searchObject} like '%${searchValue}%' 
+    where 1=1
+    <if test="searchObject != null and searchValue != null">
+      and '${searchObject}' like '%${searchValue}%'
     </if>
   </select>
   <select id="getPipelineDrafts" parameterType="Integer" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO" resultMap="pipeline">
@@ -43,10 +44,10 @@
       created_at,
       modified_at
     from temp_pipeline
-      where id = #{id} 
+      where id = ${id} 
   </select>
   <insert id="createPipelineDrafts" parameterType="String">
-    INSERT INTO temp_pipeline(name, creator, detail, created_at, modified_at) VALUES ('${name}', '${creator}', '${detail}', now(), now())
+    INSERT INTO temp_pipeline(name, creator, detail, created_at, modified_at) VALUES (#{name}, #{creator}, #{detail}, now(), now())
   </insert>
   <update id="updatePipelineDrafts">
     UPDATE temp_pipeline
@@ -59,16 +60,16 @@
     <if test="'converter'.equals(nifiFlowType) and dataSet != null">data_set = '${dataSet}',</if>
     <if test="'converter'.equals(nifiFlowType) and dataSet == null">data_set = null,</if>
     name = '${name}', detail = '${detail}', modified_at = now()
-    WHERE id = #{id}
+    WHERE id = ${id}
   </update>
   <delete id="deletePipelineDrafts" parameterType="Integer">
       DELETE FROM temp_pipeline
-      WHERE id = #{id}
+      WHERE id = ${id}
   </delete>
   <select id="isExistsDrafts" parameterType="Integer" resultType="boolean">
     SELECT
     EXISTS
     (SELECT * 
-    FROM temp_pipeline where id = #{id})
+    FROM temp_pipeline where id = ${id})
   </select>
 </mapper>
