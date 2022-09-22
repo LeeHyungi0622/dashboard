@@ -56,6 +56,8 @@
     <if test="'filter'.equals(nifiFlowType) and flowJsonString == null">SET filter = null,</if>
     <if test="'converter'.equals(nifiFlowType) and flowJsonString != null">SET converter = '${flowJsonString}',</if>
     <if test="'converter'.equals(nifiFlowType) and flowJsonString == null">SET converter = null,</if>
+    <if test="'converter'.equals(nifiFlowType) and dataSet != null">data_set = '${dataSet}',</if>
+    <if test="'converter'.equals(nifiFlowType) and dataSet == null">data_set = null,</if>
     name = '${name}', detail = '${detail}', modified_at = now()
     WHERE id = #{id}
   </update>

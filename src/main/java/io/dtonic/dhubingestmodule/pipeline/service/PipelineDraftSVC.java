@@ -41,26 +41,35 @@ public class PipelineDraftSVC {
     }
 
     @Transactional
+    public void deletePipelineDrafts(Integer id) {
+        pipelineMapper.deletePipelineDrafts(id);
+    }
+
+    @Transactional
     public void updatePipelineDrafts(String requestBody) {
         parseJSON(requestBody, "collector");
         parseJSON(requestBody, "filter");
         parseJSON(requestBody, "converter");
     }
 
+    @Transactional
     public void parseJSON(String requestBody, String nifiFlowType) {
-        int idx = 0;
-        int completeCnt = 0;
-
         JSONObject jsonObject = new JSONObject(requestBody);
+
+        // collector, filter, converter를 설정하지 않은 초기 단계 에서는 jsonString을 null로 설정
         if (jsonObject.isNull(nifiFlowType)) {
             pipelineMapper.updatePipelineDrafts(
                 jsonObject.getInt("id"),
                 jsonObject.getString("name"),
                 jsonObject.getString("detail"),
                 null,
+                null,
                 nifiFlowType
             );
+            // collector, filter, converter 내의 processor의 필수 properties 값이 모두 채워졌는지 확인
         } else {
+            int idx = 0;
+            int completeCnt = 0; // 프로세서들의 필수 properties들이 모두 채워져있으면 1 증가
             String flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
 
             JSONObject jObject = new JSONObject(flowJsonString);
@@ -86,26 +95,33 @@ public class PipelineDraftSVC {
             }
 
             // processor에서 필수로 넣어야 하는 properties 값들이 모두 채워져 있으면, completed를 true로 바꾼다
-
-            log.info("Cnt : " + completeCnt);
             if (completeCnt == nifiComponentLength) {
                 jsonObject.getJSONObject(nifiFlowType).remove("isCompleted");
                 jsonObject.getJSONObject(nifiFlowType).put("isCompleted", true);
                 flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
             }
 
-            pipelineMapper.updatePipelineDrafts(
-                jsonObject.getInt("id"),
-                jsonObject.getString("name"),
-                jsonObject.getString("detail"),
-                flowJsonString,
-                nifiFlowType
-            );
+            // converter 단계에서 dataSet을 설정한다.
+            // converter 단계가 아니면 dataSet 값은 null로 처리
+            if (nifiFlowType.equals("converter")) {
+                pipelineMapper.updatePipelineDrafts(
+                    jsonObject.getInt("id"),
+                    jsonObject.getString("name"),
+                    jsonObject.getString("detail"),
+                    jsonObject.getString("dataSet"),
+                    flowJsonString,
+                    nifiFlowType
+                );
+            } else {
+                pipelineMapper.updatePipelineDrafts(
+                    jsonObject.getInt("id"),
+                    jsonObject.getString("name"),
+                    jsonObject.getString("detail"),
+                    null,
+                    flowJsonString,
+                    nifiFlowType
+                );
+            }
         }
-    }
-
-    @Transactional
-    public void deletePipelineDrafts(Integer id) {
-        pipelineMapper.deletePipelineDrafts(id);
     }
 }
