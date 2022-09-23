@@ -34,10 +34,11 @@ public class DataSetSVC {
 
     //DataSet List 조회
     public DataSetResponseVO getDataSetList() {
-        String pathUri = DEFAULT_PATH_URL;
+        List<String> pathUri = new ArrayList<>();
+        pathUri.add(DEFAULT_PATH_URL);
         DataSetListResponseVO dataSetListResponseVO = new DataSetListResponseVO();
         Map<String, String> header = new HashMap<String, String>();
-        String datasetUrl = properties.getDatasetUrl();
+        String datasetUrl = properties.getDatacoreManagerUrl();
         List<String> DataSetId = new ArrayList<>();
 
         DataSetResponseVO dataSetResponseVO = new DataSetResponseVO();
@@ -65,8 +66,10 @@ public class DataSetSVC {
 
     //dataset이 사용하는 Model ID 조회
     public DataSetPropertiesResponseVO getDataModelId(String DataSetId) {
-        String datasetUrl = properties.getDatasetUrl();
-        String pathUri = "/datasets/" + DataSetId;
+        String datasetUrl = properties.getDatacoreManagerUrl();
+        List<String> pathUri = new ArrayList<>();
+        pathUri.add("/datasets");
+        pathUri.add(DataSetId);
         Map<String, String> header = new HashMap<String, String>();
         header.put("Accept", "application/json");
         DataSetPropertiesResponseVO dataSetPropertiesResponseVO = new DataSetPropertiesResponseVO();
@@ -76,6 +79,7 @@ public class DataSetSVC {
             datasetUrl,
             pathUri,
             header,
+            null,
             null,
             null,
             DataSetForDataModelIDVO.class
@@ -91,8 +95,11 @@ public class DataSetSVC {
     public DataSetPropertiesResponseVO getDataModelProperties(
         DataSetPropertiesResponseVO dataSetPropertiesResponseVO
     ) {
-        String datamodelUrl = properties.getDatasetUrl();
-        String pathUri = "/datamodels/" + dataSetPropertiesResponseVO.getDatamodelId();
+        String datamodelUrl = properties.getDatacoreManagerUrl();
+        List<String> pathUri = new ArrayList<>();
+        pathUri.add("/datamodels");
+        pathUri.add(dataSetPropertiesResponseVO.getDatamodelId());
+
         Map<String, String> header = new HashMap<String, String>();
 
         header.put("Accept", "application/json");
@@ -100,6 +107,7 @@ public class DataSetSVC {
             datamodelUrl,
             pathUri,
             header,
+            null,
             null,
             null,
             DataModelResponseVO.class

@@ -85,7 +85,7 @@ public class NiFiController {
      */
     public String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) {
         // Search TemplateId by name
-        String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getType());
+        String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getName());
 
         // Create Dummy Template
         String templateProcessGroupID = niFiRestSVC.createDummyTemplate(
@@ -94,7 +94,7 @@ public class NiFiController {
         );
 
         // Update Adaptor
-        updateAdaptor(templateProcessGroupID, adaptorVO.getNiFiComponent());
+        updateAdaptor(templateProcessGroupID, adaptorVO.getNifiComponents());
 
         return templateProcessGroupID;
     }
