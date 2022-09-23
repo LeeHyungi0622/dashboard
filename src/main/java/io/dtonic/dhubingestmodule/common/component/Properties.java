@@ -50,6 +50,12 @@ public class Properties {
     @Value("${spring.security.enabled}")
     private Boolean springSecurityEnabled;
 
-    @Value("${cityhub.datacore.manager.url}")
-	private String datasetUrl;
+    @Value("${nifi.url}")
+    private String nifiUrl;
+
+    @Value("${nifi.user}")
+    private String nifiUser;
+
+    @Value("${nifi.password}")
+    private String nifiPassword;
 }

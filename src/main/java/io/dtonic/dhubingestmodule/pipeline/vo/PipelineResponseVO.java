@@ -16,7 +16,8 @@ public class PipelineResponseVO {
     private String name;
     private String detail;
     private String status;
-    private String data_set;
+    private String dataSet;
+    private String processorGroupId;
     private List<AdaptorVO> collector;
     private List<AdaptorVO> filter;
     private List<AdaptorVO> converter;

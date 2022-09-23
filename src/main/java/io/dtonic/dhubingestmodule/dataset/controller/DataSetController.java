@@ -30,21 +30,32 @@ public class DataSetController {
     @GetMapping(value = "/datasets")
     public DataSetResponseVO getDatasets(HttpServletRequest request, HttpServletResponse response)
         throws Exception {
-        DataSetResponseVO datasetList = datasetsvc.getDataSets();
+        DataSetResponseVO datasetList = datasetsvc.getDataSetList();
 
         return datasetList;
     }
-    // @GetMapping(value = "/properties/{datasetid}")
-    // public DataSetPropertiesResponseVO getDatasetProperties(
-    //     HttpServletRequest request,
-    //     HttpServletResponse response,
-    //     @PathVariable String datasetid
-    // )
-    //     throws Exception {
-    //     DataSetPropertiesResponseVO dataSetPropertiesResponseVO = datasetsvc.getDatasetProperties(
-    //         datasetid
-    //     );
 
-    //     return dataSetPropertiesResponseVO;
-    // }
+    /**
+     * Retrieve datamodel attributies
+     * @param request
+     * @param response
+     * @param datasetid
+     * @return
+     * @throws Exception
+     */
+    @GetMapping(value = "/properties/{datasetid}")
+    public DataSetPropertiesResponseVO getDatasetProperties(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @PathVariable String datasetid
+    )
+        throws Exception {
+        DataSetPropertiesResponseVO dataSetPropertiesResponseVO = datasetsvc.getDataModelId(
+            datasetid
+        );
+        dataSetPropertiesResponseVO =
+            datasetsvc.getDataModelProperties(dataSetPropertiesResponseVO);
+
+        return dataSetPropertiesResponseVO;
+    }
 }

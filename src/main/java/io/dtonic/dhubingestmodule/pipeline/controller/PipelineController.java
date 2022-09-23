@@ -1,7 +1,10 @@
 package io.dtonic.dhubingestmodule.pipeline.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import graphql.com.google.common.collect.PeekingIterator;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
+import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
@@ -14,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -42,11 +46,7 @@ public class PipelineController {
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         PipelineListRetrieveVO pipelineListRetrieveVO
     ) {
-        return pipelineSVC.getPipelineList(
-            pipelineListRetrieveVO.getSearchObject(),
-            pipelineListRetrieveVO.getSearchValue(),
-            pipelineListRetrieveVO.getStatus()
-        );
+        return pipelineSVC.getPipelineList();
     }
 
     /**
@@ -78,7 +78,7 @@ public class PipelineController {
             pipelineVO.getCreatedAt(),
             pipelineVO.getModifiedAt()
         );
-        pipelineSVC.deletePipeline(pipelineVO.getId());
+        //        pipelineSVC.deletePipeline(pipelineVO.getId());
         response.setStatus(HttpStatus.CREATED.value());
     }
 
@@ -90,6 +90,8 @@ public class PipelineController {
      * @param accept   request accept header
      * @param id       retrieve Pipeline id
      * @return Pipeline object
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
      */
     @GetMapping("/pipeline/complete/{id}") // PipeLine 상세 조회
     public PipelineResponseVO getPipelineById(
@@ -97,7 +99,11 @@ public class PipelineController {
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
-    ) {
+    )
+        throws JsonMappingException, JsonProcessingException {
+        // JSONObject json = pipelineSVC.getPipelineVOById(id);
+        // response.set
+        // return json;
         return pipelineSVC.getPipelineVOById(id);
     }
 
@@ -125,8 +131,13 @@ public class PipelineController {
                 "Pipeline is not Exist"
             );
         }
-        // stop pipeline
-        pipelineSVC.changePipelineStatus(id, status);
+        if (
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
+        ) pipelineSVC.changePipelineStatus(id, status); // stop pipeline
+
         response.setStatus(HttpStatus.OK.value());
     }
 

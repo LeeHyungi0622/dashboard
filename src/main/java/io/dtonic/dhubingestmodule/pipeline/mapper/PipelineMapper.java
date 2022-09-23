@@ -10,11 +10,7 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface PipelineMapper {
-    List<PipelineListResponseVO> getPipelineList(
-        @Param("searchObject") String searchObject,
-        @Param("searchValue") String searchValue,
-        @Param("status") String status
-    );
+    List<PipelineListResponseVO> getPipelineList();
 
     PipelineResponseVO getPipeline(@Param("id") Integer id);
 

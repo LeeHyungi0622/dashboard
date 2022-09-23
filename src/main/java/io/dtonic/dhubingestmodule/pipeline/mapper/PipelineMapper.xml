@@ -53,7 +53,7 @@
     VALUES (#{id},#{creator},#{name},#{detail},#{status},#{data_set},#{collector},#{filter},#{converter},#{createdAt},#{modifiedAt})
     </insert>
   <select id="getPipelineList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO">
-      SELECT
+    SELECT
        id,
        name,
        detail,
@@ -63,12 +63,6 @@
        modified_at as modifiedAt
       FROM pipeline
       WHERE 1=1
-      <if test="status != null">
-      and status like '%#{status}%'
-      </if>
-      <if test="searchObject != null and searchValue != null">
-       and #{searchObject} like '%#{searchValue}%'
-      </if>
-      ORDER BY id ASC
-    </select>
+    ORDER BY id ASC
+  </select>
 </mapper>
