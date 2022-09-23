@@ -288,4 +288,38 @@ public class NiFiSwaggerSVC {
             return null;
         }
     }
+
+    public ProcessorEntity createTrasmitter() {
+        ProcessorEntity body = new ProcessorEntity(); // ProcessorEntity | The processor configuration details.
+        RevisionDTO revision = new RevisionDTO();
+        revision.setVersion(0L);
+
+        ProcessorDTO component = new ProcessorDTO();
+        component.setType("org.apache.nifi.processors.standard.InvokeHTTP");
+
+        BundleDTO bundle = new BundleDTO();
+        bundle.setGroup("org.apache.nifi");
+        bundle.setArtifact("nifi-standard-nar");
+        bundle.setVersion("1.16.3");
+        component.setBundle(bundle);
+
+        PositionDTO position = new PositionDTO();
+        position.setX(0.0);
+        position.setY(0.0);
+        component.setPosition(position);
+        component.setName("Transmitter");
+        body.setRevision(revision);
+        body.setComponent(component);
+
+        try {
+            ProcessorEntity result = niFiClient
+                .getProcessGroupsApiSwagger()
+                .createProcessor("root", body);
+            return result;
+        } catch (ApiException e) {
+            log.error("Fail to Create Transmitter Processor in Processor Group");
+            e.printStackTrace();
+            return new ProcessorEntity();
+        }
+    }
 }
