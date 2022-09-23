@@ -43,15 +43,23 @@ public class DataCoreRestSVC {
     private DataCoreRequestFactory requestFactory;
 
     /**
-     * Get request url
+     * make NiFi request url
      *
-     * @param baseUrl Base url
-     * @param path    path
-     * @param params  params
+     * @param nifiUrl Base url
+     * @param paths    paths
      * @return URI
      */
-    protected URI getUrl(String baseUrl, String path, Map<String, Object> params) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl).path(path);
+    protected URI getUrl(String nifiUrl, List<String> paths, Map<String, Object> params) {
+        String integratedPath = "";
+
+        for (String path : paths) {
+            integratedPath += "/";
+            integratedPath += path;
+        }
+
+        UriComponentsBuilder builder = UriComponentsBuilder
+            .fromUriString(nifiUrl)
+            .path(integratedPath);
         if (params != null) {
             Iterator<String> iteratortor = params.keySet().iterator();
             while (iteratortor.hasNext()) {
@@ -71,15 +79,23 @@ public class DataCoreRestSVC {
      * @param headers Http request header
      * @return HttpEntity
      */
-    protected <T> HttpEntity<T> getRequestEntity(T body, Map<String, String> headers) {
+    protected <T> HttpEntity<T> getRequestEntity(
+        T body,
+        Map<String, String> headers,
+        String accessToken
+    ) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         if (headers != null) {
             Iterator<String> iterator = headers.keySet().iterator();
             while (iterator.hasNext()) {
                 String key = iterator.next();
                 httpHeaders.add(key, headers.get(key));
             }
+        } else {
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        }
+        if (accessToken != null) {
+            httpHeaders.setBearerAuth(accessToken);
         }
         return new HttpEntity<>(body, httpHeaders);
     }
@@ -95,9 +111,10 @@ public class DataCoreRestSVC {
      * @param responseType Response type
      * @return List of result object by retrieved.
      */
+
     public <T> ResponseEntity<List<T>> getList(
         String moduleHost,
-        String pathUri,
+        List<String> pathUri,
         Map<String, String> headers,
         Object body,
         Map<String, Object> params,
@@ -111,7 +128,12 @@ public class DataCoreRestSVC {
             response =
                 requestFactory
                     .getRestTemplate()
-                    .exchange(uri, HttpMethod.GET, getRequestEntity(body, headers), responseType);
+                    .exchange(
+                        uri,
+                        HttpMethod.GET,
+                        getRequestEntity(body, headers, null),
+                        responseType
+                    );
         } catch (HttpClientErrorException e) {
             log.error(
                 "Client Exception - Error Status Code: {}, Response Body as String: {}",
@@ -144,7 +166,7 @@ public class DataCoreRestSVC {
      */
     public <T> ResponseEntity<T> getList(
         String moduleHost,
-        String pathUri,
+        List<String> pathUri,
         Map<String, String> headers,
         Object body,
         Map<String, Object> params,
@@ -158,7 +180,12 @@ public class DataCoreRestSVC {
             response =
                 requestFactory
                     .getRestTemplate()
-                    .exchange(uri, HttpMethod.GET, getRequestEntity(body, headers), responseType);
+                    .exchange(
+                        uri,
+                        HttpMethod.GET,
+                        getRequestEntity(body, headers, null),
+                        responseType
+                    );
         } catch (HttpClientErrorException e) {
             log.error(
                 "Client Exception - Error Status Code: {}, Response Body as String: {}",
@@ -191,10 +218,11 @@ public class DataCoreRestSVC {
      */
     public <T> ResponseEntity<T> get(
         String moduleHost,
-        String pathUri,
+        List<String> pathUri,
         Map<String, String> headers,
         Object body,
         Map<String, Object> params,
+        String accessToken,
         Class<T> responseType
     ) {
         URI uri = getUrl(moduleHost, pathUri, params);
@@ -206,7 +234,7 @@ public class DataCoreRestSVC {
                 restTemplate.exchange(
                     uri,
                     HttpMethod.GET,
-                    getRequestEntity(body, headers),
+                    getRequestEntity(body, headers, accessToken),
                     responseType
                 );
         } catch (HttpClientErrorException e) {
@@ -241,10 +269,11 @@ public class DataCoreRestSVC {
      */
     public <T> ResponseEntity<T> post(
         String moduleHost,
-        String pathUri,
+        List<String> pathUri,
         Map<String, String> headers,
         Object body,
         Map<String, Object> params,
+        String accessToken,
         Class<T> responseType
     ) {
         URI uri = getUrl(moduleHost, pathUri, params);
@@ -256,7 +285,7 @@ public class DataCoreRestSVC {
                 restTemplate.exchange(
                     uri,
                     HttpMethod.POST,
-                    getRequestEntity(body, headers),
+                    getRequestEntity(body, headers, accessToken),
                     responseType
                 );
         } catch (HttpClientErrorException e) {
@@ -291,10 +320,11 @@ public class DataCoreRestSVC {
      */
     public <T> ResponseEntity<T> patch(
         String moduleHost,
-        String pathUri,
+        List<String> pathUri,
         Map<String, String> headers,
         Object body,
         Map<String, Object> params,
+        String accessToken,
         Class<T> responseType
     ) {
         URI uri = getUrl(moduleHost, pathUri, params);
@@ -306,7 +336,7 @@ public class DataCoreRestSVC {
                 restTemplate.exchange(
                     uri,
                     HttpMethod.PATCH,
-                    getRequestEntity(body, headers),
+                    getRequestEntity(body, headers, accessToken),
                     responseType
                 );
         } catch (HttpClientErrorException e) {
@@ -339,10 +369,11 @@ public class DataCoreRestSVC {
      */
     public <T> ResponseEntity<T> put(
         String moduleHost,
-        String pathUri,
+        List<String> pathUri,
         Map<String, String> headers,
         Object body,
         Map<String, Object> params,
+        String accessToken,
         Class<T> responseType
     ) {
         URI uri = getUrl(moduleHost, pathUri, params);
@@ -354,7 +385,7 @@ public class DataCoreRestSVC {
                 restTemplate.exchange(
                     uri,
                     HttpMethod.PUT,
-                    getRequestEntity(body, headers),
+                    getRequestEntity(body, headers, accessToken),
                     responseType
                 );
         } catch (HttpClientErrorException e) {
@@ -389,10 +420,11 @@ public class DataCoreRestSVC {
      */
     public <T> ResponseEntity<T> delete(
         String moduleHost,
-        String pathUri,
+        List<String> pathUri,
         Map<String, String> headers,
         Object body,
         Map<String, Object> params,
+        String accessToken,
         Class<T> responseType
     ) {
         URI uri = getUrl(moduleHost, pathUri, params);
@@ -404,7 +436,7 @@ public class DataCoreRestSVC {
                 restTemplate.exchange(
                     uri,
                     HttpMethod.DELETE,
-                    getRequestEntity(body, headers),
+                    getRequestEntity(body, headers, accessToken),
                     responseType
                 );
         } catch (HttpClientErrorException e) {
