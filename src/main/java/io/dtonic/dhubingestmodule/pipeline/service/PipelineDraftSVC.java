@@ -2,6 +2,7 @@ package io.dtonic.dhubingestmodule.pipeline.service;
 
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,16 +24,16 @@ public class PipelineDraftSVC {
         pipelineMapper.createPipelineDrafts(name, creator, detail);
     }
 
-    public List<PipelineResponseVO> getPipelineDraftsList(String searchObject, String searchValue) {
-        List<PipelineResponseVO> pipelineVO = pipelineMapper.getPipelineDraftsList(
+    public List<PipelineVO> getPipelineDraftsList(String searchObject, String searchValue) {
+        List<PipelineVO> pipelineVO = pipelineMapper.getPipelineDraftsList(
             searchObject,
             searchValue
         );
         return pipelineVO;
     }
 
-    public PipelineResponseVO getPipelineDrafts(Integer id) {
-        PipelineResponseVO pipelineVO = pipelineMapper.getPipelineDrafts(id);
+    public PipelineVO getPipelineDrafts(Integer id) {
+        PipelineVO pipelineVO = pipelineMapper.getPipelineDrafts(id);
         return pipelineVO;
     }
 

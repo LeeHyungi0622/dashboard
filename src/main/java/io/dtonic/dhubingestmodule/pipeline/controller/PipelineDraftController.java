@@ -8,6 +8,7 @@ import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,22 +44,22 @@ public class PipelineDraftController {
      */
 
     @GetMapping("/pipeline/drafts/{id}")
-    public @ResponseBody PipelineResponseVO getPipelineDrafts(
+    public @ResponseBody PipelineVO getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @PathVariable Integer id
     ) {
-        PipelineResponseVO pipelineVO = pipelineSVC.getPipelineDrafts(id);
+        PipelineVO pipelineVO = pipelineSVC.getPipelineDrafts(id);
         return pipelineVO;
     }
 
     @GetMapping("/pipeline/drafts/list")
-    public @ResponseBody List<PipelineResponseVO> getPipelineDraftsList(
+    public @ResponseBody List<PipelineVO> getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
         PipelineListRetrieveVO pipelineListRetrieveVO
     ) {
-        List<PipelineResponseVO> pipelineVO = pipelineSVC.getPipelineDraftsList(
+        List<PipelineVO> pipelineVO = pipelineSVC.getPipelineDraftsList(
             pipelineListRetrieveVO.getSearchObject(),
             pipelineListRetrieveVO.getSearchValue()
         );
@@ -83,7 +84,7 @@ public class PipelineDraftController {
 
     @Transactional
     @PutMapping("/pipeline/drafts")
-    public @ResponseBody void updatePipelineDrafts(
+    public void updatePipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody String requestBody
@@ -95,20 +96,20 @@ public class PipelineDraftController {
 
     @Transactional
     @DeleteMapping("/pipeline/drafts/{id}")
-    public @ResponseBody void deletePipelineDrafts(
+    public void deletePipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
     ) {
         //validation check
-
         if (!pipelineSVC.isExistsDrafts(id)) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
                 "PipelineDrafts is not Exist"
             );
         }
+
         //delete pipeline
         pipelineSVC.deletePipelineDrafts(id);
         response.setStatus(HttpStatus.OK.value());

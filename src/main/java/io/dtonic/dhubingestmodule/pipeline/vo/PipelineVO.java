@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class PipelineVO {
 
-    private String id;
+    private Integer id;
 
     private String creator;
     private String name;
