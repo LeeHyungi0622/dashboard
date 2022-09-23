@@ -49,4 +49,13 @@ public class Properties {
 
     @Value("${spring.security.enabled}")
     private Boolean springSecurityEnabled;
+
+    @Value("${nifi.url}")
+    private String nifiUrl;
+
+    @Value("${nifi.user}")
+    private String nifiUser;
+
+    @Value("${nifi.password}")
+    private String nifiPassword;
 }
