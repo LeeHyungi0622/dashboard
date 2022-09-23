@@ -19,7 +19,7 @@
       creator,
       name,
       detail,
-      data_set,
+      data_set as dataSet,
       collector,
       filter,
       converter,

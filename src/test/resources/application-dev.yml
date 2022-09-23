@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: dh-datacore-ui
+
+  thymeleaf:
+    prefix: classpath:/static/
+    cache: false
+
+  security:
+    enabled: true
+
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://110.45.181.70:5432/ingestmanager
+    username: datacore
+    password: datacore
+
+    retrieve:
+      use.yn: N
+      driverClassName: org.postgresql.Driver
+      url: jdbc:postgresql://10.12.0.11:5432/datacore
+      username: keti_datacore
+      password: keti123
+server:
+  port: 8099
+  servlet:
+    context-path: /
+    session.timeout: 60m
+
+## Logging
+logging.config: classpath:logback-spring.xml
+logging.base.dir: logs
+
+# HTTP retrieve
+datacore:
+  http:
+    binding:
+      response:
+        log.yn: Y
+      cause:
+        msg:
+          trace:
+            key: x-detail-error-key
+            value: BBBBB
+          level: 3
+
+cityhub:
+  client:
+    clientId: U5p67XCeZxRdCZMc5Dv4
+    clientSecret: dNond2b5TC3afAXE0dGle6CPtybZuWsR
+    userAuthorizationUri: http://110.45.181.72:30000/oauth2.0/authorize
+    accessTokenUri: http://110.45.181.72:30000/oauth2.0/token
+    publicKeyUri: http://110.45.181.72:30000/security/publickey
+    logoutUri: http://110.45.181.72:30000/security/logout
+    userInfoUri: http://110.45.181.72:30000/security/users
+    redirectUri: http://localhost:8099/accesstoken
+
+http.pool:
+  max.total: 200
+  defaultMaxPerRoute: 100
+  connection.timeout: 5000
+  connection.request.timeout: 5000
+  read.timeout: 10000
+  validate.after.inactivity: 2000

@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +57,8 @@ public class IngestManagerSVC {
 
     @Autowired
     private DataCoreRestSVC dataCoreRestSVC;
+
+    private List<String> paths;
 
     /**
      * Create login uri for SSO authentication.
@@ -111,6 +114,7 @@ public class IngestManagerSVC {
                 null,
                 form,
                 null,
+                null,
                 String.class
             );
 
@@ -143,6 +147,7 @@ public class IngestManagerSVC {
                 null,
                 header,
                 form,
+                null,
                 null,
                 String.class
             );
@@ -199,6 +204,7 @@ public class IngestManagerSVC {
             headers,
             null,
             null,
+            null,
             String.class
         );
     }
@@ -226,7 +232,15 @@ public class IngestManagerSVC {
             );
 
             // SSO Logout
-            dataCoreRestSVC.post(properties.getLogoutUri(), null, headers, user, null, Void.class);
+            dataCoreRestSVC.post(
+                properties.getLogoutUri(),
+                null,
+                headers,
+                user,
+                null,
+                null,
+                Void.class
+            );
         } else if (object != null) {
             UserVO user = new UserVO();
 
@@ -238,7 +252,15 @@ public class IngestManagerSVC {
             );
 
             // SSO Logout
-            dataCoreRestSVC.post(properties.getLogoutUri(), null, headers, user, null, Void.class);
+            dataCoreRestSVC.post(
+                properties.getLogoutUri(),
+                null,
+                headers,
+                user,
+                null,
+                null,
+                Void.class
+            );
         }
 
         // Clear cookie and session
@@ -267,7 +289,8 @@ public class IngestManagerSVC {
 
         if (principal != null) {
             String userId = principal.toString();
-            String pathUri = "/" + userId;
+            paths.add("/");
+            paths.add(userId);
             Map<String, String> headers = new HashMap<String, String>();
             headers.put(
                 HttpHeaders.AUTHORIZATION,
@@ -277,8 +300,9 @@ public class IngestManagerSVC {
             user =
                 dataCoreRestSVC.get(
                     properties.getUserInfoUri(),
-                    pathUri,
+                    paths,
                     headers,
+                    null,
                     null,
                     null,
                     UserVO.class
