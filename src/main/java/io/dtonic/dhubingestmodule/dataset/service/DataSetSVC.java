@@ -3,6 +3,8 @@ package io.dtonic.dhubingestmodule.dataset.service;
 import com.google.gson.Gson;
 import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.common.service.DataCoreRestSVC;
+import io.dtonic.dhubingestmodule.dataset.vo.DataModelResponseVO;
+import io.dtonic.dhubingestmodule.dataset.vo.DataSetForDataModelIDVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListBaseInfoVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListResponseVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetPropertiesResponseVO;
@@ -30,7 +32,8 @@ public class DataSetSVC {
     private static final String DEFAULT_PATH_URL = "datasets";
     private final DataCoreRestSVC dataCoreRestSVC;
 
-    public DataSetResponseVO getDataSets() {
+    //DataSet List 조회
+    public DataSetResponseVO getDataSetList() {
         String pathUri = DEFAULT_PATH_URL;
         DataSetListResponseVO dataSetListResponseVO = new DataSetListResponseVO();
         Map<String, String> header = new HashMap<String, String>();
@@ -58,5 +61,54 @@ public class DataSetSVC {
         dataSetResponseVO.setDataSetId(DataSetId);
 
         return dataSetResponseVO;
+    }
+
+    //dataset이 사용하는 Model ID 조회
+    public DataSetPropertiesResponseVO getDataModelId(String DataSetId) {
+        String datasetUrl = properties.getDatasetUrl();
+        String pathUri = "/datasets/" + DataSetId;
+        Map<String, String> header = new HashMap<String, String>();
+        header.put("Accept", "application/json");
+        DataSetPropertiesResponseVO dataSetPropertiesResponseVO = new DataSetPropertiesResponseVO();
+
+        dataSetPropertiesResponseVO.setDatasetId(DataSetId);
+        ResponseEntity<DataSetForDataModelIDVO> response = dataCoreRestSVC.get(
+            datasetUrl,
+            pathUri,
+            header,
+            null,
+            null,
+            DataSetForDataModelIDVO.class
+        );
+        if (response != null) dataSetPropertiesResponseVO.setDatamodelId(
+            response.getBody().getDatasetBaseInfo().getDataModelId()
+        );
+
+        return dataSetPropertiesResponseVO;
+    }
+
+    //dataset이 사용하는 Model Properties 조회
+    public DataSetPropertiesResponseVO getDataModelProperties(
+        DataSetPropertiesResponseVO dataSetPropertiesResponseVO
+    ) {
+        String datamodelUrl = properties.getDatasetUrl();
+        String pathUri = "/datamodels/" + dataSetPropertiesResponseVO.getDatamodelId();
+        Map<String, String> header = new HashMap<String, String>();
+
+        header.put("Accept", "application/json");
+        ResponseEntity<DataModelResponseVO> response = dataCoreRestSVC.get(
+            datamodelUrl,
+            pathUri,
+            header,
+            null,
+            null,
+            DataModelResponseVO.class
+        );
+
+        if (response != null) dataSetPropertiesResponseVO.setAttribute(
+            response.getBody().getAttributes()
+        );
+
+        return dataSetPropertiesResponseVO;
     }
 }
