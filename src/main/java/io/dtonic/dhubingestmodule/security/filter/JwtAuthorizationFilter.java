@@ -1,5 +1,6 @@
 package io.dtonic.dhubingestmodule.security.filter;
 
+import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.security.exception.JwtAuthentioncationException;
 import io.dtonic.dhubingestmodule.security.exception.JwtAuthorizationException;
 import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
@@ -30,6 +31,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
+    private Properties properties;
+
     private AuthenticationEntryPoint entryPoint;
 
     private IngestManagerSVC ingestManagerSVC;
@@ -42,10 +45,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      */
     public JwtAuthorizationFilter(
         AuthenticationEntryPoint entryPoint,
-        IngestManagerSVC ingestManagerSVC
+        IngestManagerSVC ingestManagerSVC,
+        Properties properties
     ) {
         this.entryPoint = entryPoint;
         this.ingestManagerSVC = ingestManagerSVC;
+        this.properties = properties;
     }
 
     /**
@@ -66,7 +71,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 );
             }
 
-            if (!isAccessible(authentication.getAuthorities(), request, response)) {
+            if (!isAccessible(authentication.getAuthorities())) {
                 ingestManagerSVC.logout(request, response, authentication.getPrincipal());
                 throw new JwtAuthorizationException(
                     authentication.getPrincipal() + " has not role about the request"
@@ -86,11 +91,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      * @param roles		GrantedAuthority
      * @return			accessible: true, no accessible: false
      */
-    private boolean isAccessible(
-        Collection<? extends GrantedAuthority> roles,
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) {
-        return roles != null && !roles.isEmpty();
+    private boolean isAccessible(Collection<? extends GrantedAuthority> roles) {
+        if (roles != null && !roles.isEmpty()) {
+            if (properties.getAccessRoleUser() == null) {
+                log.warn("not Set up Access Role on ingestManager");
+                return false;
+            } else {
+                for (GrantedAuthority role : roles) {
+                    if (role.getAuthority().equals(properties.getAccessRoleUser())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

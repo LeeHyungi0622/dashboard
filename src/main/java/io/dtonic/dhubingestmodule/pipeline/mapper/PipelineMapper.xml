@@ -1,0 +1,74 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper">
+  <resultMap id="pipeline" type="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO">
+    <id property="id" column="id" />
+    <result property="creator" column="creator" />
+    <result property="name" column="name" />
+    <result property="detail" column="detail" />
+    <result property="status" column="status" />
+    <result property="data_set" column="data_set" />
+    <result property="collector" column="collector" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
+    <result property="filter" column="filter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
+    <result property="converter" column="converter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
+    <result property="createdAt" column="created_at" />
+    <result property="modifiedAt" column="modified_at" />
+  </resultMap>
+  <select id="getPipeline" parameterType="Integer" resultMap="pipeline">
+    SELECT
+      id,
+      creator,
+      name,
+      detail,
+      status,
+      data_set,
+      collector,
+      filter,
+      converter,
+      created_at,
+      modified_at
+    FROM pipeline
+    WHERE id = #{id}
+  </select>
+  <update id="changePipelineStatus">
+    UPDATE pipeline 
+    SET status = #{status}, modified_at = now() 
+    WHERE id = #{id}
+  </update>
+  <delete id="deletePipeline" parameterType="Integer">
+    DELETE FROM pipeline
+    WHERE id = #{id}
+    </delete>
+  <delete id="deletePipelineDrafts" parameterType="Integer">
+      DELETE FROM temp_pipeline
+      WHERE id = #{id}
+  </delete>
+  <select id="isExists" parameterType="Integer" resultType="boolean">
+    SELECT
+    EXISTS
+    (SELECT * 
+    FROM pipeline where id = #{id})
+  </select>
+  <insert id="createPipeline">
+    INSERT INTO pipeline (id, creator, name, detail, status, processor_group_id, data_set, collector, filter, converter, created_at, modified_at)
+    VALUES (#{id},#{creator},#{name},#{detail},#{status},#{data_set},#{collector},#{filter},#{converter},#{createdAt},#{modifiedAt})
+    </insert>
+  <select id="getPipelineList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO">
+      SELECT
+       id,
+       name,
+       detail,
+       data_set,
+       status,
+       created_at as createdAt,
+       modified_at as modifiedAt
+      FROM pipeline
+      WHERE 1=1
+      <if test="status != null">
+      and status like '%#{status}%'
+      </if>
+      <if test="searchObject != null and searchValue != null">
+       and #{searchObject} like '%#{searchValue}%'
+      </if>
+      ORDER BY id ASC
+    </select>
+</mapper>
