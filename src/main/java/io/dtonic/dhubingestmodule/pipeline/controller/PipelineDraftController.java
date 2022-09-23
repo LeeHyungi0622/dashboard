@@ -78,6 +78,7 @@ public class PipelineDraftController {
             pipelineCreateVO.getCreator(),
             pipelineCreateVO.getDetail()
         );
+        response.setStatus(HttpStatus.OK.value());
     }
 
     @Transactional
@@ -89,6 +90,7 @@ public class PipelineDraftController {
     )
         throws Exception {
         pipelineSVC.updatePipelineDrafts(requestBody);
+        response.setStatus(HttpStatus.OK.value());
     }
 
     @Transactional

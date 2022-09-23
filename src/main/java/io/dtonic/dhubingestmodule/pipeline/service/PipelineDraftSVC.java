@@ -70,7 +70,7 @@ public class PipelineDraftSVC {
         } else {
             int idx = 0;
             int completeCnt = 0; // 프로세서들의 필수 properties들이 모두 채워져있으면 1 증가
-            String flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
+            String flowJsonString = jsonObject.getJSONArray(nifiFlowType).get(0).toString();
 
             JSONObject jObject = new JSONObject(flowJsonString);
             int nifiComponentLength = jObject.getJSONArray("NifiComponents").length();
@@ -96,12 +96,16 @@ public class PipelineDraftSVC {
 
             // processor에서 필수로 넣어야 하는 properties 값들이 모두 채워져 있으면, completed를 true로 바꾼다
             if (completeCnt == nifiComponentLength) {
-                jsonObject.getJSONObject(nifiFlowType).remove("isCompleted");
-                jsonObject.getJSONObject(nifiFlowType).put("isCompleted", true);
-                flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
+                jsonObject.getJSONArray(nifiFlowType).getJSONObject(0).remove("isCompleted");
+                jsonObject.getJSONArray(nifiFlowType).getJSONObject(0).put("isCompleted", true);
+                flowJsonString = jsonObject.getJSONArray(nifiFlowType).toString();
+            } else {
+                jsonObject.getJSONArray(nifiFlowType).getJSONObject(0).remove("isCompleted");
+                jsonObject.getJSONArray(nifiFlowType).getJSONObject(0).put("isCompleted", false);
+                flowJsonString = jsonObject.getJSONArray(nifiFlowType).toString();
             }
 
-            // converter 단계에서 dataSet을 설정한다.
+            // converter 단계에서 dataSet을 값을 설정한다.
             // converter 단계가 아니면 dataSet 값은 null로 처리
             if (jsonObject.isNull("dataSet")) {
                 pipelineMapper.updatePipelineDrafts(
