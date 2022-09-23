@@ -198,4 +198,106 @@ public class NiFiRestSVC {
             return null;
         }
     }
+
+    //TODO exception check
+    protected ProcessGroupStatusEntity getStatusProcessGroup(String processorGroupId)
+        throws JsonMappingException, JsonProcessingException {
+        List<String> paths = new ArrayList<String>();
+        paths.add("flow");
+        paths.add("process-groups");
+        paths.add(processorGroupId);
+        paths.add("status");
+
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json");
+
+        // Map<String, Object> params = new HashMap<>();
+        // params.put("includeAncestorGroups", false);
+        // params.put("includeDescendantGroups", true);
+
+        ResponseEntity<String> result = dataCoreRestSVC.get(
+            niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+            paths,
+            headers,
+            null,
+            null,
+            niFiClientEntity.getAccessToken(),
+            String.class
+        );
+
+        ProcessGroupStatusEntity resultEntity = nifiObjectMapper.readValue(
+            result.getBody(),
+            ProcessGroupStatusEntity.class
+        );
+        return resultEntity;
+    }
+
+    public Map<String, Integer> getNumberOfProcessorStatus(
+        ProcessGroupStatusEntity processGroupStatus
+    ) {
+        Map<String, Integer> result = new HashMap<>();
+        Integer runCnt = 0;
+        Integer stopCnt = 0;
+        Integer invaildCnt = 0;
+        try {
+            for (ProcessorStatusSnapshotEntity processorStatus : processGroupStatus
+                .getProcessGroupStatus()
+                .getAggregateSnapshot()
+                .getProcessorStatusSnapshots()) {
+                String status = processorStatus.getProcessorStatusSnapshot().getRunStatus();
+                if (status.equals("Stopped")) {
+                    stopCnt++;
+                } else if (status.equals("Running")) {
+                    runCnt++;
+                } else {
+                    invaildCnt++;
+                }
+            }
+            result.put("Running", runCnt);
+            result.put("Stopped", stopCnt);
+            result.put("Invaild", invaildCnt);
+            return result;
+        } catch (Exception e) {
+            // TODO: handle exception
+            return result;
+        }
+    }
+
+    public TemplateEntity uploadTemplate() {
+        try {
+            ClassPathResource resource = new ClassPathResource("template/REST_Server.xml");
+            File templateFile = resource.getFile();
+            Resource template = new FileSystemResource(templateFile);
+
+            List<String> paths = new ArrayList<String>();
+            paths.add("process-groups");
+            paths.add("root");
+            paths.add("templates");
+            paths.add("upload");
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "multipart/form-data");
+
+            LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("template", template);
+
+            ResponseEntity<String> result = dataCoreRestSVC.post(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            TemplateEntity resultEntity = nifiObjectMapper.readValue(
+                result.getBody(),
+                TemplateEntity.class
+            );
+            return resultEntity;
+        } catch (Exception e) {
+            log.error("Not Found Template File", e);
+            return new TemplateEntity();
+        }
+    }
 }
