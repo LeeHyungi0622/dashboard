@@ -73,9 +73,7 @@
             <button v-else @click="deletePipeline(item)">중지 후 삭제</button>
           </template>
           <template v-slot:[`item.pipelineUpdate`]="{ item }">
-            <button @click="goPipelineDetailEdit(item)">
-              파이프라인 상세/수정
-            </button>
+            <button @click="goPipelineDetailEdit(item)">보기</button>
           </template>
         </v-data-table>
         <div class="paginationBox">
@@ -113,6 +111,13 @@
 <script>
 import EventBus from "@/eventBus/EventBus.js";
 export default {
+  mounted() {
+    console.log(this.$ws);
+    this.connect();
+  },
+  beforeDestroy() {
+    this.disconnect();
+  },
   computed: {
     totalPage() {
       return Math.floor((this.total + parseInt(this.perPage)) / this.perPage);
@@ -344,6 +349,26 @@ export default {
       this.$router.push({
         name: "pipelineCreate",
       });
+    },
+
+    connect() {
+      this.$ws.onopen = () => {
+        console.log("websocket Connected SUCCESS");
+        this.getMessage();
+      };
+    },
+    getMessage() {
+      this.$ws.onmessage = ({ data }) => {
+        console.log("메세지 수신", data);
+      };
+    },
+    disconnect() {
+      this.$ws.close();
+      console.log("websocket Disconnected SUCCESS");
+    },
+    sendMessage() {
+      this.$ws.send(this.message);
+      this.message = "";
     },
   },
 };

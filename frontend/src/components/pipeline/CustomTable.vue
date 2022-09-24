@@ -10,7 +10,10 @@
       <div class="value">
         <div
           class="disf"
-          v-if="content.key == `Base64 Decoder` && mode == `UPDATE`"
+          v-if="
+            content.key == `Base64 Decoder` &&
+            (mode == `UPDATE` || mode == `REGISTER`)
+          "
         >
           <input
             class="mgL12"
@@ -25,8 +28,29 @@
             value="Off"
           />Off
         </div>
-        <div v-else-if="mode == `UPDATE`">
-          <input type="text" v-model="content.value" />
+        <div v-else-if="mode == `UPDATE` || mode == `REGISTER`">
+          <select
+            style="padding: 0px 20px 0px 20px"
+            v-if="typeof content.value === 'object'"
+            v-model="content.value.selectedValue"
+          >
+            <option
+              v-for="(item, key) in content.value.datas"
+              :key="key"
+              :value="item"
+            >
+              {{ item }}
+            </option>
+          </select>
+          <select
+            style="padding: 0px 20px 0px 20px"
+            v-else-if="content.value === 'true' || content.value === 'false'"
+            v-model="content.value"
+          >
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+          <input v-else type="text" v-model="content.value" />
         </div>
         <div class="disf" v-else-if="content.key == `Base64 Decoder`">
           <input
@@ -37,7 +61,12 @@
           />
           {{ content.value }}
         </div>
-
+        <div
+          style="padding-left: 20px"
+          v-else-if="typeof content.value === `object`"
+        >
+          {{ content.value.selectedValue }}
+        </div>
         <div style="padding-left: 20px" v-else>{{ content.value }}</div>
       </div>
     </div>

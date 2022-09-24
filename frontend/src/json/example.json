@@ -1,0 +1,284 @@
+{
+  "id": 6,
+  "creator": "admin",
+  "name": "TEST6",
+  "detail": "Detail6",
+  "status": "Stopping",
+  "data_set": "DATASET6",
+  "collector": [
+    {
+      "type": "collector",
+      "isCompleted": "true",
+      "NifiComponents": [
+        {
+          "type": "controller",
+          "name": "MySQLController",
+          "properties": [
+            {
+              "name": "Database Connection URL",
+              "detail": "null",
+              "isRequired": "true",
+              "defaultValue": "null",
+              "inputValue": "jdbc:mysql://mysql:3306/db"
+            },
+            {
+              "name": "Database Driver Class Name",
+              "detail": "null",
+              "isRequired": "true",
+              "defaultValue": "null",
+              "inputValue": "org.Driver.MySQL"
+            },
+            {
+              "name": "Database Driver Location(s)",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Kerberos User Service",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Kerberos Credentials Service",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Kerberos Principal",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Kerberos Password",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Database User",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Password",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Max Wait Time",
+              "detail": "null",
+              "isRequired": "true",
+              "defaultValue": ["500 millis"],
+              "inputValue": "500 millis"
+            },
+            {
+              "name": "Max Total Connections",
+              "detail": "null",
+              "isRequired": "true",
+              "defaultValue": ["8"],
+              "inputValue": "8"
+            },
+            {
+              "name": "Validation query",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Minimum Idle Connections",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["0"],
+              "inputValue": "0"
+            },
+            {
+              "name": "Max Idle Connections",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["8"],
+              "inputValue": "8"
+            },
+            {
+              "name": "Max Connection Lifetime",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["-1"],
+              "inputValue": "-1"
+            },
+            {
+              "name": "Time Between Eviction Runs",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["-1"],
+              "inputValue": "-1"
+            },
+            {
+              "name": "Minimum Evictable Idle Time",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["30 mins"],
+              "inputValue": "30 mins"
+            },
+            {
+              "name": "Sofr Minimum Evictable Idle Time",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["-1"],
+              "inputValue": "-1"
+            }
+          ]
+        },
+        {
+          "type": "controller",
+          "name": "MariaDBController",
+          "properties": [
+            {
+              "name": "Database Connection URL",
+              "detail": "null",
+              "isRequired": "true",
+              "defaultValue": "null",
+              "inputValue": "5"
+            },
+            {
+              "name": "Database Driver Class Name",
+              "detail": "null",
+              "isRequired": "true",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Database Driver Location(s)",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Kerberos User Service",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Kerberos Credentials Service",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Kerberos Principal",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Kerberos Password",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Database User",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Password",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Max Wait Time",
+              "detail": "null",
+              "isRequired": "true",
+              "defaultValue": ["500 millis"],
+              "inputValue": "500 millis"
+            },
+            {
+              "name": "Max Total Connections",
+              "detail": "null",
+              "isRequired": "true",
+              "defaultValue": ["8"],
+              "inputValue": "8"
+            },
+            {
+              "name": "Validation query",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": "null",
+              "inputValue": "null"
+            },
+            {
+              "name": "Minimum Idle Connections",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["0"],
+              "inputValue": "0"
+            },
+            {
+              "name": "Max Idle Connections",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["8"],
+              "inputValue": "8"
+            },
+            {
+              "name": "Max Connection Lifetime",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["-1"],
+              "inputValue": "-1"
+            },
+            {
+              "name": "Time Between Eviction Runs",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["-1"],
+              "inputValue": "-1"
+            },
+            {
+              "name": "Minimum Evictable Idle Time",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["30 mins"],
+              "inputValue": "30 mins"
+            },
+            {
+              "name": "Sofr Minimum Evictable Idle Time",
+              "detail": "null",
+              "isRequired": "false",
+              "defaultValue": ["-1"],
+              "inputValue": "-1"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "filter": [],
+  "converter": [],
+  "createdAt": null,
+  "modifiedAt": null
+}

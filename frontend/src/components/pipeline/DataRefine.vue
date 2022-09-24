@@ -1,12 +1,16 @@
 <template>
   <div class="pipelineUpdateContentBox">
     <div style="justify-content: space-between; display: flex">
-      <div class="pipelineUpdateSubTitle fsb16">데이터 정재</div>
-      <button class="pipelineUpdateButton" @click="convertMode('refine')">
+      <div class="pipelineUpdateSubTitle fsb16">데이터 정제</div>
+      <button
+        v-if="mode == 'UPDATE'"
+        class="pipelineUpdateButton"
+        @click="convertMode('refine')"
+      >
         {{ mode == "UPDATE" ? "수정완료" : "수정" }}
       </button>
     </div>
-    <custom-table :contents="refine" :mode="mode" />
+    <custom-table :contents="contents" :mode="mode" />
   </div>
 </template>
 <script>
@@ -17,7 +21,7 @@ export default {
   },
   props: {
     convertMode: Function,
-    refine: Array,
+    contents: Array,
     mode: String,
   },
 };

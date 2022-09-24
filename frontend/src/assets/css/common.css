@@ -142,7 +142,6 @@ select {
 
 .pipelineTable >.v-data-table__wrapper tr:hover{
   background-color: rgba( 220 , 233, 255, 0.2) !important;
-  
 }
 
 .pipelineTable >.v-data-table__wrapper th {
@@ -157,6 +156,7 @@ select {
   border-top: 1px solid#DFDFDF;
   border-right: 1px solid#DFDFDF;
   border-bottom: 1px solid #DFDFDF;
+  font-size: 12px !important;
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(1),
 .pipelineTable >.v-data-table__wrapper td:nth-of-type(1) {
@@ -165,31 +165,31 @@ select {
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(2),
 .pipelineTable >.v-data-table__wrapper td:nth-of-type(2) {
-  width: 12%;
+  width: 13%;
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(3),
 .pipelineTable >.v-data-table__wrapper td:nth-of-type(3) {
-  width: 12%;
+  width: 13%;
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(4),
 .pipelineTable >.v-data-table__wrapper td:nth-of-type(4) {
-  width: 15%;
+  width: 18%;
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(5),
 .pipelineTable >.v-data-table__wrapper td:nth-of-type(5) {
-  width: 15%;
+  width: 14%;
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(6),
 .pipelineTable >.v-data-table__wrapper td:nth-of-type(6) {
-  width: 13%;
+  width: 14%;
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(7),
 .pipelineTable >.v-data-table__wrapper td:nth-of-type(7) {
-  width: 13%;
+  width: 11%;
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(8),
 .pipelineTable >.v-data-table__wrapper td:nth-of-type(8) {
-  width: 15%;
+  width: 12%;
 }
 
 
@@ -492,7 +492,8 @@ select {
 }
 .pipelineUpdateConvertVFT  td.text-start{
   text-align: center !important;
-  padding:0 !important
+  padding:0 !important;
+  font-size: 12px !important;
 }
 .pipelineUpdateConvertVFT input {
   width: 70%;
@@ -528,6 +529,7 @@ select {
 .pipelineUpdateIdVFT {
   margin-top: 20px;
   text-align: center !important;
+  font-size: 12px !important;
 }
 .pipelineUpdateIdVFT th.text-start{
   text-align: center !important;
@@ -535,6 +537,8 @@ select {
 .pipelineUpdateIdVFT td.text-start {
   text-align: center !important;
   padding: 0 !important;
+  font-size: 12px !important;
+
 }
 .pipelineUpdateIdVFT input {
   width: 70%;
