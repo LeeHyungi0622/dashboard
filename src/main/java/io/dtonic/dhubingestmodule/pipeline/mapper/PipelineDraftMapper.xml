@@ -5,28 +5,12 @@
     <result property="creator" column="creator" />
     <result property="name" column="name" />
     <result property="detail" column="detail" />
-    <result property="status" column="status" />
     <result property="data_set" column="data_set" />
     <result property="collector" column="collector" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
     <result property="filter" column="filter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
     <result property="converter" column="converter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
     <result property="createdAt" column="created_at" />
     <result property="modifiedAt" column="modified_at" />
-    <!-- <collection property="collector" column="collector" javaType="io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO">
-      <result property="name" column="name" />
-      <result property="isCompleted" column="isCompleted" />
-      <result property="NifiComponents" column="NifiComponents" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
-    </collection> -->
-    <!-- <collection property="filter" column="filter" javaType="io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO">
-      <result property="name" column="name" />
-      <result property="isCompleted" column="isCompleted" />
-      <result property="NifiComponents" column="NifiComponents" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
-    </collection>
-    <collection property="converter" column="converter" javaType="io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO">
-      <result property="name" column="name" />
-      <result property="isCompleted" column="isCompleted" />
-      <result property="NifiComponents" column="NifiComponents" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
-    </collection> -->
   </resultMap>
   <select id="getPipelineDraftsList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO" resultMap="pipeline">
     select

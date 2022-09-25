@@ -71,7 +71,7 @@ public class PipelineDraftController {
     public void createPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestBody PipelineResponseVO pipelineCreateVO
+        @RequestBody PipelineVO pipelineCreateVO
     )
         throws Exception {
         pipelineSVC.createPipelineDrafts(
