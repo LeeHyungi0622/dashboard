@@ -71,13 +71,13 @@ public class PipelineDraftController {
     public void createPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestBody PipelineVO pipelineCreateVO
+        @RequestBody PipelineVO pipelineVO
     )
         throws Exception {
         pipelineSVC.createPipelineDrafts(
-            pipelineCreateVO.getName(),
-            pipelineCreateVO.getCreator(),
-            pipelineCreateVO.getDetail()
+            pipelineVO.getName(),
+            pipelineVO.getCreator(),
+            pipelineVO.getDetail()
         );
         response.setStatus(HttpStatus.OK.value());
     }
