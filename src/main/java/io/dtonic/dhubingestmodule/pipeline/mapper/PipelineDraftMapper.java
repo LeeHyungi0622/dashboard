@@ -1,6 +1,6 @@
 package io.dtonic.dhubingestmodule.pipeline.mapper;
 
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
