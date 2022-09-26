@@ -11,5 +11,6 @@ public class NiFiComponentVO {
 
     private String type;
     private String name;
-    private List<PropertyVO> properties = new ArrayList<>();
+    private List<PropertyVO> requiredProps = new ArrayList<>();
+    private List<PropertyVO> optionalProps = new ArrayList<>();
 }
