@@ -1,19 +1,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper">
-  <resultMap id="pipeline" type="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO">
+  <resultMap id="pipeline" type="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO">
     <id property="id" column="id" />
     <result property="creator" column="creator" />
     <result property="name" column="name" />
     <result property="detail" column="detail" />
     <result property="status" column="status" />
     <result property="data_set" column="data_set" />
-    <result property="collector" column="collector" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
-    <result property="filter" column="filter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
-    <result property="converter" column="converter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonListTypeHandler" />
+    <result property="collector" column="collector" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
+    <result property="filter" column="filter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
+    <result property="converter" column="converter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
     <result property="createdAt" column="created_at" />
     <result property="modifiedAt" column="modified_at" />
   </resultMap>
-  <select id="getPipelineDraftsList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO" resultMap="pipeline">
+  <resultMap id="PropertyVO" type="io.dtonic.dhubingestmodule.nifi.vo.PropertyVO">
+    <result property="name" column="property_name" />
+    <result property="detail" column="detail" />
+    <result property="isRequired" column="is_required" />
+    <result property="defaultValue" column="value" typeHandler="io.dtonic.dhubingestmodule.common.handler.ListTypeHandler" />
+  </resultMap>
+  <select id="getPipelineDraftsList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO" resultMap="pipeline">
     select
       id,
       creator,
@@ -30,7 +36,7 @@
       where #{searchObject} like '%#{searchValue}%'
     </if>
   </select>
-  <select id="getPipelineDrafts" parameterType="Integer" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO" resultMap="pipeline">
+  <select id="getPipelineDrafts" parameterType="Integer" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO" resultMap="pipeline">
     select
       id,
       creator,
@@ -66,5 +72,32 @@
     EXISTS
     (SELECT * 
     FROM temp_pipeline where id = #{id})
+  </select>
+  <select id="getDataCollector" resultType="io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO">
+    SELECT 
+      id,
+      nifi_name
+    FROM 
+      adaptor
+    WHERE 
+      adaptor_type = 'collector'
+    ORDER BY id ASC
+  </select>
+  <select id="getPipelineproperties" resultMap="PropertyVO">
+    SELECT 
+      property_name ,
+      detail,
+      is_required ,
+	    B.value
+	  FROM 
+      properties A
+	  LEFT JOIN 
+      properties_value B
+	  ON 
+      A.id = B.property_id
+	  WHERE 
+      A.adaptor_id = #{adaptorid}
+    ORDER BY A.id ASC
+
   </select>
 </mapper>

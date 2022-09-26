@@ -2,7 +2,7 @@ package io.dtonic.dhubingestmodule.pipeline.mapper;
 
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.Date;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
 public interface PipelineMapper {
     List<PipelineListResponseVO> getPipelineList();
 
-    PipelineResponseVO getPipeline(@Param("id") Integer id);
+    PipelineVO getPipeline(@Param("id") Integer id);
 
     void changePipelineStatus(@Param("id") Integer id, @Param("status") String status);
 

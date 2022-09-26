@@ -1,7 +1,14 @@
 package io.dtonic.dhubingestmodule.pipeline.service;
 
+import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
+import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
+import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,16 +30,39 @@ public class PipelineDraftSVC {
         pipelineMapper.createPipelineDrafts(name, creator, detail);
     }
 
-    public List<PipelineResponseVO> getPipelineDraftsList(String searchObject, String searchValue) {
-        List<PipelineResponseVO> pipelineVO = pipelineMapper.getPipelineDraftsList(
+    public List<DataCollectorVO> getDataCollector() {
+        return pipelineMapper.getDataCollector();
+    }
+
+    public List<PipelineVO> getPipelineDraftsList(String searchObject, String searchValue) {
+        List<PipelineVO> pipelineVO = pipelineMapper.getPipelineDraftsList(
             searchObject,
             searchValue
         );
         return pipelineVO;
     }
 
-    public PipelineResponseVO getPipelineDrafts(Integer id) {
-        PipelineResponseVO pipelineVO = pipelineMapper.getPipelineDrafts(id);
+    public PipelineVO getPipelineDrafts(Integer id) {
+        PipelineVO pipelineVO = pipelineMapper.getPipelineDrafts(id);
+        return pipelineVO;
+    }
+
+    public PipelineVO getPipelineproperties(Integer adaptorid, Integer pipelineid) {
+        PipelineVO pipelineVO = pipelineMapper.getPipelineDrafts(pipelineid);
+        NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
+        List<NiFiComponentVO> niFiComponentVOs = new ArrayList<NiFiComponentVO>();
+        List<PropertyVO> propertyVO = pipelineMapper.getPipelineproperties(adaptorid);
+        for (int i = 0; i < propertyVO.size(); i++) {
+            if (propertyVO.get(i).getIsRequired()) {
+                niFiComponentVO.getRequiredProps().add(propertyVO.get(i));
+            } else {
+                niFiComponentVO.getOptionalProps().add(propertyVO.get(i));
+            }
+        }
+        AdaptorVO adaptorVO = new AdaptorVO();
+        niFiComponentVOs.add(niFiComponentVO);
+        adaptorVO.setNifiComponents(niFiComponentVOs);
+        pipelineVO.setCollector(adaptorVO);
         return pipelineVO;
     }
 
@@ -46,14 +76,14 @@ public class PipelineDraftSVC {
     }
 
     @Transactional
-    public void updatePipelineDrafts(String requestBody) {
+    public void updatePipelineDrafts(PipelineVO requestBody) {
         parseJSON(requestBody, "collector");
         parseJSON(requestBody, "filter");
         parseJSON(requestBody, "converter");
     }
 
     @Transactional
-    public void parseJSON(String requestBody, String nifiFlowType) {
+    public void parseJSON(PipelineVO requestBody, String nifiFlowType) {
         JSONObject jsonObject = new JSONObject(requestBody);
 
         // collector, filter, converter를 설정하지 않은 초기 단계 에서는 jsonString을 null로 설정

@@ -14,7 +14,7 @@ import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -107,13 +107,13 @@ public class PipelineSVC {
         return pipelineMapper.isExists(id);
     }
 
-    public PipelineResponseVO getPipelineVOById(Integer id)
+    public PipelineVO getPipelineVOById(Integer id)
         throws JsonMappingException, JsonProcessingException {
-        // PipelineResponseVO result = pipelineMapper.getPipeline(id);
+        // PipelineVO result = pipelineMapper.getPipeline(id);
 
         // List<AdaptorVO> map = objectMapper.readValue(result.getCollector(), JSONObject.class);
         // return map;
-        PipelineResponseVO result = pipelineMapper.getPipeline(id);
+        PipelineVO result = pipelineMapper.getPipeline(id);
         return result;
     }
 
