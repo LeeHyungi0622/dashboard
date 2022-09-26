@@ -1,6 +1,7 @@
 package io.dtonic.dhubingestmodule.nifi.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -9,6 +10,8 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.nifi.web.api.entity.ControllerServicesEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupStatusEntity;
+import org.apache.nifi.web.api.entity.RemoteProcessGroupEntity;
+import org.apache.nifi.web.api.entity.ScheduleComponentsEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +85,33 @@ public class NiFiRestSVCTest {
             nifiObjectMapper.writeValueAsString(result)
         );
         assertNotNull(result);
+    }
+
+    @Test
+    public void startProcessorGroupTest() throws JsonProcessingException {
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        boolean result = niFiRestSVC.startProcessorGroup(processorGroupId);
+        assertTrue(result);
+    }
+
+    @Test
+    public void stopProcessorGroupTest() throws JsonProcessingException {
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        boolean result = niFiRestSVC.stopProcessorGroup(processorGroupId);
+        assertTrue(result);
+    }
+
+    @Test
+    public void disableControllersTest() throws JsonProcessingException {
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        boolean result = niFiRestSVC.disableControllers(processorGroupId);
+        assertTrue(result);
+    }
+
+    @Test
+    public void enableControllersTest() throws JsonProcessingException {
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        boolean result = niFiRestSVC.enableControllers(processorGroupId);
+        assertTrue(result);
     }
 }

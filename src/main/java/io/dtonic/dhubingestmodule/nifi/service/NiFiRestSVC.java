@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.nifi.web.api.entity.ActivateControllerServicesEntity;
 import org.apache.nifi.web.api.entity.ControllerServiceEntity;
 import org.apache.nifi.web.api.entity.ControllerServicesEntity;
 import org.apache.nifi.web.api.entity.FlowEntity;
@@ -21,6 +22,9 @@ import org.apache.nifi.web.api.entity.InstantiateTemplateRequestEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupStatusEntity;
 import org.apache.nifi.web.api.entity.ProcessorStatusSnapshotEntity;
+import org.apache.nifi.web.api.entity.RemotePortRunStatusEntity;
+import org.apache.nifi.web.api.entity.RemoteProcessGroupEntity;
+import org.apache.nifi.web.api.entity.ScheduleComponentsEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -298,6 +302,164 @@ public class NiFiRestSVC {
         } catch (Exception e) {
             log.error("Not Found Template File", e);
             return new TemplateEntity();
+        }
+    }
+
+    public boolean startProcessorGroup(String processorGroupId) {
+        try {
+            ScheduleComponentsEntity body = new ScheduleComponentsEntity();
+            body.setState("RUNNING");
+            body.setId(processorGroupId);
+            body.setDisconnectedNodeAcknowledged(false);
+
+            List<String> paths = new ArrayList<String>();
+            paths.add("flow");
+            paths.add("process-groups");
+            paths.add(processorGroupId);
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            ResponseEntity<String> result = dataCoreRestSVC.put(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            ScheduleComponentsEntity resultEntity = nifiObjectMapper.readValue(
+                result.getBody(),
+                ScheduleComponentsEntity.class
+            );
+            if (resultEntity.getClass().equals(ScheduleComponentsEntity.class)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Can not Start Processor Groups", e);
+            return false;
+        }
+    }
+
+    public boolean stopProcessorGroup(String processorGroupId) {
+        try {
+            ScheduleComponentsEntity body = new ScheduleComponentsEntity();
+            body.setState("STOPPED");
+            body.setId(processorGroupId);
+            body.setDisconnectedNodeAcknowledged(false);
+
+            List<String> paths = new ArrayList<String>();
+            paths.add("flow");
+            paths.add("process-groups");
+            paths.add(processorGroupId);
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            ResponseEntity<String> result = dataCoreRestSVC.put(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            ScheduleComponentsEntity resultEntity = nifiObjectMapper.readValue(
+                result.getBody(),
+                ScheduleComponentsEntity.class
+            );
+            if (resultEntity.getClass().equals(ScheduleComponentsEntity.class)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Can not Stop Processor Groups", e);
+            return false;
+        }
+    }
+
+    protected boolean disableControllers(String processorGroupId) {
+        try {
+            ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
+            body.setState("DISABLED");
+            body.setId(processorGroupId);
+            body.setDisconnectedNodeAcknowledged(false);
+
+            List<String> paths = new ArrayList<String>();
+            paths.add("flow");
+            paths.add("process-groups");
+            paths.add(processorGroupId);
+            paths.add("controller-services");
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            ResponseEntity<String> result = dataCoreRestSVC.put(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            ActivateControllerServicesEntity resultEntity = nifiObjectMapper.readValue(
+                result.getBody(),
+                ActivateControllerServicesEntity.class
+            );
+            if (resultEntity.getClass().equals(ActivateControllerServicesEntity.class)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Can not Stop Processor Groups", e);
+            return false;
+        }
+    }
+
+    protected boolean enableControllers(String processorGroupId) {
+        try {
+            ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
+            body.setState("ENABLED");
+            body.setId(processorGroupId);
+            body.setDisconnectedNodeAcknowledged(false);
+
+            List<String> paths = new ArrayList<String>();
+            paths.add("flow");
+            paths.add("process-groups");
+            paths.add(processorGroupId);
+            paths.add("controller-services");
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            ResponseEntity<String> result = dataCoreRestSVC.put(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            ActivateControllerServicesEntity resultEntity = nifiObjectMapper.readValue(
+                result.getBody(),
+                ActivateControllerServicesEntity.class
+            );
+            if (resultEntity.getClass().equals(ActivateControllerServicesEntity.class)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Can not Stop Processor Groups", e);
+            return false;
         }
     }
 }
