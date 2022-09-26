@@ -28,6 +28,7 @@
     <if test="searchObject != null and searchValue != null">
       where #{searchObject} like '%#{searchValue}%'
     </if>
+    order by id
   </select>
   <select id="getPipelineDrafts" parameterType="Integer" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO" resultMap="pipeline">
     select
