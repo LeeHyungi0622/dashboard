@@ -1,8 +1,10 @@
 package io.dtonic.dhubingestmodule.pipeline.service;
 
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +26,43 @@ public class PipelineDraftSVC {
         pipelineMapper.createPipelineDrafts(name, creator, detail);
     }
 
-    public List<PipelineVO> getPipelineDraftsList(String searchObject, String searchValue) {
+    public List<PipelineDraftsListResponseVO> getPipelineDraftsList(
+        String searchObject,
+        String searchValue
+    ) {
         List<PipelineVO> pipelineVO = pipelineMapper.getPipelineDraftsList(
             searchObject,
             searchValue
         );
-        return pipelineVO;
+
+        List<PipelineDraftsListResponseVO> pipelineDraftsListResponseVO = new ArrayList<>();
+        for (int i = 0; i < pipelineVO.size(); i++) {
+            PipelineDraftsListResponseVO draftsResponse = new PipelineDraftsListResponseVO();
+            draftsResponse.setId(pipelineVO.get(i).getId());
+            draftsResponse.setName(pipelineVO.get(i).getName());
+            draftsResponse.setModifiedAt(pipelineVO.get(i).getModifiedAt());
+
+            if (pipelineVO.get(i).getCollector() == null) {
+                draftsResponse.setIsCollector(false);
+            } else {
+                draftsResponse.setIsCollector(pipelineVO.get(i).getCollector().isCompleted());
+            }
+
+            if (pipelineVO.get(i).getFilter() == null) {
+                draftsResponse.setIsFilter(false);
+            } else {
+                draftsResponse.setIsFilter(pipelineVO.get(i).getFilter().isCompleted());
+            }
+
+            if (pipelineVO.get(i).getConverter() == null) {
+                draftsResponse.setIsConverter(false);
+            } else {
+                draftsResponse.setIsConverter(pipelineVO.get(i).getConverter().isCompleted());
+            }
+
+            pipelineDraftsListResponseVO.add(draftsResponse);
+        }
+        return pipelineDraftsListResponseVO;
     }
 
     public PipelineVO getPipelineDrafts(Integer id) {

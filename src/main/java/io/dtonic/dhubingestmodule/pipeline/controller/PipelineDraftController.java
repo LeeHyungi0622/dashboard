@@ -6,9 +6,11 @@ import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,16 +56,15 @@ public class PipelineDraftController {
     }
 
     @GetMapping("/pipeline/drafts/list")
-    public @ResponseBody List<PipelineVO> getPipelineDraftsList(
+    public @ResponseBody List<PipelineDraftsListResponseVO> getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
         PipelineListRetrieveVO pipelineListRetrieveVO
     ) {
-        List<PipelineVO> pipelineVO = pipelineSVC.getPipelineDraftsList(
+        return pipelineSVC.getPipelineDraftsList(
             pipelineListRetrieveVO.getSearchObject(),
             pipelineListRetrieveVO.getSearchValue()
         );
-        return pipelineVO;
     }
 
     @Transactional
