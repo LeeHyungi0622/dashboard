@@ -46,7 +46,7 @@ public class NiFiController {
         String filterId = createAdaptor(pipelineVO.getFilter(), processGroupId);
         // Create Convertor Adaptor
         String convertorId = createAdaptor(pipelineVO.getConverter(), processGroupId);
-
+        // 수정 필요.
         /* Create Connections */
         // Create Collector - Filter Connection
         niFiSwaggerSVC.createConnection(processGroupId, collectorId, filterId, false);
@@ -54,6 +54,8 @@ public class NiFiController {
         niFiSwaggerSVC.createConnection(processGroupId, filterId, convertorId, false);
         // Create Connection Pipeline to Transmitter
         niFiSwaggerSVC.createConnection("root", convertorId, null, true);
+        // Enable all Controllers
+
     }
 
     public void deletePipeline(String processGroupId, String templateId) {
@@ -66,14 +68,40 @@ public class NiFiController {
         niFiClientEntity.manageToken();
     }
 
-    public void runPipeline() {
+    /**
+     * Run Pipeline
+     *
+     * @param String ProcessorGroup ID
+     * @return boolean Success/Fail return
+     */
+    public boolean runPipeline(String processorGroupId) {
         // Check Token Expired
         niFiClientEntity.manageToken();
+        if (niFiRestSVC.startProcessorGroup(processorGroupId)) {
+            log.info("Success Run Pipeline : Processor Group ID = {}", processorGroupId);
+            return true;
+        } else {
+            log.error("Fail to Run Pipeline : Processor Group ID = {}", processorGroupId);
+            return false;
+        }
     }
 
-    public void stopPipeline() {
+    /**
+     * Stop Pipeline
+     *
+     * @param String ProcessorGroup ID
+     * @return boolean Success/Fail return
+     */
+    public boolean stopPipeline(String processorGroupId) {
         // Check Token Expired
         niFiClientEntity.manageToken();
+        if (niFiRestSVC.stopProcessorGroup(processorGroupId)) {
+            log.info("Success Stop Pipeline : Processor Group ID = {}", processorGroupId);
+            return true;
+        } else {
+            log.error("Fail to Stop Pipeline : Processor Group ID = {}", processorGroupId);
+            return false;
+        }
     }
 
     /**
