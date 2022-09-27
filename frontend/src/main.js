@@ -8,6 +8,8 @@ import { store } from "./vuex/store";
 
 const ws = new WebSocket("ws://192.168.1.95:8099/webpipeline");
 
+Axios.defaults.baseURL = "http://192.168.1.95:8099";
+
 Vue.config.productionTip = false;
 Vue.prototype.$axios = Axios;
 Vue.use(vuetify);

@@ -109,6 +109,7 @@
   </v-app>
 </template>
 <script>
+import pipelineListService from "../../js/api/pipelineList";
 import EventBus from "@/eventBus/EventBus.js";
 import pipelineListData from "../../json/pipelineList.json";
 export default {
@@ -145,6 +146,11 @@ export default {
     };
   },
   methods: {
+    // API 사용법
+    getpipelineList() {
+      pipelineListService.getPipelineList();
+    },
+
     firstPage() {
       this.currentPage = 1;
     },
