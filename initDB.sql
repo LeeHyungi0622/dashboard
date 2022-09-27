@@ -12,13 +12,14 @@ CREATE SEQUENCE ingest_manager.adaptor_id_seq
 
 -- 220915 adaptor 테이블 추가
 -- 220922 char -> text로 타입 변경
+-- 220926 nifi_type 컬럼 삭제
 CREATE TABLE IF NOT EXISTS ingest_manager.adaptor
 (
     id integer NOT NULL DEFAULT nextval('ingest_manager.adaptor_id_seq'::regclass),
     adaptor_type text COLLATE pg_catalog."default",
     adaptor_name text COLLATE pg_catalog."default",
-    nifi_type text COLLATE pg_catalog."default",
     nifi_name text COLLATE pg_catalog."default",
+    nifi_type text COLLATE pg_catalog."default",
     CONSTRAINT adaptor_pkey PRIMARY KEY (id)
 );
 
@@ -32,13 +33,14 @@ CREATE SEQUENCE ingest_manager.properties_id_seq
 
 -- 220915 properties 테이블 수정
 -- 220922 char -> text로 타입 변경
+-- 220926 nifi_type 컬럼 추가
 CREATE TABLE IF NOT EXISTS ingest_manager.properties
 (
     id integer NOT NULL DEFAULT nextval('ingest_manager.properties_id_seq'::regclass),
     adaptor_id integer,
     property_name text COLLATE pg_catalog."default",
     detail text COLLATE pg_catalog."default",
-    is_required boolean,
+    is_required boolean,  
     CONSTRAINT properties_pkey PRIMARY KEY (id),
     CONSTRAINT properties_fkey FOREIGN KEY (adaptor_id)
         REFERENCES ingest_manager.adaptor (id) MATCH SIMPLE
