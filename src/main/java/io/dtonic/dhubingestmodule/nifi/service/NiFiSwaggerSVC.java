@@ -17,14 +17,12 @@ import com.github.hermannpencole.nifi.swagger.client.model.ProcessGroupDTO;
 import com.github.hermannpencole.nifi.swagger.client.model.ProcessGroupEntity;
 import com.github.hermannpencole.nifi.swagger.client.model.ProcessorConfigDTO;
 import com.github.hermannpencole.nifi.swagger.client.model.ProcessorDTO;
-import com.github.hermannpencole.nifi.swagger.client.model.ProcessorDTO.StateEnum;
 import com.github.hermannpencole.nifi.swagger.client.model.ProcessorEntity;
 import com.github.hermannpencole.nifi.swagger.client.model.ProcessorsEntity;
 import com.github.hermannpencole.nifi.swagger.client.model.RevisionDTO;
 import com.github.hermannpencole.nifi.swagger.client.model.TemplateDTO;
 import com.github.hermannpencole.nifi.swagger.client.model.TemplateEntity;
 import com.github.hermannpencole.nifi.swagger.client.model.TemplatesEntity;
-import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClient;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
@@ -35,6 +33,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * NiFi Services using NiFi Swagger Client
+ * @FileName NiFiSwaggerSVC.java
+ * @Project D.hub Ingest Manager
+ * @Brief
+ * @Version 1.0
+ * @Date 2022. 9. 27.
+ * @Author Justin
+ */
 @Slf4j
 @Service
 public class NiFiSwaggerSVC {
@@ -341,9 +348,10 @@ public class NiFiSwaggerSVC {
                 .toString();
             /* delete connection */
             niFiClient.getConnectionsApiSwagger().deleteConnection(connectionId, version, null);
+            log.info("Success Delete Connection From {} To Funnel", sourceProcessorGroupID);
             return true;
         } catch (Exception e) {
-            log.error("Fail to Delete Connection From {} To Transmitter", sourceProcessorGroupID);
+            log.error("Fail to Delete Connection From {} To Funnel", sourceProcessorGroupID);
             return false;
         }
     }

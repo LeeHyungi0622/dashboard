@@ -10,9 +10,20 @@ import io.jsonwebtoken.impl.DefaultJwtParser;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * NiFi Default Client and Token Set up
+ * @FileName NiFiClientEntity.java
+ * @Project D.hub Ingest Manager
+ * @Brief
+ * @Version 1.0
+ * @Date 2022. 9. 27.
+ * @Author Justin
+ */
+@Slf4j
 @Data
 @Component
 public class NiFiClientEntity {
@@ -44,18 +55,12 @@ public class NiFiClientEntity {
         auth.setAccessToken(accessToken);
     }
 
-    public void manageToken() {
-        if (isExpiredToken(accessToken)) {
-            OAuth auth = (OAuth) nifiSwaggerApiClient.getAuthentication("auth");
-            accessToken =
-                nifiSwaggerAccessApi.createAccessToken(
-                    properties.getNifiUser(),
-                    properties.getNifiPassword()
-                );
-            auth.setAccessToken(accessToken);
-        }
-    }
-
+    /**
+     * Get Expired Time in Token
+     *
+     * @param access token
+     * @return expired time
+     */
     public Date getExpiredTimeFromToken(String token) {
         String[] splitToken = token.split("\\.");
         String unsignedToken = splitToken[0] + "." + splitToken[1] + ".";
@@ -66,10 +71,26 @@ public class NiFiClientEntity {
         return claims.getExpiration();
     }
 
-    public boolean isExpiredToken(String token) {
+    /**
+     * Managing NiFi Token
+     * If access token issued NiFi is expired, refresh NiFi token.
+     *
+     * @param access token
+     */
+    public void manageToken(String token) {
         Date tokenTime = getExpiredTimeFromToken(token);
         if (tokenTime.compareTo(new Date(System.currentTimeMillis())) < 0) {
-            return true;
-        } else return false;
+            log.info("NiFi Access Token is Expired");
+            OAuth auth = (OAuth) nifiSwaggerApiClient.getAuthentication("auth");
+            accessToken =
+                nifiSwaggerAccessApi.createAccessToken(
+                    properties.getNifiUser(),
+                    properties.getNifiPassword()
+                );
+            auth.setAccessToken(accessToken);
+            log.info("NiFi Access Token is Refreshed : AccessToken = {}", accessToken);
+        } else {
+            log.info("NiFi Access Token is Allowed");
+        }
     }
 }

@@ -30,7 +30,6 @@ import org.apache.nifi.web.api.entity.ProcessorEntity;
 import org.apache.nifi.web.api.entity.ProcessorRunStatusEntity;
 import org.apache.nifi.web.api.entity.ProcessorStatusSnapshotEntity;
 import org.apache.nifi.web.api.entity.ScheduleComponentsEntity;
-import org.apache.nifi.web.api.entity.TemplateEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -39,6 +38,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 
+/**
+ * NiFi Services using NiFi REST Client
+ * @FileName NiFiRestSVC.java
+ * @Project D.hub Ingest Manager
+ * @Brief
+ * @Version 1.0
+ * @Date 2022. 9. 27.
+ * @Author Justin
+ */
 @Slf4j
 @Service
 public class NiFiRestSVC {
@@ -380,7 +388,7 @@ public class NiFiRestSVC {
 
     /**
      * Stop Transmitter
-     * When update properties of transmitter, must update transmitter status to STOPPED
+     * Transmitter status must be update to STOPPED when updating properties of transmitter
      *
      * @param transmitterId Transmitter id
      * @return Success/Fail
@@ -459,6 +467,12 @@ public class NiFiRestSVC {
         }
     }
 
+    /**
+     * Disable Controllers in process group to delete pipeline
+     *
+     * @param processGroupId
+     * @return success/fail boolean
+     */
     public boolean disableControllers(String processorGroupId) {
         try {
             ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
@@ -475,7 +489,7 @@ public class NiFiRestSVC {
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Content-Type", "application/json");
 
-            ResponseEntity<String> result = dataCoreRestSVC.put(
+            dataCoreRestSVC.put(
                 niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
                 paths,
                 headers,
@@ -484,17 +498,17 @@ public class NiFiRestSVC {
                 niFiClientEntity.getAccessToken(),
                 String.class
             );
-            ActivateControllerServicesEntity resultEntity = nifiObjectMapper.readValue(
-                result.getBody(),
-                ActivateControllerServicesEntity.class
+            log.info(
+                "Success Disable Controllers In Process Group : Process Group ID = [{}]",
+                processorGroupId
             );
-            if (resultEntity.getClass().equals(ActivateControllerServicesEntity.class)) {
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         } catch (Exception e) {
-            log.error("Can not Stop Processor Groups", e);
+            log.error(
+                "Fail to Disable Controllers In Process Group : Process Group ID = [{}]",
+                processorGroupId,
+                e
+            );
             return false;
         }
     }
@@ -539,6 +553,12 @@ public class NiFiRestSVC {
         }
     }
 
+    /**
+     * Clear Queues in process group to delete pipeline
+     *
+     * @param processGroupId
+     * @return success/fail boolean
+     */
     public boolean clearQueuesInProcessGroup(String processorGroupId) {
         try {
             ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
@@ -554,7 +574,7 @@ public class NiFiRestSVC {
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Content-Type", "application/json");
 
-            ResponseEntity<String> result = dataCoreRestSVC.post(
+            dataCoreRestSVC.post(
                 niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
                 paths,
                 headers,
@@ -563,17 +583,17 @@ public class NiFiRestSVC {
                 niFiClientEntity.getAccessToken(),
                 String.class
             );
-            ActivateControllerServicesEntity resultEntity = nifiObjectMapper.readValue(
-                result.getBody(),
-                ActivateControllerServicesEntity.class
+            log.info(
+                "Success Clear Queues in Process Group : Process Group ID = [{}]",
+                processorGroupId
             );
-            if (resultEntity.getClass().equals(ActivateControllerServicesEntity.class)) {
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         } catch (Exception e) {
-            log.error("Can not Stop Processor Groups", e);
+            log.error(
+                "Fail to Clear Queues in Process Group : Process Group ID = [{}]",
+                processorGroupId,
+                e
+            );
             return false;
         }
     }

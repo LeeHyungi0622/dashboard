@@ -30,53 +30,83 @@ public class NiFiController {
      * @param pipelineVO
      * @return templateID
      */
-    public void createPipeline(PipelineVO pipelineVO) {
-        // Check Token Expired
-        niFiClientEntity.manageToken();
-        // Create Pipeline Processor Group
-        String processGroupId = niFiSwaggerSVC.createProcessGroup(pipelineVO.getName(), "root");
+    public String createPipeline(PipelineVO pipelineVO) {
+        try {
+            // Check Token Expired
+            niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+            // Create Pipeline Processor Group
+            String processGroupId = niFiSwaggerSVC.createProcessGroup(pipelineVO.getName(), "root");
 
-        // Create Output Port
-        niFiSwaggerSVC.createOutputInPipeline(processGroupId, pipelineVO.getName());
+            // Create Output Port
+            String outputId = niFiSwaggerSVC.createOutputInPipeline(
+                processGroupId,
+                pipelineVO.getName()
+            );
 
-        /* Create Adatpors */
-        // Create Collector Adaptor
-        String collectorId = createAdaptor(pipelineVO.getCollector(), processGroupId);
-        // Create Filter Adaptor
-        String filterId = createAdaptor(pipelineVO.getFilter(), processGroupId);
-        // Create Convertor Adaptor
-        String convertorId = createAdaptor(pipelineVO.getConverter(), processGroupId);
-        // 수정 필요.
-        /* Create Connections */
-        // Create Collector - Filter Connection
-        niFiSwaggerSVC.createConnection(processGroupId, collectorId, filterId, false);
-        // Create Filter - Convertor Connection
-        niFiSwaggerSVC.createConnection(processGroupId, filterId, convertorId, false);
-        // Create Connection Pipeline to Transmitter
-        niFiSwaggerSVC.createConnection("root", convertorId, null, true);
-        // Enable all Controllers
+            /* Create Adatpors */
+            // Create Collector Adaptor
+            String collectorId = createAdaptor(pipelineVO.getCollector(), processGroupId);
+            // Create Filter Adaptor
+            String filterId = createAdaptor(pipelineVO.getFilter(), processGroupId);
+            // Create Convertor Adaptor
+            String convertorId = createAdaptor(pipelineVO.getConverter(), processGroupId);
 
-    }
+            // 수정 필요.
+            /* Create Connections */
+            // Create Collector - Filter Connection
+            niFiSwaggerSVC.createConnection(processGroupId, collectorId, filterId);
+            // Create Filter - Convertor Connection
+            niFiSwaggerSVC.createConnection(processGroupId, filterId, convertorId, false);
+            // Create Convertor - Output Connection
+            niFiSwaggerSVC.createConnection(processGroupId, convertorId, outputId, false);
 
-    public void deletePipeline(String processGroupId, String templateId) {
-        // Check Token Expired
-        niFiClientEntity.manageToken();
-    }
-
-    public void updatePipeline() {
-        // Check Token Expired
-        niFiClientEntity.manageToken();
+            // Create Connection Output to Transmitter
+            niFiSwaggerSVC.createConnection("root", convertorId, null, true);
+            // Enable all Controllers
+            return processGroupId;
+        } catch (Exception e) {
+            log.error("Fail to Create Pipeline in NiFi: PipelineVO = {}", pipelineVO);
+            return null;
+        }
     }
 
     /**
-     * Run Pipeline
+     * Delete Pipeline
      *
-     * @param String ProcessorGroup ID
-     * @return boolean Success/Fail return
+     * @param processGroupId
+     * @return success/fail boolean
      */
+    public boolean deletePipeline(String processGroupId) {
+        try {
+            // Check Token Expired
+            niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+
+            /* Clear Queues in Connections */
+            niFiRestSVC.clearQueuesInProcessGroup(processGroupId);
+            /* Disable Controller */
+            niFiRestSVC.disableControllers(processGroupId);
+            /* Stop Pipeline */
+            stopPipeline(processGroupId);
+
+            /* Delete Connection */
+            niFiSwaggerSVC.deleteConnectionToFunnel(processGroupId);
+            /* Delete Processor Group */
+            log.info("Success Delete Pipeline in NiFI : processGroupId = [{}]", processGroupId);
+            return true;
+        } catch (Exception e) {
+            log.error("Fail to Delete Pipeline in NiFi : processGroupId = [{}]", processGroupId);
+            return false;
+        }
+    }
+
+    public void updatePipeline(PipelineVO pipelineVO) {
+        // Check Token Expired
+        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+    }
+
     public boolean runPipeline(String processorGroupId) {
         // Check Token Expired
-        niFiClientEntity.manageToken();
+        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
         if (niFiRestSVC.startProcessorGroup(processorGroupId)) {
             log.info("Success Run Pipeline : Processor Group ID = {}", processorGroupId);
             return true;
@@ -89,12 +119,14 @@ public class NiFiController {
     /**
      * Stop Pipeline
      *
-     * @param String ProcessorGroup ID
-     * @return boolean Success/Fail return
+     * @param processGroupId
+     * @return success/fail boolean
      */
     public boolean stopPipeline(String processorGroupId) {
         // Check Token Expired
-        niFiClientEntity.manageToken();
+        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+
+        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
         if (niFiRestSVC.stopProcessorGroup(processorGroupId)) {
             log.info("Success Stop Pipeline : Processor Group ID = {}", processorGroupId);
             return true;
@@ -104,27 +136,21 @@ public class NiFiController {
         }
     }
 
+    // 다시짜자
     /**
-     * Create Adaptor
-     *
      * @param adaptorVO
      * @param rootProcessorGroupId Parent Process ID
      * @return ProcessGroup ID created Adaptor
      */
     public String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) {
-        // Search TemplateId by name
-        String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getName());
+        // String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getType());
 
         // Create Dummy Template
-        String templateProcessGroupID = niFiRestSVC.createDummyTemplate(
-            rootProcessorGroupId,
-            templateId
-        );
 
         // Update Adaptor
-        updateAdaptor(templateProcessGroupID, adaptorVO.getNifiComponents());
+        // updateAdaptor(templateProcessGroupID, adaptorVO.getNiFiComponent());
 
-        return templateProcessGroupID;
+        return rootProcessorGroupId;
     }
 
     public void updateAdaptor(String processorGroupId, List<NiFiComponentVO> NiFiComponents) {
