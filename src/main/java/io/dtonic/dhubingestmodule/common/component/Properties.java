@@ -44,6 +44,9 @@ public class Properties {
     @Value("${cityhub.datacore.manager.url}")
     private String datacoreManagerUrl;
 
+    @Value("${cityhub.datacore.ingestInterface.url}")
+    private String datacoreIngestUrl;
+
     @Value("${cityhub.security.accessRole.user}")
     private String accessRoleUser;
 

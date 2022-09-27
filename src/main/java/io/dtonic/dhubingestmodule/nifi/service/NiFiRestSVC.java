@@ -8,22 +8,27 @@ import io.dtonic.dhubingestmodule.nifi.client.NiFiClientEntity;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.nifi.web.api.dto.FunnelDTO;
+import org.apache.nifi.web.api.dto.PositionDTO;
+import org.apache.nifi.web.api.dto.RevisionDTO;
 import org.apache.nifi.web.api.entity.ActivateControllerServicesEntity;
 import org.apache.nifi.web.api.entity.ControllerServiceEntity;
 import org.apache.nifi.web.api.entity.ControllerServicesEntity;
 import org.apache.nifi.web.api.entity.FlowEntity;
+import org.apache.nifi.web.api.entity.FunnelEntity;
 import org.apache.nifi.web.api.entity.InstantiateTemplateRequestEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupStatusEntity;
+import org.apache.nifi.web.api.entity.ProcessorEntity;
+import org.apache.nifi.web.api.entity.ProcessorRunStatusEntity;
 import org.apache.nifi.web.api.entity.ProcessorStatusSnapshotEntity;
-import org.apache.nifi.web.api.entity.RemotePortRunStatusEntity;
-import org.apache.nifi.web.api.entity.RemoteProcessGroupEntity;
 import org.apache.nifi.web.api.entity.ScheduleComponentsEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,7 +208,32 @@ public class NiFiRestSVC {
         }
     }
 
-    //TODO exception check
+    public ProcessorEntity getProcessorInfo(String processorId)
+        throws JsonMappingException, JsonProcessingException {
+        List<String> paths = new ArrayList<String>();
+        paths.add("processors");
+        paths.add(processorId);
+
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json");
+
+        ResponseEntity<String> result = dataCoreRestSVC.get(
+            niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+            paths,
+            headers,
+            null,
+            null,
+            niFiClientEntity.getAccessToken(),
+            String.class
+        );
+
+        ProcessorEntity resultEntity = nifiObjectMapper.readValue(
+            result.getBody(),
+            ProcessorEntity.class
+        );
+        return resultEntity;
+    }
+
     protected ProcessGroupStatusEntity getStatusProcessGroup(String processorGroupId)
         throws JsonMappingException, JsonProcessingException {
         List<String> paths = new ArrayList<String>();
@@ -267,44 +297,6 @@ public class NiFiRestSVC {
         }
     }
 
-    public TemplateEntity uploadTemplate() {
-        try {
-            ClassPathResource resource = new ClassPathResource("template/REST_Server.xml");
-            File templateFile = resource.getFile();
-            Resource template = new FileSystemResource(templateFile);
-
-            List<String> paths = new ArrayList<String>();
-            paths.add("process-groups");
-            paths.add("root");
-            paths.add("templates");
-            paths.add("upload");
-
-            Map<String, String> headers = new HashMap<String, String>();
-            headers.put("Content-Type", "multipart/form-data");
-
-            LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("template", template);
-
-            ResponseEntity<String> result = dataCoreRestSVC.post(
-                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
-                paths,
-                headers,
-                body,
-                null,
-                niFiClientEntity.getAccessToken(),
-                String.class
-            );
-            TemplateEntity resultEntity = nifiObjectMapper.readValue(
-                result.getBody(),
-                TemplateEntity.class
-            );
-            return resultEntity;
-        } catch (Exception e) {
-            log.error("Not Found Template File", e);
-            return new TemplateEntity();
-        }
-    }
-
     public boolean startProcessorGroup(String processorGroupId) {
         try {
             ScheduleComponentsEntity body = new ScheduleComponentsEntity();
@@ -340,6 +332,90 @@ public class NiFiRestSVC {
             }
         } catch (Exception e) {
             log.error("Can not Start Processor Groups", e);
+            return false;
+        }
+    }
+
+    /**
+     * Start Transmitter
+     * When finshed update properties of transmitter, must update transmitter status to RUNNING
+     *
+     * @param transmitterId Transmitter id
+     * @return Success/Fail
+     */
+    public boolean startTransmitter(String transmitterId) {
+        try {
+            ProcessorRunStatusEntity body = new ProcessorRunStatusEntity();
+            body.setState("RUNNING");
+
+            ProcessorEntity transmitter = getProcessorInfo(transmitterId);
+            RevisionDTO revision = transmitter.getRevision();
+            body.setRevision(revision);
+            body.setDisconnectedNodeAcknowledged(false);
+
+            List<String> paths = new ArrayList<String>();
+            paths.add("processors");
+            paths.add(transmitterId);
+            paths.add("run-status");
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            dataCoreRestSVC.put(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            log.info("Success Update Transmitter Status to RUNNING");
+            return true;
+        } catch (Exception e) {
+            log.error("Fail to Update Transmitter Status to RUNNING", e);
+            return false;
+        }
+    }
+
+    /**
+     * Stop Transmitter
+     * When update properties of transmitter, must update transmitter status to STOPPED
+     *
+     * @param transmitterId Transmitter id
+     * @return Success/Fail
+     */
+    public boolean stopTransmitter(String transmitterId) {
+        try {
+            ProcessorRunStatusEntity body = new ProcessorRunStatusEntity();
+            body.setState("STOPPED");
+
+            ProcessorEntity transmitter = getProcessorInfo(transmitterId);
+            RevisionDTO revision = transmitter.getRevision();
+            body.setRevision(revision);
+            body.setDisconnectedNodeAcknowledged(false);
+
+            List<String> paths = new ArrayList<String>();
+            paths.add("processors");
+            paths.add(transmitterId);
+            paths.add("run-status");
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            dataCoreRestSVC.put(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            log.info("Success Update Transmitter Status to STOPPED");
+            return true;
+        } catch (Exception e) {
+            log.error("Fail to Update Transmitter Status to STOPPED", e);
             return false;
         }
     }
@@ -383,7 +459,7 @@ public class NiFiRestSVC {
         }
     }
 
-    protected boolean disableControllers(String processorGroupId) {
+    public boolean disableControllers(String processorGroupId) {
         try {
             ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
             body.setState("DISABLED");
@@ -423,7 +499,7 @@ public class NiFiRestSVC {
         }
     }
 
-    protected boolean enableControllers(String processorGroupId) {
+    public boolean enableControllers(String processorGroupId) {
         try {
             ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
             body.setState("ENABLED");
@@ -460,6 +536,133 @@ public class NiFiRestSVC {
         } catch (Exception e) {
             log.error("Can not Stop Processor Groups", e);
             return false;
+        }
+    }
+
+    public boolean clearQueuesInProcessGroup(String processorGroupId) {
+        try {
+            ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
+            body.setState("ENABLED");
+            body.setId(processorGroupId);
+            body.setDisconnectedNodeAcknowledged(false);
+
+            List<String> paths = new ArrayList<String>();
+            paths.add("process-groups");
+            paths.add(processorGroupId);
+            paths.add("empty-all-connections-requests");
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            ResponseEntity<String> result = dataCoreRestSVC.post(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            ActivateControllerServicesEntity resultEntity = nifiObjectMapper.readValue(
+                result.getBody(),
+                ActivateControllerServicesEntity.class
+            );
+            if (resultEntity.getClass().equals(ActivateControllerServicesEntity.class)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Can not Stop Processor Groups", e);
+            return false;
+        }
+    }
+
+    /**
+     * Upload NiFi Templates to register collector/filter/converter
+     *
+     */
+    public void uploadTemplate() {
+        try {
+            File[] tempFile = new ClassPathResource("template/").getFile().listFiles();
+            for (File file : tempFile) {
+                Resource template = new FileSystemResource(file);
+
+                List<String> paths = new ArrayList<String>();
+                paths.add("process-groups");
+                paths.add("root");
+                paths.add("templates");
+                paths.add("upload");
+
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "multipart/form-data");
+
+                LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                body.add("template", template);
+
+                ResponseEntity<String> result = dataCoreRestSVC.postTemplate(
+                    niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                    paths,
+                    headers,
+                    body,
+                    null,
+                    niFiClientEntity.getAccessToken(),
+                    String.class
+                );
+                if (result == null) {
+                    log.info("{} is already Exist", file.getName());
+                } else {
+                    log.info("Upload Template Name : [{}]", file.getName());
+                }
+            }
+        } catch (IOException e) {
+            log.error("Not Found Template Files in src/main/resources/template", e);
+        }
+    }
+
+    /**
+     * Create Funnel to connect Transmitter In Ingest Manager
+     *
+     * @return Funnel ID
+     */
+    public String createFunnelInRoot() {
+        try {
+            FunnelEntity body = new FunnelEntity();
+            FunnelDTO funnelDTO = new FunnelDTO();
+            RevisionDTO revision = new RevisionDTO();
+            revision.setVersion(0L);
+            PositionDTO positionDTO = new PositionDTO(0D, 0D);
+            funnelDTO.setPosition(positionDTO);
+            body.setComponent(funnelDTO);
+            body.setRevision(revision);
+            body.setDisconnectedNodeAcknowledged(false);
+
+            List<String> paths = new ArrayList<String>();
+            paths.add("process-groups");
+            paths.add("root");
+            paths.add("funnels");
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            ResponseEntity<String> result = dataCoreRestSVC.post(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            FunnelEntity resultEntity = nifiObjectMapper.readValue(
+                result.getBody(),
+                FunnelEntity.class
+            );
+            log.info("Create Funnel In Ingest Manager : Funnel ID = [{}]", resultEntity.getId());
+            return resultEntity.getId();
+        } catch (Exception e) {
+            log.error("Fail to Create Funnel In Ingest Manager", e);
+            return null;
         }
     }
 }

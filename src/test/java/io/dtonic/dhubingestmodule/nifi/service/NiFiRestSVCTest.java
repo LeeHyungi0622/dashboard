@@ -10,8 +10,6 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.nifi.web.api.entity.ControllerServicesEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupStatusEntity;
-import org.apache.nifi.web.api.entity.RemoteProcessGroupEntity;
-import org.apache.nifi.web.api.entity.ScheduleComponentsEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,15 +49,11 @@ public class NiFiRestSVCTest {
         assertNotNull(result);
     }
 
-    @Test
-    public void uploadTemplateTest() throws JsonProcessingException {
-        TemplateEntity result = niFiRestSVC.uploadTemplate();
-        log.info(
-            "TEST Search Controllers In Processor Group : [{}]",
-            nifiObjectMapper.writeValueAsString(result)
-        );
-        assertNotNull(result);
-    }
+    // @Test
+    // public void uploadTemplateTest() throws JsonProcessingException {
+    //     niFiRestSVC.uploadTemplate();
+    //     log.info("TEST Search Controllers In Processor Group : [{}]");
+    // }
 
     @Test
     public void getStatusProcessGroupTest() throws JsonProcessingException {
@@ -113,5 +107,12 @@ public class NiFiRestSVCTest {
         String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
         boolean result = niFiRestSVC.enableControllers(processorGroupId);
         assertTrue(result);
+    }
+
+    @Test
+    public void createFunnelTest() throws JsonProcessingException {
+        String result = niFiRestSVC.createFunnelInRoot();
+        log.debug("{}", nifiObjectMapper.writeValueAsString(result));
+        assertNotNull(result);
     }
 }
