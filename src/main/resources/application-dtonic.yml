@@ -60,6 +60,8 @@ cityhub:
   datacore:
     manager:
       url: http://110.45.181.71:8080
+    ingestInterface:
+      url: http://110.45.181.71:8081
 
 http.pool:
   max.total: 200
