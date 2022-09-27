@@ -34,6 +34,15 @@
     SET status = #{status}, modified_at = now() 
     WHERE id = #{id}
   </update>
+  <update id="updatePipeline">
+    UPDATE pipeline
+    <if test="'collector'.equals(nifiFlowType)">SET collector = #{flowJsonString},</if>
+    <if test="'filter'.equals(nifiFlowType)">SET filter = #{flowJsonString},</if>
+    <if test="'converter'.equals(nifiFlowType)">SET converter = #{flowJsonString}, data_set = #{dataSet},</if>
+    <if test="'converter'.equals(nifiFlowType)"></if>
+    name = #{name}, detail = #{detail}, modified_at = now()
+    WHERE id = #{id}
+  </update>
   <delete id="deletePipeline" parameterType="Integer">
     DELETE FROM pipeline
     WHERE id = #{id}

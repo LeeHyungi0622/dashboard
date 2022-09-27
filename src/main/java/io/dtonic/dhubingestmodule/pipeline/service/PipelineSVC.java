@@ -127,4 +127,85 @@ public class PipelineSVC {
         // check nifi run or stop. if running then stop to nifi
         pipelineMapper.deletePipeline(id);
     }
+
+    @Transactional
+    public void updatePipeline(String requestBody) {
+        parseJSON(requestBody, "collector");
+        parseJSON(requestBody, "filter");
+        parseJSON(requestBody, "converter");
+    }
+
+    @Transactional
+    public void parseJSON(String requestBody, String nifiFlowType) {
+        JSONObject jsonObject = new JSONObject(requestBody);
+
+        // collector, filter, converter를 설정하지 않은 초기 단계 에서는 jsonString을 null로 설정
+        if (jsonObject.isNull(nifiFlowType)) {
+            pipelineMapper.updatePipeline(
+                jsonObject.getInt("id"),
+                jsonObject.getString("name"),
+                jsonObject.getString("detail"),
+                null,
+                null,
+                nifiFlowType
+            );
+            // collector, filter, converter 내의 processor의 필수 properties 값이 모두 채워졌는지 확인
+        } else {
+            int idx = 0;
+            int completeCnt = 0; // 프로세서들의 필수 properties들이 모두 채워져있으면 1 증가
+            String flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
+
+            JSONObject jObject = new JSONObject(flowJsonString);
+            int nifiComponentLength = jObject.getJSONArray("NifiComponents").length();
+
+            for (int i = 0; i < nifiComponentLength; i++) {
+                JSONObject jObj = new JSONObject(
+                    jObject.getJSONArray("NifiComponents").get(i).toString()
+                );
+                JSONArray properties = jObj.getJSONArray("requiredProps");
+                for (idx = 0; idx < properties.length(); idx++) {
+                    if (properties.getJSONObject(idx).isNull("inputValue")) {
+                        break;
+                    }
+                }
+
+                if (idx == properties.length()) {
+                    completeCnt++;
+                }
+            }
+
+            // processor에서 필수로 넣어야 하는 properties 값들이 모두 채워져 있으면, completed를 true로 바꾼다
+            if (completeCnt == nifiComponentLength) {
+                jsonObject.getJSONObject(nifiFlowType).remove("isCompleted");
+                jsonObject.getJSONObject(nifiFlowType).put("isCompleted", true);
+                flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
+            } else {
+                jsonObject.getJSONObject(nifiFlowType).remove("isCompleted");
+                jsonObject.getJSONObject(nifiFlowType).put("isCompleted", false);
+                flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
+            }
+
+            // converter 단계에서 dataSet을 값을 설정한다.
+            // converter 단계가 아니면 dataSet 값은 null로 처리
+            if (jsonObject.isNull("dataSet")) {
+                pipelineMapper.updatePipeline(
+                    jsonObject.getInt("id"),
+                    jsonObject.getString("name"),
+                    jsonObject.getString("detail"),
+                    null,
+                    flowJsonString,
+                    nifiFlowType
+                );
+            } else {
+                pipelineMapper.updatePipeline(
+                    jsonObject.getInt("id"),
+                    jsonObject.getString("name"),
+                    jsonObject.getString("detail"),
+                    jsonObject.getString("dataSet"),
+                    flowJsonString,
+                    nifiFlowType
+                );
+            }
+        }
+    }
 }

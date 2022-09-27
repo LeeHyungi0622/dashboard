@@ -167,4 +167,28 @@ public class PipelineController {
         pipelineSVC.deletePipeline(id);
         response.setStatus(HttpStatus.OK.value());
     }
+
+    /**
+     * Update Pipeline
+     *
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @param accept   request accept header
+     * @param id       retrieve Pipeline id
+     * @return
+     */
+
+    @PutMapping("/pipeline/complete/{id}") // PipeLine 수정
+    public PipelineVO updatePipeline(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestBody String requestBody,
+        @PathVariable Integer id
+    )
+        throws JsonMappingException, JsonProcessingException {
+        pipelineSVC.updatePipeline(requestBody);
+        // response.setStatus(HttpStatus.OK.value());
+
+        return pipelineSVC.getPipelineVOById(id);
+    }
 }

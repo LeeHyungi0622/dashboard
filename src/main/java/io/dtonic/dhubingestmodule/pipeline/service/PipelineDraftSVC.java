@@ -113,12 +113,9 @@ public class PipelineDraftSVC {
                 JSONObject jObj = new JSONObject(
                     jObject.getJSONArray("NifiComponents").get(i).toString()
                 );
-                JSONArray properties = jObj.getJSONArray("properties");
+                JSONArray properties = jObj.getJSONArray("requiredProps");
                 for (idx = 0; idx < properties.length(); idx++) {
-                    if (
-                        properties.getJSONObject(idx).getBoolean("isRequired") &&
-                        properties.getJSONObject(idx).isNull("inputValue")
-                    ) {
+                    if (properties.getJSONObject(idx).isNull("inputValue")) {
                         break;
                     }
                 }

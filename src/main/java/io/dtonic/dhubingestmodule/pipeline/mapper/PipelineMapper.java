@@ -34,4 +34,13 @@ public interface PipelineMapper {
         @Param("createdAt") Date createdAt,
         @Param("modifiedAt") Date modifiedAt
     );
+
+    void updatePipeline(
+        @Param("id") Integer id,
+        @Param("name") String name,
+        @Param("detail") String detail,
+        @Param("dataSet") String dataSet,
+        @Param("flowJsonString") String flowJsonString,
+        @Param("nifiFlowType") String nifiFlowType
+    );
 }
