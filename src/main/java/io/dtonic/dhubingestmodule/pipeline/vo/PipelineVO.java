@@ -8,8 +8,8 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-@JsonInclude(JsonInclude.Include.ALWAYS)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class PipelineVO {
 
     private Integer id;

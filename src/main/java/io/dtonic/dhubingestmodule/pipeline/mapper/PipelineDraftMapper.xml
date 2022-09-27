@@ -12,6 +12,15 @@
     <result property="createdAt" column="created_at" />
     <result property="modifiedAt" column="modified_at" />
   </resultMap>
+  <resultMap id="PropertyVO" type="io.dtonic.dhubingestmodule.nifi.vo.PropertyVO">
+    <result property="nifiType" column="nifi_type" />
+    <result property="nifiName" column="nifi_name" />
+    <result property="adaptorId" column="adaptor_id" />
+    <result property="name" column="property_name" />
+    <result property="detail" column="detail" />
+    <result property="isRequired" column="is_required" />
+    <result property="defaultValue" column="value" typeHandler="io.dtonic.dhubingestmodule.common.handler.ListTypeHandler" />
+  </resultMap>
   <select id="getPipelineDraftsList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO" resultMap="pipeline">
     select
       id,
@@ -72,5 +81,38 @@
     EXISTS
     (SELECT * 
     FROM temp_pipeline where id = #{id})
+  </select>
+  <select id="getDataCollector" resultType="io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO">
+    SELECT 
+      DISTINCT adaptor_name as adaptorName
+    FROM 
+      adaptor
+    WHERE 
+      adaptor_type = 'collector'
+    ORDER BY adaptor_name ASC
+  </select>
+  <select id="getPipelineproperties" resultMap="PropertyVO">
+    SELECT 
+      nifi_type,
+      nifi_name,
+      adaptor_id,
+      property_name ,
+      detail,
+      is_required ,
+	    B.value
+	  FROM 
+      properties A
+	  LEFT JOIN 
+      properties_value B
+	  ON 
+      A.id = B.property_id
+    LEFT JOIN
+      ingest_manager.adaptor C
+    ON
+      C.id = A.adaptor_id
+	  WHERE 
+      A.adaptor_name = #{adaptorName}
+    ORDER BY A.id ASC
+
   </select>
 </mapper>

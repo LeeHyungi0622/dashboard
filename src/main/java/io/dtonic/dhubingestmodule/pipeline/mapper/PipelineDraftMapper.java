@@ -1,5 +1,8 @@
 package io.dtonic.dhubingestmodule.pipeline.mapper;
 
+import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -7,6 +10,10 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface PipelineDraftMapper {
+    List<DataCollectorVO> getDataCollector();
+
+    List<PropertyVO> getPipelineproperties(@Param("adaptorName") String adaptorName);
+
     List<PipelineVO> getPipelineDraftsList(
         @Param("searchObject") String searchObject,
         @Param("searchValue") String searchValue
