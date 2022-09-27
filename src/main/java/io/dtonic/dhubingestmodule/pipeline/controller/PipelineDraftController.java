@@ -41,7 +41,7 @@ public class PipelineDraftController {
      * @return Pipeline object
      */
 
-    @GetMapping("/pipeline/drafts/{id}")
+    @GetMapping("/pipeline/drafts/{id}") // 임시저장 상세 조회
     public PipelineVO getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -50,7 +50,7 @@ public class PipelineDraftController {
         return pipelineSVC.getPipelineDrafts(id);
     }
 
-    @GetMapping("/pipeline/drafts/list")
+    @GetMapping("/pipeline/drafts/list") // 임시저장 목록 조회
     public @ResponseBody List<PipelineDraftsListResponseVO> getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -63,7 +63,7 @@ public class PipelineDraftController {
     }
 
     @Transactional
-    @PutMapping("/pipeline/drafts")
+    @PutMapping("/pipeline/drafts") // 임시저장 등록/수정
     public Integer upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -109,7 +109,7 @@ public class PipelineDraftController {
     // }
 
     @Transactional
-    @DeleteMapping("/pipeline/drafts/{id}")
+    @DeleteMapping("/pipeline/drafts/{id}") // 임시저장 삭제
     public void deletePipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,

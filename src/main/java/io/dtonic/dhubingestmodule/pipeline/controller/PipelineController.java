@@ -179,17 +179,30 @@ public class PipelineController {
      */
 
     @PutMapping("/pipeline/complete/{id}") // PipeLine 수정
-    public PipelineVO updatePipeline(
+    public void updatePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody String requestBody,
         @PathVariable Integer id
     )
         throws JsonMappingException, JsonProcessingException {
+        // validation check
         JSONObject jsonObject = new JSONObject(requestBody);
-        pipelineSVC.updatePipeline(jsonObject);
-        // response.setStatus(HttpStatus.OK.value());
+        String status = jsonObject.getString("status");
 
-        return pipelineSVC.getPipelineVOById(id);
+        if (!pipelineSVC.isExists(id)) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
+                "Pipeline is not Exist"
+            );
+        }
+        if (
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
+        ) pipelineSVC.changePipelineStatus(id, status); // stop pipeline
+
+        pipelineSVC.updatePipeline(jsonObject);
     }
 }
