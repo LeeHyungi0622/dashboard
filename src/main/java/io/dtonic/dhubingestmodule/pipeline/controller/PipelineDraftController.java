@@ -47,8 +47,7 @@ public class PipelineDraftController {
         HttpServletResponse response,
         @PathVariable Integer id
     ) {
-        PipelineVO pipelineVO = pipelineSVC.getPipelineDrafts(id);
-        return pipelineVO;
+        return pipelineSVC.getPipelineDrafts(id);
     }
 
     @GetMapping("/pipeline/drafts/list")
