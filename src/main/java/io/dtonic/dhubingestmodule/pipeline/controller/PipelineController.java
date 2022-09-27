@@ -183,12 +183,12 @@ public class PipelineController {
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody String requestBody,
-        @PathVariable Integer id
+        @PathVariable Integer id,
+        @RequestParam(value = "status") String status
     )
         throws JsonMappingException, JsonProcessingException {
         // validation check
         JSONObject jsonObject = new JSONObject(requestBody);
-        String status = jsonObject.getString("status");
 
         if (!pipelineSVC.isExists(id)) {
             throw new BadRequestException(
