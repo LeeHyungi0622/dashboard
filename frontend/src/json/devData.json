@@ -1,116 +1,116 @@
 {
   "mode": {
-    "defaultInfo": null,
-    "collect": null,
-    "refine": null,
-    "convert": null
+    "defaultInfo": "",
+    "collect": "",
+    "refine": "",
+    "convert": ""
   },
   "defaultInfo": [
-    { "key": "파이프라인 이름", "value": "Parking Lot Adaptor" },
+    { "name": "파이프라인 이름", "inputValue": "Parking Lot Adaptor" },
     {
-      "key": "파이프라인 정의",
-      "value": "산탄데르 주차장 센서 데이터용"
+      "name": "파이프라인 정의",
+      "inputValue": "산탄데르 주차장 센서 데이터용"
     }
   ],
   "collect": {
-    "collector": [
+    "dataCollector": [
       {
-        "key": "데이터 수집기",
-        "value": {
-          "selectedValue": "HTTP Listener",
+        "name": "데이터 수집기",
+        "inputValue": {
+          "selectedValue": "",
           "datas": ["HTTP Listener", "DataBase - Postgres"]
         }
       }
     ],
-    "requiredSettingValue": [
+    "requiredSettinginputValue": [
       {
-        "key": "Base Path",
+        "name": "Base Path",
         "desc": "a",
-        "value": "ContentListener"
+        "inputValue": "ContentListener"
       },
       {
-        "key": "Listerning Port",
+        "name": "Listerning Port",
         "desc": "a",
-        "value": "true"
+        "inputValue": "true"
       },
       {
-        "key": "Base Path",
+        "name": "Base Path",
         "desc": "a",
-        "value": ""
+        "inputValue": ""
       },
       {
-        "key": "Authorized Subject DN Pattern",
+        "name": "Authorized Subject DN Pattern",
         "desc": "a",
-        "value": ".*"
+        "inputValue": ".*"
       },
       {
-        "key": "Max Uncomfirmed Profile Time",
+        "name": "Max Uncomfirmed Profile Time",
         "desc": "a",
-        "value": "60 Secs"
+        "inputValue": "60 Secs"
       },
       {
-        "key": "Multipart Request Max Size",
+        "name": "Multipart Request Max Size",
         "desc": "a",
-        "value": "1 MB"
+        "inputValue": "1 MB"
       }
     ],
-    "selectedSettingValue": [
+    "selectedSettinginputValue": [
       {
-        "key": "Listening Port for Health Check Requests",
+        "name": "Listening Port for Health Check Requests",
         "desc": "a",
-        "value": ""
+        "inputValue": ""
       },
       {
-        "key": "Max Data to Receive Per Second",
+        "name": "Max Data to Receive Per Second",
         "desc": "a",
-        "value": ""
+        "inputValue": ""
       },
       {
-        "key": "SSL Context Service",
+        "name": "SSL Context Service",
         "desc": "a",
-        "value": ""
+        "inputValue": ""
       },
       {
-        "key": "Autorized Issure DN Pattern",
+        "name": "Autorized Issure DN Pattern",
         "desc": "a",
-        "value": ".*"
+        "inputValue": ".*"
       },
       {
-        "key": "HTTP Headers to receive as Attributes (Regex)",
+        "name": "HTTP Headers to receive as Attributes (Regex)",
         "desc": "a",
-        "value": ""
+        "inputValue": ""
       }
     ]
   },
   "refine": [
     {
-      "key": "Base64 Decoder",
-      "value": "On"
+      "name": "Base64 Decoder",
+      "inputValue": "On"
     },
     {
-      "key": "Root Key",
-      "value": " ParkingLot1 : Location "
+      "name": "Root name",
+      "inputValue": " ParkingLot1 : Location "
     }
   ],
   "convert": {
     "content": [
       {
-        "key": "DataSet",
-        "value": "ParkingLot1 : Location"
+        "name": "DataSet",
+        "inputValue": "ParkingLot1 : Location"
       }
     ],
     "convertHeaders": [
       {
         "text": "DataSet 속성 (속성 유형)",
         "sortable": false,
-        "value": "name"
+        "inputValue": "name"
       },
-      { "text": "Raw Data 속성", "value": "value", "sortable": false }
+      { "text": "Raw Data 속성", "inputValue": "inputValue", "sortable": false }
     ],
     "convertData": [
       {
         "name": "location (GeoProperty)",
-        "value": "Position, Site, Place"
+        "inputValue": "Position, Site, Place"
       },
       {
         "name": "ParkingAreaId (Property)"
@@ -126,18 +126,18 @@
       {
         "text": "Depth",
         "sortable": false,
-        "value": "name"
+        "inputValue": "name"
       },
-      { "text": "ID Key", "value": "value", "sortable": false }
+      { "text": "ID name", "inputValue": "inputValue", "sortable": false }
     ],
     "IdData": [
       {
         "name": "Level 1",
-        "value": "Location"
+        "inputValue": "Location"
       },
       {
         "name": "Level 2",
-        "value": "coordinates"
+        "inputValue": "coordinates"
       },
       {
         "name": "Level 3"

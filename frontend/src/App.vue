@@ -64,18 +64,33 @@
       :contents="confirmContent"
       @close-confirm-popup="closeConfirmPopup"
     ></confirm-popup>
+    <user-alert-popup
+      v-if="userAlertShowFlag"
+      :contents="userAlertContent"
+      @close-userAlert-popup="closeUserAlertPopup"
+    ></user-alert-popup>
+    <alert-popup
+      v-if="alertShowFlag"
+      :contents="alertContent"
+      @close-alert-popup="closeAlertPopup"
+    ></alert-popup>
   </v-app>
 </template>
 
 <script>
 import CustomNavigation from "./components/nav/CustomNavigation.vue";
 import ConfirmPopup from "./components/popup/ConfirmPopup.vue";
+import UserAlertPopup from "./components/popup/UserAlertPopup.vue";
+import AlertPopup from "./components/popup/AlertPopup.vue";
 import EventBus from "@/eventBus/EventBus.js";
+import userInfo from "./json/userInfo.json";
 
 export default {
   components: {
     CustomNavigation,
+    UserAlertPopup,
     ConfirmPopup,
+    AlertPopup,
   },
   computed: {
     activationRoutePath() {
@@ -91,8 +106,23 @@ export default {
         param: "default",
         body: "default",
       },
+      userInfo: userInfo,
+      userAlertContent: {
+        title: "default",
+        userContent: {
+          userId: { key: null, value: null },
+          name: { key: null, value: null },
+          phone: { key: null, value: null },
+        },
+      },
+      alertContent: {
+        title: "입력값 오류",
+        text: "입력값에 오류가 있습니다. <br/>구분자 혹은  값을 입력해주세요",
+      },
       show: true,
       confirmShowFlag: false,
+      userAlertShowFlag: false,
+      alertShowFlag: false,
       menu: [
         ["사용자 정보", "userInfo"],
         ["로그아웃", "logout"],
@@ -108,6 +138,7 @@ export default {
     closeConfirmPopup: function () {
       this.confirmShowFlag = false;
     },
+
     showconfirmPopup(payload) {
       this.confirmShowFlag = true;
       this.confirmContent.title = payload.title;
@@ -116,9 +147,31 @@ export default {
       this.confirmContent.param = payload.param;
       this.confirmContent.body = payload.body;
     },
+    closeUserAlertPopup: function () {
+      this.userAlertShowFlag = false;
+    },
+    showUserAlertPopup() {
+      this.userAlertShowFlag = true;
+      this.userAlertContent.title = "사용자 정보";
+      this.userAlertContent.userContent.userId.key = "사용자 아이디";
+      this.userAlertContent.userContent.userId.value = this.userInfo.userId;
+      this.userAlertContent.userContent.name.key = "사용자 이름";
+      this.userAlertContent.userContent.name.value = this.userInfo.name;
+      this.userAlertContent.userContent.phone.key = "사용자 연락처";
+      this.userAlertContent.userContent.phone.value = this.userInfo.phone;
+    },
+    closeAlertPopup: function () {
+      this.alertShowFlag = false;
+    },
+    showAlertPopup() {
+      this.userAlertShowFlag = true;
+      this.alertContent.title = "입력값 오류";
+      this.alertContent.text =
+        "입력값에 오류가 있습니다. <br/>구분자 혹은  값을 입력해주세요";
+    },
     menuAction(mode) {
       if (mode == "userInfo") {
-        console.log("userInfo!!!!");
+        this.showUserAlertPopup();
       } else {
         console.log("logout!!!!");
       }

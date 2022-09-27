@@ -5,24 +5,25 @@
     </div>
     <div style="margin: 3%">
       <default-info
-        :convert-mode="devData.convertMode"
-        :contents="devData.defaultInfo"
-        :mode="devData.mode.defaultInfo"
+        :contents="defaultInfoContents()"
+        :convert-mode="convertMode"
+        :mode="mode.defaultInfo"
       />
       <data-collect
-        :convert-mode="devData.convertMode"
-        :contents="devData.contents"
-        :mode="devData.mode.collect"
+        :contents="getContents('collector')"
+        :convert-mode="convertMode"
+        :mode="mode.collect"
       />
-      <data-refine
-        :convert-mode="devData.convertMode"
-        :contents="devData.refine"
-        :mode="devData.mode.refine"
+      <data-filters
+        :contents="getContents('filter')"
+        :convert-mode="convertMode"
+        :mode="mode.refine"
       />
       <data-convert
-        :mode="devData.mode.convert"
-        :contents="devData.convert"
-        :convert-mode="devData.convertMode"
+        :contents="getContents('converter')"
+        :convert-mode="convertMode"
+        @selected-data-set="selectedDataSetFunction"
+        :mode="mode.convert"
       />
       <div class="pipelineUpdateBtnBox mgT12">
         <button class="pipelineUpdateButton">목록으로</button>
@@ -34,22 +35,51 @@
 <script>
 import DefaultInfo from "../../components/pipeline/DefaultInfo.vue";
 import DataCollect from "../../components/pipeline/DataCollect.vue";
-import DataRefine from "../../components/pipeline/DataRefine.vue";
+import DataFilters from "../../components/pipeline/DataFilters.vue";
 import DataConvert from "../../components/pipeline/DataConvert.vue";
-import devData from "../../json/devData.json";
+// import devData from "../../json/devData.json";
+import pipeLineEdit from "../../json/pipeLineEdit.json";
 export default {
   components: {
     DataConvert,
     DefaultInfo,
     DataCollect,
-    DataRefine,
+    DataFilters,
   },
   data() {
     return {
-      devData: devData,
+      devData: pipeLineEdit,
+
+      selectedDataSet: "",
+      mode: {
+        defaultInfo: "",
+        collect: "",
+        refine: "",
+        convert: "",
+      },
     };
   },
   methods: {
+    selectedDataSetFunction(value) {
+      this.selectedDataSet = value;
+    },
+    getContents(contentsName) {
+      return this.devData[contentsName].NifiComponents;
+    },
+
+    defaultInfoContents() {
+      return [
+        {
+          name: "파이프라인 이름",
+          inputValue: this.devData.name,
+        },
+        {
+          name: "파이프라인 정의",
+          inputValue: this.devData.detail,
+        },
+      ];
+    },
+
     convertMode(item) {
       switch (item) {
         case "defaultInfo":

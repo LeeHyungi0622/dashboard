@@ -6,10 +6,11 @@
         <div class="searchBox">
           <div class="activationFilter">
             <p>동작</p>
-            <select>
+            <select @change="settingFilter('activationStatus', $event)">
               <option
                 v-for="(item, index) in activationStatusList"
                 :key="index"
+                :value="item"
               >
                 {{ item }}
               </option>
@@ -34,38 +35,37 @@
         </div>
 
         <v-data-table
-          :headers="headers"
-          :items="data"
+          :headers="pipelineListData.headers"
+          :items="filteritems"
           :items-per-page="perPage"
           :page="currentPage"
           item-key="name"
           class="pipelineTable mgT12"
+          :search="searchValue"
           :hide-default-footer="true"
           style="text-align: center"
         >
-          <template v-slot:[`item.activationStatus`]="{ item }">
+          <template v-slot:[`item.status`]="{ item }">
             <div class="activationStatusBox">
               <div class="acsTextBox">
-                {{ item.activationStatus }}
+                {{ item.status }}
               </div>
               <div class="acsBtnBox">
                 <button
-                  @click="
-                    pipelineStatusAlertShows(item.name, item.activationStatus)
-                  "
+                  @click="pipelineStatusAlertShows(item.name, item.status)"
                   :disabled="
-                    item.activationStatus == 'STARTING' ||
-                    item.activationStatus == 'STOPPING'
+                    item.status.toUpperCase() == 'STARTING' ||
+                    item.status.toUpperCase() == 'STOPPING'
                   "
                 >
-                  {{ item.activationStatus }}
+                  {{ item.status }}
                 </button>
               </div>
             </div>
           </template>
           <template v-slot:[`item.delete`]="{ item }">
             <button
-              v-if="item.activationStatus == 'STOPPED'"
+              v-if="item.status.toUpperCase() == 'STOPPED'"
               @click="deletePipeline(item)"
             >
               삭제
@@ -110,6 +110,7 @@
 </template>
 <script>
 import EventBus from "@/eventBus/EventBus.js";
+import pipelineListData from "../../json/pipelineList.json";
 export default {
   mounted() {
     console.log(this.$ws);
@@ -120,7 +121,16 @@ export default {
   },
   computed: {
     totalPage() {
-      return Math.floor((this.total + parseInt(this.perPage)) / this.perPage);
+      return Math.floor(
+        (this.filteritems.length + parseInt(this.perPage)) / this.perPage
+      );
+    },
+    filteritems() {
+      return this.pipelineListData.data.filter((i) => {
+        return (
+          !this.selectedFilter || i[this.selectedFilter] === this.searchValue
+        );
+      });
     },
   },
   data() {
@@ -128,175 +138,10 @@ export default {
       perPage: 10,
       currentPage: 1,
       total: 15,
-      activationStatusList: [
-        "전체",
-        "RUNNING",
-        "STARTING",
-        "STOPPING",
-        "STOPPED",
-      ],
-      pipelineListFilterList: [
-        "전체",
-        "파이프라인 이름",
-        "파이프라인 정의",
-        "적재Dataset",
-      ],
-
-      headers: [
-        { text: "NO", value: "NO", sortable: false },
-        { text: "파이프라인 이름", value: "name", sortable: false },
-        { text: "적재 DataSet", value: "dataSet", sortable: false },
-        {
-          text: "파이프라인 동작 상태",
-          value: "activationStatus",
-          sortable: false,
-        },
-        { text: "등록 일시", value: "createDateTime", sortable: false },
-        { text: "수정 일시", value: "editDateTime", sortable: false },
-        { text: "삭제", value: "delete", sortable: false },
-        {
-          text: "파이프라인 상세/수정",
-          value: "pipelineUpdate",
-          sortable: false,
-        },
-      ],
-      data: [
-        {
-          NO: "1",
-          name: "Mobius Pipeline",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "2",
-          name: "Mobius Pipeline2",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "STOPPING",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "3",
-          name: "Mobius Pipeline3",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "STOPPED",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "4",
-          name: "Mobius Pipeline4",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "6",
-          name: "Mobius Pipeline6",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "7",
-          name: "Mobius Pipeline7",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "8",
-          name: "Mobius Pipeline8",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "9",
-          name: "Mobius Pipeline9",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "10",
-          name: "Mobius Pipeline10",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "11",
-          name: "Mobius Pipeline11",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "12",
-          name: "Mobius Pipeline12",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "13",
-          name: "Mobius Pipeline13",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "14",
-          name: "Mobius Pipeline14",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "15",
-          name: "Mobius Pipeline15",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-        {
-          NO: "16",
-          name: "Mobius Pipeline16",
-          dataSet: "PakingSensorStatus mobius",
-          activationStatus: "RUN",
-          createDateTime: "2022-07-28T00:00:00",
-          editDateTime: "2022-07-28T00:00:00",
-          delete: "삭제",
-        },
-      ],
+      activationStatusList: ["전체", "RUN", "STARTING", "STOP", "STOPPED"],
+      pipelineListFilterList: ["전체", "파이프라인 이름", "적재Dataset"],
+      searchValue: null,
+      pipelineListData: pipelineListData,
     };
   },
   methods: {
@@ -369,6 +214,11 @@ export default {
     sendMessage() {
       this.$ws.send(this.message);
       this.message = "";
+    },
+    settingFilter(filter, event) {
+      console.log(filter, event.target.value);
+      this.selectedFilter = filter;
+      this.searchValue = event.target.value;
     },
   },
 };

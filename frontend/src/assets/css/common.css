@@ -699,3 +699,45 @@ select {
   z-index: 2;
   position: absolute;
 }
+
+.userAlertTextBox {
+  height: 180px;
+  width:500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0px !important;
+  margin: 0 24px 20px;
+}
+.userAlertTextBox .first {
+  display: flex;
+  border-top: 2px solid #2B4F8C;
+  width: 500px; 
+  height: 40px;
+  align-items: center;
+}
+.userAlertTextBox .normal {
+  display: flex; 
+  border-top: 1px solid #DFDFDF;
+  width: 500px;
+  height: 40px; 
+  align-items: center;
+}
+.userAlertTextBox .key {
+  width: 40%;
+  height: 100%;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FBFBFB;
+}
+.userAlertTextBox .value {
+  width: 60%; 
+  height: 100%;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #DFDFDF;
+}
+

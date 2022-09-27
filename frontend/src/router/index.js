@@ -6,7 +6,7 @@ import pipelineCreate from "../views/pipelineCreate/PipelineCreate.vue";
 import defaultInfo from "../components/pipeline/DefaultInfo";
 import dataCollect from "../components/pipeline/DataCollect";
 import dataConvert from "../components/pipeline/DataConvert";
-import dataRefine from "../components/pipeline/DataRefine";
+import datafilters from "../components/pipeline/DataFilters";
 
 Vue.use(VueRouter);
 
@@ -22,7 +22,7 @@ const routes = [
     component: pipelineCreate,
     children: [
       {
-        path: "/",
+        path: "/defaultInfo",
         name: "defaultInfo",
         component: defaultInfo,
         props: (route) => ({
@@ -32,8 +32,8 @@ const routes = [
         }),
       },
       {
-        path: "/collect",
-        name: "collect",
+        path: "/collector",
+        name: "collector",
         component: dataCollect,
         props: (route) => ({
           contents: route.params.contents,
@@ -42,8 +42,8 @@ const routes = [
         }),
       },
       {
-        path: "/convert",
-        name: "convert",
+        path: "/converter",
+        name: "converter",
         component: dataConvert,
         props: (route) => ({
           contents: route.params.contents,
@@ -52,9 +52,9 @@ const routes = [
         }),
       },
       {
-        path: "/refine",
-        name: "refine",
-        component: dataRefine,
+        path: "/filter",
+        name: "filter",
+        component: datafilters,
         props: (route) => ({
           contents: route.params.contents,
           convertMode: route.params.convertMode,
