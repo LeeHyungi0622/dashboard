@@ -15,10 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.nifi.web.api.dto.ConnectableDTO;
+import org.apache.nifi.web.api.dto.ConnectionDTO;
 import org.apache.nifi.web.api.dto.FunnelDTO;
 import org.apache.nifi.web.api.dto.PositionDTO;
 import org.apache.nifi.web.api.dto.RevisionDTO;
 import org.apache.nifi.web.api.entity.ActivateControllerServicesEntity;
+import org.apache.nifi.web.api.entity.ConnectionEntity;
 import org.apache.nifi.web.api.entity.ControllerServiceEntity;
 import org.apache.nifi.web.api.entity.ControllerServicesEntity;
 import org.apache.nifi.web.api.entity.FlowEntity;
@@ -645,7 +648,7 @@ public class NiFiRestSVC {
      *
      * @return Funnel ID
      */
-    public String createFunnelInRoot() {
+    public String createFunnel(String ingestProcessGroupId) {
         try {
             FunnelEntity body = new FunnelEntity();
             FunnelDTO funnelDTO = new FunnelDTO();
@@ -659,7 +662,7 @@ public class NiFiRestSVC {
 
             List<String> paths = new ArrayList<String>();
             paths.add("process-groups");
-            paths.add("root");
+            paths.add(ingestProcessGroupId);
             paths.add("funnels");
 
             Map<String, String> headers = new HashMap<String, String>();
@@ -683,6 +686,79 @@ public class NiFiRestSVC {
         } catch (Exception e) {
             log.error("Fail to Create Funnel In Ingest Manager", e);
             return null;
+        }
+    }
+
+    /**
+     * Create connection from Funnel to Transmitter.
+     *
+     * @param ingestProcessGroupId ingestProcessGroup id
+     * @param funnelId Funnel id
+     * @param transmitterId Transmitter id
+     */
+    public void createConnectionFromFunnelToTransmitter(
+        String ingestProcessGroupId,
+        String funnelId,
+        String transmitterId
+    ) {
+        try {
+            // Create connection
+            ConnectionEntity body = new ConnectionEntity();
+            ConnectionDTO component = new ConnectionDTO();
+            component.setFlowFileExpiration("0 sec");
+            component.setBackPressureDataSizeThreshold("1 GB");
+            component.setBackPressureObjectThreshold(10000L);
+            component.setFlowFileExpiration("0 sec");
+            component.setLoadBalanceCompression("DO_NOT_COMPRESS");
+            component.setLoadBalanceStrategy("DO_NOT_LOAD_BALANCE");
+
+            // Set up Source Funnel
+            ConnectableDTO source = new ConnectableDTO();
+            source.setId(funnelId);
+            source.setGroupId(ingestProcessGroupId);
+            source.setType("FUNNEL");
+            component.setSource(source);
+
+            // Set up Destination Transmitter
+            ConnectableDTO destination = new ConnectableDTO();
+            destination.setId(transmitterId);
+            destination.setGroupId(ingestProcessGroupId);
+            destination.setType("PROCESSOR");
+            component.setDestination(destination);
+
+            RevisionDTO revision = new RevisionDTO();
+            revision.setVersion(0L);
+
+            body.setComponent(component);
+            body.setRevision(revision);
+            body.setDisconnectedNodeAcknowledged(false);
+            List<String> paths = new ArrayList<String>();
+            paths.add("process-groups");
+            paths.add(ingestProcessGroupId);
+            paths.add("connections");
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            ResponseEntity<String> result = dataCoreRestSVC.post(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            ConnectionEntity resultEntity = nifiObjectMapper.readValue(
+                result.getBody(),
+                ConnectionEntity.class
+            );
+            log.info(
+                "Create Connection From Funnel To Transmitter In Ingest Manager : connection ID = [{}]",
+                resultEntity.getId()
+            );
+        } catch (Exception e) {
+            log.error("Fail to Create Connection From Funnel To Transmitter", e);
         }
     }
 }

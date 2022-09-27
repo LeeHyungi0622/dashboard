@@ -10,6 +10,15 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * NiFi Swegger Client Setup
+ * @FileName NiFiClient.java
+ * @Project D.hub Ingest Manager
+ * @Brief
+ * @Version 1.0
+ * @Date 2022. 9. 27.
+ * @Author Justin
+ */
 @Data
 @Component
 public class NiFiClient {

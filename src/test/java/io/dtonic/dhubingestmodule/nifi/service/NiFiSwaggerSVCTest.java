@@ -29,7 +29,7 @@ public class NiFiSwaggerSVCTest {
     @Test
     public void searchProcessorsInProcessorGroupTest() throws JsonProcessingException {
         String processorGroupId = "15382931-0274-3554-807c-190d8a1470f6";
-        ProcessorsEntity result = niFiSwaggerSVC.searchProcessorsInProcessorGroup(processorGroupId);
+        ProcessorsEntity result = niFiSwaggerSVC.searchProcessorsInProcessGroup(processorGroupId);
         log.debug("{}", nifiObjectMapper.writeValueAsString(result));
         assertNotNull(result);
     }
@@ -52,7 +52,8 @@ public class NiFiSwaggerSVCTest {
 
     @Test
     public void createTrasmitterTest() throws JsonProcessingException {
-        niFiSwaggerSVC.createTransmitter();
+        String processorGroupId = "15382931-0274-3554-807c-190d8a1470f6";
+        niFiSwaggerSVC.createTransmitter(processorGroupId);
     }
 
     @Test

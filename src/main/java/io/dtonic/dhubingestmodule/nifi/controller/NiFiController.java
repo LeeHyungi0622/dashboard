@@ -1,5 +1,6 @@
 package io.dtonic.dhubingestmodule.nifi.controller;
 
+import io.dtonic.dhubingestmodule.nifi.NiFiApplicationRunner;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClientEntity;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiSwaggerSVC;
@@ -11,6 +12,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+/**
+ * Served Pipeline Service
+ * @FileName NiFiController.java
+ * @Project D.hub Ingest Manager
+ * @Brief
+ * @Version 1.0
+ * @Date 2022. 9. 27.
+ * @Author Justin
+ */
 @Slf4j
 @Controller
 public class NiFiController {
@@ -24,6 +34,9 @@ public class NiFiController {
     @Autowired
     private NiFiRestSVC niFiRestSVC;
 
+    @Autowired
+    NiFiApplicationRunner niFiApplicationRunner;
+
     /**
      * Create Pipeline
      *
@@ -35,7 +48,10 @@ public class NiFiController {
             // Check Token Expired
             niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
             // Create Pipeline Processor Group
-            String processGroupId = niFiSwaggerSVC.createProcessGroup(pipelineVO.getName(), "root");
+            String processGroupId = niFiSwaggerSVC.createProcessGroup(
+                pipelineVO.getName(),
+                niFiApplicationRunner.getIngestProcessGroupId()
+            );
 
             // Create Output Port
             String outputId = niFiSwaggerSVC.createOutputInPipeline(
@@ -54,19 +70,65 @@ public class NiFiController {
             // 수정 필요.
             /* Create Connections */
             // Create Collector - Filter Connection
-            niFiSwaggerSVC.createConnection(processGroupId, collectorId, filterId);
+            niFiSwaggerSVC.createConnectionBetweenProcessGroup(
+                processGroupId,
+                collectorId,
+                filterId
+            );
             // Create Filter - Convertor Connection
-            niFiSwaggerSVC.createConnection(processGroupId, filterId, convertorId, false);
-            // Create Convertor - Output Connection
-            niFiSwaggerSVC.createConnection(processGroupId, convertorId, outputId, false);
-
-            // Create Connection Output to Transmitter
-            niFiSwaggerSVC.createConnection("root", convertorId, null, true);
+            niFiSwaggerSVC.createConnectionBetweenProcessGroup(
+                processGroupId,
+                filterId,
+                convertorId
+            );
+            //TODO
+            // Create Convertor - Output Port Connection
+            niFiSwaggerSVC.createConnectionBetweenProcessGroup(
+                processGroupId,
+                convertorId,
+                outputId
+            );
+            //TODO
             // Enable all Controllers
+            log.info("Success Create Pipeline in NiFi : PipelineVO = {}", pipelineVO);
             return processGroupId;
         } catch (Exception e) {
-            log.error("Fail to Create Pipeline in NiFi: PipelineVO = {}", pipelineVO);
+            log.error("Fail to Create Pipeline in NiFi : PipelineVO = {}", pipelineVO, e);
             return null;
+        }
+    }
+
+    // 다시짜자
+    /**
+     * @param adaptorVO
+     * @param rootProcessorGroupId Parent Process ID
+     * @return ProcessGroup ID created Adaptor
+     */
+    public String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) {
+        // String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getType());
+
+        // Create Dummy Template
+
+        // Update Adaptor
+        // updateAdaptor(templateProcessGroupID, adaptorVO.getNiFiComponent());
+
+        return rootProcessorGroupId;
+    }
+
+    public void updateAdaptor(String processorGroupId, List<NiFiComponentVO> NiFiComponents) {
+        if (NiFiComponents.size() < 1) {
+            log.error("Empty NiFi Components In Request Pipeline");
+        }
+        for (NiFiComponentVO component : NiFiComponents) {
+            if (component.getType().equals("processor")) {
+                // Update Processors Properties in Adaptor Processor Group
+                niFiSwaggerSVC.updateProcessorsInAdaptor(processorGroupId, component);
+            } else if (component.getType().equals("controller")) {
+                // Update Controllers Properties in Adaptor
+                niFiRestSVC.updateControllersInAdaptor(processorGroupId, component);
+            } else {
+                log.error("Not Found NiFi Component Type");
+            }
         }
     }
 
@@ -104,6 +166,12 @@ public class NiFiController {
         niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
     }
 
+    /**
+     * Run Pipeline
+     *
+     * @param processGroupId
+     * @return success/fail boolean
+     */
     public boolean runPipeline(String processorGroupId) {
         // Check Token Expired
         niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
@@ -133,40 +201,6 @@ public class NiFiController {
         } else {
             log.error("Fail to Stop Pipeline : Processor Group ID = {}", processorGroupId);
             return false;
-        }
-    }
-
-    // 다시짜자
-    /**
-     * @param adaptorVO
-     * @param rootProcessorGroupId Parent Process ID
-     * @return ProcessGroup ID created Adaptor
-     */
-    public String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) {
-        // String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getType());
-
-        // Create Dummy Template
-
-        // Update Adaptor
-        // updateAdaptor(templateProcessGroupID, adaptorVO.getNiFiComponent());
-
-        return rootProcessorGroupId;
-    }
-
-    public void updateAdaptor(String processorGroupId, List<NiFiComponentVO> NiFiComponents) {
-        if (NiFiComponents.size() < 1) {
-            log.error("Empty NiFi Components In Request Pipeline");
-        }
-        for (NiFiComponentVO component : NiFiComponents) {
-            if (component.getType().equals("processor")) {
-                // Update Processors Properties in Adaptor Processor Group
-                niFiSwaggerSVC.updateProcessorsInAdaptor(processorGroupId, component);
-            } else if (component.getType().equals("controller")) {
-                // Update Controllers Properties in Adaptor
-                niFiRestSVC.updateControllersInAdaptor(processorGroupId, component);
-            } else {
-                log.error("Not Found NiFi Component Type");
-            }
         }
     }
 }

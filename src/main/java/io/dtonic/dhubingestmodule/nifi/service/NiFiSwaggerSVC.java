@@ -100,7 +100,14 @@ public class NiFiSwaggerSVC {
         return null;
     }
 
-    public String createProcessGroup(String pipelineName, String rootProcessorGroupId) {
+    /**
+     * Create Pipeline Processor Group
+     *
+     * @param pipelineName pipeline name
+     * @param rootProcessGroupId root
+     * @return processGroupID
+     */
+    public String createProcessGroup(String pipelineName, String rootProcessGroupId) {
         ProcessGroupEntity body = new ProcessGroupEntity();
         ProcessGroupDTO processorGroupSetting = new ProcessGroupDTO();
         RevisionDTO processorGroupRevision = new RevisionDTO();
@@ -108,17 +115,33 @@ public class NiFiSwaggerSVC {
         processorGroupSetting.setName(pipelineName);
 
         processorGroupRevision.setVersion(0L);
-        processorGroupRevision.setClientId(rootProcessorGroupId);
+        processorGroupRevision.setClientId(rootProcessGroupId);
 
         body.setComponent(processorGroupSetting);
         body.setRevision(processorGroupRevision);
 
-        ProcessGroupEntity result = niFiClient
-            .getProcessGroupsApiSwagger()
-            .createProcessGroup(rootProcessorGroupId, body);
-        return result.getId();
+        try {
+            ProcessGroupEntity result = niFiClient
+                .getProcessGroupsApiSwagger()
+                .createProcessGroup(rootProcessGroupId, body);
+            log.info(
+                "Success Create Pipeline Process Group : Process Group ID = [{}]",
+                result.getId()
+            );
+            return result.getId();
+        } catch (Exception e) {
+            log.error("Fail to Create Pipeline Process Group ");
+            return null;
+        }
     }
 
+    /**
+     * Create Output Port In Pipeline Process Group
+     *
+     * @param processGroupId pipeline processor group id
+     * @param pipelineName pipeline name
+     * @return output ID
+     */
     public String createOutputInPipeline(String processGroupId, String pipelineName) {
         PortEntity body = new PortEntity();
         PortDTO component = body.getComponent();
@@ -134,7 +157,7 @@ public class NiFiSwaggerSVC {
             PortEntity result = niFiClient
                 .getProcessGroupsApiSwagger()
                 .createOutputPort(processGroupId, body);
-            log.info("Create Output in Pipeline : output PortEntity= {}", result);
+            log.info("Create Output in Pipeline : output PortEntity = [{}]", result.getId());
             return result.getId();
         } catch (ApiException e) {
             log.error("Fail to Create Output in Pipeline : Pipeline Name = [{}]", pipelineName);
@@ -157,6 +180,20 @@ public class NiFiSwaggerSVC {
         return result;
     }
 
+    public boolean isExistedConnectionToProcessor(String rootProcessGroupId, String processorId) {
+        ConnectionsEntity result = niFiClient
+            .getProcessGroupsApiSwagger()
+            .getConnections(rootProcessGroupId);
+        for (ConnectionEntity connection : result.getConnections()) {
+            if (connection.getDestinationId().equals(processorId)) {
+                log.info("Found Connection To {}", processorId);
+                return true;
+            }
+        }
+        log.info("Not Found Connection To {}", processorId);
+        return false;
+    }
+
     /**
      * Search Funnel In Ingest Manager
      * When search funnel, get first element of funnels array because one funnel exist in Ingest Manager
@@ -173,6 +210,28 @@ public class NiFiSwaggerSVC {
             return funnel.getId();
         }
         log.info("Empty Funnel In Ingest Manager");
+        return null;
+    }
+
+    /**
+     * Search Process Group In Ingest Manager
+     * When search funnel, get first element of funnels array because one funnel exist in Ingest Manager
+     *
+     * @param sourceProcessorGroupID pipeline processor group id
+     * @return FunnelID
+     */
+    public String searchProcessGroupInProcessGroup(String processGroupId) {
+        for (ProcessGroupEntity processGroup : niFiClient
+            .getProcessGroupsApiSwagger()
+            .getProcessGroups(processGroupId)
+            .getProcessGroups()) {
+            log.info(
+                "Search Process Group In Ingest Manager : Funnel ID = [{}]",
+                processGroup.getId()
+            );
+            return processGroup.getId();
+        }
+        log.info("Empty process Group In Ingest Manager");
         return null;
     }
 
@@ -256,76 +315,64 @@ public class NiFiSwaggerSVC {
         }
     }
 
+    /**
+     * Create Connection Between Process Group Input/Output
+     *
+     * @param rootProcessGroupId pipeline process group id
+     * @param sourceProcessGroupId from process group id
+     * @param destinationProcessGroupId to process group id
+     */
     public void createConnectionBetweenProcessGroup(
         String rootProcessGroupId,
         String sourceProcessGroupId,
         String destinationProcessGroupId
     ) {
-        // Search Output in Source Processor Group
-        PortDTO sourceOutput = searchOutputInProcessorGroup(sourceProcessGroupId);
-        // Create connection
-        ConnectionEntity body = new ConnectionEntity();
-        ConnectionDTO component = body.getComponent();
-        component.setFlowFileExpiration("0 sec");
-        component.setBackPressureDataSizeThreshold("1 GB");
-        component.setBackPressureObjectThreshold(10000L);
-        // component.setload
-        ConnectableDTO source = component.getSource();
-        source.setId(sourceOutput.getId());
-        source.setGroupId(sourceOutput.getParentGroupId());
-        ConnectableDTO.TypeEnum sourceType = nifiObjectMapper.convertValue(
-            sourceOutput.getType(),
-            ConnectableDTO.TypeEnum.class
-        );
-        source.setType(sourceType);
-
-        // Search Input in Destination Processor Group
-        PortDTO destInput = searchInputInProcessorGroup(destinationProcessGroupId);
-        ConnectableDTO dest = component.getDestination();
-        dest.setId(destInput.getId());
-        dest.setGroupId(destInput.getParentGroupId());
-        ConnectableDTO.TypeEnum destType = nifiObjectMapper.convertValue(
-            destInput.getType(),
-            ConnectableDTO.TypeEnum.class
-        );
-        dest.setType(destType);
-
-        body.setComponent(component);
-        niFiClient.getProcessGroupsApiSwagger().createConnection(rootProcessGroupId, body);
-    }
-
-    /**
-     * Create connection from Funnel to Transmitter.
-     *
-     * @param funnelId Funnel id
-     * @param transmitterId Transmitter id
-     */
-    public void createConnectionFromFunnelToTransmitter(String funnelId, String transmitterId) {
         try {
+            // Search Output in Source Processor Group
+            PortDTO sourceOutput = searchOutputInProcessorGroup(sourceProcessGroupId);
             // Create connection
             ConnectionEntity body = new ConnectionEntity();
             ConnectionDTO component = body.getComponent();
             component.setFlowFileExpiration("0 sec");
             component.setBackPressureDataSizeThreshold("1 GB");
             component.setBackPressureObjectThreshold(10000L);
-
-            // Set up Source Funnel
+            // component.setload
             ConnectableDTO source = component.getSource();
-            source.setId(funnelId);
-            source.setGroupId("root");
-            source.setType(ConnectableDTO.TypeEnum.FUNNEL);
+            source.setId(sourceOutput.getId());
+            source.setGroupId(sourceOutput.getParentGroupId());
+            ConnectableDTO.TypeEnum sourceType = nifiObjectMapper.convertValue(
+                sourceOutput.getType(),
+                ConnectableDTO.TypeEnum.class
+            );
+            source.setType(sourceType);
 
-            // Set up Destination Transmitter
-            ConnectableDTO destination = component.getDestination();
-            destination.setId(transmitterId);
-            destination.setGroupId("root");
-            destination.setType(ConnectableDTO.TypeEnum.PROCESSOR);
+            // Search Input in Destination Processor Group
+            PortDTO destInput = searchInputInProcessorGroup(destinationProcessGroupId);
+            ConnectableDTO dest = component.getDestination();
+            dest.setId(destInput.getId());
+            dest.setGroupId(destInput.getParentGroupId());
+            ConnectableDTO.TypeEnum destType = nifiObjectMapper.convertValue(
+                destInput.getType(),
+                ConnectableDTO.TypeEnum.class
+            );
+            dest.setType(destType);
 
             body.setComponent(component);
-            niFiClient.getProcessGroupsApiSwagger().createConnection("root", body);
-            log.info("Create Connection From Funnel To Transmitter");
+            niFiClient.getProcessGroupsApiSwagger().createConnection(rootProcessGroupId, body);
+            log.info(
+                "Success Create Connection From {} To {} in {}",
+                sourceProcessGroupId,
+                destinationProcessGroupId,
+                rootProcessGroupId
+            );
         } catch (Exception e) {
-            log.error("Fail to Create Connection From Funnel To Transmitter");
+            log.error(
+                "Fail to Create Connection From {} To {} in {}",
+                sourceProcessGroupId,
+                destinationProcessGroupId,
+                rootProcessGroupId,
+                e
+            );
         }
     }
 
@@ -351,11 +398,17 @@ public class NiFiSwaggerSVC {
             log.info("Success Delete Connection From {} To Funnel", sourceProcessorGroupID);
             return true;
         } catch (Exception e) {
-            log.error("Fail to Delete Connection From {} To Funnel", sourceProcessorGroupID);
+            log.error("Fail to Delete Connection From {} To Funnel", sourceProcessorGroupID, e);
             return false;
         }
     }
 
+    /**
+     * Search Output Port In Process Group.
+     *
+     * @param processGroupId pipeline processor group id
+     * @return Output Port Entity
+     */
     public PortDTO searchOutputInProcessorGroup(String processGroupId) {
         try {
             OutputPortsEntity outputPorts = niFiClient
@@ -376,17 +429,27 @@ public class NiFiSwaggerSVC {
             } else {
                 for (PortEntity port : outputPorts.getOutputPorts()) {
                     PortDTO portComponent = port.getComponent();
+                    log.info(
+                        "Success Search Output Port in {} : Output Port ID = [{}]",
+                        processGroupId,
+                        portComponent.getId()
+                    );
                     return portComponent;
                 }
             }
             return null;
         } catch (ApiException e) {
-            log.error("Fail to Search output port in processor Group.", e);
-            e.printStackTrace();
+            log.error("Fail to Search output port in {}.", processGroupId, e);
             return null;
         }
     }
 
+    /**
+     * Search Input Port In Process Group.
+     *
+     * @param processGroupId pipeline processor group id
+     * @return Input Port Entity
+     */
     public PortDTO searchInputInProcessorGroup(String processGroupId) {
         try {
             InputPortsEntity inputPorts = niFiClient
@@ -407,13 +470,17 @@ public class NiFiSwaggerSVC {
             } else {
                 for (PortEntity port : inputPorts.getInputPorts()) {
                     PortDTO portComponent = port.getComponent();
+                    log.info(
+                        "Success Search Input Port in {} : Input Port ID = [{}]",
+                        processGroupId,
+                        portComponent.getId()
+                    );
                     return portComponent;
                 }
             }
             return null;
         } catch (ApiException e) {
-            log.error("Fail to Search input port in processor Group.", e);
-            e.printStackTrace();
+            log.error("Fail to Search input port in {}.", processGroupId, e);
             return null;
         }
     }
@@ -424,7 +491,7 @@ public class NiFiSwaggerSVC {
      *
      * @return Transmitter ID
      */
-    public String createTransmitter() {
+    public String createTransmitter(String ingestProcessGroupId) {
         ProcessorEntity body = new ProcessorEntity();
         RevisionDTO revision = new RevisionDTO();
         revision.setVersion(0L);
@@ -449,7 +516,7 @@ public class NiFiSwaggerSVC {
         try {
             ProcessorEntity result = niFiClient
                 .getProcessGroupsApiSwagger()
-                .createProcessor("root", body);
+                .createProcessor(ingestProcessGroupId, body);
             log.info(
                 "Create Transmitter in Ingest Manager : Transmitter ID = [{}]",
                 result.getId()
