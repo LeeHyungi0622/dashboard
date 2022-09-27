@@ -3,7 +3,6 @@ package io.dtonic.dhubingestmodule.pipeline.service;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,6 @@ public class PipelineDraftSVC {
     private PipelineDraftMapper pipelineMapper;
 
     public void createPipelineDrafts(JSONObject jsonObject) {
-        String collector = "";
-
         pipelineMapper.createPipelineDrafts(
             jsonObject.getString("name"),
             jsonObject.getString("creator"),
