@@ -15,6 +15,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,7 +47,7 @@ public class PipelineDraftController {
      */
 
     @GetMapping("/pipeline/drafts/{id}")
-    public @ResponseBody PipelineVO getPipelineDrafts(
+    public PipelineVO getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @PathVariable Integer id
@@ -68,32 +69,50 @@ public class PipelineDraftController {
     }
 
     @Transactional
-    @PostMapping("/pipeline/drafts")
-    public void createPipelineDrafts(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestBody PipelineVO pipelineVO
-    )
-        throws Exception {
-        pipelineSVC.createPipelineDrafts(
-            pipelineVO.getName(),
-            pipelineVO.getCreator(),
-            pipelineVO.getDetail()
-        );
-        response.setStatus(HttpStatus.OK.value());
-    }
-
-    @Transactional
     @PutMapping("/pipeline/drafts")
-    public void updatePipelineDrafts(
+    public Integer upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody String requestBody
-    )
-        throws Exception {
-        pipelineSVC.updatePipelineDrafts(requestBody);
-        response.setStatus(HttpStatus.OK.value());
+    ) {
+        JSONObject jsonObject = new JSONObject(requestBody);
+        if (!jsonObject.has("id")) {
+            pipelineSVC.createPipelineDrafts(jsonObject);
+            response.setStatus(HttpStatus.OK.value());
+            return pipelineSVC.getRecentPipelineDraftsId();
+        } else {
+            pipelineSVC.updatePipelineDrafts(jsonObject);
+            response.setStatus(HttpStatus.OK.value());
+            return jsonObject.getInt("id");
+        }
     }
+
+    // @Transactional
+    // @PostMapping("/pipeline/drafts")
+    // public void createPipelineDrafts(
+    //     HttpServletRequest request,
+    //     HttpServletResponse response,
+    //     @RequestBody PipelineVO pipelineVO
+    // ) {
+    //     pipelineSVC.createPipelineDrafts(
+    //         pipelineVO.getName(),
+    //         pipelineVO.getCreator(),
+    //         pipelineVO.getDetail()
+    //     );
+    //     response.setStatus(HttpStatus.OK.value());
+    // }
+
+    // @Transactional
+    // @PutMapping("/pipeline/drafts")
+    // public void updatePipelineDrafts(
+    //     HttpServletRequest request,
+    //     HttpServletResponse response,
+    //     @RequestBody String requestBody
+    // )
+    //     throws Exception {
+    //     pipelineSVC.updatePipelineDrafts(requestBody);
+    //     response.setStatus(HttpStatus.OK.value());
+    // }
 
     @Transactional
     @DeleteMapping("/pipeline/drafts/{id}")

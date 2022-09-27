@@ -22,8 +22,14 @@ public class PipelineDraftSVC {
     @Autowired
     private PipelineDraftMapper pipelineMapper;
 
-    public void createPipelineDrafts(String name, String creator, String detail) {
-        pipelineMapper.createPipelineDrafts(name, creator, detail);
+    public void createPipelineDrafts(JSONObject jsonObject) {
+        String collector = "";
+
+        pipelineMapper.createPipelineDrafts(
+            jsonObject.getString("name"),
+            jsonObject.getString("creator"),
+            jsonObject.getString("detail")
+        );
     }
 
     public List<PipelineDraftsListResponseVO> getPipelineDraftsList(
@@ -70,6 +76,10 @@ public class PipelineDraftSVC {
         return pipelineVO;
     }
 
+    public Integer getRecentPipelineDraftsId() {
+        return pipelineMapper.getRecentPipelineDraftsId();
+    }
+
     public Boolean isExistsDrafts(Integer id) {
         return pipelineMapper.isExistsDrafts(id);
     }
@@ -80,16 +90,14 @@ public class PipelineDraftSVC {
     }
 
     @Transactional
-    public void updatePipelineDrafts(String requestBody) {
-        parseJSON(requestBody, "collector");
-        parseJSON(requestBody, "filter");
-        parseJSON(requestBody, "converter");
+    public void updatePipelineDrafts(JSONObject jsonObject) {
+        parseJSON(jsonObject, "collector");
+        parseJSON(jsonObject, "filter");
+        parseJSON(jsonObject, "converter");
     }
 
     @Transactional
-    public void parseJSON(String requestBody, String nifiFlowType) {
-        JSONObject jsonObject = new JSONObject(requestBody);
-
+    public void parseJSON(JSONObject jsonObject, String nifiFlowType) {
         // collector, filter, converter를 설정하지 않은 초기 단계 에서는 jsonString을 null로 설정
         if (jsonObject.isNull(nifiFlowType)) {
             pipelineMapper.updatePipelineDrafts(

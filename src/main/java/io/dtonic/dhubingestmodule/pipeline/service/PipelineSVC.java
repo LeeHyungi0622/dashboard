@@ -129,16 +129,14 @@ public class PipelineSVC {
     }
 
     @Transactional
-    public void updatePipeline(String requestBody) {
-        parseJSON(requestBody, "collector");
-        parseJSON(requestBody, "filter");
-        parseJSON(requestBody, "converter");
+    public void updatePipeline(JSONObject jsonObject) {
+        parseJSON(jsonObject, "collector");
+        parseJSON(jsonObject, "filter");
+        parseJSON(jsonObject, "converter");
     }
 
     @Transactional
-    public void parseJSON(String requestBody, String nifiFlowType) {
-        JSONObject jsonObject = new JSONObject(requestBody);
-
+    public void parseJSON(JSONObject jsonObject, String nifiFlowType) {
         // collector, filter, converter를 설정하지 않은 초기 단계 에서는 jsonString을 null로 설정
         if (jsonObject.isNull(nifiFlowType)) {
             pipelineMapper.updatePipeline(

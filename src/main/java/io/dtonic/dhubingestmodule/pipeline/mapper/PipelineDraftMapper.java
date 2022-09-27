@@ -15,6 +15,8 @@ public interface PipelineDraftMapper {
 
     PipelineVO getPipelineDrafts(@Param("id") Integer id);
 
+    Integer getRecentPipelineDraftsId();
+
     void deletePipelineDrafts(@Param("id") Integer id);
 
     Boolean isExistsDrafts(@Param("id") Integer id);

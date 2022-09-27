@@ -186,7 +186,8 @@ public class PipelineController {
         @PathVariable Integer id
     )
         throws JsonMappingException, JsonProcessingException {
-        pipelineSVC.updatePipeline(requestBody);
+        JSONObject jsonObject = new JSONObject(requestBody);
+        pipelineSVC.updatePipeline(jsonObject);
         // response.setStatus(HttpStatus.OK.value());
 
         return pipelineSVC.getPipelineVOById(id);
