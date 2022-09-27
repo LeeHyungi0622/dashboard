@@ -50,11 +50,11 @@ public class DataSetController {
         @PathVariable String datasetid
     )
         throws Exception {
-        DataSetPropertiesResponseVO dataSetPropertiesResponseVO = datasetsvc.getDataModelId(
+        DataSetPropertiesResponseVO dataSetPropertiesResponseVO = datasetsvc.getDataModelId( //model ID 가져오기
             datasetid
         );
         dataSetPropertiesResponseVO =
-            datasetsvc.getDataModelProperties(dataSetPropertiesResponseVO);
+            datasetsvc.getDataModelProperties(dataSetPropertiesResponseVO); // 해당 Model의 속성값 가져오기
 
         return dataSetPropertiesResponseVO;
     }

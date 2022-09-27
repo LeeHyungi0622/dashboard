@@ -9,6 +9,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataCollectorVO {
 
-    private Integer id;
-    private String nifi_name;
+    private String adaptorName;
 }

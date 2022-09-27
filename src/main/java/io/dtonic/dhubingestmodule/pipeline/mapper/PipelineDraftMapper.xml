@@ -5,7 +5,6 @@
     <result property="creator" column="creator" />
     <result property="name" column="name" />
     <result property="detail" column="detail" />
-    <result property="status" column="status" />
     <result property="data_set" column="data_set" />
     <result property="collector" column="collector" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
     <result property="filter" column="filter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
@@ -14,6 +13,9 @@
     <result property="modifiedAt" column="modified_at" />
   </resultMap>
   <resultMap id="PropertyVO" type="io.dtonic.dhubingestmodule.nifi.vo.PropertyVO">
+    <result property="nifiType" column="nifi_type" />
+    <result property="nifiName" column="nifi_name" />
+    <result property="adaptorId" column="adaptor_id" />
     <result property="name" column="property_name" />
     <result property="detail" column="detail" />
     <result property="isRequired" column="is_required" />
@@ -35,6 +37,7 @@
     <if test="searchObject != null and searchValue != null">
       where #{searchObject} like '%#{searchValue}%'
     </if>
+    order by id
   </select>
   <select id="getPipelineDrafts" parameterType="Integer" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO" resultMap="pipeline">
     select
@@ -42,7 +45,7 @@
       creator,
       name,
       detail,
-      data_set,
+      data_set as dataSet,
       collector,
       filter,
       converter,
@@ -75,16 +78,18 @@
   </select>
   <select id="getDataCollector" resultType="io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO">
     SELECT 
-      id,
-      nifi_name
+      DISTINCT adaptor_name as adaptorName
     FROM 
       adaptor
     WHERE 
       adaptor_type = 'collector'
-    ORDER BY id ASC
+    ORDER BY adaptor_name ASC
   </select>
   <select id="getPipelineproperties" resultMap="PropertyVO">
     SELECT 
+      nifi_type,
+      nifi_name,
+      adaptor_id,
       property_name ,
       detail,
       is_required ,
@@ -95,8 +100,12 @@
       properties_value B
 	  ON 
       A.id = B.property_id
+    LEFT JOIN
+      ingest_manager.adaptor C
+    ON
+      C.id = A.adaptor_id
 	  WHERE 
-      A.adaptor_id = #{adaptorid}
+      A.adaptor_name = #{adaptorName}
     ORDER BY A.id ASC
 
   </select>

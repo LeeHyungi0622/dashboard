@@ -7,13 +7,16 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.ALWAYS)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PropertyVO {
 
+    private String nifiType;
+    private String nifiName;
+    private Integer adaptorId;
     private String name;
     private String detail;
-    private Boolean isRequired;
     private List<String> defaultValue = new ArrayList<>();
     private String inputValue;
+    private Boolean isRequired;
 }

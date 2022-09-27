@@ -57,7 +57,7 @@
        id,
        name,
        detail,
-       data_set,
+       data_set as dataSet,
        status,
        created_at as createdAt,
        modified_at as modifiedAt

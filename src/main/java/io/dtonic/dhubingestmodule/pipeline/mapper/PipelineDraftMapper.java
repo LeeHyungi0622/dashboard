@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
 public interface PipelineDraftMapper {
     List<DataCollectorVO> getDataCollector();
 
-    List<PropertyVO> getPipelineproperties(@Param("adaptorid") Integer adaptorid);
+    List<PropertyVO> getPipelineproperties(@Param("adaptorName") String adaptorName);
 
     List<PipelineVO> getPipelineDraftsList(
         @Param("searchObject") String searchObject,

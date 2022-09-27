@@ -113,9 +113,9 @@ public class DataSetSVC {
             DataModelResponseVO.class
         );
 
-        if (response != null) dataSetPropertiesResponseVO.setAttribute(
-            response.getBody().getAttributes()
-        );
+        if (response != null) {
+            dataSetPropertiesResponseVO.setAttribute(response.getBody().getAttributes());
+        }
 
         return dataSetPropertiesResponseVO;
     }
