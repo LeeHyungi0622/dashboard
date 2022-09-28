@@ -3,6 +3,7 @@ package io.dtonic.dhubingestmodule.pipeline.service;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
+import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetPropertiesResponseVO;
 import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
@@ -61,19 +62,16 @@ public class PipelineDraftSVC {
                 pipelineVO.setFilter(adaptorVO);
                 break;
             case 3: //데이터셋 선택시 (변환 pipelineVO 속성 리턴)
-                DataSetPropertiesResponseVO dataSetPropertiesResponseVO = datasetsvc.getDataModelId( //model ID 가져오기
+                DataModelVO dataModelVO = datasetsvc.getDataModelId( //model ID 가져오기
                     datasetid
                 );
-                pipelineVO.setDataModel(dataSetPropertiesResponseVO.getDatamodelId());
-                dataSetPropertiesResponseVO =
-                    datasetsvc.getDataModelProperties(dataSetPropertiesResponseVO);
+                pipelineVO.setDataModel(dataModelVO.getId());
+                dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId());
                 NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
-                for (int i = 0; i < dataSetPropertiesResponseVO.getAttribute().size(); i++) {
+                for (int i = 0; i < dataModelVO.getAttributes().size(); i++) {
                     PropertyVO propertyVO = new PropertyVO();
-                    propertyVO.setName(dataSetPropertiesResponseVO.getAttribute().get(i).getName());
-                    propertyVO.setDetail(
-                        dataSetPropertiesResponseVO.getAttribute().get(i).getDescription()
-                    );
+                    propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                    propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
                     niFiComponentVO.getRequiredProps().add(propertyVO);
                     niFiComponentVO.setName("DataSetProps");
                     niFiComponentVO.setType("Processor");

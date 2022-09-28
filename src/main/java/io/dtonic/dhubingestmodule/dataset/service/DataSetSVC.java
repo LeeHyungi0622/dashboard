@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.common.service.DataCoreRestSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelResponseVO;
+import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetForDataModelIDVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListBaseInfoVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListResponseVO;
@@ -65,16 +66,16 @@ public class DataSetSVC {
     }
 
     //dataset이 사용하는 Model ID 조회
-    public DataSetPropertiesResponseVO getDataModelId(String DataSetId) {
+    public DataModelVO getDataModelId(String DataSetId) {
         String datasetUrl = properties.getDatacoreManagerUrl();
         List<String> pathUri = new ArrayList<>();
         pathUri.add("/datasets");
         pathUri.add(DataSetId);
         Map<String, String> header = new HashMap<String, String>();
         header.put("Accept", "application/json");
-        DataSetPropertiesResponseVO dataSetPropertiesResponseVO = new DataSetPropertiesResponseVO();
+        DataModelVO dataModelVO = new DataModelVO();
 
-        dataSetPropertiesResponseVO.setDatasetId(DataSetId);
+        dataModelVO.setDatasetId(DataSetId);
         ResponseEntity<DataSetForDataModelIDVO> response = dataCoreRestSVC.get(
             datasetUrl,
             pathUri,
@@ -84,39 +85,32 @@ public class DataSetSVC {
             null,
             DataSetForDataModelIDVO.class
         );
-        if (response != null) dataSetPropertiesResponseVO.setDatamodelId(
+        if (response != null) dataModelVO.setId(
             response.getBody().getDatasetBaseInfo().getDataModelId()
         );
-
-        return dataSetPropertiesResponseVO;
+        return dataModelVO;
     }
 
-    //dataset이 사용하는 Model Properties 조회
-    public DataSetPropertiesResponseVO getDataModelProperties(
-        DataSetPropertiesResponseVO dataSetPropertiesResponseVO
-    ) {
+    //ModelId를 통한 Model Properties 조회
+    public DataModelVO getDataModelProperties(String id) {
         String datamodelUrl = properties.getDatacoreManagerUrl();
         List<String> pathUri = new ArrayList<>();
         pathUri.add("/datamodels");
-        pathUri.add(dataSetPropertiesResponseVO.getDatamodelId());
+        pathUri.add(id);
 
         Map<String, String> header = new HashMap<String, String>();
 
         header.put("Accept", "application/json");
-        ResponseEntity<DataModelResponseVO> response = dataCoreRestSVC.get(
+        ResponseEntity<DataModelVO> response = dataCoreRestSVC.get(
             datamodelUrl,
             pathUri,
             header,
             null,
             null,
             null,
-            DataModelResponseVO.class
+            DataModelVO.class
         );
-
-        if (response != null) {
-            dataSetPropertiesResponseVO.setAttribute(response.getBody().getAttributes());
-        }
-
-        return dataSetPropertiesResponseVO;
+        DataModelVO dataModelVO = response.getBody();
+        return dataModelVO;
     }
 }
