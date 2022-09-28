@@ -14,10 +14,7 @@ public interface PipelineDraftMapper {
 
     List<PropertyVO> getPipelineproperties(@Param("adaptorName") String adaptorName);
 
-    List<PipelineVO> getPipelineDraftsList(
-        @Param("searchObject") String searchObject,
-        @Param("searchValue") String searchValue
-    );
+    List<PipelineVO> getPipelineDraftsList();
 
     PipelineVO getPipelineDrafts(@Param("id") Integer id);
 

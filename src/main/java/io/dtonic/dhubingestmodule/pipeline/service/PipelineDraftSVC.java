@@ -212,14 +212,8 @@ public class PipelineDraftSVC {
         }
     }
 
-    public List<PipelineDraftsListResponseVO> getPipelineDraftsList(
-        String searchObject,
-        String searchValue
-    ) {
-        List<PipelineVO> pipelineVO = pipelineMapper.getPipelineDraftsList(
-            searchObject,
-            searchValue
-        );
+    public List<PipelineDraftsListResponseVO> getPipelineDraftsList() {
+        List<PipelineVO> pipelineVO = pipelineMapper.getPipelineDraftsList();
 
         List<PipelineDraftsListResponseVO> pipelineDraftsListResponseVO = new ArrayList<>();
         for (int i = 0; i < pipelineVO.size(); i++) {

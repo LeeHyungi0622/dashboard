@@ -59,10 +59,7 @@ public class PipelineDraftController {
         HttpServletResponse response,
         PipelineListRetrieveVO pipelineListRetrieveVO
     ) {
-        return pipelineSVC.getPipelineDraftsList(
-            pipelineListRetrieveVO.getSearchObject(),
-            pipelineListRetrieveVO.getSearchValue()
-        );
+        return pipelineSVC.getPipelineDraftsList();
     }
 
     @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create)
