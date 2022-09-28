@@ -1,18 +1,25 @@
 package io.dtonic.dhubingestmodule.pipeline.mapper;
 
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface PipelineDraftMapper {
-    List<PipelineResponseVO> getPipelineDraftsList(
+    List<DataCollectorVO> getDataCollector();
+
+    List<PropertyVO> getPipelineproperties(@Param("adaptorName") String adaptorName);
+
+    List<PipelineVO> getPipelineDraftsList(
         @Param("searchObject") String searchObject,
         @Param("searchValue") String searchValue
     );
 
-    PipelineResponseVO getPipelineDrafts(@Param("id") Integer id);
+    PipelineVO getPipelineDrafts(@Param("id") Integer id);
 
     void deletePipelineDrafts(@Param("id") Integer id);
 

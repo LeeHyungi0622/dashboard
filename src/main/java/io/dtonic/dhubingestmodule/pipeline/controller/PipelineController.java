@@ -11,7 +11,7 @@ import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -94,7 +94,7 @@ public class PipelineController {
      * @throws JsonMappingException
      */
     @GetMapping("/pipeline/complete/{id}") // PipeLine 상세 조회
-    public PipelineResponseVO getPipelineById(
+    public PipelineVO getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,

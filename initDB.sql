@@ -11,13 +11,14 @@ CREATE SEQUENCE ingest_manager.adaptor_id_seq
 
 
 -- 220915 adaptor 테이블 추가
+-- 220922 char -> text로 타입 변경
 CREATE TABLE IF NOT EXISTS ingest_manager.adaptor
 (
     id integer NOT NULL DEFAULT nextval('ingest_manager.adaptor_id_seq'::regclass),
-    adaptor_type character varying(255) COLLATE pg_catalog."default",
-    adaptor_name character varying(255) COLLATE pg_catalog."default",
-    nifi_type character varying(255) COLLATE pg_catalog."default",
-    nifi_name character varying(255) COLLATE pg_catalog."default",
+    adaptor_type text COLLATE pg_catalog."default",
+    adaptor_name text COLLATE pg_catalog."default",
+    nifi_type text COLLATE pg_catalog."default",
+    nifi_name text COLLATE pg_catalog."default",
     CONSTRAINT adaptor_pkey PRIMARY KEY (id)
 );
 
@@ -30,12 +31,13 @@ CREATE SEQUENCE ingest_manager.properties_id_seq
     CACHE 1;
 
 -- 220915 properties 테이블 수정
+-- 220922 char -> text로 타입 변경
 CREATE TABLE IF NOT EXISTS ingest_manager.properties
 (
     id integer NOT NULL DEFAULT nextval('ingest_manager.properties_id_seq'::regclass),
     adaptor_id integer,
-    property_name character varying(255) COLLATE pg_catalog."default",
-    detail character varying(255) COLLATE pg_catalog."default",
+    property_name text COLLATE pg_catalog."default",
+    detail text COLLATE pg_catalog."default",
     is_required boolean,
     CONSTRAINT properties_pkey PRIMARY KEY (id),
     CONSTRAINT properties_fkey FOREIGN KEY (adaptor_id)
@@ -53,13 +55,12 @@ CREATE SEQUENCE ingest_manager.properties_value_id_seq
     CACHE 1;
 
 -- 220915 properties_value 테이블 수정
+-- 220922 properties_value 테이블 수정 : property_name, property_value, is_default 컬럼 삭제 / value 컬럼 추가
 CREATE TABLE IF NOT EXISTS ingest_manager.properties_value
 (
     id integer NOT NULL DEFAULT nextval('ingest_manager.properties_value_id_seq'::regclass),
     property_id integer,
-    property_name character varying(255) COLLATE pg_catalog."default",
-    property_value character varying(255) COLLATE pg_catalog."default",
-    is_default boolean,
+    value text COLLATE pg_catalog."default",
     CONSTRAINT properties_value_pkey PRIMARY KEY (id),
     CONSTRAINT properties_value_fkey FOREIGN KEY (property_id)
         REFERENCES ingest_manager.properties (id) MATCH SIMPLE
@@ -75,15 +76,16 @@ CREATE SEQUENCE ingest_manager.pipeline_id_seq
     CACHE 1;
 
 -- 220913 pipeline 테이블 추가
+-- 220922 charvar -> text로 변경
 CREATE TABLE IF NOT EXISTS ingest_manager.pipeline
 (
     id integer NOT NULL DEFAULT nextval('ingest_manager.pipeline_id_seq'::regclass),
-    creator character varying(255) COLLATE pg_catalog."default",
-    name character varying(255) COLLATE pg_catalog."default" NOT NULL,
-    detail character varying(255) COLLATE pg_catalog."default",
-    status character varying(255) COLLATE pg_catalog."default",
-    processor_group_id character varying(255) COLLATE pg_catalog."default",
-    data_set character varying(255) COLLATE pg_catalog."default",
+    creator text COLLATE pg_catalog."default",
+    name text COLLATE pg_catalog."default" NOT NULL,
+    detail text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default",
+    processor_group_id text COLLATE pg_catalog."default",
+    data_set text COLLATE pg_catalog."default",
     collector text COLLATE pg_catalog."default",
     filter text COLLATE pg_catalog."default",
     converter text COLLATE pg_catalog."default",
@@ -104,10 +106,10 @@ CREATE SEQUENCE ingest_manager.temp_pipeline_id_seq
 CREATE TABLE IF NOT EXISTS ingest_manager.temp_pipeline
 (
     id integer NOT NULL DEFAULT nextval('ingest_manager.temp_pipeline_id_seq'::regclass),
-    creator character varying(255) COLLATE pg_catalog."default",
-    name character varying(255) COLLATE pg_catalog."default" NOT NULL,
-    detail character varying(255) COLLATE pg_catalog."default",
-    data_set character varying(255) COLLATE pg_catalog."default",
+    creator text COLLATE pg_catalog."default",
+    name text COLLATE pg_catalog."default" NOT NULL,
+    detail text COLLATE pg_catalog."default",
+    data_set text COLLATE pg_catalog."default",
     collector text COLLATE pg_catalog."default",
     filter text COLLATE pg_catalog."default",
     converter text COLLATE pg_catalog."default",
