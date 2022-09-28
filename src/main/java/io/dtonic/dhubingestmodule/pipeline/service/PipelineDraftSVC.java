@@ -1,6 +1,9 @@
 package io.dtonic.dhubingestmodule.pipeline.service;
 
+import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
+import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
+import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetPropertiesResponseVO;
 import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
@@ -31,7 +34,13 @@ public class PipelineDraftSVC {
     private DataSetSVC datasetsvc;
 
     public void createPipelineDrafts(String name, String creator, String detail) {
-        pipelineMapper.createPipelineDrafts(name, creator, detail);
+        int result = pipelineMapper.createPipelineDrafts(name, creator, detail);
+        if (result != 1) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
+                "Create Pipeline Error"
+            );
+        }
     }
 
     public List<DataCollectorVO> getDataCollector() {
@@ -45,7 +54,7 @@ public class PipelineDraftSVC {
         String datasetid
     ) {
         PipelineVO pipelineVO = pipelineMapper.getPipelineDrafts(pipelineid);
-        AdaptorVO adaptorVO = getPipelineproperties(adaptorName, pipelineid);
+        AdaptorVO adaptorVO = getPipelineproperties(adaptorName);
         switch (page) {
             case 1: //수집기 선택시 (수집 pipelineVO 속성 리턴)
                 pipelineVO.setCollector(adaptorVO);
@@ -54,18 +63,16 @@ public class PipelineDraftSVC {
                 pipelineVO.setFilter(adaptorVO);
                 break;
             case 3: //데이터셋 선택시 (변환 pipelineVO 속성 리턴)
-                DataSetPropertiesResponseVO dataSetPropertiesResponseVO = datasetsvc.getDataModelId( //model ID 가져오기
+                DataModelVO dataModelVO = datasetsvc.getDataModelId( //model ID 가져오기
                     datasetid
                 );
-                dataSetPropertiesResponseVO =
-                    datasetsvc.getDataModelProperties(dataSetPropertiesResponseVO);
+                pipelineVO.setDataModel(dataModelVO.getId());
+                dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId());
                 NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
-                for (int i = 0; i < dataSetPropertiesResponseVO.getAttribute().size(); i++) {
+                for (int i = 0; i < dataModelVO.getAttributes().size(); i++) {
                     PropertyVO propertyVO = new PropertyVO();
-                    propertyVO.setName(dataSetPropertiesResponseVO.getAttribute().get(i).getName());
-                    propertyVO.setDetail(
-                        dataSetPropertiesResponseVO.getAttribute().get(i).getDescription()
-                    );
+                    propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                    propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
                     niFiComponentVO.getRequiredProps().add(propertyVO);
                     niFiComponentVO.setName("DataSetProps");
                     niFiComponentVO.setType("Processor");
@@ -78,7 +85,8 @@ public class PipelineDraftSVC {
         return pipelineVO;
     }
 
-    public AdaptorVO getPipelineproperties(String adaptorName, Integer pipelineid) { //adaptor의 속성값 가져오기
+    //adaptor의 속성값 가져오기
+    public AdaptorVO getPipelineproperties(String adaptorName) {
         NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
         List<NiFiComponentVO> niFiComponentVOs = new ArrayList<NiFiComponentVO>();
         List<PropertyVO> propertyVO = pipelineMapper.getPipelineproperties(adaptorName);
@@ -86,9 +94,9 @@ public class PipelineDraftSVC {
         Integer cur_adaptor_id = propertyVO.get(0).getAdaptorId();
         for (int i = 0; i < propertyVO.size(); i++) {
             if (propertyVO.get(i).getAdaptorId() != cur_adaptor_id) {
+                niFiComponentVO.setName(pipelineMapper.getAdaptorinfo(cur_adaptor_id).getName());
+                niFiComponentVO.setType(pipelineMapper.getAdaptorinfo(cur_adaptor_id).getType());
                 cur_adaptor_id = propertyVO.get(i).getAdaptorId();
-                niFiComponentVO.setName(propertyVO.get(i - 1).getNifiName());
-                niFiComponentVO.setType(propertyVO.get(i - 1).getNifiType());
                 niFiComponentVOs.add(niFiComponentVO);
                 niFiComponentVO = new NiFiComponentVO();
             }
@@ -104,8 +112,8 @@ public class PipelineDraftSVC {
                 niFiComponentVO.getOptionalProps().add(propertyVO.get(i));
             }
             if (i == propertyVO.size() - 1) {
-                niFiComponentVO.setName(propertyVO.get(i).getNifiName());
-                niFiComponentVO.setType(propertyVO.get(i).getNifiType());
+                niFiComponentVO.setName(pipelineMapper.getAdaptorinfo(cur_adaptor_id).getName());
+                niFiComponentVO.setType(pipelineMapper.getAdaptorinfo(cur_adaptor_id).getType());
             }
         }
         niFiComponentVOs.add(niFiComponentVO);
@@ -114,13 +122,15 @@ public class PipelineDraftSVC {
         return adaptorVO;
     }
 
-    public Boolean isExistsDrafts(Integer id) {
-        return pipelineMapper.isExistsDrafts(id);
-    }
-
     @Transactional
     public void deletePipelineDrafts(Integer id) {
-        pipelineMapper.deletePipelineDrafts(id);
+        int result = pipelineMapper.deletePipelineDrafts(id);
+        if (result != 1) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.BAD_REQUEST,
+                "Delete Pipeline Error"
+            );
+        }
     }
 
     @Transactional
@@ -202,10 +212,6 @@ public class PipelineDraftSVC {
         }
     }
 
-    static boolean isStringEmpty(String str) {
-        return str == null || str.isEmpty();
-    }
-
     public List<PipelineDraftsListResponseVO> getPipelineDraftsList(
         String searchObject,
         String searchValue
@@ -246,7 +252,21 @@ public class PipelineDraftSVC {
     }
 
     public PipelineVO getPipelineDrafts(Integer id) {
-        PipelineVO pipelineVO = pipelineMapper.getPipelineDrafts(id);
-        return pipelineVO;
+        PipelineVO result = pipelineMapper.getPipelineDrafts(id);
+        if (result == null) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.NOT_EXIST_ENTITY,
+                "Pipeline Not Exist"
+            );
+        }
+        return result;
+    }
+
+    public Boolean isExistsDrafts(Integer id) {
+        return pipelineMapper.isExistsDrafts(id);
+    }
+
+    static boolean isStringEmpty(String str) {
+        return str == null || str.isEmpty();
     }
 }

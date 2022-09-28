@@ -2,15 +2,14 @@ package io.dtonic.dhubingestmodule.pipeline.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import graphql.com.google.common.collect.PeekingIterator;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
 import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
+import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
@@ -18,7 +17,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +39,9 @@ public class PipelineController {
     @Autowired
     private PipelineSVC pipelineSVC;
 
+    @Autowired
+    private PipelineDraftSVC pipelineDraftSVC;
+
     @GetMapping("/pipeline/complete/list") // PipeLine List 조회
     public List<PipelineListResponseVO> getPipelineList(
         HttpServletRequest request,
@@ -60,16 +61,17 @@ public class PipelineController {
      * @return
      */
     @Transactional
-    @PostMapping("/pipeline/complete") // PipeLine 등록
+    @PostMapping("/pipeline/complete/{id}") // PipeLine 등록
     public void createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
+        @PathVariable Integer id,
         @RequestBody String requestBody
     ) {
         JSONObject jsonObject = new JSONObject(requestBody);
-        // 1. validation check
         pipelineSVC.createPipeline(
+            id,
             jsonObject.getString("creator"),
             jsonObject.getString("name"),
             jsonObject.getString("detail"),
@@ -138,11 +140,7 @@ public class PipelineController {
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
-    )
-        throws JsonMappingException, JsonProcessingException {
-        // JSONObject json = pipelineSVC.getPipelineVOById(id);
-        // response.set
-        // return json;
+    ) {
         return pipelineSVC.getPipelineVOById(id);
     }
 
@@ -151,7 +149,7 @@ public class PipelineController {
         HttpServletRequest request,
         HttpServletResponse response
     ) {
-        return pipelineSVC.getDataCollector();
+        return pipelineDraftSVC.getDataCollector();
     }
 
     @GetMapping("/pipeline/complete/properties") // <데이터수집> 데이터수집 선택완료시
@@ -161,7 +159,7 @@ public class PipelineController {
         @RequestParam(name = "adaptorName") String adaptorName,
         @RequestParam(name = "Pipelineid") Integer pipelineid
     ) {
-        AdaptorVO adaptorVO = pipelineSVC.getPipelineproperties(adaptorName, pipelineid);
+        AdaptorVO adaptorVO = pipelineDraftSVC.getPipelineproperties(adaptorName);
         return adaptorVO;
     }
 

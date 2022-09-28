@@ -67,8 +67,28 @@
     FROM pipeline where id = #{id})
   </select>
   <insert id="createPipeline">
-    INSERT INTO pipeline (creator, name, detail, status, data_set, collector, filter, converter, created_at, modified_at)
-    VALUES (#{creator},#{name},#{detail},#{status},#{data_set},#{collector},#{filter},#{converter},now(),now())
+    INSERT INTO pipeline 
+    ( creator,
+      name,
+      detail, 
+      status, 
+      data_set, 
+      collector, 
+      filter, 
+      converter, 
+      created_at, 
+      modified_at)
+    VALUES 
+    ( #{creator},
+      #{name},
+      #{detail},
+      #{status},
+      #{dataSet},
+      #{collector},
+      #{filter},
+      #{converter},
+      now(),
+      now())
     </insert>
   <select id="getPipelineList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO">
     SELECT

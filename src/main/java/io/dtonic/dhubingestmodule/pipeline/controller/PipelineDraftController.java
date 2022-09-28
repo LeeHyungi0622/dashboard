@@ -2,13 +2,9 @@ package io.dtonic.dhubingestmodule.pipeline.controller;
 
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
-import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
-import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
-import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
@@ -26,7 +22,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -97,17 +92,6 @@ public class PipelineDraftController {
         HttpServletResponse response
     ) {
         return pipelineSVC.getDataCollector();
-    }
-
-    @GetMapping("/pipeline/drafts/properties") // <데이터수집> 데이터수집 선택완료시
-    public AdaptorVO getPipelineproperties(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestParam(name = "adaptorName") String adaptorName,
-        @RequestParam(name = "Pipelineid") Integer pipelineid
-    ) {
-        AdaptorVO adaptorVO = pipelineSVC.getPipelineproperties(adaptorName, pipelineid);
-        return adaptorVO;
     }
 
     @Transactional
