@@ -11,8 +11,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PropertyVO {
 
-    private String nifiType;
-    private String nifiName;
     private Integer adaptorId;
     private String name;
     private String detail;

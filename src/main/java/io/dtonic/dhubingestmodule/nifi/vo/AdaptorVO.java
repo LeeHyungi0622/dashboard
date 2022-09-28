@@ -13,7 +13,7 @@ import lombok.Data;
 public class AdaptorVO {
 
     private String name;
-    private boolean isCompleted;
+    private boolean completed;
 
     @JsonProperty("NifiComponents")
     private List<NiFiComponentVO> NifiComponents = new ArrayList<>();

@@ -13,8 +13,6 @@
     <result property="modifiedAt" column="modified_at" />
   </resultMap>
   <resultMap id="PropertyVO" type="io.dtonic.dhubingestmodule.nifi.vo.PropertyVO">
-    <result property="nifiType" column="nifi_type" />
-    <result property="nifiName" column="nifi_name" />
     <result property="adaptorId" column="adaptor_id" />
     <result property="name" column="property_name" />
     <result property="detail" column="detail" />
@@ -87,8 +85,6 @@
   </select>
   <select id="getPipelineproperties" resultMap="PropertyVO">
     SELECT 
-      nifi_type,
-      nifi_name,
       adaptor_id,
       property_name ,
       detail,
@@ -108,5 +104,14 @@
       A.adaptor_name = #{adaptorName}
     ORDER BY A.id ASC
 
+  </select>
+  <select id="getAdaptorinfo" resultType="io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO">
+    SELECT
+      nifi_name as name,
+      nifi_type as type
+    FROM
+      adaptor
+    WHERE
+      id = #{adaptorId}
   </select>
 </mapper>

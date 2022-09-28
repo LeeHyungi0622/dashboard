@@ -1,8 +1,8 @@
 package io.dtonic.dhubingestmodule.pipeline.mapper;
 
+import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -21,16 +21,16 @@ public interface PipelineDraftMapper {
 
     PipelineVO getPipelineDrafts(@Param("id") Integer id);
 
-    void deletePipelineDrafts(@Param("id") Integer id);
+    int deletePipelineDrafts(@Param("id") Integer id);
 
     Boolean isExistsDrafts(@Param("id") Integer id);
 
-    void createPipelineDrafts(
+    int createPipelineDrafts(
         @Param("name") String name,
         @Param("creator") String creator,
         @Param("detail") String detail
     );
-    void updatePipelineDrafts(
+    int updatePipelineDrafts(
         @Param("id") Integer id,
         @Param("name") String name,
         @Param("detail") String detail,
@@ -38,4 +38,5 @@ public interface PipelineDraftMapper {
         @Param("flowJsonString") String flowJsonString,
         @Param("nifiFlowType") String nifiFlowType
     );
+    NiFiComponentVO getAdaptorinfo(@Param("adaptorId") Integer adaptorId);
 }
