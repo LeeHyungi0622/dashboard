@@ -19,6 +19,7 @@ public class PipelineVO {
     private String detail;
     private String status;
     private String dataSet;
+    private String dataModel;
     private String processorGroupId;
     private AdaptorVO collector;
     private AdaptorVO filter;

@@ -5,10 +5,17 @@ import io.dtonic.dhubingestmodule.nifi.client.NiFiClientEntity;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiSwaggerSVC;
 import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
+import io.dtonic.dhubingestmodule.nifi.vo.ConverterVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
+import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.crypto.modes.NISTCTSBlockCipher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -65,7 +72,7 @@ public class NiFiController {
             // Create Filter Adaptor
             String filterId = createAdaptor(pipelineVO.getFilter(), processGroupId);
             // Create Convertor Adaptor
-            AdaptorVO formattedNiFiProps = convertPipelineVOToNiFiForm(pipelineVO.getConverter());
+            AdaptorVO formattedNiFiProps = convertPipelineVOToNiFiForm(pipelineVO);
             String convertorId = createAdaptor(formattedNiFiProps, processGroupId);
 
             /* Create Connections */
@@ -105,9 +112,41 @@ public class NiFiController {
     }
 
     //TODO
-    private AdaptorVO convertPipelineVOToNiFiForm(AdaptorVO convertor) {
+    private AdaptorVO convertPipelineVOToNiFiForm(PipelineVO convertor) {
+        // DataSet ID로 Data Model 정보 호출
+
+        // ID 생성
+        String id = idGenerater(convertor);
+        AdaptorVO converterVO = new AdaptorVO();
+
         //VO 만들어서 ObjectMapper로 Replace Text Property 샛팅하자
         return new AdaptorVO();
+    }
+
+    private String idGenerater(PipelineVO convertor) {
+        String id = "\"urn:datahub:" + convertor.getDataModel() + ":";
+        for (NiFiComponentVO nifi : convertor.getConverter().getNifiComponents()) {
+            if (nifi.getName().equals("IDGenerater")) {
+                for (int i = 0; i < nifi.getRequiredProps().size(); i++) {
+                    if (i < nifi.getRequiredProps().size() - 1) {
+                        id = id + "${" + nifi.getRequiredProps().get(i).getInputValue() + "}:";
+                    } else {
+                        id = id + "${" + nifi.getRequiredProps().get(i).getInputValue() + "}\"";
+                    }
+                }
+            }
+        }
+        return id;
+    }
+
+    private NiFiComponentVO convertNGSILD(String dataSetId, String id) {
+        ConverterVO data = new ConverterVO();
+        NiFiComponentVO nifi = new NiFiComponentVO();
+        data.getEntities()
+        Map<String, Object> ngsiLdElements = new HashMap<>();
+        ngsiLdElements.put("id", id);
+        ngsiLdElements.put("type", dataModelId);
+        return nifi;
     }
 
     // 다시짜자

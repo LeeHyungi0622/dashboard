@@ -295,10 +295,11 @@ public class NiFiSwaggerSVC {
             .getComponent()
             .getConfig()
             .getProperties();
-        //TODO:Dongjin Property Vo 수정 반영 해야함
         for (PropertyVO property : properies) {
             if (property.getName().equals("Scheduling")) {
                 processor.getComponent().getConfig().setSchedulingPeriod(property.getInputValue());
+            } else if (processorProperties.get(property.getName()) == null) {
+                processorProperties.put(property.getName(), property.getInputValue());
             } else {
                 processorProperties.replace(property.getName(), property.getInputValue());
             }
@@ -320,13 +321,25 @@ public class NiFiSwaggerSVC {
         } else {
             for (ProcessorEntity processor : processors.getProcessors()) {
                 if (processor.getComponent().getName().equals(niFiComponentVO.getName())) {
-                    ProcessorEntity updateProcessor = updateProcessorProperties(
-                        processor,
-                        niFiComponentVO.getRequiredProps()
-                    );
+                    if (niFiComponentVO.getRequiredProps().size() != 0) {
+                        processor =
+                            updateProcessorProperties(
+                                processor,
+                                niFiComponentVO.getRequiredProps()
+                            );
+                    } else {
+                        log.error("Empty Required Props Elements In {}", niFiComponentVO.getName());
+                    }
+                    if (niFiComponentVO.getOptionalProps().size() != 0) {
+                        processor =
+                            updateProcessorProperties(
+                                processor,
+                                niFiComponentVO.getOptionalProps()
+                            );
+                    }
                     niFiClient
                         .getProcessorsApiSwagger()
-                        .updateProcessor(updateProcessor.getId(), updateProcessor);
+                        .updateProcessor(processor.getId(), processor);
                 }
             }
         }
