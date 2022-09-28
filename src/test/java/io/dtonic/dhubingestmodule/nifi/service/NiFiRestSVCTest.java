@@ -1,6 +1,7 @@
 package io.dtonic.dhubingestmodule.nifi.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -48,15 +49,11 @@ public class NiFiRestSVCTest {
         assertNotNull(result);
     }
 
-    @Test
-    public void uploadTemplateTest() throws JsonProcessingException {
-        TemplateEntity result = niFiRestSVC.uploadTemplate();
-        log.info(
-            "TEST Search Controllers In Processor Group : [{}]",
-            nifiObjectMapper.writeValueAsString(result)
-        );
-        assertNotNull(result);
-    }
+    // @Test
+    // public void uploadTemplateTest() throws JsonProcessingException {
+    //     niFiRestSVC.uploadTemplate();
+    //     log.info("TEST Search Controllers In Processor Group : [{}]");
+    // }
 
     @Test
     public void getStatusProcessGroupTest() throws JsonProcessingException {
@@ -81,6 +78,42 @@ public class NiFiRestSVCTest {
             "TEST Get Status Number Of Processor Group : [{}]",
             nifiObjectMapper.writeValueAsString(result)
         );
+        assertNotNull(result);
+    }
+
+    @Test
+    public void startProcessorGroupTest() throws JsonProcessingException {
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        boolean result = niFiRestSVC.startProcessorGroup(processorGroupId);
+        assertTrue(result);
+    }
+
+    @Test
+    public void stopProcessorGroupTest() throws JsonProcessingException {
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        boolean result = niFiRestSVC.stopProcessorGroup(processorGroupId);
+        assertTrue(result);
+    }
+
+    @Test
+    public void disableControllersTest() throws JsonProcessingException {
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        boolean result = niFiRestSVC.disableControllers(processorGroupId);
+        assertTrue(result);
+    }
+
+    @Test
+    public void enableControllersTest() throws JsonProcessingException {
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        boolean result = niFiRestSVC.enableControllers(processorGroupId);
+        assertTrue(result);
+    }
+
+    @Test
+    public void createFunnelTest() throws JsonProcessingException {
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        String result = niFiRestSVC.createFunnel(processorGroupId);
+        log.debug("{}", nifiObjectMapper.writeValueAsString(result));
         assertNotNull(result);
     }
 }

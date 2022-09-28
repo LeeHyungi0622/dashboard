@@ -308,6 +308,61 @@ public class DataCoreRestSVC {
     }
 
     /**
+     * Request post method
+     *
+     * @param moduleHost   Destination module host
+     * @param pathUri      Path uri
+     * @param headers      Http request header
+     * @param body         Http request body
+     * @param params       Http request param
+     * @param responseType Response type
+     * @return A response object to a POST request.
+     */
+    public <T> ResponseEntity<T> postTemplate(
+        String moduleHost,
+        List<String> pathUri,
+        Map<String, String> headers,
+        Object body,
+        Map<String, Object> params,
+        String accessToken,
+        Class<T> responseType
+    ) {
+        URI uri = getUrl(moduleHost, pathUri, params);
+        log.info("POST - REST API URL : {}", uri);
+
+        ResponseEntity<T> response = null;
+        try {
+            response =
+                restTemplate.exchange(
+                    uri,
+                    HttpMethod.POST,
+                    getRequestEntity(body, headers, accessToken),
+                    responseType
+                );
+        } catch (HttpClientErrorException e) {
+            if (e.getRawStatusCode() == 409) {
+                return null;
+            } else {
+                log.error(
+                    "Client Exception - Error Status Code: {}, Response Body as String: {}",
+                    e.getStatusCode(),
+                    e.getResponseBodyAsString(),
+                    e
+                );
+                throw new DataCoreUIException(e.getStatusCode(), e);
+            }
+        } catch (ResourceAccessException e) {
+            log.error("Connection refused - {}", moduleHost, e);
+            throw new DataCoreUIException(HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (RestClientException e) {
+            log.error("REST POST Exception, ", e);
+            throw new DataCoreUIException(HttpStatus.BAD_REQUEST);
+        }
+
+        return response;
+    }
+
+    /**
      * Request patch method
      *
      * @param moduleHost   Destination module host
