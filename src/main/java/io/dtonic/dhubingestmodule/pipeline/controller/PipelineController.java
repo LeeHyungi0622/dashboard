@@ -7,7 +7,9 @@ import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
+import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
+import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
@@ -63,23 +65,60 @@ public class PipelineController {
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @RequestBody PipelineCreateVO pipelineVO
+        @RequestBody String requestBody
     ) {
+        JSONObject jsonObject = new JSONObject(requestBody);
         // 1. validation check
         pipelineSVC.createPipeline(
-            pipelineVO.getCreator(),
-            pipelineVO.getName(),
-            pipelineVO.getDetail(),
-            pipelineVO.getStatus(),
-            pipelineVO.getData_set(),
-            pipelineVO.getCollector(),
-            pipelineVO.getFilter(),
-            pipelineVO.getConverter(),
-            pipelineVO.getCreatedAt(),
-            pipelineVO.getModifiedAt()
+            jsonObject.getString("creator"),
+            jsonObject.getString("name"),
+            jsonObject.getString("detail"),
+            "Stopped",
+            jsonObject.getString("dataSet"),
+            jsonObject.getJSONObject("collector").toString(),
+            jsonObject.getJSONObject("filter").toString(),
+            jsonObject.getJSONObject("converter").toString()
         );
         //        pipelineSVC.deletePipeline(pipelineVO.getId());
         response.setStatus(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Update Pipeline
+     *
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @param accept   request accept header
+     * @param id       retrieve Pipeline id
+     * @return
+     */
+
+    @PutMapping("/pipeline/complete/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
+    public void updatePipeline(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestBody String requestBody,
+        @PathVariable Integer id,
+        @RequestParam(value = "status") String status
+    )
+        throws JsonMappingException, JsonProcessingException {
+        // validation check
+        JSONObject jsonObject = new JSONObject(requestBody);
+
+        if (!pipelineSVC.isExists(id)) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
+                "Pipeline is not Exist"
+            );
+        }
+        if (
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
+        ) pipelineSVC.changePipelineStatus(id, status); // stop pipeline
+
+        pipelineSVC.updatePipeline(jsonObject);
     }
 
     /**
@@ -105,6 +144,25 @@ public class PipelineController {
         // response.set
         // return json;
         return pipelineSVC.getPipelineVOById(id);
+    }
+
+    @GetMapping("/pipeline/complete/collectors") // 데이터수집기 리스트 리턴
+    public List<DataCollectorVO> getPipelinecollectors(
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        return pipelineSVC.getDataCollector();
+    }
+
+    @GetMapping("/pipeline/complete/properties") // <데이터수집> 데이터수집 선택완료시
+    public AdaptorVO getPipelineproperties(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestParam(name = "adaptorName") String adaptorName,
+        @RequestParam(name = "Pipelineid") Integer pipelineid
+    ) {
+        AdaptorVO adaptorVO = pipelineSVC.getPipelineproperties(adaptorName, pipelineid);
+        return adaptorVO;
     }
 
     /**
@@ -166,43 +224,5 @@ public class PipelineController {
         // delete pipeline
         pipelineSVC.deletePipeline(id);
         response.setStatus(HttpStatus.OK.value());
-    }
-
-    /**
-     * Update Pipeline
-     *
-     * @param request  HttpServletRequest
-     * @param response HttpServletResponse
-     * @param accept   request accept header
-     * @param id       retrieve Pipeline id
-     * @return
-     */
-
-    @PutMapping("/pipeline/complete/{id}") // PipeLine 수정
-    public void updatePipeline(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestBody String requestBody,
-        @PathVariable Integer id,
-        @RequestParam(value = "status") String status
-    )
-        throws JsonMappingException, JsonProcessingException {
-        // validation check
-        JSONObject jsonObject = new JSONObject(requestBody);
-
-        if (!pipelineSVC.isExists(id)) {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
-                "Pipeline is not Exist"
-            );
-        }
-        if (
-            status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
-            status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||
-            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()) ||
-            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
-        ) pipelineSVC.changePipelineStatus(id, status); // stop pipeline
-
-        pipelineSVC.updatePipeline(jsonObject);
     }
 }

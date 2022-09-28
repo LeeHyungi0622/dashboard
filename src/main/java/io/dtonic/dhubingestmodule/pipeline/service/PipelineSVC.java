@@ -12,6 +12,7 @@ import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper;
+import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
@@ -76,6 +77,46 @@ public class PipelineSVC {
         return pipelineListVOs;
     }
 
+    public List<DataCollectorVO> getDataCollector() {
+        return pipelineMapper.getDataCollector();
+    }
+
+    public AdaptorVO getPipelineproperties(String adaptorName, Integer pipelineid) { //adaptor의 속성값 가져오기
+        NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
+        List<NiFiComponentVO> niFiComponentVOs = new ArrayList<NiFiComponentVO>();
+        List<PropertyVO> propertyVO = pipelineMapper.getPipelineproperties(adaptorName);
+        AdaptorVO adaptorVO = new AdaptorVO();
+        Integer cur_adaptor_id = propertyVO.get(0).getAdaptorId();
+        for (int i = 0; i < propertyVO.size(); i++) {
+            if (propertyVO.get(i).getAdaptorId() != cur_adaptor_id) {
+                cur_adaptor_id = propertyVO.get(i).getAdaptorId();
+                niFiComponentVO.setName(propertyVO.get(i - 1).getNifiName());
+                niFiComponentVO.setType(propertyVO.get(i - 1).getNifiType());
+                niFiComponentVOs.add(niFiComponentVO);
+                niFiComponentVO = new NiFiComponentVO();
+            }
+            if (propertyVO.get(i).getIsRequired()) {
+                if (
+                    propertyVO.get(i).getDefaultValue().size() > 0 &&
+                    isStringEmpty(propertyVO.get(i).getInputValue())
+                ) {
+                    propertyVO.get(i).setInputValue(propertyVO.get(i).getDefaultValue().get(0));
+                }
+                niFiComponentVO.getRequiredProps().add(propertyVO.get(i));
+            } else {
+                niFiComponentVO.getOptionalProps().add(propertyVO.get(i));
+            }
+            if (i == propertyVO.size() - 1) {
+                niFiComponentVO.setName(propertyVO.get(i).getNifiName());
+                niFiComponentVO.setType(propertyVO.get(i).getNifiType());
+            }
+        }
+        niFiComponentVOs.add(niFiComponentVO);
+        adaptorVO.setNifiComponents(niFiComponentVOs);
+        adaptorVO.setName(adaptorName);
+        return adaptorVO;
+    }
+
     public void createPipeline(
         String creator,
         String name,
@@ -84,9 +125,7 @@ public class PipelineSVC {
         String data_set,
         String collector,
         String filter,
-        String converter,
-        Date createdAt,
-        Date modifiedAt
+        String converter
     ) {
         // NIFI API response data_set
         pipelineMapper.createPipeline(
@@ -97,10 +136,12 @@ public class PipelineSVC {
             data_set,
             collector,
             filter,
-            converter,
-            createdAt,
-            modifiedAt
+            converter
         );
+    }
+
+    static boolean isStringEmpty(String str) {
+        return str == null || str.isEmpty();
     }
 
     public Boolean isExists(Integer id) {
@@ -174,12 +215,12 @@ public class PipelineSVC {
 
             // processor에서 필수로 넣어야 하는 properties 값들이 모두 채워져 있으면, completed를 true로 바꾼다
             if (completeCnt == nifiComponentLength) {
-                jsonObject.getJSONObject(nifiFlowType).remove("isCompleted");
-                jsonObject.getJSONObject(nifiFlowType).put("isCompleted", true);
+                jsonObject.getJSONObject(nifiFlowType).remove("completed");
+                jsonObject.getJSONObject(nifiFlowType).put("completed", true);
                 flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
             } else {
-                jsonObject.getJSONObject(nifiFlowType).remove("isCompleted");
-                jsonObject.getJSONObject(nifiFlowType).put("isCompleted", false);
+                jsonObject.getJSONObject(nifiFlowType).remove("completed");
+                jsonObject.getJSONObject(nifiFlowType).put("completed", false);
                 flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
             }
 

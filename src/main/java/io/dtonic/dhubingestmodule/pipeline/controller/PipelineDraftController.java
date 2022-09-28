@@ -70,43 +70,25 @@ public class PipelineDraftController {
         );
     }
 
-    // @Transactional
-    // @PutMapping("/pipeline/drafts") // 임시저장 등록/수정
-    // public Integer upsertPipelineDrafts(
-    //     HttpServletRequest request,
-    //     HttpServletResponse response,
-    //     @RequestBody String requestBody
-    // ) {
-    //     JSONObject jsonObject = new JSONObject(requestBody);
-    //     if (!jsonObject.has("id")) {
-    //         pipelineSVC.createPipelineDrafts(jsonObject);
-    //         response.setStatus(HttpStatus.OK.value());
-    //         return pipelineSVC.getRecentPipelineDraftsId();
-    //     } else {
-    //         pipelineSVC.updatePipelineDrafts(jsonObject);
-    //         response.setStatus(HttpStatus.OK.value());
-    //         return jsonObject.getInt("id");
-    //     }
-    // }
-
     @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create)
     public void createPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestBody PipelineVO pipelineCreateVO
+        @RequestBody String requestBody
     ) {
-        Integer id = pipelineCreateVO.getId();
+        JSONObject jsonObject = new JSONObject(requestBody);
 
-        if (pipelineSVC.isExistsDrafts(id)) {
-            pipelineSVC.updatePipelineDrafts(pipelineCreateVO);
+        if (jsonObject.has("id") && pipelineSVC.isExistsDrafts(jsonObject.getInt("id"))) {
+            pipelineSVC.updatePipelineDrafts(jsonObject);
+            response.setStatus(HttpStatus.OK.value());
         } else {
             pipelineSVC.createPipelineDrafts(
-                pipelineCreateVO.getName(),
-                pipelineCreateVO.getCreator(),
-                pipelineCreateVO.getDetail()
+                jsonObject.getString("name"),
+                jsonObject.getString("creator"),
+                jsonObject.getString("detail")
             );
+            response.setStatus(HttpStatus.CREATED.value());
         }
-        response.setStatus(HttpStatus.CREATED.value());
     }
 
     @GetMapping("/pipeline/drafts/collectors") // 데이터수집기 리스트 리턴
@@ -146,33 +128,6 @@ public class PipelineDraftController {
         );
         return pipelineVO;
     }
-
-    // @Transactional
-    // @PostMapping("/pipeline/drafts")
-    // public void createPipelineDrafts(
-    //     HttpServletRequest request,
-    //     HttpServletResponse response,
-    //     @RequestBody PipelineVO pipelineVO
-    // ) {
-    //     pipelineSVC.createPipelineDrafts(
-    //         pipelineVO.getName(),
-    //         pipelineVO.getCreator(),
-    //         pipelineVO.getDetail()
-    //     );
-    //     response.setStatus(HttpStatus.OK.value());
-    // }
-
-    // @Transactional
-    // @PutMapping("/pipeline/drafts")
-    // public void updatePipelineDrafts(
-    //     HttpServletRequest request,
-    //     HttpServletResponse response,
-    //     @RequestBody String requestBody
-    // )
-    //     throws Exception {
-    //     pipelineSVC.updatePipelineDrafts(requestBody);
-    //     response.setStatus(HttpStatus.OK.value());
-    // }
 
     @Transactional
     @DeleteMapping("/pipeline/drafts/{id}") // 임시저장 삭제

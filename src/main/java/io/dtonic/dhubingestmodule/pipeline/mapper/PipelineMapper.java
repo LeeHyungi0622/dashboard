@@ -1,5 +1,7 @@
 package io.dtonic.dhubingestmodule.pipeline.mapper;
 
+import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
@@ -10,7 +12,11 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface PipelineMapper {
+    List<DataCollectorVO> getDataCollector();
+
     List<PipelineListResponseVO> getPipelineList();
+
+    List<PropertyVO> getPipelineproperties(@Param("adaptorName") String adaptorName);
 
     PipelineVO getPipeline(@Param("id") Integer id);
 
@@ -30,9 +36,7 @@ public interface PipelineMapper {
         @Param("data_set") String data_set,
         @Param("collector") String collector,
         @Param("filter") String filter,
-        @Param("converter") String converter,
-        @Param("createdAt") Date createdAt,
-        @Param("modifiedAt") Date modifiedAt
+        @Param("converter") String converter
     );
 
     void updatePipeline(

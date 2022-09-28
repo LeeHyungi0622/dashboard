@@ -9,11 +9,7 @@ import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper;
 import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.ArrayList;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -118,10 +114,6 @@ public class PipelineDraftSVC {
         return adaptorVO;
     }
 
-    public Integer getRecentPipelineDraftsId() {
-        return pipelineMapper.getRecentPipelineDraftsId();
-    }
-
     public Boolean isExistsDrafts(Integer id) {
         return pipelineMapper.isExistsDrafts(id);
     }
@@ -132,16 +124,14 @@ public class PipelineDraftSVC {
     }
 
     @Transactional
-    public void updatePipelineDrafts(PipelineVO requestBody) {
-        parseJSON(requestBody, "collector");
-        parseJSON(requestBody, "filter");
-        parseJSON(requestBody, "converter");
+    public void updatePipelineDrafts(JSONObject jsonObject) {
+        parseJSON(jsonObject, "collector");
+        parseJSON(jsonObject, "filter");
+        parseJSON(jsonObject, "converter");
     }
 
     @Transactional
-    public void parseJSON(PipelineVO requestBody, String nifiFlowType) {
-        JSONObject jsonObject = new JSONObject(requestBody);
-
+    public void parseJSON(JSONObject jsonObject, String nifiFlowType) {
         // collector, filter, converter를 설정하지 않은 초기 단계 에서는 jsonString을 null로 설정
         if (jsonObject.isNull(nifiFlowType)) {
             pipelineMapper.updatePipelineDrafts(
@@ -179,12 +169,12 @@ public class PipelineDraftSVC {
 
             // processor에서 필수로 넣어야 하는 properties 값들이 모두 채워져 있으면, completed를 true로 바꾼다
             if (completeCnt == nifiComponentLength) {
-                jsonObject.getJSONObject(nifiFlowType).remove("isCompleted");
-                jsonObject.getJSONObject(nifiFlowType).put("isCompleted", true);
+                jsonObject.getJSONObject(nifiFlowType).remove("completed");
+                jsonObject.getJSONObject(nifiFlowType).put("completed", true);
                 flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
             } else {
-                jsonObject.getJSONObject(nifiFlowType).remove("isCompleted");
-                jsonObject.getJSONObject(nifiFlowType).put("isCompleted", false);
+                jsonObject.getJSONObject(nifiFlowType).remove("completed");
+                jsonObject.getJSONObject(nifiFlowType).put("completed", false);
                 flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
             }
 

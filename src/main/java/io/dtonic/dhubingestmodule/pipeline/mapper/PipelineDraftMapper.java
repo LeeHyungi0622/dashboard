@@ -2,7 +2,6 @@ package io.dtonic.dhubingestmodule.pipeline.mapper;
 
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -20,8 +19,6 @@ public interface PipelineDraftMapper {
     );
 
     PipelineVO getPipelineDrafts(@Param("id") Integer id);
-
-    Integer getRecentPipelineDraftsId();
 
     void deletePipelineDrafts(@Param("id") Integer id);
 
