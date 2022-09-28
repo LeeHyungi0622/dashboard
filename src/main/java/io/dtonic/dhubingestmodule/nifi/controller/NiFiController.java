@@ -1,5 +1,8 @@
 package io.dtonic.dhubingestmodule.nifi.controller;
 
+import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
+import io.dtonic.dhubingestmodule.dataset.vo.Attribute;
+import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.nifi.NiFiApplicationRunner;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClientEntity;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
@@ -13,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.modes.NISTCTSBlockCipher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,9 @@ public class NiFiController {
 
     @Autowired
     NiFiApplicationRunner niFiApplicationRunner;
+
+    @Autowired
+    DataSetSVC dataSetSVC;
 
     /**
      * Create Pipeline
@@ -117,10 +122,29 @@ public class NiFiController {
 
         // ID 생성
         String id = idGenerater(convertor);
-        AdaptorVO converterVO = new AdaptorVO();
+        // Convert NGSI LD
+        PipelineVO ngsiLdNiFi = setAttribute(convertor);
+        NiFiComponentVO ngsiLdFormater = convertNgsiLdData(convertor.getDataModel(), id);
+        NiFiComponentVO convertType = convertValueType(convertor.getDataModel());
 
-        //VO 만들어서 ObjectMapper로 Replace Text Property 샛팅하자
-        return new AdaptorVO();
+        // NiFi Components Setting
+
+        ngsiLdNiFi.getConverter().getNifiComponents().add(ngsiLdFormater);
+        ngsiLdNiFi.getConverter().getNifiComponents().add(convertType);
+
+        return ngsiLdNiFi.getConverter();
+    }
+
+    private PipelineVO setAttribute(PipelineVO convertor) {
+        for (NiFiComponentVO nifi : convertor.getConverter().getNifiComponents()) {
+            if (nifi.getName().equals("DataSetProps")) {
+                for (PropertyVO prop : nifi.getRequiredProps()) {
+                    String convertInput = prop.getInputValue().replace("\\\"", "");
+                    prop.setInputValue("$." + convertInput);
+                }
+            }
+        }
+        return convertor;
     }
 
     private String idGenerater(PipelineVO convertor) {
@@ -139,14 +163,89 @@ public class NiFiController {
         return id;
     }
 
-    private NiFiComponentVO convertNGSILD(String dataSetId, String id) {
-        ConverterVO data = new ConverterVO();
-        NiFiComponentVO nifi = new NiFiComponentVO();
-        data.getEntities()
-        Map<String, Object> ngsiLdElements = new HashMap<>();
-        ngsiLdElements.put("id", id);
-        ngsiLdElements.put("type", dataModelId);
-        return nifi;
+    private NiFiComponentVO convertNgsiLdData(String dataModelId, String id) {
+        NiFiComponentVO ngsiLdFormmater = new NiFiComponentVO();
+        ngsiLdFormmater.setName("NGSI-LD Fommater");
+        ngsiLdFormmater.setType("Processor");
+        DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(dataModelId);
+
+        ConverterVO converterVO = new ConverterVO();
+        List<Object> entities = new ArrayList<>();
+        converterVO.setDatasetId(dataModelInfo.getDatasetId());
+        Map<String, Object> entity = new HashMap<>();
+        entity.put("id", id);
+        entity.put("type", dataModelId);
+        entity.put("@context", dataModelInfo.getContext());
+        for (Attribute e : dataModelInfo.getAttributes()) {
+            Map<String, Object> subAttribute = new HashMap<>();
+            subAttribute.put("type", e.getAttributeType());
+            if (e.getAttributeType().equals("Property")) {
+                subAttribute.put("value", "${" + e.getName() + "}");
+            } else if (e.getAttributeType().equals("Relationship")) {
+                subAttribute.put("object", "${" + e.getName() + "}");
+            }
+            //TODO:IDK
+            // else if(e.getAttributeType().equals("GeoProperty")){
+            //     subAttribute.put("IDK","IDK")
+            // }
+            if (e.getHasObservedAt()) {
+                subAttribute.put("observedAt", "time");
+            }
+            // TODO:IDK
+            // if(e.getHasUnitCode()){
+            //     subAttribute.put("observedAt","time");
+            // }
+            entity.put(e.getName(), subAttribute);
+        }
+        entities.add(entity);
+        converterVO.setEntities(entities);
+        String convertData = converterVO.toString();
+        List<PropertyVO> props = new ArrayList<>();
+        PropertyVO ngsiProp = new PropertyVO();
+        ngsiProp.setName("Replacement Value");
+        ngsiProp.setInputValue(convertData);
+        props.add(ngsiProp);
+        ngsiLdFormmater.setRequiredProps(props);
+        return ngsiLdFormmater;
+    }
+
+    private NiFiComponentVO convertValueType(String dataModelId) {
+        NiFiComponentVO convertValueTypeProc = new NiFiComponentVO();
+        convertValueTypeProc.setName("ConvertValueType");
+        convertValueTypeProc.setType("Processor");
+        DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(dataModelId);
+
+        List<Object> jolt = new ArrayList<>();
+        Map<String, Object> val = new HashMap<>();
+        val.put("operation", "modify-overwrite-beta");
+        Map<String, Object> spec = new HashMap<>();
+        Map<String, Object> en = new HashMap<>();
+        Map<String, Object> ae = new HashMap<>();
+        for (Attribute a : dataModelInfo.getAttributes()) {
+            Map<String, String> e = new HashMap<>();
+            if (a.getValueType().equals("Integer")) {
+                e.put("value", "=toInteger");
+                ae.put(a.getName(), e);
+            } else if (a.getValueType().equals("Double")) {
+                e.put("value", "=toDouble");
+                ae.put(a.getName(), e);
+            } else if (a.getValueType().equals("Boolean")) {
+                e.put("value", "=toBoolean");
+                ae.put(a.getName(), e);
+            }
+            //Date 추가.. //Geo는 어캄?
+        }
+        en.put("*", ae);
+        spec.put("entities", en);
+        val.put("spec", spec);
+        jolt.add(val);
+        List<PropertyVO> joltList = new ArrayList<>();
+        PropertyVO prop = new PropertyVO();
+        prop.setName("jolt-spec");
+        prop.setInputValue(jolt.toString());
+        joltList.add(prop);
+        convertValueTypeProc.setRequiredProps(joltList);
+        return convertValueTypeProc;
     }
 
     // 다시짜자

@@ -8,5 +8,5 @@ import lombok.Data;
 public class ConverterVO {
 
     private String datasetId;
-    private List<Map<String, String>> entities;
+    private List<Object> entities;
 }
