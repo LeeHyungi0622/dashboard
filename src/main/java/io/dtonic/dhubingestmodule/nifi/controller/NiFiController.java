@@ -58,16 +58,16 @@ public class NiFiController {
                 processGroupId,
                 pipelineVO.getName()
             );
-
+            //TODO
             /* Create Adatpors */
             // Create Collector Adaptor
             String collectorId = createAdaptor(pipelineVO.getCollector(), processGroupId);
             // Create Filter Adaptor
             String filterId = createAdaptor(pipelineVO.getFilter(), processGroupId);
             // Create Convertor Adaptor
-            String convertorId = createAdaptor(pipelineVO.getConverter(), processGroupId);
+            AdaptorVO formattedNiFiProps = convertPipelineVOToNiFiForm(pipelineVO.getConverter());
+            String convertorId = createAdaptor(formattedNiFiProps, processGroupId);
 
-            // 수정 필요.
             /* Create Connections */
             // Create Collector - Filter Connection
             niFiSwaggerSVC.createConnectionBetweenProcessGroup(
@@ -81,21 +81,33 @@ public class NiFiController {
                 filterId,
                 convertorId
             );
-            //TODO
             // Create Convertor - Output Port Connection
-            niFiSwaggerSVC.createConnectionBetweenProcessGroup(
+            niFiSwaggerSVC.createConnectionFromProcessGroupToOutput(
                 processGroupId,
                 convertorId,
-                outputId
+                processGroupId
             );
-            //TODO
+            // Create Output Port - Funnel Connection
+            niFiSwaggerSVC.createConnectionFromOutputToFunnel(
+                niFiApplicationRunner.getIngestProcessGroupId(),
+                processGroupId,
+                niFiApplicationRunner.getIngestProcessGroupId()
+            );
             // Enable all Controllers
+            niFiRestSVC.enableControllers(processGroupId);
+
             log.info("Success Create Pipeline in NiFi : PipelineVO = {}", pipelineVO);
             return processGroupId;
         } catch (Exception e) {
             log.error("Fail to Create Pipeline in NiFi : PipelineVO = {}", pipelineVO, e);
             return null;
         }
+    }
+
+    //TODO
+    private AdaptorVO convertPipelineVOToNiFiForm(AdaptorVO convertor) {
+        //VO 만들어서 ObjectMapper로 Replace Text Property 샛팅하자
+        return new AdaptorVO();
     }
 
     // 다시짜자
@@ -105,14 +117,14 @@ public class NiFiController {
      * @return ProcessGroup ID created Adaptor
      */
     public String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) {
-        // String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getType());
+        String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getName());
 
         // Create Dummy Template
-
+        String adaptorId = niFiRestSVC.createDummyTemplate(templateId, rootProcessorGroupId);
         // Update Adaptor
-        // updateAdaptor(templateProcessGroupID, adaptorVO.getNiFiComponent());
+        updateAdaptor(adaptorId, adaptorVO.getNifiComponents());
 
-        return rootProcessorGroupId;
+        return adaptorId;
     }
 
     public void updateAdaptor(String processorGroupId, List<NiFiComponentVO> NiFiComponents) {

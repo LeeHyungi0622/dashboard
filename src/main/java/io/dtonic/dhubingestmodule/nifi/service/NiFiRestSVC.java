@@ -71,7 +71,7 @@ public class NiFiRestSVC {
      * @param accessToken set up nifi access token
      * @return ProcessGroup ID created Adaptor
      */
-    public <T> String createDummyTemplate(String rootProcessorGroupId, String templateId) {
+    public String createDummyTemplate(String rootProcessorGroupId, String templateId) {
         try {
             List<String> paths = new ArrayList<String>();
             Map<String, String> headers = new HashMap<String, String>();
@@ -516,7 +516,12 @@ public class NiFiRestSVC {
         }
     }
 
-    public boolean enableControllers(String processorGroupId) {
+    /**
+     * Enable Controllers in process group
+     *
+     * @param processGroupId
+     */
+    public void enableControllers(String processorGroupId) {
         try {
             ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
             body.setState("ENABLED");
@@ -532,7 +537,7 @@ public class NiFiRestSVC {
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Content-Type", "application/json");
 
-            ResponseEntity<String> result = dataCoreRestSVC.put(
+            dataCoreRestSVC.put(
                 niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
                 paths,
                 headers,
@@ -541,18 +546,9 @@ public class NiFiRestSVC {
                 niFiClientEntity.getAccessToken(),
                 String.class
             );
-            ActivateControllerServicesEntity resultEntity = nifiObjectMapper.readValue(
-                result.getBody(),
-                ActivateControllerServicesEntity.class
-            );
-            if (resultEntity.getClass().equals(ActivateControllerServicesEntity.class)) {
-                return true;
-            } else {
-                return false;
-            }
+            log.info("Success Enable Controllers in {}", processorGroupId);
         } catch (Exception e) {
             log.error("Can not Stop Processor Groups", e);
-            return false;
         }
     }
 
