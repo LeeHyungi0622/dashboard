@@ -1,6 +1,7 @@
 package io.dtonic.dhubingestmodule.dataset.controller;
 
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
+import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListResponseVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetPropertiesResponseVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetResponseVO;
@@ -44,18 +45,17 @@ public class DataSetController {
      * @throws Exception
      */
     @GetMapping(value = "/properties/{datasetid}")
-    public DataSetPropertiesResponseVO getDatasetProperties(
+    public DataModelVO getDatasetProperties(
         HttpServletRequest request,
         HttpServletResponse response,
         @PathVariable String datasetid
     )
         throws Exception {
-        DataSetPropertiesResponseVO dataSetPropertiesResponseVO = datasetsvc.getDataModelId(
+        DataModelVO dataModelVO = datasetsvc.getDataModelId( //model ID 가져오기
             datasetid
         );
-        dataSetPropertiesResponseVO =
-            datasetsvc.getDataModelProperties(dataSetPropertiesResponseVO);
+        dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId()); // 해당 Model의 속성값 가져오기
 
-        return dataSetPropertiesResponseVO;
+        return dataModelVO;
     }
 }

@@ -1,34 +1,14 @@
 package io.dtonic.dhubingestmodule.pipeline.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.google.gson.JsonObject;
+import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
-import io.dtonic.dhubingestmodule.common.code.ResponseCode;
-import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
-import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
-import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
+import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
-import java.util.function.ObjIntConsumer;
-import java.util.stream.Collector;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import netscape.javascript.JSException;
-import netscape.javascript.JSObject;
-import org.apache.commons.lang3.ObjectUtils.Null;
-import org.bouncycastle.cms.jcajce.JceKEKAuthenticatedRecipient;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +22,40 @@ public class PipelineSVC {
     private PipelineMapper pipelineMapper;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private PipelineDraftSVC pipelineDraftSVC;
+
+    public void createPipeline(
+        Integer id,
+        String creator,
+        String name,
+        String detail,
+        String status,
+        String dataSet,
+        String collector,
+        String filter,
+        String converter
+    ) {
+        // NIFI API response data_set
+        int result = pipelineMapper.createPipeline(
+            creator,
+            name,
+            detail,
+            status,
+            dataSet,
+            collector,
+            filter,
+            converter
+        );
+        //임시 파이프라인 삭제
+        if (result == 1) {
+            pipelineDraftSVC.deletePipelineDrafts(id);
+        } else {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
+                "Create Pipeline Error"
+            );
+        }
+    }
 
     // private final NiFoControlSVC nificontrolSVC;
     @Transactional
@@ -76,55 +89,41 @@ public class PipelineSVC {
         return pipelineListVOs;
     }
 
-    public void createPipeline(
-        String creator,
-        String name,
-        String detail,
-        String status,
-        String data_set,
-        String collector,
-        String filter,
-        String converter,
-        Date createdAt,
-        Date modifiedAt
-    ) {
-        // NIFI API response data_set
-        pipelineMapper.createPipeline(
-            creator,
-            name,
-            detail,
-            status,
-            data_set,
-            collector,
-            filter,
-            converter,
-            createdAt,
-            modifiedAt
-        );
-    }
-
-    public Boolean isExists(Integer id) {
-        return pipelineMapper.isExists(id);
-    }
-
-    public PipelineResponseVO getPipelineVOById(Integer id)
-        throws JsonMappingException, JsonProcessingException {
-        // PipelineResponseVO result = pipelineMapper.getPipeline(id);
-
-        // List<AdaptorVO> map = objectMapper.readValue(result.getCollector(), JSONObject.class);
-        // return map;
-        PipelineResponseVO result = pipelineMapper.getPipeline(id);
+    public PipelineVO getPipelineVOById(Integer id) {
+        PipelineVO result = pipelineMapper.getPipeline(id);
+        if (result == null) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.NOT_EXIST_ENTITY,
+                "Pipeline Not Exist"
+            );
+        }
         return result;
     }
 
     @Transactional
     public void changePipelineStatus(Integer id, String status) {
-        pipelineMapper.changePipelineStatus(id, status);
+        int result = pipelineMapper.changePipelineStatus(id, status);
+        if (result != 1) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.BAD_REQUEST,
+                "Change Pipeline Status Error"
+            );
+        }
     }
 
     @Transactional
     public void deletePipeline(Integer id) {
         // check nifi run or stop. if running then stop to nifi
-        pipelineMapper.deletePipeline(id);
+        int result = pipelineMapper.deletePipeline(id);
+        if (result != 1) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.BAD_REQUEST,
+                "Delete Pipeline Error"
+            );
+        }
+    }
+
+    public Boolean isExists(Integer id) {
+        return pipelineMapper.isExists(id);
     }
 }

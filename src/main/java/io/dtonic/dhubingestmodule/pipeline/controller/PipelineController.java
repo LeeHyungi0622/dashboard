@@ -2,21 +2,17 @@ package io.dtonic.dhubingestmodule.pipeline.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import graphql.com.google.common.collect.PeekingIterator;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
-import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -58,25 +54,25 @@ public class PipelineController {
      * @return
      */
     @Transactional
-    @PostMapping("/pipeline/complete") // PipeLine 등록
+    @PostMapping("/pipeline/complete/{id}") // PipeLine 등록
     public void createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @RequestBody PipelineCreateVO pipelineVO
+        @PathVariable Integer id,
+        @RequestBody String requestBody
     ) {
-        // 1. validation check
+        JSONObject jsonObject = new JSONObject(requestBody);
         pipelineSVC.createPipeline(
-            pipelineVO.getCreator(),
-            pipelineVO.getName(),
-            pipelineVO.getDetail(),
-            pipelineVO.getStatus(),
-            pipelineVO.getData_set(),
-            pipelineVO.getCollector(),
-            pipelineVO.getFilter(),
-            pipelineVO.getConverter(),
-            pipelineVO.getCreatedAt(),
-            pipelineVO.getModifiedAt()
+            id,
+            jsonObject.getString("creator"),
+            jsonObject.getString("name"),
+            jsonObject.getString("detail"),
+            "Stopped",
+            jsonObject.getString("dataSet"),
+            jsonObject.getJSONObject("collector").toString(),
+            jsonObject.getJSONObject("filter").toString(),
+            jsonObject.getJSONObject("converter").toString()
         );
         //        pipelineSVC.deletePipeline(pipelineVO.getId());
         response.setStatus(HttpStatus.CREATED.value());
@@ -94,16 +90,12 @@ public class PipelineController {
      * @throws JsonMappingException
      */
     @GetMapping("/pipeline/complete/{id}") // PipeLine 상세 조회
-    public PipelineResponseVO getPipelineById(
+    public PipelineVO getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
-    )
-        throws JsonMappingException, JsonProcessingException {
-        // JSONObject json = pipelineSVC.getPipelineVOById(id);
-        // response.set
-        // return json;
+    ) {
         return pipelineSVC.getPipelineVOById(id);
     }
 

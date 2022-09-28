@@ -111,7 +111,8 @@ public class NiFiRestSVCTest {
 
     @Test
     public void createFunnelTest() throws JsonProcessingException {
-        String result = niFiRestSVC.createFunnelInRoot();
+        String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
+        String result = niFiRestSVC.createFunnel(processorGroupId);
         log.debug("{}", nifiObjectMapper.writeValueAsString(result));
         assertNotNull(result);
     }
