@@ -10,6 +10,7 @@ import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper;
 import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,16 +134,14 @@ public class PipelineDraftSVC {
     }
 
     @Transactional
-    public void updatePipelineDrafts(PipelineVO requestBody) {
-        parseJSON(requestBody, "collector");
-        parseJSON(requestBody, "filter");
-        parseJSON(requestBody, "converter");
+    public void updatePipelineDrafts(JSONObject jsonObject) {
+        parseJSON(jsonObject, "collector");
+        parseJSON(jsonObject, "filter");
+        parseJSON(jsonObject, "converter");
     }
 
     @Transactional
-    public void parseJSON(PipelineVO requestBody, String nifiFlowType) {
-        JSONObject jsonObject = new JSONObject(requestBody);
-
+    public void parseJSON(JSONObject jsonObject, String nifiFlowType) {
         // collector, filter, converter를 설정하지 않은 초기 단계 에서는 jsonString을 null로 설정
         if (jsonObject.isNull(nifiFlowType)) {
             pipelineMapper.updatePipelineDrafts(
@@ -166,12 +165,9 @@ public class PipelineDraftSVC {
                 JSONObject jObj = new JSONObject(
                     jObject.getJSONArray("NifiComponents").get(i).toString()
                 );
-                JSONArray properties = jObj.getJSONArray("properties");
+                JSONArray properties = jObj.getJSONArray("requiredProps");
                 for (idx = 0; idx < properties.length(); idx++) {
-                    if (
-                        properties.getJSONObject(idx).getBoolean("isRequired") &&
-                        properties.getJSONObject(idx).isNull("inputValue")
-                    ) {
+                    if (properties.getJSONObject(idx).isNull("inputValue")) {
                         break;
                     }
                 }
@@ -216,12 +212,37 @@ public class PipelineDraftSVC {
         }
     }
 
-    public List<PipelineVO> getPipelineDraftsList(String searchObject, String searchValue) {
-        List<PipelineVO> pipelineVO = pipelineMapper.getPipelineDraftsList(
-            searchObject,
-            searchValue
-        );
-        return pipelineVO;
+    public List<PipelineDraftsListResponseVO> getPipelineDraftsList() {
+        List<PipelineVO> pipelineVO = pipelineMapper.getPipelineDraftsList();
+
+        List<PipelineDraftsListResponseVO> pipelineDraftsListResponseVO = new ArrayList<>();
+        for (int i = 0; i < pipelineVO.size(); i++) {
+            PipelineDraftsListResponseVO draftsResponse = new PipelineDraftsListResponseVO();
+            draftsResponse.setId(pipelineVO.get(i).getId());
+            draftsResponse.setName(pipelineVO.get(i).getName());
+            draftsResponse.setModifiedAt(pipelineVO.get(i).getModifiedAt());
+
+            if (pipelineVO.get(i).getCollector() == null) {
+                draftsResponse.setIsCollector(false);
+            } else {
+                draftsResponse.setIsCollector(pipelineVO.get(i).getCollector().isCompleted());
+            }
+
+            if (pipelineVO.get(i).getFilter() == null) {
+                draftsResponse.setIsFilter(false);
+            } else {
+                draftsResponse.setIsFilter(pipelineVO.get(i).getFilter().isCompleted());
+            }
+
+            if (pipelineVO.get(i).getConverter() == null) {
+                draftsResponse.setIsConverter(false);
+            } else {
+                draftsResponse.setIsConverter(pipelineVO.get(i).getConverter().isCompleted());
+            }
+
+            pipelineDraftsListResponseVO.add(draftsResponse);
+        }
+        return pipelineDraftsListResponseVO;
     }
 
     public PipelineVO getPipelineDrafts(Integer id) {

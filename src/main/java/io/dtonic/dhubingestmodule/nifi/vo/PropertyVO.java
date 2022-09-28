@@ -14,7 +14,7 @@ public class PropertyVO {
     private Integer adaptorId;
     private String name;
     private String detail;
+    private Boolean isRequired;
     private List<String> defaultValue = new ArrayList<>();
     private String inputValue;
-    private Boolean isRequired;
 }

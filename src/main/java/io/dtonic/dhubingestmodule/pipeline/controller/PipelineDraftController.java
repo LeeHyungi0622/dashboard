@@ -3,13 +3,17 @@ package io.dtonic.dhubingestmodule.pipeline.controller;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
+import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,48 +44,43 @@ public class PipelineDraftController {
      * @return Pipeline object
      */
 
-    @GetMapping("/pipeline/drafts/{id}")
-    public @ResponseBody PipelineVO getPipelineDrafts(
+    @GetMapping("/pipeline/drafts/{id}") // 임시저장 상세 조회
+    public PipelineVO getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @PathVariable Integer id
     ) {
-        PipelineVO pipelineVO = pipelineSVC.getPipelineDrafts(id);
-        return pipelineVO;
+        return pipelineSVC.getPipelineDrafts(id);
     }
 
-    @GetMapping("/pipeline/drafts/list")
-    public @ResponseBody List<PipelineVO> getPipelineDraftsList(
+    @GetMapping("/pipeline/drafts/list") // 임시저장 목록 조회
+    public @ResponseBody List<PipelineDraftsListResponseVO> getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
         PipelineListRetrieveVO pipelineListRetrieveVO
     ) {
-        List<PipelineVO> pipelineVO = pipelineSVC.getPipelineDraftsList(
-            pipelineListRetrieveVO.getSearchObject(),
-            pipelineListRetrieveVO.getSearchValue()
-        );
-        return pipelineVO;
+        return pipelineSVC.getPipelineDraftsList();
     }
 
-    @Transactional
     @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create)
     public void createPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestBody PipelineVO PipelineVO
+        @RequestBody String requestBody
     ) {
-        Integer id = PipelineVO.getId();
+        JSONObject jsonObject = new JSONObject(requestBody);
 
-        if (pipelineSVC.isExistsDrafts(id)) {
-            pipelineSVC.updatePipelineDrafts(PipelineVO);
+        if (jsonObject.has("id") && pipelineSVC.isExistsDrafts(jsonObject.getInt("id"))) {
+            pipelineSVC.updatePipelineDrafts(jsonObject);
+            response.setStatus(HttpStatus.OK.value());
         } else {
             pipelineSVC.createPipelineDrafts(
-                PipelineVO.getName(),
-                PipelineVO.getCreator(),
-                PipelineVO.getDetail()
+                jsonObject.getString("name"),
+                jsonObject.getString("creator"),
+                jsonObject.getString("detail")
             );
+            response.setStatus(HttpStatus.CREATED.value());
         }
-        response.setStatus(HttpStatus.CREATED.value());
     }
 
     @GetMapping("/pipeline/drafts/collectors") // 데이터수집기 리스트 리턴
@@ -112,7 +111,7 @@ public class PipelineDraftController {
     }
 
     @Transactional
-    @DeleteMapping("/pipeline/drafts/{id}")
+    @DeleteMapping("/pipeline/drafts/{id}") // 임시저장 삭제
     public void deletePipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
