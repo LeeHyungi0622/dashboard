@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import pipelineList from "../views/pipelineList/PipelineList.vue";
 import pipelineUpdate from "../views/pipelineUpdate/PipelineUpdate.vue";
-import pipelineCreate from "../views/pipelineCreate/PipelineCreate.vue";
+import PipelineRegister from "../views/pipelineCreate/PipelineRegister.vue";
 import defaultInfo from "../components/pipeline/DefaultInfo";
 import dataCollect from "../components/pipeline/DataCollect";
 import dataConvert from "../components/pipeline/DataConvert";
@@ -17,9 +17,10 @@ const routes = [
     component: pipelineList,
   },
   {
-    path: "/pipelineCreate",
-    name: "pipelineCreate",
-    component: pipelineCreate,
+    path: "/PipelineRegister",
+    name: "PipelineRegister",
+    component: PipelineRegister,
+    props: true,
     children: [
       {
         path: "/defaultInfo",

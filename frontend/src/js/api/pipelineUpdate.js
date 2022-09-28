@@ -1,9 +1,9 @@
 import axios from "axios";
 
-class pipelineList {
-  getPipelineList() {
+class pipelineUpdate {
+  getPipelineListById(id) {
     return axios
-      .get(`/pipeline/complete/list`, {})
+      .get(`/pipeline/complete/${id}`, {})
       .then((response) => {
         return response.data;
       })
@@ -11,4 +11,4 @@ class pipelineList {
   }
 }
 
-export default new pipelineList();
+export default new pipelineUpdate();

@@ -119,10 +119,16 @@ export default {
   mounted() {
     console.log(this.$ws);
     this.connect();
+    pipelineListService
+      .getPipelineList()
+      .then((res) => {
+        this.$store.state.pipelineList = res;
+      })
+      .catch((err) => {
+        console.log("Brand 목록의 조회에 실패했습니다.", err);
+      });
   },
-  beforeDestroy() {
-    this.disconnect();
-  },
+
   computed: {
     totalPage() {
       return Math.floor(
@@ -130,7 +136,7 @@ export default {
       );
     },
     filteritems() {
-      return this.pipelineListData.data.filter((i) => {
+      return this.$store.state.pipelineList.filter((i) => {
         return (
           !this.selectedFilter || i[this.selectedFilter] === this.searchValue
         );
@@ -203,7 +209,7 @@ export default {
     goPipelineDetailEdit(item) {
       this.$router.push({
         name: "pipelineUpdate",
-        query: { id: item.NO },
+        query: { id: item.id },
       });
     },
     goPipelineRegister() {
@@ -220,7 +226,8 @@ export default {
     },
     getMessage() {
       this.$ws.onmessage = ({ data }) => {
-        console.log("메세지 수신", data);
+        this.$store.state.pipelineList = JSON.parse(data);
+        console.log("메세지 수신", JSON.parse(data));
       };
     },
     disconnect() {

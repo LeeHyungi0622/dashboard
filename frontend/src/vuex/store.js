@@ -6,18 +6,8 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
   state() {
     return {
-      pipelineVo: {
-        id: "",
-        creator: "",
-        name: "",
-        detail: "",
-        status: "",
-        dataSet: "",
-        processorGroupId: null,
-        collector: {},
-        filter: {},
-        converter: {},
-      },
+      pipelineList: [],
+      pipelineVo: {},
     };
   },
   mutations: {

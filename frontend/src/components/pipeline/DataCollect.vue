@@ -22,7 +22,7 @@
                 :key="key"
                 :value="item"
               >
-                {{ item.nifi_name }}
+                {{ item }}
               </option>
             </select>
           </div>
@@ -59,18 +59,20 @@
 
 <script>
 import CustomTable from "../../components/pipeline/CustomTable.vue";
-import collector from "../../json/collector.json";
+import collectorService from "../../js/api/collector";
 export default {
   components: {
     CustomTable,
+  },
+  created() {
+    this.getCollector();
   },
   data() {
     return {
       collectorContents: {
         key: "데이터 수집기",
         value: {
-          selectedValue: "",
-          datas: collector,
+          datas: [],
         },
       },
       selectedCollectValue: {},
@@ -82,6 +84,18 @@ export default {
     contents: Array,
     convertMode: Function,
   },
-  methods: {},
+  methods: {
+    getCollector() {
+      collectorService
+        .getCollectorList()
+        .then((res) => {
+          console.log(res.dataSetId);
+          this.collectorContents.value.datas = res;
+        })
+        .catch((err) => {
+          console.log("Brand 목록의 조회에 실패했습니다.", err);
+        });
+    },
+  },
 };
 </script>

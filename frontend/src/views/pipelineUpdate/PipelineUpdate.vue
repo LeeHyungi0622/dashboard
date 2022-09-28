@@ -10,16 +10,19 @@
         :mode="mode.defaultInfo"
       />
       <data-collect
+        v-if="$store.state.pipelineVo['collector']"
         :contents="getContents('collector')"
         :convert-mode="convertMode"
         :mode="mode.collect"
       />
       <data-filters
+        v-if="$store.state.pipelineVo['filter']"
         :contents="getContents('filter')"
         :convert-mode="convertMode"
         :mode="mode.refine"
       />
       <data-convert
+        v-if="$store.state.pipelineVo['converter']"
         :contents="getContents('converter')"
         :convert-mode="convertMode"
         @selected-data-set="selectedDataSetFunction"
@@ -37,8 +40,7 @@ import DefaultInfo from "../../components/pipeline/DefaultInfo.vue";
 import DataCollect from "../../components/pipeline/DataCollect.vue";
 import DataFilters from "../../components/pipeline/DataFilters.vue";
 import DataConvert from "../../components/pipeline/DataConvert.vue";
-// import devData from "../../json/devData.json";
-import pipeLineEdit from "../../json/pipeLineEdit.json";
+import pipelineUpdateService from "../../js/api/pipelineUpdate";
 export default {
   components: {
     DataConvert,
@@ -46,10 +48,18 @@ export default {
     DataCollect,
     DataFilters,
   },
+  created() {
+    pipelineUpdateService
+      .getPipelineListById(this.$route.query.id)
+      .then((res) => {
+        this.$store.state.pipelineVo = res;
+      })
+      .catch((err) => {
+        console.log("Brand 목록의 조회에 실패했습니다.", err);
+      });
+  },
   data() {
     return {
-      devData: pipeLineEdit,
-
       selectedDataSet: "",
       mode: {
         defaultInfo: "",
@@ -64,18 +74,18 @@ export default {
       this.selectedDataSet = value;
     },
     getContents(contentsName) {
-      return this.devData[contentsName].NifiComponents;
+      return this.$store.state.pipelineVo[contentsName].NifiComponents;
     },
 
     defaultInfoContents() {
       return [
         {
           name: "파이프라인 이름",
-          inputValue: this.devData.name,
+          inputValue: this.$store.state.pipelineVo.name,
         },
         {
           name: "파이프라인 정의",
-          inputValue: this.devData.detail,
+          inputValue: this.$store.state.pipelineVo.detail,
         },
       ];
     },
