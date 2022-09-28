@@ -21,7 +21,7 @@
             align-items: center;
             text-align: center;
           "
-          class="fs14;"
+          class="fs14"
         >
           <div class="search" style="height: 20px">
             <!-- <select>
@@ -50,6 +50,21 @@
             :hide-default-footer="true"
             style="text-align: center; width: 100%"
           >
+            <template v-slot:[`item.readAction`]="{ item }">
+              <button @click="goTempPipeline(item)">보기</button>
+            </template>
+            <template v-slot:[`item.deleteAction`]="{ item }">
+              <button @click="deleteTempPipeline(item)">삭제</button>
+            </template>
+            <template v-slot:[`item.isCollector`]="{ item }">
+              <img :src="imgSrc[getImg(item.isCollector)]" />
+            </template>
+            <template v-slot:[`item.isFilter`]="{ item }">
+              <img :src="imgSrc[getImg(item.isFilter)]" />
+            </template>
+            <template v-slot:[`item.isConverter`]="{ item }">
+              <img :src="imgSrc[getImg(item.isConverter)]" />
+            </template>
           </v-data-table>
           <div>
             <div class="paginationBox">
@@ -131,8 +146,8 @@ export default {
         { text: "데이터 수집 설정", value: "isCollector", sortable: false },
         { text: "데이터 정제 설정", value: "isFilter", sortable: false },
         { text: "데이터 변환 설정", value: "isConverter", sortable: false },
-        { text: "불러오기", value: "id", sortable: false },
-        { text: "삭제", value: "id", sortable: false },
+        { text: "불러오기", value: "readAction", sortable: false },
+        { text: "삭제", value: "deleteAction", sortable: false },
       ],
       searchValue: "",
       selectedFilter: "",
@@ -140,9 +155,20 @@ export default {
       perPage: 5,
       currentPage: 1,
       total: 0,
+      imgSrc: {
+        x: require("../../assets/img/x.svg"),
+        check: require("../../assets/img/check.svg"),
+      },
     };
   },
   methods: {
+    getImg(value) {
+      let imgSrc = "x";
+      if (value) {
+        imgSrc = "check";
+      }
+      return imgSrc;
+    },
     close() {
       this.$emit("close-temp-pipeline-popup");
     },
@@ -151,6 +177,19 @@ export default {
     },
     lastPage() {
       this.currentPage = this.totalPage;
+    },
+    deleteTempPipeline(item) {
+      console.log("Delete Temp Pipeline", item);
+      this.close();
+    },
+    goTempPipeline(item) {
+      if (this.$route.name != "pipelineCreate") {
+        this.$router.push({
+          name: "pipelineCreate",
+          query: { id: item.id },
+        });
+        this.close();
+      }
     },
   },
 };
