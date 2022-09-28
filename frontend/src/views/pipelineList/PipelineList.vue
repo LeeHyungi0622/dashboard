@@ -12,7 +12,7 @@
                 :key="index"
                 :value="item"
               >
-                {{ item }}
+                {{ item == "" ? "전체" : item }}
               </option>
             </select>
           </div>
@@ -22,7 +22,7 @@
                 v-for="(item, index) in pipelineListFilterList"
                 :key="index"
               >
-                {{ item }}
+                {{ item == "" ? "전체" : item }}
               </option>
             </select>
             <input type="text" class="mgL12" />
@@ -37,7 +37,7 @@
         <v-data-table
           :headers="pipelineListData.headers"
           :items="filteritems"
-          :items-per-page="perPage"
+          :items-per-page="parseInt(perPage)"
           :page="currentPage"
           item-key="name"
           class="pipelineTable mgT12"
@@ -99,7 +99,9 @@
         </div>
 
         <div class="pipelineBtnBox mgT12">
-          <button class="pipelineButton">임시저장 파이프라인</button>
+          <button class="pipelineButton" @click="tempPipelineShows">
+            임시저장 파이프라인
+          </button>
           <button class="pipelineButton mgL12" @click="goPipelineRegister">
             파이프라인 등록
           </button>
@@ -112,6 +114,7 @@
 import pipelineListService from "../../js/api/pipelineList";
 import EventBus from "@/eventBus/EventBus.js";
 import pipelineListData from "../../json/pipelineList.json";
+import tempPipeline from "../../json/tempPipeline.json";
 export default {
   mounted() {
     console.log(this.$ws);
@@ -139,8 +142,9 @@ export default {
       perPage: 10,
       currentPage: 1,
       total: 15,
-      activationStatusList: ["전체", "RUN", "STARTING", "STOP", "STOPPED"],
-      pipelineListFilterList: ["전체", "파이프라인 이름", "적재Dataset"],
+      tempPipeline: tempPipeline,
+      activationStatusList: ["", "RUN", "STARTING", "STOP", "STOPPED"],
+      pipelineListFilterList: ["", "파이프라인 이름", "적재Dataset"],
       searchValue: null,
       pipelineListData: pipelineListData,
     };
@@ -156,6 +160,12 @@ export default {
     },
     lastPage() {
       this.currentPage = this.totalPage;
+    },
+    tempPipelineShows() {
+      let alertPayload = {
+        contents: this.tempPipeline,
+      };
+      EventBus.$emit("show-temp-pipeline-popup", alertPayload);
     },
     pipelineStatusAlertShows(name, status) {
       let alertPayload = {

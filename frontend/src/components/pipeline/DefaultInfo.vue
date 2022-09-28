@@ -2,11 +2,7 @@
   <div class="pipelineUpdateContentBox">
     <div style="justify-content: space-between; display: flex" class="fsb14">
       <div class="fsb16" style="color: #2b4f8c">데이터 파이프라인 기본정보</div>
-      <button
-        v-if="!mode == `REGISTER`"
-        class="pipelineUpdateButton"
-        @click="convertMode('defaultInfo')"
-      >
+      <button class="pipelineUpdateButton" @click="convertMode('defaultInfo')">
         {{ mode == "UPDATE" ? "수정완료" : "수정" }}
       </button>
     </div>

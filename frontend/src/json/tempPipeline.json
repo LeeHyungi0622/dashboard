@@ -1,0 +1,50 @@
+[
+  {
+    "id": 13,
+    "name": "Dummy Test Template2",
+    "modifiedAt": "2022-09-22 03:58:30.546Z",
+    "isCollector": false,
+    "isFilter": false,
+    "isConverter": false
+  },
+  {
+    "id": 14,
+    "name": "Dummy Test Temp14",
+    "modifiedAt": "2022-09-22 23:52:09.350Z",
+    "isCollector": false,
+    "isFilter": false,
+    "isConverter": false
+  },
+  {
+    "id": 15,
+    "name": "Dummy Test Temp15",
+    "modifiedAt": "2022-09-23 00:22:00.183Z",
+    "isCollector": false,
+    "isFilter": false,
+    "isConverter": false
+  },
+  {
+    "id": 16,
+    "name": "Dummy Test Temp16",
+    "modifiedAt": "2022-09-28 00:59:16.503Z",
+    "isCollector": true,
+    "isFilter": true,
+    "isConverter": true
+  },
+  {
+    "id": 17,
+    "name": "Dummy Test Temp17",
+    "modifiedAt": "2022-09-26 01:14:50.535Z",
+    "isCollector": false,
+    "isFilter": false,
+    "isConverter": false
+  },
+  {
+    "id": 18,
+    "name": "test",
+    "modifiedAt": "2022-09-25 23:55:44.198Z",
+    "isCollector": false,
+    "isFilter": false,
+    "isConverter": false
+  }
+]

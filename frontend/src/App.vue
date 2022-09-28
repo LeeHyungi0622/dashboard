@@ -74,6 +74,11 @@
       :contents="alertContent"
       @close-alert-popup="closeAlertPopup"
     ></alert-popup>
+    <temp-pipeline-popup
+      v-if="tempPipelineShowFlag"
+      @close-temp-pipeline-popup="closeTempPipelinePopup"
+      :contents="tempPipelineContent"
+    ></temp-pipeline-popup>
   </v-app>
 </template>
 
@@ -84,6 +89,8 @@ import UserAlertPopup from "./components/popup/UserAlertPopup.vue";
 import AlertPopup from "./components/popup/AlertPopup.vue";
 import EventBus from "@/eventBus/EventBus.js";
 import userInfo from "./json/userInfo.json";
+import TempPipelinePopup from "./components/popup/TempPipelinePopup.vue";
+import tempPipeline from "./json/tempPipeline.json";
 
 export default {
   components: {
@@ -91,6 +98,7 @@ export default {
     UserAlertPopup,
     ConfirmPopup,
     AlertPopup,
+    TempPipelinePopup,
   },
   computed: {
     activationRoutePath() {
@@ -119,7 +127,14 @@ export default {
         title: "입력값 오류",
         text: "입력값에 오류가 있습니다. <br/>구분자 혹은  값을 입력해주세요",
       },
+      tempPipelineContent: {
+        title: "임시저장 파이프라인",
+        subTitle: " 파이프라인 목록",
+        data: tempPipeline,
+        filterList: [],
+      },
       show: true,
+      tempPipelineShowFlag: false,
       confirmShowFlag: false,
       userAlertShowFlag: false,
       alertShowFlag: false,
@@ -132,6 +147,9 @@ export default {
   created() {
     EventBus.$on("show-confirm-popup", (payload) => {
       this.showconfirmPopup(payload);
+    });
+    EventBus.$on("show-temp-pipeline-popup", (payload) => {
+      this.showTempPipelinePopup(payload);
     });
   },
   methods: {
@@ -168,6 +186,13 @@ export default {
       this.alertContent.title = "입력값 오류";
       this.alertContent.text =
         "입력값에 오류가 있습니다. <br/>구분자 혹은  값을 입력해주세요";
+    },
+    closeTempPipelinePopup: function () {
+      this.tempPipelineShowFlag = false;
+    },
+    showTempPipelinePopup(payload) {
+      this.tempPipelineShowFlag = true;
+      this.tempPipelineContent.data = payload.contents;
     },
     menuAction(mode) {
       if (mode == "userInfo") {

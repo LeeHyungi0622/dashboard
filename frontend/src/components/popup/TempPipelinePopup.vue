@@ -1,0 +1,157 @@
+<template>
+  <div class="text-center">
+    <v-dialog v-model="dialog" persistent width="1400">
+      <v-card>
+        <v-card-title class="lighten-2 fsb14" style="color: #2b4f8c">
+          {{ contents.title }}
+        </v-card-title>
+
+        <v-card-title
+          class="lighten-2 fsb12 mgL12"
+          style="float: left:  !important;"
+        >
+          {{ contents.subTitle }}
+        </v-card-title>
+        <v-card-text
+          style="
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+          "
+          class="fs14;"
+        >
+          <div class="search" style="height: 20px">
+            <!-- <select>
+                <option
+                  v-for="(item, index) in pipelineListFilterList"
+                  :key="index"
+                >
+                  {{ item == "" ? "전체" : item }}
+                </option>
+              </select> -->
+            <input type="text" class="mgL12" />
+            <button class="mgL12">검색</button>
+            <select name="" id="" class="mgL12" v-model="perPage">
+              <option value="5">5개씩 표시</option>
+              <option value="10">10개씩 표시</option>
+            </select>
+          </div>
+          <v-data-table
+            :headers="headers"
+            :items="filteritems"
+            :items-per-page="parseInt(perPage)"
+            :page="currentPage"
+            item-key="name"
+            class="pipelineTable mgT12"
+            :search="searchValue"
+            :hide-default-footer="true"
+            style="text-align: center; width: 100%"
+          >
+          </v-data-table>
+          <div>
+            <div class="paginationBox">
+              <div class="firstPageBtnBox">
+                <button
+                  class="v-pagination__navigation"
+                  @click="firstPage"
+                  :disabled="currentPage == 1"
+                ></button>
+              </div>
+              <v-pagination
+                v-model="currentPage"
+                :length="totalPage"
+                color="#2B4F8C"
+              ></v-pagination>
+              <div class="lastPageBtnBox">
+                <button
+                  class="v-pagination__navigation"
+                  @click="lastPage"
+                  :disabled="currentPage == totalPage"
+                ></button>
+              </div>
+            </div>
+          </div>
+        </v-card-text>
+
+        <v-card-actions style="display: flex; justify-content: center">
+          <button style="width: 15%; padding: 3px" class="fs12" @click="close">
+            파이프라인 새로 만들기
+          </button>
+          <button
+            style="width: 15%; padding: 3px"
+            class="mgL12 fs12"
+            @click="close"
+          >
+            닫기
+          </button>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    contents: {
+      type: Object,
+      default: () => {
+        return {
+          title: null,
+          data: null,
+          filterList: null,
+        };
+      },
+      required: true,
+    },
+  },
+  computed: {
+    totalPage() {
+      return Math.floor(
+        (this.filteritems.length + parseInt(this.perPage)) / this.perPage
+      );
+    },
+    filteritems() {
+      return this.contents.data.filter((i) => {
+        return (
+          !this.selectedFilter || i[this.selectedFilter] === this.searchValue
+        );
+      });
+    },
+  },
+  data() {
+    return {
+      headers: [
+        { text: "NO", value: "id", sortable: false },
+        { text: "파이프라인 이름", value: "name", sortable: false },
+        { text: "최종 수정일시", value: "modifiedAt", sortable: false },
+        { text: "데이터 수집 설정", value: "isCollector", sortable: false },
+        { text: "데이터 정제 설정", value: "isFilter", sortable: false },
+        { text: "데이터 변환 설정", value: "isConverter", sortable: false },
+        { text: "불러오기", value: "id", sortable: false },
+        { text: "삭제", value: "id", sortable: false },
+      ],
+      searchValue: "",
+      selectedFilter: "",
+      dialog: true,
+      perPage: 5,
+      currentPage: 1,
+      total: 0,
+    };
+  },
+  methods: {
+    close() {
+      this.$emit("close-temp-pipeline-popup");
+    },
+    firstPage() {
+      this.currentPage = 1;
+    },
+    lastPage() {
+      this.currentPage = this.totalPage;
+    },
+  },
+};
+</script>

@@ -33,7 +33,7 @@
         <div v-else-if="mode == `UPDATE` || mode == `REGISTER`">
           <select
             style="padding: 0px 20px 0px 20px"
-            v-if="typeof content.value === 'object'"
+            v-if="typeof content.inputValue === 'object'"
             v-model="content.value.selectedValue"
           >
             <option

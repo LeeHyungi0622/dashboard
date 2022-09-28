@@ -2,11 +2,7 @@
   <div class="pipelineUpdateContentBox">
     <div style="justify-content: space-between; display: flex">
       <div class="pipelineUpdateMainTitle fsb16">데이터 변환</div>
-      <button
-        v-if="!mode == `REGISTER`"
-        class="pipelineUpdateButton"
-        @click="convertMode('convert')"
-      >
+      <button class="pipelineUpdateButton" @click="convertMode('convert')">
         {{ mode == "UPDATE" ? "수정완료" : "수정" }}
       </button>
     </div>

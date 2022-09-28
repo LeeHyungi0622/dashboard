@@ -1,22 +1,17 @@
 [
   {
-    "id": 9,
     "nifi_name": "Rest Server"
   },
   {
-    "id": 10,
     "nifi_name": "Rest API"
   },
   {
-    "id": 11,
     "nifi_name": "Database-Postgres"
   },
   {
-    "id": 12,
     "nifi_name": "Database-MySQL"
   },
   {
-    "id": 13,
     "nifi_name": "Database-MariaDB"
   }
 ]
