@@ -33,7 +33,7 @@ export default {
   data: () => ({
     admins: [
       ["파이프라인 목록", "/"],
-      ["파이프라인 등록", "/PipelineRegister"],
+      ["파이프라인 등록", "/pipelineRegister"],
     ],
   }),
   methods: {

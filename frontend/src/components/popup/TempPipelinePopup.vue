@@ -183,9 +183,9 @@ export default {
       this.close();
     },
     goTempPipeline(item) {
-      if (this.$route.name != "pipelineCreate") {
+      if (this.$route.name != "pipelineRegister") {
         this.$router.push({
-          name: "pipelineCreate",
+          name: "pipelineRegister",
           query: { id: item.id },
         });
         this.close();

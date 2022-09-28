@@ -17,8 +17,8 @@ const routes = [
     component: pipelineList,
   },
   {
-    path: "/PipelineRegister",
-    name: "PipelineRegister",
+    path: "/pipelineRegister",
+    name: "pipelineRegister",
     component: PipelineRegister,
     props: true,
     children: [
