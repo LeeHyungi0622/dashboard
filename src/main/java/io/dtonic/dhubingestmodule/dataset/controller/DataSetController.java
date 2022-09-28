@@ -28,7 +28,7 @@ public class DataSetController {
      * @param accept request accept header
      * @throws Exception retrieve error
      */
-    @GetMapping(value = "/datasets")
+    @GetMapping(value = "/datasets/list")
     public DataSetResponseVO getDatasets(HttpServletRequest request, HttpServletResponse response)
         throws Exception {
         DataSetResponseVO datasetList = datasetsvc.getDataSetList();
@@ -44,7 +44,7 @@ public class DataSetController {
      * @return
      * @throws Exception
      */
-    @GetMapping(value = "/properties/{datasetid}")
+    @GetMapping(value = "/dataset/properties/{datasetid}")
     public DataModelVO getDatasetProperties(
         HttpServletRequest request,
         HttpServletResponse response,
