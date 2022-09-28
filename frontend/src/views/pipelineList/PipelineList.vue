@@ -52,7 +52,15 @@
               </div>
               <div class="acsBtnBox">
                 <button
-                  @click="pipelineStatusAlertShows(item.name, item.status)"
+                  @click="
+                    pipelineStatusAlertShows(
+                      item.name,
+                      item.status.toUpperCase() == 'STOP' ||
+                        item.status.toUpperCase() == 'STOPPED'
+                        ? 'STARTING'
+                        : 'STOPPED'
+                    )
+                  "
                   :disabled="
                     item.status.toUpperCase() == 'STARTING' ||
                     item.status.toUpperCase() == 'STOPPING'
