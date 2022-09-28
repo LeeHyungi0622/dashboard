@@ -13,7 +13,6 @@ import lombok.Data;
 public class PipelineVO {
 
     private Integer id;
-
     private String creator;
     private String name;
     private String detail;
