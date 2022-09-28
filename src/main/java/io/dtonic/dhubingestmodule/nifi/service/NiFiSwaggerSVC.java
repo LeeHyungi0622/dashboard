@@ -168,7 +168,7 @@ public class NiFiSwaggerSVC {
                 if (processor.getComponent().getName().equals(niFiComponentVO.getName())) {
                     ProcessorEntity updateProcessor = updateProcessorProperties(
                         processor,
-                        niFiComponentVO.getProperties()
+                        niFiComponentVO.getRequiredProps()
                     );
                     niFiClient
                         .getProcessorsApiSwagger()

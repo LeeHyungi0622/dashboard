@@ -1,17 +1,19 @@
 package io.dtonic.dhubingestmodule.pipeline.controller;
 
-import graphql.com.google.common.collect.PeekingIterator;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
-import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
+import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
+import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,9 +22,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,71 +44,88 @@ public class PipelineDraftController {
      * @return Pipeline object
      */
 
-    @GetMapping("/pipeline/drafts/{id}")
-    public @ResponseBody PipelineResponseVO getPipelineDrafts(
+    @GetMapping("/pipeline/drafts/{id}") // 임시저장 상세 조회
+    public PipelineVO getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @PathVariable Integer id
     ) {
-        PipelineResponseVO pipelineVO = pipelineSVC.getPipelineDrafts(id);
-        return pipelineVO;
+        return pipelineSVC.getPipelineDrafts(id);
     }
 
-    @GetMapping("/pipeline/drafts/list")
-    public @ResponseBody List<PipelineResponseVO> getPipelineDraftsList(
+    @GetMapping("/pipeline/drafts/list") // 임시저장 목록 조회
+    public @ResponseBody List<PipelineDraftsListResponseVO> getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
         PipelineListRetrieveVO pipelineListRetrieveVO
     ) {
-        List<PipelineResponseVO> pipelineVO = pipelineSVC.getPipelineDraftsList(
-            pipelineListRetrieveVO.getSearchObject(),
-            pipelineListRetrieveVO.getSearchValue()
+        return pipelineSVC.getPipelineDraftsList();
+    }
+
+    @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create)
+    public void createPipelineDrafts(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestBody String requestBody
+    ) {
+        JSONObject jsonObject = new JSONObject(requestBody);
+
+        if (jsonObject.has("id") && pipelineSVC.isExistsDrafts(jsonObject.getInt("id"))) {
+            pipelineSVC.updatePipelineDrafts(jsonObject);
+            response.setStatus(HttpStatus.OK.value());
+        } else {
+            pipelineSVC.createPipelineDrafts(
+                jsonObject.getString("name"),
+                jsonObject.getString("creator"),
+                jsonObject.getString("detail")
+            );
+            response.setStatus(HttpStatus.CREATED.value());
+        }
+    }
+
+    @GetMapping("/pipeline/drafts/collectors") // 데이터수집기 리스트 리턴
+    public List<DataCollectorVO> getPipelinecollectors(
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        return pipelineSVC.getDataCollector();
+    }
+
+    @Transactional
+    @GetMapping("/pipeline/drafts") //<데이터수집, 정제, 변환> 다음버튼 누를시
+    public @ResponseBody PipelineVO updatePipelineDrafts(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestParam(name = "page") Integer page,
+        @RequestParam(name = "Pipelineid") Integer pipelineid,
+        @RequestParam(name = "adaptorName") String adaptorName,
+        @RequestParam(name = "datasetid", required = false) String datasetid
+    ) {
+        PipelineVO pipelineVO = pipelineSVC.getPipelineDraftsPage(
+            pipelineid,
+            page,
+            adaptorName,
+            datasetid
         );
         return pipelineVO;
     }
 
     @Transactional
-    @PostMapping("/pipeline/drafts")
-    public void createPipelineDrafts(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestBody PipelineResponseVO pipelineCreateVO
-    )
-        throws Exception {
-        pipelineSVC.createPipelineDrafts(
-            pipelineCreateVO.getName(),
-            pipelineCreateVO.getCreator(),
-            pipelineCreateVO.getDetail()
-        );
-    }
-
-    @Transactional
-    @PutMapping("/pipeline/drafts")
-    public @ResponseBody void updatePipelineDrafts(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestBody String requestBody
-    )
-        throws Exception {
-        pipelineSVC.updatePipelineDrafts(requestBody);
-    }
-
-    @Transactional
-    @DeleteMapping("/pipeline/drafts/{id}")
-    public @ResponseBody void deletePipelineDrafts(
+    @DeleteMapping("/pipeline/drafts/{id}") // 임시저장 삭제
+    public void deletePipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
     ) {
         //validation check
-
         if (!pipelineSVC.isExistsDrafts(id)) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
                 "PipelineDrafts is not Exist"
             );
         }
+
         //delete pipeline
         pipelineSVC.deletePipelineDrafts(id);
         response.setStatus(HttpStatus.OK.value());

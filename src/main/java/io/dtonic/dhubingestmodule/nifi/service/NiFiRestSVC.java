@@ -116,7 +116,7 @@ public class NiFiRestSVC {
             for (ControllerServiceEntity controller : controllers.getControllerServices()) {
                 ControllerServiceEntity updateController = updateControllerProperties(
                     controller,
-                    properies.getProperties()
+                    properies.getRequiredProps()
                 );
                 try {
                     List<String> paths = new ArrayList<String>();

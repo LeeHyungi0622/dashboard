@@ -2,21 +2,21 @@ package io.dtonic.dhubingestmodule.pipeline.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import graphql.com.google.common.collect.PeekingIterator;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
+import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
+import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineCreateVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineResponseVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +39,9 @@ public class PipelineController {
     @Autowired
     private PipelineSVC pipelineSVC;
 
+    @Autowired
+    private PipelineDraftSVC pipelineDraftSVC;
+
     @GetMapping("/pipeline/complete/list") // PipeLine List 조회
     public List<PipelineListResponseVO> getPipelineList(
         HttpServletRequest request,
@@ -58,28 +61,66 @@ public class PipelineController {
      * @return
      */
     @Transactional
-    @PostMapping("/pipeline/complete") // PipeLine 등록
+    @PostMapping("/pipeline/complete/{id}") // PipeLine 등록
     public void createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @RequestBody PipelineCreateVO pipelineVO
+        @PathVariable Integer id,
+        @RequestBody String requestBody
     ) {
-        // 1. validation check
+        JSONObject jsonObject = new JSONObject(requestBody);
         pipelineSVC.createPipeline(
-            pipelineVO.getCreator(),
-            pipelineVO.getName(),
-            pipelineVO.getDetail(),
-            pipelineVO.getStatus(),
-            pipelineVO.getData_set(),
-            pipelineVO.getCollector(),
-            pipelineVO.getFilter(),
-            pipelineVO.getConverter(),
-            pipelineVO.getCreatedAt(),
-            pipelineVO.getModifiedAt()
+            id,
+            jsonObject.getString("creator"),
+            jsonObject.getString("name"),
+            jsonObject.getString("detail"),
+            "Stopped",
+            jsonObject.getString("dataSet"),
+            jsonObject.getJSONObject("collector").toString(),
+            jsonObject.getJSONObject("filter").toString(),
+            jsonObject.getJSONObject("converter").toString()
         );
         //        pipelineSVC.deletePipeline(pipelineVO.getId());
         response.setStatus(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Update Pipeline
+     *
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @param accept   request accept header
+     * @param id       retrieve Pipeline id
+     * @return
+     */
+
+    @PutMapping("/pipeline/complete/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
+    public void updatePipeline(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestBody String requestBody,
+        @PathVariable Integer id,
+        @RequestParam(value = "status") String status
+    )
+        throws JsonMappingException, JsonProcessingException {
+        // validation check
+        JSONObject jsonObject = new JSONObject(requestBody);
+
+        if (!pipelineSVC.isExists(id)) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
+                "Pipeline is not Exist"
+            );
+        }
+        if (
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()) ||
+            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
+        ) pipelineSVC.changePipelineStatus(id, status); // stop pipeline
+
+        pipelineSVC.updatePipeline(jsonObject);
     }
 
     /**
@@ -94,17 +135,32 @@ public class PipelineController {
      * @throws JsonMappingException
      */
     @GetMapping("/pipeline/complete/{id}") // PipeLine 상세 조회
-    public PipelineResponseVO getPipelineById(
+    public PipelineVO getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
-    )
-        throws JsonMappingException, JsonProcessingException {
-        // JSONObject json = pipelineSVC.getPipelineVOById(id);
-        // response.set
-        // return json;
+    ) {
         return pipelineSVC.getPipelineVOById(id);
+    }
+
+    @GetMapping("/pipeline/complete/collectors") // 데이터수집기 리스트 리턴
+    public List<DataCollectorVO> getPipelinecollectors(
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        return pipelineDraftSVC.getDataCollector();
+    }
+
+    @GetMapping("/pipeline/complete/properties") // <데이터수집> 데이터수집 선택완료시
+    public AdaptorVO getPipelineproperties(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestParam(name = "adaptorName") String adaptorName,
+        @RequestParam(name = "Pipelineid") Integer pipelineid
+    ) {
+        AdaptorVO adaptorVO = pipelineDraftSVC.getPipelineproperties(adaptorName);
+        return adaptorVO;
     }
 
     /**
