@@ -50,7 +50,6 @@ export default {
   },
   created() {
     this.moveRoute("defaultInfo");
-    console.log(this.$store.state);
   },
   methods: {
     moveRoute(name) {

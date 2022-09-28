@@ -125,7 +125,7 @@ export default {
         this.$store.state.pipelineList = res;
       })
       .catch((err) => {
-        console.log("Brand 목록의 조회에 실패했습니다.", err);
+        console.log("PipelineList 조회에 실패하였습니다.", err);
       });
   },
 
@@ -178,9 +178,8 @@ export default {
         title: "파이프라인 삭제",
         text:
           name +
-          " 파이프라인이 " +
-          status +
-          "되어 <br/>실행 상태가 " +
+          " 파이프라인의 " +
+          "<br/>실행 상태가 " +
           status +
           "로 변경됩니다." +
           "<br/> <br/> 계속 진행하시겠습니까?",

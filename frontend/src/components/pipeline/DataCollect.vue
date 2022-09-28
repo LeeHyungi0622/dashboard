@@ -93,7 +93,7 @@ export default {
           this.collectorContents.value.datas = res;
         })
         .catch((err) => {
-          console.log("Brand 목록의 조회에 실패했습니다.", err);
+          console.log("collector 목록의 조회에 실패했습니다.", err);
         });
     },
   },

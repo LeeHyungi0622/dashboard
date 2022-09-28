@@ -55,7 +55,7 @@ export default {
         this.$store.state.pipelineVo = res;
       })
       .catch((err) => {
-        console.log("Brand 목록의 조회에 실패했습니다.", err);
+        console.log("PipelinListById 조회에 실패했습니다.", err);
       });
   },
   data() {
