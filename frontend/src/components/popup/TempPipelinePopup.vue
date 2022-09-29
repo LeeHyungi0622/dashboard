@@ -44,7 +44,7 @@
             :items="filteritems"
             :items-per-page="parseInt(perPage)"
             :page="currentPage"
-            item-key="name"
+            item-key="id"
             class="pipelineTable mgT12"
             :search="searchValue"
             :hide-default-footer="true"
