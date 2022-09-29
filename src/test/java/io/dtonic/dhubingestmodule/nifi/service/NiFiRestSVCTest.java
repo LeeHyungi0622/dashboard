@@ -49,33 +49,12 @@ public class NiFiRestSVCTest {
         assertNotNull(result);
     }
 
-    // @Test
-    // public void uploadTemplateTest() throws JsonProcessingException {
-    //     niFiRestSVC.uploadTemplate();
-    //     log.info("TEST Search Controllers In Processor Group : [{}]");
-    // }
-
     @Test
     public void getStatusProcessGroupTest() throws JsonProcessingException {
         String processorGroupId = "95aa36a9-cda1-1e8b-06cd-b7dc03983c33";
-        ProcessGroupStatusEntity result = niFiRestSVC.getStatusProcessGroup(processorGroupId);
+        Map<String, Integer> result = niFiRestSVC.getStatusProcessGroup(processorGroupId);
         log.info(
             "TEST Get Status Of Processor Group : [{}]",
-            nifiObjectMapper.writeValueAsString(result)
-        );
-        assertNotNull(result);
-    }
-
-    @Test
-    public void getNumberOfProcessorStatusTest()
-        throws JsonMappingException, JsonProcessingException {
-        String processorGroupId = "95aa36a9-cda1-1e8b-06cd-b7dc03983c33";
-        ProcessGroupStatusEntity processGroupStatus = niFiRestSVC.getStatusProcessGroup(
-            processorGroupId
-        );
-        Map<String, Integer> result = niFiRestSVC.getNumberOfProcessorStatus(processGroupStatus);
-        log.info(
-            "TEST Get Status Number Of Processor Group : [{}]",
             nifiObjectMapper.writeValueAsString(result)
         );
         assertNotNull(result);
@@ -105,8 +84,7 @@ public class NiFiRestSVCTest {
     @Test
     public void enableControllersTest() throws JsonProcessingException {
         String processorGroupId = "81d89c64-de74-3396-c9f6-d2b3a31661ad";
-        boolean result = niFiRestSVC.enableControllers(processorGroupId);
-        assertTrue(result);
+        niFiRestSVC.enableControllers(processorGroupId);
     }
 
     @Test

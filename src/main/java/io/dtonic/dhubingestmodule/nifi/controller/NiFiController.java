@@ -12,12 +12,12 @@ import io.dtonic.dhubingestmodule.nifi.vo.ConverterVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.crypto.modes.NISTCTSBlockCipher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -116,7 +116,6 @@ public class NiFiController {
         }
     }
 
-    //TODO
     private AdaptorVO convertPipelineVOToNiFiForm(PipelineVO convertor) {
         // DataSet ID로 Data Model 정보 호출
 
@@ -140,6 +139,7 @@ public class NiFiController {
             if (nifi.getName().equals("DataSetProps")) {
                 for (PropertyVO prop : nifi.getRequiredProps()) {
                     String convertInput = prop.getInputValue().replace("\\\"", "");
+
                     prop.setInputValue("$." + convertInput);
                 }
             }
@@ -183,18 +183,15 @@ public class NiFiController {
                 subAttribute.put("value", "${" + e.getName() + "}");
             } else if (e.getAttributeType().equals("Relationship")) {
                 subAttribute.put("object", "${" + e.getName() + "}");
+            } else if (e.getAttributeType().equals("GeoProperty")) {
+                Map<String, String> geoProp = new HashMap<>();
+                geoProp.put("type", "Point");
+                geoProp.put("coordinates", "${" + e.getName() + "}");
+                subAttribute.put("value", geoProp);
             }
-            //TODO:IDK
-            // else if(e.getAttributeType().equals("GeoProperty")){
-            //     subAttribute.put("IDK","IDK")
-            // }
             if (e.getHasObservedAt()) {
-                subAttribute.put("observedAt", "time");
+                subAttribute.put("observedAt", LocalDate.now().toString());
             }
-            // TODO:IDK
-            // if(e.getHasUnitCode()){
-            //     subAttribute.put("observedAt","time");
-            // }
             entity.put(e.getName(), subAttribute);
         }
         entities.add(entity);
@@ -233,7 +230,6 @@ public class NiFiController {
                 e.put("value", "=toBoolean");
                 ae.put(a.getName(), e);
             }
-            //Date 추가.. //Geo는 어캄?
         }
         en.put("*", ae);
         spec.put("entities", en);
@@ -248,13 +244,12 @@ public class NiFiController {
         return convertValueTypeProc;
     }
 
-    // 다시짜자
     /**
      * @param adaptorVO
      * @param rootProcessorGroupId Parent Process ID
      * @return ProcessGroup ID created Adaptor
      */
-    public String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) {
+    private String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) {
         String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getName());
 
         // Create Dummy Template
@@ -265,7 +260,7 @@ public class NiFiController {
         return adaptorId;
     }
 
-    public void updateAdaptor(String processorGroupId, List<NiFiComponentVO> NiFiComponents) {
+    private void updateAdaptor(String processorGroupId, List<NiFiComponentVO> NiFiComponents) {
         if (NiFiComponents.size() < 1) {
             log.error("Empty NiFi Components In Request Pipeline");
         }
@@ -312,7 +307,6 @@ public class NiFiController {
     }
 
     public String updatePipeline(PipelineVO pipelineVO) {
-        // Check Token Expired
         try {
             niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
             String processGroupId = createPipeline(pipelineVO);
@@ -359,6 +353,15 @@ public class NiFiController {
         } else {
             log.error("Fail to Stop Pipeline : Processor Group ID = {}", processorGroupId);
             return false;
+        }
+    }
+
+    public Map<String, Integer> getPipelineStatus(String processorGroup) {
+        try {
+            return niFiRestSVC.getStatusProcessGroup(processorGroup);
+        } catch (Exception e) {
+            log.error("Fail to Get Pipeline Status.", e);
+            return null;
         }
     }
 }
