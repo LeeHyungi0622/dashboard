@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface PipelineDraftMapper {
-    List<DataCollectorVO> getDataCollector();
+    List<String> getDataCollector();
 
     List<PropertyVO> getPipelineproperties(@Param("adaptorName") String adaptorName);
 

@@ -311,9 +311,17 @@ public class NiFiController {
         }
     }
 
-    public void updatePipeline(PipelineVO pipelineVO) {
+    public String updatePipeline(PipelineVO pipelineVO) {
         // Check Token Expired
-        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+        try {
+            niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+            String processGroupId = createPipeline(pipelineVO);
+            deletePipeline(pipelineVO.getProcessorGroupId());
+            return processGroupId;
+        } catch (Exception e) {
+            log.error("Fail to update Pipeline in NiFi : processGroupId = [{}]", pipelineVO, e);
+            return null;
+        }
     }
 
     /**

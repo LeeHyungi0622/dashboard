@@ -77,7 +77,7 @@
     (SELECT * 
     FROM temp_pipeline where id = #{id})
   </select>
-  <select id="getDataCollector" resultType="io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO">
+  <select id="getDataCollector" resultType="String">
     SELECT 
       DISTINCT adaptor_name as adaptorName
     FROM 
