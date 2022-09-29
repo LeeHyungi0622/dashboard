@@ -3,6 +3,7 @@ package io.dtonic.dhubingestmodule.pipeline.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Date;
 import lombok.Data;
 
 @Data
@@ -16,8 +17,8 @@ public class PipelineListResponseVO {
     private String status;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSXXX")
-    private String createdAt;
+    private Date createdAt;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSXXX")
-    private String modifiedAt;
+    private Date modifiedAt;
 }

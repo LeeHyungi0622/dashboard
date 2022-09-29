@@ -18,6 +18,7 @@ import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -80,7 +81,11 @@ public class PipelineSVC {
     public List<PipelineListResponseVO> getPipelineList() {
         List<PipelineListResponseVO> pipelineListVOs = pipelineMapper.getPipelineList();
         for (int i = 0; i < pipelineListVOs.size(); i++) {
-            String temp_status = "Starting"; // Nifi API Response stats 값 가져와서 (현재 임시값)
+            PipelineVO pipeline = getPipelineVOById(pipelineListVOs.get(i).getId());
+            Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
+                pipeline.getProcessorGroupId()
+            );
+
             String cur_status = pipelineListVOs.get(i).getStatus(); // 현재 DB status값
             if (
                 cur_status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
@@ -89,12 +94,14 @@ public class PipelineSVC {
                 // 일어남
                 if (
                     cur_status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) &&
-                    temp_status.equals(PipelineStatusCode.PIPELINE_NIFISTATUS_RUNNING.getCode())
+                    nifiStatus.get("Stopped") == 0 &&
+                    nifiStatus.get("Invalid") == 0
                 ) pipelineListVOs
                     .get(i)
                     .setStatus(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()); else if ( // DB상태 Run // DB상태 Starting Nifi 상태 Running =>
                     cur_status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()) &&
-                    temp_status.equals(PipelineStatusCode.PIPELINE_NIFISTATUS_STOP.getCode())
+                    nifiStatus.get("Running") == 0 &&
+                    nifiStatus.get("Invalid") == 0
                 ) pipelineListVOs
                     .get(i)
                     .setStatus(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()); // DB상태 Stopped // DB상태 Stopping Nifi 상태 Stop =>
