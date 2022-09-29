@@ -41,7 +41,11 @@
               style="padding: 0px 20px 0px 20px"
               v-model="selectedSettingValue"
             >
-              <option v-for="(item, key) in contents" :key="key" :value="item">
+              <option
+                v-for="(item, key) in collectorData"
+                :key="key"
+                :value="item"
+              >
                 {{ item.name }}
               </option>
             </select>
@@ -69,11 +73,39 @@ export default {
   },
   watch: {
     selectedCollectValue() {
-      collectorService.getPipelineComplete({
-        adaptorName: this.selectedCollectValue,
-        pipelineid: this.$route.query.id,
-        page: 1,
-      });
+      if (this.mode == "REGISTER") {
+        collectorService
+          .getPipelineDraft({
+            adaptorName: this.selectedCollectValue,
+            pipelineid: this.$route.query.id,
+            page: 1,
+          })
+          .then((res) => {
+            console.log(res);
+            this.$store.state.pipelineVo.collector = res.collector;
+            this.collectorData =
+              this.$store.state.pipelineVo.collector.NifiComponents;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        collectorService
+          .getPipelineComplete({
+            adaptorName: this.selectedCollectValue,
+            pipelineid: this.$route.query.id,
+            page: 1,
+          })
+          .then((res) => {
+            console.log(res);
+            this.$store.state.pipelineVo.collector = res.collector;
+            this.collectorData =
+              this.$store.state.pipelineVo.collector.NifiComponents;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
     },
   },
   data() {
@@ -84,8 +116,9 @@ export default {
           datas: [],
         },
       },
-      selectedCollectValue: null,
+      selectedCollectValue: {},
       selectedSettingValue: {},
+      collectorData: {},
     };
   },
   props: {

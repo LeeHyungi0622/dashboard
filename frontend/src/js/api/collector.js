@@ -3,23 +3,23 @@ import axios from "axios";
 class collector {
   getCollectorList() {
     return axios
-      .get(`/pipeline/complete/collectors`, {})
+      .get(`/pipeline/collectors`, {})
       .then((response) => {
         return response.data;
       })
       .catch((error) => error);
   }
-  getPipelineComplete(param) {
+  getPipelineComplete(params) {
     return axios
-      .get(`/pipeline/complete/properties`, { param: param })
+      .get(`/pipeline/complete/properties`, { params: params })
       .then((response) => {
         return response.data;
       })
       .catch((error) => error);
   }
-  getPipelineDraft(param) {
+  getPipelineDraft(params) {
     return axios
-      .get(`/pipeline/drafts/properties`, { param: param })
+      .get(`/pipeline/drafts/properties`, { params: params })
       .then((response) => {
         return response.data;
       })

@@ -79,12 +79,13 @@ export default {
       if (name == "defaultInfo") {
         contents = this.defaultInfoContents();
       } else {
-        contents = devData[name].NifiComponents;
+        contents = this.$store.state.pipelineVo[name].NifiComponents;
       }
 
       if (this.$route.name != name) {
         this.$router.push({
           name: name,
+          query: { id: this.$route.query.id },
           params: {
             contents: contents,
             convertMode: this.convertMode(),
@@ -100,11 +101,11 @@ export default {
       return [
         {
           name: "파이프라인 이름",
-          inputValue: this.devData.name,
+          inputValue: this.$store.state.pipelineVo.name,
         },
         {
           name: "파이프라인 정의",
-          inputValue: this.devData.detail,
+          inputValue: this.$store.state.pipelineVo.detail,
         },
       ];
     },

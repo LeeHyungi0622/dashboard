@@ -55,16 +55,14 @@
                   @click="
                     pipelineStatusAlertShows(
                       item.name,
-                      item.status.toUpperCase() == 'STOP' ||
+                      item.status.toUpperCase() == 'STARING' ||
                         item.status.toUpperCase() == 'STOPPED'
                         ? 'STARTING'
-                        : 'STOPPED'
+                        : 'STARTING',
+                      item.id
                     )
                   "
-                  :disabled="
-                    item.status.toUpperCase() == 'STARTING' ||
-                    item.status.toUpperCase() == 'STOPPING'
-                  "
+                  :disabled="item.status.toUpperCase().includes('ING')"
                 >
                   {{ item.status }}
                 </button>
@@ -157,7 +155,7 @@ export default {
       currentPage: 1,
       total: 15,
       tempPipeline: tempPipeline,
-      activationStatusList: ["", "Run", "Starting", "Stop", "Stopped"],
+      activationStatusList: ["", "Run", "Starting", "Stopped", "Stopping"],
       pipelineListFilterList: ["", "파이프라인 이름", "적재Dataset"],
       searchValue: null,
       pipelineListData: pipelineListData,
@@ -181,7 +179,7 @@ export default {
       };
       EventBus.$emit("show-temp-pipeline-popup", alertPayload);
     },
-    pipelineStatusAlertShows(name, status) {
+    pipelineStatusAlertShows(name, status, id) {
       let alertPayload = {
         title: "파이프라인 삭제",
         text:
@@ -191,9 +189,7 @@ export default {
           status +
           "로 변경됩니다." +
           "<br/> <br/> 계속 진행하시겠습니까?",
-        url: "/test",
-        param: "test=test",
-        body: "default",
+        id: id,
       };
       EventBus.$emit("show-confirm-popup", alertPayload);
     },
@@ -206,9 +202,6 @@ export default {
           "<br/>프로세서를 중지하고 <br/>" +
           "잔여 Queue가 모두 삭제됩니다." +
           "<br/> <br/> 계속 진행하시겠습니까?",
-        url: "/test",
-        param: "test=test",
-        body: "default",
       };
       console.log(item);
       EventBus.$emit("show-confirm-popup", alertPayload);

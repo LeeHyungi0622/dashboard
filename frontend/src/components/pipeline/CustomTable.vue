@@ -20,20 +20,20 @@
             class="mgL12"
             type="radio"
             v-model="content.inputValue"
-            value="On"
+            value="true"
           />On
           <input
             type="radio"
             class="mgL12"
             v-model="content.inputValue"
-            value="Off"
+            value="false"
           />Off
         </div>
         <!-- 수정이나 등록시 -->
         <div v-else-if="mode == `UPDATE` || mode == `REGISTER`">
           <select
             style="padding: 0px 20px 0px 20px"
-            v-if="typeof content.inputValue === 'object'"
+            v-if="Array.isArray(content.inputValue)"
             v-model="content.inputValue"
           >
             <option
