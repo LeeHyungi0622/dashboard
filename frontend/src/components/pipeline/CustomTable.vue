@@ -34,7 +34,7 @@
           <select
             style="padding: 0px 20px 0px 20px"
             v-if="typeof content.inputValue === 'object'"
-            v-model="content.value.selectedValue"
+            v-model="content.inputValue"
           >
             <option
               v-for="(item, key) in content.value.datas"

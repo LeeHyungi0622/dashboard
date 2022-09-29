@@ -60,12 +60,22 @@
 <script>
 import CustomTable from "../../components/pipeline/CustomTable.vue";
 import collectorService from "../../js/api/collector";
+import pipelineVoService from "../../js/api/pipelineVo";
 export default {
   components: {
     CustomTable,
   },
   created() {
     this.getCollector();
+  },
+  watch: {
+    selectedCollectValue() {
+      pipelineVoService.getPipelineDraft({
+        adaptorName: this.selectedCollectValue,
+        pipelineid: this.$route.query.id,
+        page: 1,
+      });
+    },
   },
   data() {
     return {
@@ -75,7 +85,7 @@ export default {
           datas: [],
         },
       },
-      selectedCollectValue: {},
+      selectedCollectValue: null,
       selectedSettingValue: {},
     };
   },

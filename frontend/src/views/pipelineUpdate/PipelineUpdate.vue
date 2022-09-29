@@ -29,7 +29,9 @@
         :mode="mode.convert"
       />
       <div class="pipelineUpdateBtnBox mgT12">
-        <button class="pipelineUpdateButton">목록으로</button>
+        <button class="pipelineUpdateButton" @click="goPipelineList()">
+          목록으로
+        </button>
         <button class="pipelineUpdateButton mgL12">저장</button>
       </div>
     </div>
@@ -75,6 +77,12 @@ export default {
     },
     getContents(contentsName) {
       return this.$store.state.pipelineVo[contentsName].NifiComponents;
+    },
+
+    goPipelineList() {
+      this.$router.push({
+        name: "pipelineList",
+      });
     },
 
     defaultInfoContents() {

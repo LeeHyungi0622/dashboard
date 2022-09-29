@@ -157,7 +157,7 @@ export default {
       currentPage: 1,
       total: 15,
       tempPipeline: tempPipeline,
-      activationStatusList: ["", "RUN", "STARTING", "STOP", "STOPPED"],
+      activationStatusList: ["", "Run", "Starting", "Stop", "Stopped"],
       pipelineListFilterList: ["", "파이프라인 이름", "적재Dataset"],
       searchValue: null,
       pipelineListData: pipelineListData,

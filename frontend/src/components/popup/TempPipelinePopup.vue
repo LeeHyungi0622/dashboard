@@ -51,7 +51,7 @@
             style="text-align: center; width: 100%"
           >
             <template v-slot:[`item.readAction`]="{ item }">
-              <button @click="goTempPipeline(item)">보기</button>
+              <button @click="goPipelineRegister(item)">보기</button>
             </template>
             <template v-slot:[`item.deleteAction`]="{ item }">
               <button @click="deleteTempPipeline(item)">삭제</button>
@@ -92,7 +92,11 @@
         </v-card-text>
 
         <v-card-actions style="display: flex; justify-content: center">
-          <button style="width: 15%; padding: 3px" class="fs12" @click="close">
+          <button
+            style="width: 15%; padding: 3px"
+            class="fs12"
+            @click="goPipelineRegister(`default`)"
+          >
             파이프라인 새로 만들기
           </button>
           <button
@@ -109,6 +113,7 @@
 </template>
 
 <script>
+import tempPipelineListService from "../../js/api/tempPipelineList";
 export default {
   props: {
     contents: {
@@ -123,6 +128,14 @@ export default {
       required: true,
     },
   },
+  created() {
+    tempPipelineListService
+      .getTempPipelineList()
+      .then((res) => {
+        this.vuetifyData = res;
+      })
+      .catch((error) => error);
+  },
   computed: {
     totalPage() {
       return Math.floor(
@@ -130,9 +143,9 @@ export default {
       );
     },
     filteritems() {
-      return this.contents.data.filter((i) => {
+      return this.vuetifyData.filter((i) => {
         return (
-          !this.selectedFilter || i[this.selectedFilter] === this.searchValue
+          !this.selectedFilter || i[this.selectedFilter] == this.searchValue
         );
       });
     },
@@ -154,6 +167,7 @@ export default {
       dialog: true,
       perPage: 5,
       currentPage: 1,
+      vuetifyData: [],
       total: 0,
       imgSrc: {
         x: require("../../assets/img/x.svg"),
@@ -182,14 +196,18 @@ export default {
       console.log("Delete Temp Pipeline", item);
       this.close();
     },
-    goTempPipeline(item) {
-      if (this.$route.name != "pipelineRegister") {
+    goPipelineRegister(item) {
+      if (item == `default`) {
+        this.$router.push({
+          name: "pipelineRegister",
+        });
+      } else if (this.$route.name != "pipelineRegister") {
         this.$router.push({
           name: "pipelineRegister",
           query: { id: item.id },
         });
-        this.close();
       }
+      this.close();
     },
   },
 };
