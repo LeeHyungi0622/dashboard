@@ -245,7 +245,7 @@ public class NiFiRestSVC {
         return resultEntity;
     }
 
-    protected ProcessGroupStatusEntity getStatusProcessGroup(String processorGroupId)
+    public Map<String, Integer> getStatusProcessGroup(String processorGroupId)
         throws JsonMappingException, JsonProcessingException {
         List<String> paths = new ArrayList<String>();
         paths.add("flow");
@@ -274,10 +274,10 @@ public class NiFiRestSVC {
             result.getBody(),
             ProcessGroupStatusEntity.class
         );
-        return resultEntity;
+        return getNumberOfProcessorStatus(resultEntity);
     }
 
-    public Map<String, Integer> getNumberOfProcessorStatus(
+    protected Map<String, Integer> getNumberOfProcessorStatus(
         ProcessGroupStatusEntity processGroupStatus
     ) {
         Map<String, Integer> result = new HashMap<>();
