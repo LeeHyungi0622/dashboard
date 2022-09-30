@@ -160,6 +160,7 @@ public class PipelineDraftSVC {
                 jsonObject.getString("detail"),
                 null,
                 null,
+                null,
                 nifiFlowType
             );
             // collector, filter, converter 내의 processor의 필수 properties 값이 모두 채워졌는지 확인
@@ -206,6 +207,7 @@ public class PipelineDraftSVC {
                     jsonObject.getString("name"),
                     jsonObject.getString("detail"),
                     null,
+                    null,
                     flowJsonString,
                     nifiFlowType
                 );
@@ -215,6 +217,7 @@ public class PipelineDraftSVC {
                     jsonObject.getString("name"),
                     jsonObject.getString("detail"),
                     jsonObject.getString("dataSet"),
+                    jsonObject.getString("dataModel"),
                     flowJsonString,
                     nifiFlowType
                 );

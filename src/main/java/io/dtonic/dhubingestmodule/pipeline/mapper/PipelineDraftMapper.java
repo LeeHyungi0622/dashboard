@@ -32,6 +32,7 @@ public interface PipelineDraftMapper {
         @Param("name") String name,
         @Param("detail") String detail,
         @Param("dataSet") String dataSet,
+        @Param("dataModel") String dataModel,
         @Param("flowJsonString") String flowJsonString,
         @Param("nifiFlowType") String nifiFlowType
     );
