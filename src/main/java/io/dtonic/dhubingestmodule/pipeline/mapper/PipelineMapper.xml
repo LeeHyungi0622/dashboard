@@ -47,11 +47,11 @@
     UPDATE 
       pipeline
     SET 
-      collector = #{flowJsonString}, 
-      filter = #{flowJsonString},
-      converter = #{flowJsonString}, 
+      collector = #{collector}, 
+      filter = #{filter},
+      converter = #{converter}, 
       data_set = #{dataSet},
-      processorGroupId = #{processorGroupId},
+      processor_group_id = #{processorGroupId},
       name = #{name}, 
       detail = #{detail}, 
       modified_at = now()

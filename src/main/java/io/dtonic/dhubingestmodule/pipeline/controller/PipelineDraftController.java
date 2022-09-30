@@ -41,7 +41,6 @@ public class PipelineDraftController {
         HttpServletResponse response
     ) {
         PipelineVO pipelineVO = new PipelineVO();
-        log.info(pipelineVO.toString());
         return pipelineVO;
     }
 

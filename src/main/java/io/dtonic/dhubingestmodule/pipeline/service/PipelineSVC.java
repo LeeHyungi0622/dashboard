@@ -51,8 +51,7 @@ public class PipelineSVC {
     private ObjectMapper objectMapper;
 
     public void createPipeline(Integer id, PipelineVO pipelineVO) {
-        // String processorGroupId = niFiController.createPipeline(pipelineVO);
-        String processorGroupId = "Test";
+        String processorGroupId = niFiController.createPipeline(pipelineVO);
         JSONObject jsonObject = new JSONObject(pipelineVO);
         int result = pipelineMapper.createPipeline(
             jsonObject.getString("creator"),
@@ -67,7 +66,7 @@ public class PipelineSVC {
         );
         //임시 파이프라인 삭제
         if (result == 1) {
-            //pipelineDraftSVC.deletePipelineDrafts(id);
+            pipelineDraftSVC.deletePipelineDrafts(id);
         } else {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
@@ -128,12 +127,12 @@ public class PipelineSVC {
     @Transactional
     public void changePipelineStatus(Integer id, String status) {
         //NifiAPI
-        // PipelineVO pipelineVO = getPipelineVOById(id);
-        // if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode())) {
-        //     niFiController.runPipeline(pipelineVO.getProcessorGroupId());
-        // } else if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())) {
-        //     niFiController.stopPipeline(pipelineVO.getProcessorGroupId());
-        // }
+        PipelineVO pipelineVO = getPipelineVOById(id);
+        if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode())) {
+            niFiController.runPipeline(pipelineVO.getProcessorGroupId());
+        } else if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())) {
+            niFiController.stopPipeline(pipelineVO.getProcessorGroupId());
+        }
         int result = pipelineMapper.changePipelineStatus(id, status);
         if (result != 1) {
             throw new BadRequestException(
@@ -146,8 +145,8 @@ public class PipelineSVC {
     @Transactional
     public void deletePipeline(Integer id) {
         //NifiAPI
-        // PipelineVO pipelineVO = getPipelineVOById(id);
-        // niFiController.deletePipeline(pipelineVO.getProcessorGroupId());
+        PipelineVO pipelineVO = getPipelineVOById(id);
+        niFiController.deletePipeline(pipelineVO.getProcessorGroupId());
         int result = pipelineMapper.deletePipeline(id);
         if (result != 1) {
             throw new BadRequestException(
@@ -163,8 +162,7 @@ public class PipelineSVC {
 
     @Transactional
     public void updatePipeline(Integer id, PipelineVO pipelineVO) {
-        //String processorGroupId = niFiController.updatePipeline(pipelineVO);
-        String processorGroupId = "Test";
+        String processorGroupId = niFiController.updatePipeline(pipelineVO);
         JSONObject jsonObject = new JSONObject(pipelineVO);
         int result = pipelineMapper.updatePipeline(
             jsonObject.getInt("id"),
@@ -177,12 +175,10 @@ public class PipelineSVC {
             jsonObject.getJSONObject("converter").toString()
         );
         //임시 파이프라인 삭제
-        if (result == 1) {
-            pipelineDraftSVC.deletePipelineDrafts(id);
-        } else {
+        if (result != 1) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
-                "Create Pipeline Error"
+                "Update Pipeline Error"
             );
         }
     }

@@ -44,7 +44,7 @@ public interface PipelineMapper {
         @Param("dataSet") String dataSet,
         @Param("processorGroupId") String processorGroupId,
         @Param("collector") String collector,
-        @Param("collector") String filter,
-        @Param("collector") String converter
+        @Param("filter") String filter,
+        @Param("converter") String converter
     );
 }

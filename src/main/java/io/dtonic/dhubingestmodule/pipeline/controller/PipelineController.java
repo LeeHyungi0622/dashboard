@@ -61,7 +61,7 @@ public class PipelineController {
      * @return
      */
     @Transactional
-    @PostMapping("/pipeline/complete/{id}") // PipeLine 등록
+    @PostMapping("/pipeline/complete/{id}") // PipeLine "등록완료"
     public void createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -99,6 +99,7 @@ public class PipelineController {
             );
         }
         pipelineSVC.updatePipeline(id, pipelineVO);
+        response.setStatus(HttpStatus.OK.value());
     }
 
     /**
@@ -130,7 +131,7 @@ public class PipelineController {
         return pipelineDraftSVC.getDataCollector();
     }
 
-    @GetMapping("/pipeline/complete/properties") // <데이터수집> 데이터수집 선택완료시
+    @GetMapping("/pipeline/complete/properties") // 파이프라인 수정시 DataSet, Collector 선택시 호출
     public PipelineVO getPipelineProperties(
         HttpServletRequest request,
         HttpServletResponse response,
