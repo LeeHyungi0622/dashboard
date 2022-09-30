@@ -170,11 +170,11 @@ public class PipelineDraftSVC {
             String flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
 
             JSONObject jObject = new JSONObject(flowJsonString);
-            int nifiComponentLength = jObject.getJSONArray("NifiComponents").length();
+            int nifiComponentLength = jObject.getJSONArray("nifiComponents").length();
 
             for (int i = 0; i < nifiComponentLength; i++) {
                 JSONObject jObj = new JSONObject(
-                    jObject.getJSONArray("NifiComponents").get(i).toString()
+                    jObject.getJSONArray("nifiComponents").get(i).toString()
                 );
                 JSONArray properties = jObj.getJSONArray("requiredProps");
                 for (idx = 0; idx < properties.length(); idx++) {

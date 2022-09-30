@@ -70,7 +70,7 @@ public class PipelineDraftController {
         return pipelineDraftSVC.getPipelineDraftsList();
     }
 
-    @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create) or 생성 과정중 "다음" 누를 시
+    @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create) or 매 생성 과정중 "다음" 누를 시
     public int upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,

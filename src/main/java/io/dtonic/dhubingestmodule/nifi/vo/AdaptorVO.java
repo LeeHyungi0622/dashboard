@@ -15,6 +15,6 @@ public class AdaptorVO {
     private String name;
     private boolean completed;
 
-    @JsonProperty("NifiComponents")
-    private List<NiFiComponentVO> NifiComponents = new ArrayList<>();
+    @JsonProperty("nifiComponents")
+    private List<NiFiComponentVO> nifiComponents = new ArrayList<>();
 }

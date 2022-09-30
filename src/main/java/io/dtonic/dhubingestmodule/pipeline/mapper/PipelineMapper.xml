@@ -6,7 +6,8 @@
     <result property="name" column="name" />
     <result property="detail" column="detail" />
     <result property="status" column="status" />
-    <result property="data_set" column="data_set" />
+    <result property="dataSet" column="data_set" />
+    <result property="dataModel" column="data_model" />
     <result property="processorGroupId" column="processor_group_id" />
     <result property="collector" column="collector" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
     <result property="filter" column="filter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
@@ -30,8 +31,8 @@
       name,
       detail,
       status,
-      data_set as dataSet,
-      data_model as dataModel,
+      data_set,
+      data_model,
       processor_group_id,
       collector,
       filter,

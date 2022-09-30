@@ -95,13 +95,15 @@ public class PipelineSVC {
                 if (
                     cur_status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) &&
                     nifiStatus.get("Stopped") == 0 &&
-                    nifiStatus.get("Invalid") == 0
-                ) pipelineListVOs
-                    .get(i)
-                    .setStatus(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()); else if ( // DB상태 Run // DB상태 Starting Nifi 상태 Running =>
+                    nifiStatus.get("Invaild") == 0
+                ) {
+                    pipelineListVOs
+                        .get(i)
+                        .setStatus(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
+                } else if ( // DB상태 Run // DB상태 Starting Nifi 상태 Running =>
                     cur_status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()) &&
                     nifiStatus.get("Running") == 0 &&
-                    nifiStatus.get("Invalid") == 0
+                    nifiStatus.get("Invaild") == 0
                 ) pipelineListVOs
                     .get(i)
                     .setStatus(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()); // DB상태 Stopped // DB상태 Stopping Nifi 상태 Stop =>

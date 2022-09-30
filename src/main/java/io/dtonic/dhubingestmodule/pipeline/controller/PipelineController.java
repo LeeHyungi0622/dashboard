@@ -46,8 +46,7 @@ public class PipelineController {
     public List<PipelineListResponseVO> getPipelineList(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        PipelineListRetrieveVO pipelineListRetrieveVO
+        @RequestHeader(HttpHeaders.ACCEPT) String accept
     ) {
         return pipelineSVC.getPipelineList();
     }
