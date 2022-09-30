@@ -1,5 +1,7 @@
 package io.dtonic.dhubingestmodule.nifi.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.Attribute;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
@@ -47,6 +49,9 @@ public class NiFiController {
     NiFiApplicationRunner niFiApplicationRunner;
 
     @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
     DataSetSVC dataSetSVC;
 
     /**
@@ -66,7 +71,7 @@ public class NiFiController {
             );
 
             // Create Output Port
-            String outputId = niFiSwaggerSVC.createOutputInPipeline(
+            String outputId = niFiRestSVC.createOutputInPipeline(
                 processGroupId,
                 pipelineVO.getName()
             );
@@ -116,29 +121,37 @@ public class NiFiController {
         }
     }
 
-    private AdaptorVO convertPipelineVOToNiFiForm(PipelineVO convertor) {
+    private AdaptorVO convertPipelineVOToNiFiForm(PipelineVO convertor)
+        throws JsonProcessingException {
         // DataSet ID로 Data Model 정보 호출
 
         // ID 생성
         String id = idGenerater(convertor);
         // Convert NGSI LD
         PipelineVO ngsiLdNiFi = setAttribute(convertor);
-        NiFiComponentVO ngsiLdFormater = convertNgsiLdData(convertor.getDataModel(), id);
+        NiFiComponentVO ngsiLdFormater = convertNgsiLdData(
+            convertor.getDataModel(),
+            convertor.getDataSet(),
+            id
+        );
         NiFiComponentVO convertType = convertValueType(convertor.getDataModel());
-
+        NiFiComponentVO dateFormater = convertDateType(
+            convertor.getConverter(),
+            convertor.getDataModel()
+        );
         // NiFi Components Setting
+        AdaptorVO result = ngsiLdNiFi.getConverter();
+        result.getNifiComponents().add(ngsiLdFormater);
+        result.getNifiComponents().add(convertType);
 
-        ngsiLdNiFi.getConverter().getNifiComponents().add(ngsiLdFormater);
-        ngsiLdNiFi.getConverter().getNifiComponents().add(convertType);
-
-        return ngsiLdNiFi.getConverter();
+        return result;
     }
 
     private PipelineVO setAttribute(PipelineVO convertor) {
         for (NiFiComponentVO nifi : convertor.getConverter().getNifiComponents()) {
             if (nifi.getName().equals("DataSetProps")) {
                 for (PropertyVO prop : nifi.getRequiredProps()) {
-                    String convertInput = prop.getInputValue().replace("\\\"", "");
+                    String convertInput = prop.getInputValue().replace("\"", "");
 
                     prop.setInputValue("$." + convertInput);
                 }
@@ -148,27 +161,53 @@ public class NiFiController {
     }
 
     private String idGenerater(PipelineVO convertor) {
-        String id = "\"urn:datahub:" + convertor.getDataModel() + ":";
+        String id = "urn:datahub:" + convertor.getDataModel() + ":";
         for (NiFiComponentVO nifi : convertor.getConverter().getNifiComponents()) {
             if (nifi.getName().equals("IDGenerater")) {
-                for (int i = 0; i < nifi.getRequiredProps().size(); i++) {
-                    if (i < nifi.getRequiredProps().size() - 1) {
-                        id = id + "${" + nifi.getRequiredProps().get(i).getInputValue() + "}:";
-                    } else {
-                        id = id + "${" + nifi.getRequiredProps().get(i).getInputValue() + "}\"";
+                if (nifi.getRequiredProps().size() == 0) {
+                    log.error("Not Found ID Generate Levels");
+                    return null;
+                } else {
+                    for (int i = 0; i < nifi.getRequiredProps().size(); i++) {
+                        if (nifi.getRequiredProps().get(i).getInputValue() != null) {
+                            if (i < nifi.getRequiredProps().size() - 1) {
+                                id =
+                                    id +
+                                    "${" +
+                                    nifi
+                                        .getRequiredProps()
+                                        .get(i)
+                                        .getInputValue()
+                                        .replace("\"", "") +
+                                    "}:";
+                            } else {
+                                id =
+                                    id +
+                                    "${" +
+                                    nifi
+                                        .getRequiredProps()
+                                        .get(i)
+                                        .getInputValue()
+                                        .replace("\"", "") +
+                                    "}\"";
+                            }
+                        }
                     }
+                    log.info("Create ID Gen : [{}]", id);
+                    return id;
                 }
             }
         }
-        return id;
+        return null;
     }
 
-    private NiFiComponentVO convertNgsiLdData(String dataModelId, String id) {
+    private NiFiComponentVO convertNgsiLdData(String dataModelId, String dataSetId, String id)
+        throws JsonProcessingException {
         NiFiComponentVO ngsiLdFormmater = new NiFiComponentVO();
         ngsiLdFormmater.setName("NGSI-LD Fommater");
-        ngsiLdFormmater.setType("Processor");
+        ngsiLdFormmater.setType("processor");
         DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(dataModelId);
-
+        log.info("Data Model get Properties : [{}]", dataModelInfo);
         ConverterVO converterVO = new ConverterVO();
         List<Object> entities = new ArrayList<>();
         converterVO.setDatasetId(dataModelInfo.getDatasetId());
@@ -190,23 +229,26 @@ public class NiFiController {
                 subAttribute.put("value", geoProp);
             }
             if (e.getHasObservedAt()) {
-                subAttribute.put("observedAt", LocalDate.now().toString());
+                subAttribute.put("observedAt", "${observedAt}");
             }
             entity.put(e.getName(), subAttribute);
         }
         entities.add(entity);
         converterVO.setEntities(entities);
-        String convertData = converterVO.toString();
+        converterVO.setDatasetId(dataSetId);
+        String convertData = objectMapper.writeValueAsString(converterVO);
+        log.info("Convert Data = {}", convertData);
         List<PropertyVO> props = new ArrayList<>();
         PropertyVO ngsiProp = new PropertyVO();
         ngsiProp.setName("Replacement Value");
         ngsiProp.setInputValue(convertData);
         props.add(ngsiProp);
         ngsiLdFormmater.setRequiredProps(props);
+
         return ngsiLdFormmater;
     }
 
-    private NiFiComponentVO convertValueType(String dataModelId) {
+    private NiFiComponentVO convertValueType(String dataModelId) throws JsonProcessingException {
         NiFiComponentVO convertValueTypeProc = new NiFiComponentVO();
         convertValueTypeProc.setName("ConvertValueType");
         convertValueTypeProc.setType("Processor");
@@ -229,6 +271,9 @@ public class NiFiController {
             } else if (a.getValueType().equals("Boolean")) {
                 e.put("value", "=toBoolean");
                 ae.put(a.getName(), e);
+            } else if (a.getValueType().equals("Date")) {
+                e.put("value", "=toBoolean");
+                ae.put(a.getName(), e);
             }
         }
         en.put("*", ae);
@@ -238,37 +283,73 @@ public class NiFiController {
         List<PropertyVO> joltList = new ArrayList<>();
         PropertyVO prop = new PropertyVO();
         prop.setName("jolt-spec");
-        prop.setInputValue(jolt.toString());
+        log.info("Convert Data = {}", objectMapper.writeValueAsString(jolt));
+        prop.setInputValue(objectMapper.writeValueAsString(jolt));
         joltList.add(prop);
         convertValueTypeProc.setRequiredProps(joltList);
         return convertValueTypeProc;
+    }
+
+    private NiFiComponentVO convertDateType(AdaptorVO convertor, String dataModelId)
+        throws JsonProcessingException {
+        DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(dataModelId);
+        // List<PropertyVO> DateList = convertor.getNifiComponents(/
+        for (Attribute a : dataModelInfo.getAttributes()) {
+            // PropertyVO prop = new PropertyVO();
+            if (a.getValueType().equals("Date")) {
+                for (NiFiComponentVO nifi : convertor.getNifiComponents()) {
+                    if (nifi.getName().equals("ConvertDateType")) {
+                        for (PropertyVO prop : nifi.getRequiredProps()) {
+                            if (prop.getName().equals("DateFormat")) {
+                                prop.setInputValue(
+                                    "${" +
+                                    a.getName() +
+                                    ":toDate(\"" +
+                                    prop.getInputValue() +
+                                    "\"):format(\"yyyy-MM-dd'T'HH:mm:ssXXX\", \"GMT\")}"
+                                );
+                            }
+                        }
+                        return nifi;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
      * @param adaptorVO
      * @param rootProcessorGroupId Parent Process ID
      * @return ProcessGroup ID created Adaptor
+     * @throws JsonProcessingException
      */
-    private String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) {
+    private String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId)
+        throws JsonProcessingException {
         String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getName());
 
         // Create Dummy Template
-        String adaptorId = niFiRestSVC.createDummyTemplate(templateId, rootProcessorGroupId);
+        String adaptorId = niFiRestSVC.createDummyTemplate(rootProcessorGroupId, templateId);
         // Update Adaptor
         updateAdaptor(adaptorId, adaptorVO.getNifiComponents());
 
         return adaptorId;
     }
 
-    private void updateAdaptor(String processorGroupId, List<NiFiComponentVO> NiFiComponents) {
+    private void updateAdaptor(String processorGroupId, List<NiFiComponentVO> NiFiComponents)
+        throws JsonProcessingException {
         if (NiFiComponents.size() < 1) {
             log.error("Empty NiFi Components In Request Pipeline");
         }
         for (NiFiComponentVO component : NiFiComponents) {
-            if (component.getType().equals("processor")) {
+            if (
+                component.getType().equals("processor") || component.getType().equals("Processor")
+            ) {
                 // Update Processors Properties in Adaptor Processor Group
                 niFiSwaggerSVC.updateProcessorsInAdaptor(processorGroupId, component);
-            } else if (component.getType().equals("controller")) {
+            } else if (
+                component.getType().equals("controller") || component.getType().equals("Controller")
+            ) {
                 // Update Controllers Properties in Adaptor
                 niFiRestSVC.updateControllersInAdaptor(processorGroupId, component);
             } else {
@@ -298,6 +379,7 @@ public class NiFiController {
             /* Delete Connection */
             niFiSwaggerSVC.deleteConnectionToFunnel(processGroupId);
             /* Delete Processor Group */
+            niFiSwaggerSVC.deleteProcessGroup(processGroupId);
             log.info("Success Delete Pipeline in NiFI : processGroupId = [{}]", processGroupId);
             return true;
         } catch (Exception e) {

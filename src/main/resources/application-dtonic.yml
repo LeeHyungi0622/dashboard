@@ -72,6 +72,6 @@ http.pool:
   validate.after.inactivity: 2000
 
 nifi:
-  url: https://110.45.181.70:8443
+  url: https://110.45.181.71:8443
   user: admin
   password: ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB

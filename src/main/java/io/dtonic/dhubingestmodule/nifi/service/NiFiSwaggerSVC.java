@@ -139,34 +139,22 @@ public class NiFiSwaggerSVC {
         }
     }
 
-    /**
-     * Create Output Port In Pipeline Process Group
-     *
-     * @param processGroupId pipeline processor group id
-     * @param pipelineName pipeline name
-     * @return output ID
-     */
-    public String createOutputInPipeline(String processGroupId, String pipelineName) {
-        PortEntity body = new PortEntity();
-        PortDTO component = body.getComponent();
-        component.setName(pipelineName + " output");
-
-        PositionDTO position = new PositionDTO();
-        position.setX(0.0);
-        position.setY(0.0);
-        component.setPosition(position);
-
-        body.setComponent(component);
+    public boolean deleteProcessGroup(String processGroupId) {
         try {
-            PortEntity result = niFiClient
+            String version = niFiClient
                 .getProcessGroupsApiSwagger()
-                .createOutputPort(processGroupId, body);
-            log.info("Create Output in Pipeline : output PortEntity = [{}]", result.getId());
-            return result.getId();
-        } catch (ApiException e) {
-            log.error("Fail to Create Output in Pipeline : Pipeline Name = [{}]", pipelineName);
-            e.printStackTrace();
-            return null;
+                .getProcessGroup(processGroupId)
+                .getRevision()
+                .getVersion()
+                .toString();
+            niFiClient
+                .getProcessGroupsApiSwagger()
+                .removeProcessGroup(processGroupId, version, null);
+            log.info("Success Delete Process Group : Process Group ID = [{}]", processGroupId);
+            return true;
+        } catch (Exception e) {
+            log.error("Fail to Delete Process Group : Process Group ID = [{}]", processGroupId);
+            return false;
         }
     }
 
@@ -260,7 +248,9 @@ public class NiFiSwaggerSVC {
      * @return String connectionId
      */
     public String clearQueuesInConnectionToFunnel(String sourceProcessorGroupID) {
-        ConnectionsEntity connections = searchConnectionsInProcessorGroup("root");
+        ConnectionsEntity connections = searchConnectionsInProcessorGroup(
+            searchProcessGroupInProcessGroup("root")
+        );
         if (connections.getConnections().size() == 0) {
             log.error("Empty Connection From Pipeline To Funnel In IngestManager");
             return null;
@@ -298,6 +288,13 @@ public class NiFiSwaggerSVC {
         for (PropertyVO property : properies) {
             if (property.getName().equals("Scheduling")) {
                 processor.getComponent().getConfig().setSchedulingPeriod(property.getInputValue());
+            } else if (property.getName().equals("root_key")) {
+                if (property.getInputValue() != null) {
+                    String convertStr = property.getInputValue().replace("\"", "");
+                    processorProperties.put(property.getName(), convertStr);
+                } else {
+                    processorProperties.put(property.getName(), " ");
+                }
             } else if (processorProperties.get(property.getName()) == null) {
                 processorProperties.put(property.getName(), property.getInputValue());
             } else {
@@ -321,6 +318,7 @@ public class NiFiSwaggerSVC {
         } else {
             for (ProcessorEntity processor : processors.getProcessors()) {
                 if (processor.getComponent().getName().equals(niFiComponentVO.getName())) {
+                    log.info("processor name : {}", processor.getComponent().getName());
                     if (niFiComponentVO.getRequiredProps().size() != 0) {
                         processor =
                             updateProcessorProperties(
@@ -362,32 +360,29 @@ public class NiFiSwaggerSVC {
             PortDTO sourceOutput = searchOutputInProcessorGroup(sourceProcessGroupId);
             // Create connection
             ConnectionEntity body = new ConnectionEntity();
-            ConnectionDTO component = body.getComponent();
+            ConnectionDTO component = new ConnectionDTO();
             component.setFlowFileExpiration("0 sec");
             component.setBackPressureDataSizeThreshold("1 GB");
             component.setBackPressureObjectThreshold(10000L);
             // component.setload
-            ConnectableDTO source = component.getSource();
+            ConnectableDTO source = new ConnectableDTO();
             source.setId(sourceOutput.getId());
             source.setGroupId(sourceOutput.getParentGroupId());
-            ConnectableDTO.TypeEnum sourceType = nifiObjectMapper.convertValue(
-                sourceOutput.getType(),
-                ConnectableDTO.TypeEnum.class
-            );
-            source.setType(sourceType);
-
+            source.setType(ConnectableDTO.TypeEnum.OUTPUT_PORT);
+            component.setSource(source);
             // Search Input in Destination Processor Group
             PortDTO destInput = searchInputInProcessorGroup(destinationProcessGroupId);
-            ConnectableDTO dest = component.getDestination();
+            ConnectableDTO dest = new ConnectableDTO();
             dest.setId(destInput.getId());
             dest.setGroupId(destInput.getParentGroupId());
-            ConnectableDTO.TypeEnum destType = nifiObjectMapper.convertValue(
-                destInput.getType(),
-                ConnectableDTO.TypeEnum.class
-            );
-            dest.setType(destType);
 
+            dest.setType(ConnectableDTO.TypeEnum.INPUT_PORT);
+            component.setDestination(dest);
             body.setComponent(component);
+            // Set up Revision
+            RevisionDTO revision = new RevisionDTO();
+            revision.setVersion(0L);
+            body.setRevision(revision);
             niFiClient.getProcessGroupsApiSwagger().createConnection(rootProcessGroupId, body);
             log.info(
                 "Success Create Connection From {} To {} in {}",
@@ -423,31 +418,28 @@ public class NiFiSwaggerSVC {
             PortDTO sourceOutput = searchOutputInProcessorGroup(sourceProcessGroupId);
             // Create connection
             ConnectionEntity body = new ConnectionEntity();
-            ConnectionDTO component = body.getComponent();
+            ConnectionDTO component = new ConnectionDTO();
             component.setFlowFileExpiration("0 sec");
             component.setBackPressureDataSizeThreshold("1 GB");
             component.setBackPressureObjectThreshold(10000L);
             // component.setload
-            ConnectableDTO source = component.getSource();
+            ConnectableDTO source = new ConnectableDTO();
             source.setId(sourceOutput.getId());
             source.setGroupId(sourceOutput.getParentGroupId());
-            ConnectableDTO.TypeEnum sourceType = nifiObjectMapper.convertValue(
-                sourceOutput.getType(),
-                ConnectableDTO.TypeEnum.class
-            );
-            source.setType(sourceType);
+            source.setType(ConnectableDTO.TypeEnum.OUTPUT_PORT);
+            component.setSource(source);
             PortDTO destOutput = searchOutputInProcessorGroup(destProcessGroupId);
             // Search Input in Destination Funnel
-            ConnectableDTO dest = component.getDestination();
+            ConnectableDTO dest = new ConnectableDTO();
             dest.setId(destOutput.getId());
             dest.setGroupId(destOutput.getParentGroupId());
-            ConnectableDTO.TypeEnum destType = nifiObjectMapper.convertValue(
-                destOutput.getType(),
-                ConnectableDTO.TypeEnum.class
-            );
-            dest.setType(destType);
-
+            dest.setType(ConnectableDTO.TypeEnum.OUTPUT_PORT);
+            component.setDestination(dest);
             body.setComponent(component);
+            // Set up Revision
+            RevisionDTO revision = new RevisionDTO();
+            revision.setVersion(0L);
+            body.setRevision(revision);
             niFiClient.getProcessGroupsApiSwagger().createConnection(rootProcessGroupId, body);
             log.info(
                 "Success Create Connection From {} To {} in {}",
@@ -483,28 +475,28 @@ public class NiFiSwaggerSVC {
             PortDTO sourceOutput = searchOutputInProcessorGroup(sourceProcessGroupId);
             // Create connection
             ConnectionEntity body = new ConnectionEntity();
-            ConnectionDTO component = body.getComponent();
+            ConnectionDTO component = new ConnectionDTO();
             component.setFlowFileExpiration("0 sec");
             component.setBackPressureDataSizeThreshold("1 GB");
             component.setBackPressureObjectThreshold(10000L);
             // component.setload
-            ConnectableDTO source = component.getSource();
+            ConnectableDTO source = new ConnectableDTO();
             source.setId(sourceOutput.getId());
             source.setGroupId(sourceOutput.getParentGroupId());
-            ConnectableDTO.TypeEnum sourceType = nifiObjectMapper.convertValue(
-                sourceOutput.getType(),
-                ConnectableDTO.TypeEnum.class
-            );
-            source.setType(sourceType);
-
+            source.setType(ConnectableDTO.TypeEnum.OUTPUT_PORT);
+            component.setSource(source);
             FunnelEntity destOutput = searchFunnelInProcessGroup(destProcessGroupId);
             // Search Input in Destination Funnel
-            ConnectableDTO dest = component.getDestination();
+            ConnectableDTO dest = new ConnectableDTO();
             dest.setId(destOutput.getId());
             dest.setGroupId(destOutput.getComponent().getParentGroupId());
             dest.setType(ConnectableDTO.TypeEnum.FUNNEL);
-
+            component.setDestination(dest);
             body.setComponent(component);
+            // Set up Revision
+            RevisionDTO revision = new RevisionDTO();
+            revision.setVersion(0L);
+            body.setRevision(revision);
             niFiClient.getProcessGroupsApiSwagger().createConnection(rootProcessGroupId, body);
             log.info(
                 "Success Create Connection From {} To {} in {}",
@@ -689,7 +681,8 @@ public class NiFiSwaggerSVC {
             properties.replace("HTTP Method", "POST");
             properties.replace(
                 "Remote URL",
-                niFiClient.getNiFiClientEntity().getProperties().getDatacoreIngestUrl()
+                niFiClient.getNiFiClientEntity().getProperties().getDatacoreIngestUrl() +
+                "/entityOperations/upsert"
             );
 
             /* DownStream Terminated */

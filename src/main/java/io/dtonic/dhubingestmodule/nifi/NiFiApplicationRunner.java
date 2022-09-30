@@ -44,11 +44,13 @@ public class NiFiApplicationRunner implements ApplicationRunner {
         niFiRestSVC.stopTransmitter(transmitterId);
         niFiSwaggerSVC.updateTransmitter(transmitterId);
 
-        String funnelId = niFiSwaggerSVC.searchFunnelInProcessGroup(ingestProcessGroupId).getId();
+        String funnelId = "";
         /* Check Funnel */
-        if (funnelId == null) {
+        if (niFiSwaggerSVC.searchFunnelInProcessGroup(ingestProcessGroupId) == null) {
             /* Create Funnel */
             funnelId = niFiRestSVC.createFunnel(ingestProcessGroupId);
+        } else {
+            funnelId = niFiSwaggerSVC.searchFunnelInProcessGroup(ingestProcessGroupId).getId();
         }
 
         /* Check connection */
