@@ -36,4 +36,7 @@ public interface PipelineDraftMapper {
         @Param("nifiFlowType") String nifiFlowType
     );
     NiFiComponentVO getAdaptorinfo(@Param("adaptorId") Integer adaptorId);
+
+    Integer getPipelineIdByname(@Param("name") String name);
+    Boolean isExistsNameDrafts(@Param("name") String name);
 }

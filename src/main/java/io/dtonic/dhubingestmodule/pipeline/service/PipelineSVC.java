@@ -174,7 +174,7 @@ public class PipelineSVC {
             jsonObject.getJSONObject("filter").toString(),
             jsonObject.getJSONObject("converter").toString()
         );
-        //임시 파이프라인 삭제
+
         if (result != 1) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,

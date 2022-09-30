@@ -33,14 +33,16 @@ public class PipelineDraftSVC {
     @Autowired
     private DataSetSVC datasetsvc;
 
-    public void createPipelineDrafts(String name, String creator, String detail) {
-        int result = pipelineDraftMapper.createPipelineDrafts(name, creator, detail);
-        if (result != 1) {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
-                "Create Pipeline Error"
-            );
-        }
+    public int createPipelineDrafts(String name, String creator, String detail) {
+        pipelineDraftMapper.createPipelineDrafts(name, creator, detail);
+        int Pipelineid = pipelineDraftMapper.getPipelineIdByname(name);
+        // if (result != 1) {
+        //     throw new BadRequestException(
+        //         DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
+        //         "Create Pipeline Error"
+        //     );
+        // }
+        return Pipelineid;
     }
 
     public List<String> getDataCollector() {
@@ -270,5 +272,9 @@ public class PipelineDraftSVC {
 
     static boolean isStringEmpty(String str) {
         return str == null || str.isEmpty();
+    }
+
+    public Boolean isExistsNameDrafts(String name) {
+        return pipelineDraftMapper.isExistsNameDrafts(name);
     }
 }

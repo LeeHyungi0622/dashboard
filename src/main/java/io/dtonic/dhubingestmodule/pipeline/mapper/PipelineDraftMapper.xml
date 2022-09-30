@@ -56,8 +56,31 @@
       ORDER BY id DESC LIMIT 1 
   </select>
   <insert id="createPipelineDrafts" parameterType="String">
-    INSERT INTO temp_pipeline(name, creator, detail, created_at, modified_at) VALUES (#{name}, #{creator}, #{detail}, now(), now())
+    INSERT INTO 
+      temp_pipeline
+      (
+        name,
+        creator,
+        detail, 
+        created_at, 
+        modified_at)
+      VALUES 
+      (
+        #{name}, 
+        #{creator}, 
+        #{detail}, 
+        now(), 
+        now()
+        )
   </insert>
+  <select id="getPipelineIdByname" parameterType="String" resultType="Integer">
+    SELECT 
+      id
+    FROM
+      temp_pipeline
+    WHERE
+      name = #{name}
+  </select>
   <update id="updatePipelineDrafts">
     UPDATE temp_pipeline
     <if test="'collector'.equals(nifiFlowType)">SET collector = #{flowJsonString},</if>
@@ -77,6 +100,12 @@
     (SELECT * 
     FROM temp_pipeline where id = #{id})
   </select>
+  <select id="isExistsNameDrafts" parameterType="String" resultType="boolean">
+    SELECT
+    EXISTS
+    (SELECT * 
+    FROM temp_pipeline where name = #{name})
+    </select>
   <select id="getDataCollector" resultType="String">
     SELECT 
       DISTINCT adaptor_name as adaptorName

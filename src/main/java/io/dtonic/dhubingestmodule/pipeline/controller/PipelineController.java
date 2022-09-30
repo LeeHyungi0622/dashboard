@@ -66,7 +66,7 @@ public class PipelineController {
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @PathVariable Integer id,
+        @PathVariable Integer id, //삭제할 임시파이프라인 id
         @RequestBody PipelineVO pipelineVO
     ) {
         pipelineSVC.createPipeline(id, pipelineVO);
