@@ -1,6 +1,11 @@
+application:
+  title: D.Hub-Ingest-Manager
+  version: 1.0.0
+
 spring:
   application:
     name: dh-ingest-manager
+
 
   thymeleaf:
     prefix: classpath:/static/
