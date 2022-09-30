@@ -58,6 +58,15 @@
     <custom-table :contents="selectedSettingValue.requiredProps" :mode="mode" />
     <div class="pipelineUpdateSubTitle fsb14">선택 설정 값</div>
     <custom-table :contents="selectedSettingValue.optionalProps" :mode="mode" />
+    <div
+      v-if="mode == `REGISTER`"
+      class="mgT12"
+      style="display: flex; justify-content: right"
+    >
+      <button class="pipelineButton">이전</button>
+      <button class="pipelineButton mgL12">임시 저장</button>
+      <button class="pipelineButton mgL12" @click="nextRoute()">다음</button>
+    </div>
   </div>
 </template>
 

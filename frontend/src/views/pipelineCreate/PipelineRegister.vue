@@ -25,30 +25,17 @@
     <div>
       <div class="pipelineListTitle">
         <router-view @get-route-contents="getRouteContents"></router-view>
-        <div
-          class="mgT12"
-          style="display: flex; justify-content: right; width: 95%"
-        >
-          <button class="pipelineButton">이전</button>
-          <button class="pipelineButton mgL12">임시 저장</button>
-          <button class="pipelineButton mgL12" @click="nextRoute()">
-            다음
-          </button>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-// import devData from "../../json/devData.json";
-import devData from "../../json/pipelineCreate.json";
 import pipelineRegisterService from "../../js/api/pipelineRegister";
 export default {
   data() {
     return {
       title: "데이터 파이프라인 기본정보",
-      devData: devData,
       contents: null,
     };
   },
@@ -88,7 +75,7 @@ export default {
           query: { id: this.$route.query.id },
           params: {
             contents: contents,
-            convertMode: this.convertMode(),
+            convertMode: this.nextRoute(),
             mode: "REGISTER",
           },
         });
@@ -111,7 +98,14 @@ export default {
     },
     nextRoute() {
       if (this.$route.name == "defaultInfo") {
-        pipelineRegisterService.craetePipelineDraft();
+        pipelineRegisterService
+          .craetePipelineDraft(this.$store.state.pipelineVo)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       } else {
         pipelineRegisterService.getPipelineDraft(this.reqParam);
       }

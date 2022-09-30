@@ -8,6 +8,12 @@ export const store = new Vuex.Store({
     return {
       pipelineList: [],
       pipelineVo: {},
+      userInfo: {
+        userId: "cityhub10",
+        name: "홍길동",
+        nickName: "홍길동",
+        phone: "010-1234-5678",
+      },
     };
   },
   mutations: {
