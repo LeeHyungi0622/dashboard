@@ -2,7 +2,7 @@
 <template encoding-version="1.3">
     <description></description>
     <groupId>7e478eb5-0183-1000-c651-d9c64ba2b9b7</groupId>
-    <name>convertor_final0929</name>
+    <name>converter</name>
     <snippet>
         <processGroups>
             <id>38b3e727-165a-341b-0000-000000000000</id>
@@ -177,28 +177,28 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>Destination</key>
-<value>
-    <name>Destination</name>
-</value>
+                                <key>Destination</key>
+                                <value>
+                                    <name>Destination</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Return Type</key>
-<value>
-    <name>Return Type</name>
-</value>
+                                <key>Return Type</key>
+                                <value>
+                                    <name>Return Type</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Path Not Found Behavior</key>
-<value>
-    <name>Path Not Found Behavior</name>
-</value>
+                                <key>Path Not Found Behavior</key>
+                                <value>
+                                    <name>Path Not Found Behavior</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Null Value Representation</key>
-<value>
-    <name>Null Value Representation</name>
-</value>
+                                <key>Null Value Representation</key>
+                                <value>
+                                    <name>Null Value Representation</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -207,20 +207,20 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>Destination</key>
-<value>flowfile-attribute</value>
+                                <key>Destination</key>
+                                <value>flowfile-attribute</value>
                             </entry>
                             <entry>
-<key>Return Type</key>
-<value>auto-detect</value>
+                                <key>Return Type</key>
+                                <value>auto-detect</value>
                             </entry>
                             <entry>
-<key>Path Not Found Behavior</key>
-<value>ignore</value>
+                                <key>Path Not Found Behavior</key>
+                                <value>ignore</value>
                             </entry>
                             <entry>
-<key>Null Value Representation</key>
-<value>empty string</value>
+                                <key>Null Value Representation</key>
+                                <value>empty string</value>
                             </entry>
                         </properties>
                         <retryCount>10</retryCount>
@@ -247,7 +247,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.standard.EvaluateJsonPath</type>
                 </processors>
                 <processors>
@@ -269,46 +269,46 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>Regular Expression</key>
-<value>
-    <name>Regular Expression</name>
-</value>
+                                <key>Regular Expression</key>
+                                <value>
+                                    <name>Regular Expression</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Replacement Value</key>
-<value>
-    <name>Replacement Value</name>
-</value>
+                                <key>Replacement Value</key>
+                                <value>
+                                    <name>Replacement Value</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Character Set</key>
-<value>
-    <name>Character Set</name>
-</value>
+                                <key>Character Set</key>
+                                <value>
+                                    <name>Character Set</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Maximum Buffer Size</key>
-<value>
-    <name>Maximum Buffer Size</name>
-</value>
+                                <key>Maximum Buffer Size</key>
+                                <value>
+                                    <name>Maximum Buffer Size</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Replacement Strategy</key>
-<value>
-    <name>Replacement Strategy</name>
-</value>
+                                <key>Replacement Strategy</key>
+                                <value>
+                                    <name>Replacement Strategy</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Evaluation Mode</key>
-<value>
-    <name>Evaluation Mode</name>
-</value>
+                                <key>Evaluation Mode</key>
+                                <value>
+                                    <name>Evaluation Mode</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Line-by-Line Evaluation Mode</key>
-<value>
-    <name>Line-by-Line Evaluation Mode</name>
-</value>
+                                <key>Line-by-Line Evaluation Mode</key>
+                                <value>
+                                    <name>Line-by-Line Evaluation Mode</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -317,32 +317,32 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>Regular Expression</key>
-<value>.*</value>
+                                <key>Regular Expression</key>
+                                <value>.*</value>
                             </entry>
                             <entry>
-<key>Replacement Value</key>
-<value>{}</value>
+                                <key>Replacement Value</key>
+                                <value>{}</value>
                             </entry>
                             <entry>
-<key>Character Set</key>
-<value>UTF-8</value>
+                                <key>Character Set</key>
+                                <value>UTF-8</value>
                             </entry>
                             <entry>
-<key>Maximum Buffer Size</key>
-<value>1 MB</value>
+                                <key>Maximum Buffer Size</key>
+                                <value>1 MB</value>
                             </entry>
                             <entry>
-<key>Replacement Strategy</key>
-<value>Regex Replace</value>
+                                <key>Replacement Strategy</key>
+                                <value>Regex Replace</value>
                             </entry>
                             <entry>
-<key>Evaluation Mode</key>
-<value>Entire text</value>
+                                <key>Evaluation Mode</key>
+                                <value>Entire text</value>
                             </entry>
                             <entry>
-<key>Line-by-Line Evaluation Mode</key>
-<value>All</value>
+                                <key>Line-by-Line Evaluation Mode</key>
+                                <value>All</value>
                             </entry>
                         </properties>
                         <retryCount>0</retryCount>
@@ -364,7 +364,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.standard.ReplaceText</type>
                 </processors>
                 <processors>
@@ -386,48 +386,48 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>jolt-transform</key>
-<value>
-    <name>jolt-transform</name>
-</value>
+                                <key>jolt-transform</key>
+                                <value>
+                                    <name>jolt-transform</name>
+                                </value>
                             </entry>
                             <entry>
-<key>jolt-custom-class</key>
-<value>
-    <dependencies>
-        <dependentValues>jolt-transform-custom</dependentValues>
-        <propertyName>jolt-spec</propertyName>
-    </dependencies>
-    <name>jolt-custom-class</name>
-</value>
+                                <key>jolt-custom-class</key>
+                                <value>
+                                    <dependencies>
+                                        <dependentValues>jolt-transform-custom</dependentValues>
+                                        <propertyName>jolt-spec</propertyName>
+                                    </dependencies>
+                                    <name>jolt-custom-class</name>
+                                </value>
                             </entry>
                             <entry>
-<key>jolt-custom-modules</key>
-<value>
-    <dependencies>
-        <dependentValues>jolt-transform-custom</dependentValues>
-        <propertyName>jolt-spec</propertyName>
-    </dependencies>
-    <name>jolt-custom-modules</name>
-</value>
+                                <key>jolt-custom-modules</key>
+                                <value>
+                                    <dependencies>
+                                        <dependentValues>jolt-transform-custom</dependentValues>
+                                        <propertyName>jolt-spec</propertyName>
+                                    </dependencies>
+                                    <name>jolt-custom-modules</name>
+                                </value>
                             </entry>
                             <entry>
-<key>jolt-spec</key>
-<value>
-    <name>jolt-spec</name>
-</value>
+                                <key>jolt-spec</key>
+                                <value>
+                                    <name>jolt-spec</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Transform Cache Size</key>
-<value>
-    <name>Transform Cache Size</name>
-</value>
+                                <key>Transform Cache Size</key>
+                                <value>
+                                    <name>Transform Cache Size</name>
+                                </value>
                             </entry>
                             <entry>
-<key>pretty_print</key>
-<value>
-    <name>pretty_print</name>
-</value>
+                                <key>pretty_print</key>
+                                <value>
+                                    <name>pretty_print</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -436,25 +436,25 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>jolt-transform</key>
-<value>jolt-transform-chain</value>
+                                <key>jolt-transform</key>
+                                <value>jolt-transform-chain</value>
                             </entry>
                             <entry>
-<key>jolt-custom-class</key>
+                                <key>jolt-custom-class</key>
                             </entry>
                             <entry>
-<key>jolt-custom-modules</key>
+                                <key>jolt-custom-modules</key>
                             </entry>
                             <entry>
-<key>jolt-spec</key>
+                                <key>jolt-spec</key>
                             </entry>
                             <entry>
-<key>Transform Cache Size</key>
-<value>1</value>
+                                <key>Transform Cache Size</key>
+                                <value>1</value>
                             </entry>
                             <entry>
-<key>pretty_print</key>
-<value>false</value>
+                                <key>pretty_print</key>
+                                <value>false</value>
                             </entry>
                         </properties>
                         <retryCount>10</retryCount>
@@ -476,7 +476,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.standard.JoltTransformJSON</type>
                 </processors>
             </contents>
@@ -486,7 +486,7 @@
             <flowfileConcurrency>UNBOUNDED</flowfileConcurrency>
             <flowfileOutboundPolicy>STREAM_WHEN_AVAILABLE</flowfileOutboundPolicy>
             <name>Convertor</name>
-            <variables/>
+            <variables />
         </processGroups>
     </snippet>
     <timestamp>09/29/2022 15:11:00 KST</timestamp>
