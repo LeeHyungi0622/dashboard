@@ -134,7 +134,7 @@ public class PipelineController {
     public PipelineVO getPipelineProperties(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestParam(name = "page") Integer page,
+        @RequestParam(name = "page") String page,
         @RequestParam(name = "pipelineid") Integer pipelineid,
         @RequestParam(name = "adaptorName") String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid

@@ -27,6 +27,24 @@ public class ValidateUtil {
     }
 
     /**
+     * @param str
+     * @return
+     */
+    public static boolean isStringEmpty(String str) {
+        if (str == null || str.isEmpty()) return true;
+        return false;
+    }
+
+    /**
+     * @param map
+     * @return
+     */
+    public static boolean isMapEmpty(final Map<?, ?> map) {
+        if (map == null || map.isEmpty()) return true;
+        return false;
+    }
+
+    /**
      * Check empty list of object
      * @param ob	Check target object
      * @return		Empty: true, Not empty: flase
