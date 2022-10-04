@@ -33,7 +33,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class PipelineDraftController {
 
     @Autowired
-    private PipelineDraftSVC pipelineSVC;
+    private PipelineDraftSVC pipelineDraftSVC;
+
+    @GetMapping("/pipeline/drafts/create") // 파이프라인 생성 첫 시작 API
+    public PipelineVO createPipelineDrafts(
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        PipelineVO pipelineVO = new PipelineVO();
+        return pipelineVO;
+    }
 
     /**
      * Retrieve Pipeline
@@ -43,65 +52,67 @@ public class PipelineDraftController {
      * @param id retrieve Pipeline id
      * @return Pipeline object
      */
-
     @GetMapping("/pipeline/drafts/{id}") // 임시저장 상세 조회
     public PipelineVO getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @PathVariable Integer id
     ) {
-        return pipelineSVC.getPipelineDrafts(id);
+        return pipelineDraftSVC.getPipelineDrafts(id);
     }
 
     @GetMapping("/pipeline/drafts/list") // 임시저장 목록 조회
-    public @ResponseBody List<PipelineDraftsListResponseVO> getPipelineDraftsList(
+    public List<PipelineDraftsListResponseVO> getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
         PipelineListRetrieveVO pipelineListRetrieveVO
     ) {
-        return pipelineSVC.getPipelineDraftsList();
+        return pipelineDraftSVC.getPipelineDraftsList();
     }
 
-    @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create)
-    public void createPipelineDrafts(
+    @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create) or 매 생성 과정중 "다음" 누를 시
+    public int upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody String requestBody
     ) {
         JSONObject jsonObject = new JSONObject(requestBody);
 
-        if (jsonObject.has("id") && pipelineSVC.isExistsDrafts(jsonObject.getInt("id"))) {
-            pipelineSVC.updatePipelineDrafts(jsonObject);
-            response.setStatus(HttpStatus.OK.value());
+        if (!jsonObject.isNull("id")) {
+            if (pipelineDraftSVC.isExistsDrafts(jsonObject.getInt("id"))) {
+                pipelineDraftSVC.updatePipelineDrafts(jsonObject);
+                response.setStatus(HttpStatus.OK.value());
+            }
         } else {
-            pipelineSVC.createPipelineDrafts(
-                jsonObject.getString("name"),
-                jsonObject.getString("creator"),
-                jsonObject.getString("detail")
-            );
-            response.setStatus(HttpStatus.CREATED.value());
+            if (!pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name"))) {
+                int result = pipelineDraftSVC.createPipelineDrafts(
+                    jsonObject.getString("name"),
+                    jsonObject.getString("creator"),
+                    jsonObject.getString("detail")
+                );
+                response.setStatus(HttpStatus.CREATED.value());
+                return result;
+            } else {
+                throw new BadRequestException(
+                    DataCoreUiCode.ErrorCode.ALREADY_EXISTS,
+                    "PipelineName already Exists"
+                );
+            }
         }
-    }
-
-    @GetMapping("/pipeline/drafts/collectors") // 데이터수집기 리스트 리턴
-    public List<DataCollectorVO> getPipelinecollectors(
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) {
-        return pipelineSVC.getDataCollector();
+        return 0;
     }
 
     @Transactional
-    @GetMapping("/pipeline/drafts") //<데이터수집, 정제, 변환> 다음버튼 누를시
-    public @ResponseBody PipelineVO updatePipelineDrafts(
+    @GetMapping("/pipeline/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
+    public PipelineVO getPipelineDraftsProperties(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestParam(name = "page") Integer page,
-        @RequestParam(name = "Pipelineid") Integer pipelineid,
+        @RequestParam(name = "pipelineid") Integer pipelineid,
         @RequestParam(name = "adaptorName") String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid
     ) {
-        PipelineVO pipelineVO = pipelineSVC.getPipelineDraftsPage(
+        PipelineVO pipelineVO = pipelineDraftSVC.getPipelineDraftsProperties(
             pipelineid,
             page,
             adaptorName,
@@ -119,7 +130,7 @@ public class PipelineDraftController {
         @PathVariable Integer id
     ) {
         //validation check
-        if (!pipelineSVC.isExistsDrafts(id)) {
+        if (!pipelineDraftSVC.isExistsDrafts(id)) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
                 "PipelineDrafts is not Exist"
@@ -127,7 +138,7 @@ public class PipelineDraftController {
         }
 
         //delete pipeline
-        pipelineSVC.deletePipelineDrafts(id);
+        pipelineDraftSVC.deletePipelineDrafts(id);
         response.setStatus(HttpStatus.OK.value());
     }
 }

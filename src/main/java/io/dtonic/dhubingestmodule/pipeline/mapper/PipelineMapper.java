@@ -1,7 +1,6 @@
 package io.dtonic.dhubingestmodule.pipeline.mapper;
 
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
@@ -10,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface PipelineMapper {
-    List<DataCollectorVO> getDataCollector();
+    List<String> getDataCollector();
 
     List<PipelineListResponseVO> getPipelineList();
 
@@ -32,17 +31,22 @@ public interface PipelineMapper {
         @Param("detail") String detail,
         @Param("status") String status,
         @Param("dataSet") String dataSet,
+        @Param("dataModel") String dataModel,
         @Param("collector") String collector,
         @Param("filter") String filter,
-        @Param("converter") String converter
+        @Param("converter") String converter,
+        @Param("processGroupId") String processGroupId
     );
 
-    void updatePipeline(
+    int updatePipeline(
         @Param("id") Integer id,
         @Param("name") String name,
         @Param("detail") String detail,
         @Param("dataSet") String dataSet,
-        @Param("flowJsonString") String flowJsonString,
-        @Param("nifiFlowType") String nifiFlowType
+        @Param("dataModel") String dataModel,
+        @Param("processorGroupId") String processorGroupId,
+        @Param("collector") String collector,
+        @Param("filter") String filter,
+        @Param("converter") String converter
     );
 }

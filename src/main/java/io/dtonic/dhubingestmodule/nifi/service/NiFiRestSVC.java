@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.nifi.web.api.dto.ConnectableDTO;
 import org.apache.nifi.web.api.dto.ConnectionDTO;
 import org.apache.nifi.web.api.dto.FunnelDTO;
+import org.apache.nifi.web.api.dto.PortDTO;
 import org.apache.nifi.web.api.dto.PositionDTO;
 import org.apache.nifi.web.api.dto.RevisionDTO;
 import org.apache.nifi.web.api.entity.ActivateControllerServicesEntity;
@@ -27,6 +28,7 @@ import org.apache.nifi.web.api.entity.ControllerServicesEntity;
 import org.apache.nifi.web.api.entity.FlowEntity;
 import org.apache.nifi.web.api.entity.FunnelEntity;
 import org.apache.nifi.web.api.entity.InstantiateTemplateRequestEntity;
+import org.apache.nifi.web.api.entity.PortEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupStatusEntity;
 import org.apache.nifi.web.api.entity.ProcessorEntity;
@@ -125,7 +127,68 @@ public class NiFiRestSVC {
         }
     }
 
-    public void updateControllersInAdaptor(String processorGroupId, NiFiComponentVO properies) {
+    /**
+     * Create Output Port In Pipeline Process Group
+     *
+     * @param processGroupId pipeline processor group id
+     * @param pipelineName pipeline name
+     * @return output ID
+     */
+    public String createOutputInPipeline(String processGroupId, String pipelineName) {
+        PortEntity body = new PortEntity();
+        PortDTO component = new PortDTO();
+        component.setName(pipelineName + " output");
+        component.setAllowRemoteAccess(false);
+
+        PositionDTO position = new PositionDTO();
+        position.setX(0.0);
+        position.setY(0.0);
+        component.setPosition(position);
+
+        RevisionDTO revision = new RevisionDTO();
+        revision.setVersion(0L);
+
+        body.setRevision(revision);
+        body.setComponent(component);
+
+        List<String> paths = new ArrayList<String>();
+        Map<String, String> headers = new HashMap<String, String>();
+
+        headers.put("Content-Type", "application/json");
+
+        paths.add("process-groups");
+        paths.add(processGroupId);
+        paths.add("output-ports");
+        try {
+            ResponseEntity<String> result = dataCoreRestSVC.post(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                body,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+
+            PortEntity resultPortEntity = nifiObjectMapper.readValue(
+                result.getBody(),
+                PortEntity.class
+            );
+
+            log.info(
+                "Create Output in Pipeline : output PortEntity = [{}]",
+                resultPortEntity.getId()
+            );
+            return resultPortEntity.getId();
+        } catch (Exception e) {
+            log.error("Fail to Create Output in Pipeline : Pipeline Name = [{}]", pipelineName);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void updateControllersInAdaptor(String processorGroupId, NiFiComponentVO properies)
+        throws JsonProcessingException {
         ControllerServicesEntity controllers = searchControllersInProcessorGroup(processorGroupId);
         if (controllers.getControllerServices().size() == 0) {
             log.error(
@@ -134,36 +197,45 @@ public class NiFiRestSVC {
             );
         } else {
             for (ControllerServiceEntity controller : controllers.getControllerServices()) {
-                ControllerServiceEntity updateController = updateControllerProperties(
-                    controller,
-                    properies.getRequiredProps()
-                );
-                try {
-                    List<String> paths = new ArrayList<String>();
-                    paths.add("controller-services");
-                    paths.add(updateController.getId());
+                if (controller.getComponent().getName().equals(properies.getName())) {
+                    log.info("Controller name : {}", controller.getComponent().getName());
+                    if (properies.getRequiredProps().size() != 0) {
+                        controller =
+                            updateControllerProperties(controller, properies.getRequiredProps());
+                    } else {
+                        log.error("Empty Required Props Elements In {}", properies.getName());
+                    }
+                    if (properies.getOptionalProps().size() != 0) {
+                        controller =
+                            updateControllerProperties(controller, properies.getOptionalProps());
+                    }
+                    try {
+                        List<String> paths = new ArrayList<String>();
+                        paths.add("controller-services");
+                        paths.add(controller.getId());
 
-                    Map<String, String> headers = new HashMap<String, String>();
-                    headers.put("Content-Type", "application/json");
+                        Map<String, String> headers = new HashMap<String, String>();
+                        headers.put("Content-Type", "application/json");
 
-                    ResponseEntity<String> result = dataCoreRestSVC.get(
-                        niFiClientEntity.getProperties().getNifiUrl() +
-                        niFiClientEntity.getBASE_URL(),
-                        paths,
-                        headers,
-                        updateController,
-                        null,
-                        niFiClientEntity.getAccessToken(),
-                        String.class
-                    );
+                        ResponseEntity<String> result = dataCoreRestSVC.put(
+                            niFiClientEntity.getProperties().getNifiUrl() +
+                            niFiClientEntity.getBASE_URL(),
+                            paths,
+                            headers,
+                            controller,
+                            null,
+                            niFiClientEntity.getAccessToken(),
+                            String.class
+                        );
 
-                    ControllerServicesEntity resultEntity = nifiObjectMapper.readValue(
-                        result.getBody(),
-                        ControllerServicesEntity.class
-                    );
-                    log.info("Update Controllers In Adaptor : Controller = {}", resultEntity);
-                } catch (Exception e) {
-                    log.error("Fail to Update Controllers in Adaptor.", e);
+                        ControllerServiceEntity resultEntity = nifiObjectMapper.readValue(
+                            result.getBody(),
+                            ControllerServiceEntity.class
+                        );
+                        log.info("Update Controllers In Adaptor : Controller = {}", resultEntity);
+                    } catch (Exception e) {
+                        log.error("Fail to Update Controllers in Adaptor.", e);
+                    }
                 }
             }
         }
@@ -175,9 +247,16 @@ public class NiFiRestSVC {
     ) {
         Map<String, String> setUpProperties = controller.getComponent().getProperties();
         for (PropertyVO property : properies) {
-            setUpProperties.replace(property.getName(), property.getInputValue());
+            if (property.getName().equals("Database Connection URL")) {
+                setUpProperties.replace(
+                    property.getName(),
+                    setUpProperties.get("Database Connection URL") + property.getInputValue()
+                );
+            } else {
+                setUpProperties.replace(property.getName(), property.getInputValue());
+            }
         }
-
+        log.info("Properties : {}", setUpProperties);
         controller.getComponent().setProperties(setUpProperties);
 
         return controller;
@@ -245,7 +324,7 @@ public class NiFiRestSVC {
         return resultEntity;
     }
 
-    protected ProcessGroupStatusEntity getStatusProcessGroup(String processorGroupId)
+    public Map<String, Integer> getStatusProcessGroup(String processorGroupId)
         throws JsonMappingException, JsonProcessingException {
         List<String> paths = new ArrayList<String>();
         paths.add("flow");
@@ -274,10 +353,10 @@ public class NiFiRestSVC {
             result.getBody(),
             ProcessGroupStatusEntity.class
         );
-        return resultEntity;
+        return getNumberOfProcessorStatus(resultEntity);
     }
 
-    public Map<String, Integer> getNumberOfProcessorStatus(
+    protected Map<String, Integer> getNumberOfProcessorStatus(
         ProcessGroupStatusEntity processGroupStatus
     ) {
         Map<String, Integer> result = new HashMap<>();

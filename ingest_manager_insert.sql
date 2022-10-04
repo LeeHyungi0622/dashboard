@@ -335,5 +335,7 @@ INSERT INTO ingest_manager.properties (adaptor_name, adaptor_id, property_name, 
 INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELECT id FROM ingest_manager.properties ORDER BY ID DESC LIMIT 1), null );
 INSERT INTO ingest_manager.properties (adaptor_name, adaptor_id, property_name, detail, is_required) values( (SELECT adaptor_name FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), (SELECT id FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), 'level3', null, true);
 INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELECT id FROM ingest_manager.properties ORDER BY ID DESC LIMIT 1), null );
+INSERT INTO ingest_manager.properties (adaptor_name, adaptor_id, property_name, detail, is_required) values( (SELECT adaptor_name FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), (SELECT id FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), 'DateFormat', null, true);
+INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELECT id FROM ingest_manager.properties ORDER BY ID DESC LIMIT 1), null );
 
 

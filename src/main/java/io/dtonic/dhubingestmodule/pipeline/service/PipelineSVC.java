@@ -1,13 +1,25 @@
 package io.dtonic.dhubingestmodule.pipeline.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
+import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
+import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
+import io.dtonic.dhubingestmodule.nifi.controller.NiFiController;
+import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
+import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
+import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
+import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper;
 import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import io.dtonic.dhubingestmodule.util.ValidateUtil;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -27,66 +39,80 @@ public class PipelineSVC {
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
 
-    public void createPipeline(
-        Integer id,
-        String creator,
-        String name,
-        String detail,
-        String status,
-        String dataSet,
-        String collector,
-        String filter,
-        String converter
-    ) {
-        // NIFI API response data_set
-        int result = pipelineMapper.createPipeline(
-            creator,
-            name,
-            detail,
-            status,
-            dataSet,
-            collector,
-            filter,
-            converter
-        );
-        //임시 파이프라인 삭제
-        if (result == 1) {
-            pipelineDraftSVC.deletePipelineDrafts(id);
-        } else {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
-                "Create Pipeline Error"
+    @Autowired
+    private DataSetSVC dataSetSVC;
+
+    @Autowired
+    private PipelineDraftMapper pipelineDraftMapper;
+
+    @Autowired
+    private NiFiController niFiController;
+
+    @Transactional
+    public void createPipeline(Integer id, PipelineVO pipelineVO) {
+        String processorGroupId = niFiController.createPipeline(pipelineVO);
+        if (!ValidateUtil.isStringEmpty(processorGroupId)) {
+            JSONObject jsonObject = new JSONObject(pipelineVO);
+            int result = pipelineMapper.createPipeline(
+                jsonObject.getString("creator"),
+                jsonObject.getString("name"),
+                jsonObject.getString("detail"),
+                "Stopped",
+                jsonObject.getString("dataSet"),
+                jsonObject.getString("dataModel"),
+                jsonObject.getJSONObject("collector").toString(),
+                jsonObject.getJSONObject("filter").toString(),
+                jsonObject.getJSONObject("converter").toString(),
+                processorGroupId
             );
+            if (result != 1) {
+                throw new BadRequestException(
+                    DataCoreUiCode.ErrorCode.BAD_REQUEST,
+                    "It's not created Pipeline in DB"
+                );
+            }
+            //임시 파이프라인 삭제
+            pipelineDraftSVC.deletePipelineDrafts(id);
         }
     }
 
-    // private final NiFoControlSVC nificontrolSVC;
     @Transactional
     public List<PipelineListResponseVO> getPipelineList() {
         List<PipelineListResponseVO> pipelineListVOs = pipelineMapper.getPipelineList();
         for (int i = 0; i < pipelineListVOs.size(); i++) {
-            String temp_status = "Starting"; // Nifi API Response stats 값 가져와서 (현재 임시값)
-            String cur_status = pipelineListVOs.get(i).getStatus(); // 현재 DB status값
-            if (
-                cur_status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
-                cur_status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
-            ) { // DB 상태 Starting or Stopping 경우 상태변화
-                // 일어남
+            PipelineVO pipeline = getPipelineVOById(pipelineListVOs.get(i).getId());
+            Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
+                pipeline.getProcessorGroupId()
+            );
+            if (!ValidateUtil.isMapEmpty(nifiStatus)) {
+                String curStatus = pipelineListVOs.get(i).getStatus(); // 현재 DB status값
                 if (
-                    cur_status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) &&
-                    temp_status.equals(PipelineStatusCode.PIPELINE_NIFISTATUS_RUNNING.getCode())
-                ) pipelineListVOs
-                    .get(i)
-                    .setStatus(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()); else if ( // DB상태 Run // DB상태 Starting Nifi 상태 Running =>
-                    cur_status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()) &&
-                    temp_status.equals(PipelineStatusCode.PIPELINE_NIFISTATUS_STOP.getCode())
-                ) pipelineListVOs
-                    .get(i)
-                    .setStatus(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()); // DB상태 Stopped // DB상태 Stopping Nifi 상태 Stop =>
-                changePipelineStatus(
-                    pipelineListVOs.get(i).getId(),
-                    pipelineListVOs.get(i).getStatus()
-                );
+                    curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
+                    curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
+                ) { // DB 상태 Starting or Stopping 경우 상태변화
+                    // 일어남
+                    if (
+                        curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) &&
+                        nifiStatus.get("Stopped") == 0 &&
+                        nifiStatus.get("Invaild") == 0
+                    ) {
+                        pipelineListVOs
+                            .get(i)
+                            .setStatus(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
+                    } else if ( // DB상태 Run // DB상태 Starting Nifi 상태 Running =>
+                        curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()) &&
+                        nifiStatus.get("Running") == 0 &&
+                        nifiStatus.get("Invaild") == 0
+                    ) {
+                        pipelineListVOs
+                            .get(i)
+                            .setStatus(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode());
+                    }
+                    changePipelineStatus(
+                        pipelineListVOs.get(i).getId(),
+                        pipelineListVOs.get(i).getStatus()
+                    );
+                }
             }
         }
         return pipelineListVOs;
@@ -105,6 +131,13 @@ public class PipelineSVC {
 
     @Transactional
     public void changePipelineStatus(Integer id, String status) {
+        //NifiAPI
+        PipelineVO pipelineVO = getPipelineVOById(id);
+        if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode())) {
+            niFiController.runPipeline(pipelineVO.getProcessorGroupId());
+        } else if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())) {
+            niFiController.stopPipeline(pipelineVO.getProcessorGroupId());
+        }
         int result = pipelineMapper.changePipelineStatus(id, status);
         if (result != 1) {
             throw new BadRequestException(
@@ -116,13 +149,20 @@ public class PipelineSVC {
 
     @Transactional
     public void deletePipeline(Integer id) {
-        // check nifi run or stop. if running then stop to nifi
-        int result = pipelineMapper.deletePipeline(id);
-        if (result != 1) {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.BAD_REQUEST,
-                "Delete Pipeline Error"
-            );
+        //NifiAPI
+        try {
+            PipelineVO pipelineVO = getPipelineVOById(id);
+            if (niFiController.deletePipeline(pipelineVO.getProcessorGroupId())) {
+                int result = pipelineMapper.deletePipeline(id);
+                if (result != 1) {
+                    throw new BadRequestException(
+                        DataCoreUiCode.ErrorCode.BAD_REQUEST,
+                        "Delete Pipeline Error"
+                    );
+                }
+            }
+        } catch (Exception e) {
+            log.error("Fail to Delete Pipeline in DB : PipelineID = {}", id, e);
         }
     }
 
@@ -131,81 +171,114 @@ public class PipelineSVC {
     }
 
     @Transactional
-    public void updatePipeline(JSONObject jsonObject) {
-        parseJSON(jsonObject, "collector");
-        parseJSON(jsonObject, "filter");
-        parseJSON(jsonObject, "converter");
+    public void updatePipeline(Integer id, PipelineVO pipelineVO) {
+        String processorGroupId = niFiController.updatePipeline(pipelineVO);
+        JSONObject jsonObject = new JSONObject(pipelineVO);
+        int result = pipelineMapper.updatePipeline(
+            jsonObject.getInt("id"),
+            jsonObject.getString("name"),
+            jsonObject.getString("detail"),
+            jsonObject.getString("dataSet"),
+            jsonObject.getString("dataModel"),
+            processorGroupId,
+            jsonObject.getJSONObject("collector").toString(),
+            jsonObject.getJSONObject("filter").toString(),
+            jsonObject.getJSONObject("converter").toString()
+        );
+
+        if (result != 1) {
+            throw new BadRequestException(
+                DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
+                "Update Pipeline Error"
+            );
+        }
     }
 
-    @Transactional
-    public void parseJSON(JSONObject jsonObject, String nifiFlowType) {
-        // collector, filter, converter를 설정하지 않은 초기 단계 에서는 jsonString을 null로 설정
-        if (jsonObject.isNull(nifiFlowType)) {
-            pipelineMapper.updatePipeline(
-                jsonObject.getInt("id"),
-                jsonObject.getString("name"),
-                jsonObject.getString("detail"),
-                null,
-                null,
-                nifiFlowType
-            );
-            // collector, filter, converter 내의 processor의 필수 properties 값이 모두 채워졌는지 확인
-        } else {
-            int idx = 0;
-            int completeCnt = 0; // 프로세서들의 필수 properties들이 모두 채워져있으면 1 증가
-            String flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
-
-            JSONObject jObject = new JSONObject(flowJsonString);
-            int nifiComponentLength = jObject.getJSONArray("NifiComponents").length();
-
-            for (int i = 0; i < nifiComponentLength; i++) {
-                JSONObject jObj = new JSONObject(
-                    jObject.getJSONArray("NifiComponents").get(i).toString()
+    public PipelineVO getPipelineProperties(
+        Integer pipelineid,
+        String page,
+        String adaptorName,
+        String datasetid
+    ) {
+        PipelineVO pipelineVO = pipelineMapper.getPipeline(pipelineid);
+        AdaptorVO adaptorVO = getPipelineproperties(adaptorName);
+        switch (page) {
+            case "collector": //수집기 선택시 (수집 pipelineVO 속성 리턴)
+                pipelineVO.setCollector(adaptorVO);
+                break;
+            case "filter": //수집에서 다음 누를때(정제 pipelineVO 속성 리턴)
+                pipelineVO.setFilter(adaptorVO);
+                break;
+            case "converter": //데이터셋 선택시 (변환 pipelineVO 속성 리턴)
+                DataModelVO dataModelVO = dataSetSVC.getDataModelId( //model ID 가져오기
+                    datasetid
                 );
-                JSONArray properties = jObj.getJSONArray("requiredProps");
-                for (idx = 0; idx < properties.length(); idx++) {
-                    if (properties.getJSONObject(idx).isNull("inputValue")) {
-                        break;
-                    }
+                pipelineVO.setDataModel(dataModelVO.getId());
+                dataModelVO = dataSetSVC.getDataModelProperties(dataModelVO.getId());
+                NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
+                for (int i = 0; i < dataModelVO.getAttributes().size(); i++) {
+                    PropertyVO propertyVO = new PropertyVO();
+                    propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                    propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
+                    niFiComponentVO.getRequiredProps().add(propertyVO);
+                    niFiComponentVO.setName("DataSetProps");
+                    niFiComponentVO.setType("Processor");
                 }
-
-                if (idx == properties.length()) {
-                    completeCnt++;
-                }
-            }
-
-            // processor에서 필수로 넣어야 하는 properties 값들이 모두 채워져 있으면, completed를 true로 바꾼다
-            if (completeCnt == nifiComponentLength) {
-                jsonObject.getJSONObject(nifiFlowType).remove("completed");
-                jsonObject.getJSONObject(nifiFlowType).put("completed", true);
-                flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
-            } else {
-                jsonObject.getJSONObject(nifiFlowType).remove("completed");
-                jsonObject.getJSONObject(nifiFlowType).put("completed", false);
-                flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
-            }
-
-            // converter 단계에서 dataSet을 값을 설정한다.
-            // converter 단계가 아니면 dataSet 값은 null로 처리
-            if (jsonObject.isNull("dataSet")) {
-                pipelineMapper.updatePipeline(
-                    jsonObject.getInt("id"),
-                    jsonObject.getString("name"),
-                    jsonObject.getString("detail"),
-                    null,
-                    flowJsonString,
-                    nifiFlowType
+                adaptorVO.getNifiComponents().add(niFiComponentVO);
+                pipelineVO.setConverter(adaptorVO);
+                break;
+            default:
+                throw new BadRequestException(
+                    DataCoreUiCode.ErrorCode.BAD_REQUEST,
+                    "Page name Error"
                 );
+        }
+
+        return pipelineVO;
+    }
+
+    //adaptor의 속성값 가져오기
+    public AdaptorVO getPipelineproperties(String adaptorName) {
+        NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
+        List<NiFiComponentVO> niFiComponentVOs = new ArrayList<NiFiComponentVO>();
+        List<PropertyVO> propertyVO = pipelineDraftMapper.getPipelineproperties(adaptorName);
+        AdaptorVO adaptorVO = new AdaptorVO();
+        Integer cur_adaptor_id = propertyVO.get(0).getAdaptorId();
+        for (int i = 0; i < propertyVO.size(); i++) {
+            if (propertyVO.get(i).getAdaptorId() != cur_adaptor_id) {
+                niFiComponentVO.setName(
+                    pipelineDraftMapper.getAdaptorinfo(cur_adaptor_id).getName()
+                );
+                niFiComponentVO.setType(
+                    pipelineDraftMapper.getAdaptorinfo(cur_adaptor_id).getType()
+                );
+                cur_adaptor_id = propertyVO.get(i).getAdaptorId();
+                niFiComponentVOs.add(niFiComponentVO);
+                niFiComponentVO = new NiFiComponentVO();
+            }
+            if (propertyVO.get(i).getIsRequired()) {
+                if (
+                    propertyVO.get(i).getDefaultValue().size() > 0 &&
+                    ValidateUtil.isStringEmpty(propertyVO.get(i).getInputValue())
+                ) {
+                    propertyVO.get(i).setInputValue(propertyVO.get(i).getDefaultValue().get(0));
+                }
+                niFiComponentVO.getRequiredProps().add(propertyVO.get(i));
             } else {
-                pipelineMapper.updatePipeline(
-                    jsonObject.getInt("id"),
-                    jsonObject.getString("name"),
-                    jsonObject.getString("detail"),
-                    jsonObject.getString("dataSet"),
-                    flowJsonString,
-                    nifiFlowType
+                niFiComponentVO.getOptionalProps().add(propertyVO.get(i));
+            }
+            if (i == propertyVO.size() - 1) {
+                niFiComponentVO.setName(
+                    pipelineDraftMapper.getAdaptorinfo(cur_adaptor_id).getName()
+                );
+                niFiComponentVO.setType(
+                    pipelineDraftMapper.getAdaptorinfo(cur_adaptor_id).getType()
                 );
             }
         }
+        niFiComponentVOs.add(niFiComponentVO);
+        adaptorVO.setNifiComponents(niFiComponentVOs);
+        adaptorVO.setName(adaptorName);
+        return adaptorVO;
     }
 }
