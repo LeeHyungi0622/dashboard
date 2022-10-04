@@ -3,9 +3,6 @@ package io.dtonic.dhubingestmodule.pipeline.service;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.shaded.json.JSONObject;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -17,9 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("dtonic")
 public class PipelineSVCTest {
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private PipelineSVC pipelineSVC;
