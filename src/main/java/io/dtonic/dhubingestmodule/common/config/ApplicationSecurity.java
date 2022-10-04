@@ -72,7 +72,11 @@ public class ApplicationSecurity {
                     BasicAuthenticationFilter.class
                 )
                 .addFilterAfter(
-                    new JwtAuthorizationFilter(authenticationEntryPoint(), ingestManagerSVC),
+                    new JwtAuthorizationFilter(
+                        authenticationEntryPoint(),
+                        ingestManagerSVC,
+                        properties
+                    ),
                     JwtAuthenticationFilter.class
                 );
         } else {

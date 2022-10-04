@@ -1,145 +1,26 @@
-2022-08-03 10:48:11.605 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Starting DHubIngestModuleApplicationTests using Java 11.0.12 on DESKTOP-L9PPN7S with PID 21924 (started by A in c:\dev\git\d.hub\ingestmanager)
-2022-08-03 10:48:11.605 DEBUG [main] i.d.d.DHubIngestModuleApplicationTests : Running with Spring Boot v2.7.2, Spring v5.3.22
-2022-08-03 10:48:11.606 INFO [main] i.d.d.DHubIngestModuleApplicationTests : The following 1 profile is active: "dev"
-2022-08-03 10:48:13.801 WARN [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration : 
+2022-09-27 09:43:46.918 WARN [main] o.s.b.t.j.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer : 
 
-Using generated security password: 13a4f103-048a-4a31-b704-c96c9538c5fd
+Found multiple occurrences of org.json.JSONObject on the class path:
 
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
+	jar:file:/C:/Users/dolky/.m2/repository/org/json/json/20180813/json-20180813.jar!/org/json/JSONObject.class
+	jar:file:/C:/Users/dolky/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar!/org/json/JSONObject.class
 
-2022-08-03 10:48:13.973 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@58601e7a, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@62735b13, org.springframework.security.web.context.SecurityContextPersistenceFilter@621624b1, io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter@7aae1170, io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter@4ef5dd23, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@61853c7e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@32e5af53, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@163e8949, org.springframework.security.web.session.SessionManagementFilter@6fe04f2a, org.springframework.security.web.access.ExceptionTranslationFilter@47a3d56a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@60928a61]
-2022-08-03 10:48:13.977 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/accesstoken']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 10:48:13.977 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/accesstoken']
-2022-08-03 10:48:13.978 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/logout']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 10:48:13.979 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/logout']
-2022-08-03 10:48:15.185 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Started DHubIngestModuleApplicationTests in 4.057 seconds (JVM running for 5.31)
-2022-08-03 10:55:44.483 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Starting DHubIngestModuleApplicationTests using Java 11.0.12 on DESKTOP-L9PPN7S with PID 30352 (started by A in c:\dev\git\d.hub\ingestmanager)
-2022-08-03 10:55:44.484 DEBUG [main] i.d.d.DHubIngestModuleApplicationTests : Running with Spring Boot v2.7.2, Spring v5.3.22
-2022-08-03 10:55:44.484 INFO [main] i.d.d.DHubIngestModuleApplicationTests : The following 1 profile is active: "dev"
-2022-08-03 10:55:46.712 WARN [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration : 
+You may wish to exclude one of them to ensure predictable runtime behavior
 
-Using generated security password: fcb9ca4d-827c-40c3-a983-28d8ce21107f
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2022-08-03 10:55:46.877 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@dc1fadd, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3ef3f661, org.springframework.security.web.context.SecurityContextPersistenceFilter@119d4443, io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter@baa9ce4, io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter@5b332439, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3a38e4dc, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@41fc0084, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@59262a90, org.springframework.security.web.session.SessionManagementFilter@30036a18, org.springframework.security.web.access.ExceptionTranslationFilter@50f4b83d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2c99c8d]
-2022-08-03 10:55:46.891 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/accesstoken']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 10:55:46.891 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/accesstoken']
-2022-08-03 10:55:46.891 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/logout']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 10:55:46.891 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/logout']
-2022-08-03 10:55:47.948 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Started DHubIngestModuleApplicationTests in 3.965 seconds (JVM running for 5.006)
-2022-08-03 11:00:10.219 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Starting DHubIngestModuleApplicationTests using Java 11.0.12 on DESKTOP-L9PPN7S with PID 29264 (started by A in c:\dev\git\d.hub\ingestmanager)
-2022-08-03 11:00:10.219 DEBUG [main] i.d.d.DHubIngestModuleApplicationTests : Running with Spring Boot v2.7.2, Spring v5.3.22
-2022-08-03 11:00:10.219 INFO [main] i.d.d.DHubIngestModuleApplicationTests : The following 1 profile is active: "dev"
-2022-08-03 11:00:12.286 WARN [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration : 
-
-Using generated security password: 995e007c-c3e0-4abf-846a-49ca316a3c5a
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2022-08-03 11:00:12.465 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@59262a90, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@78479f2b, org.springframework.security.web.context.SecurityContextPersistenceFilter@41fc0084, io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter@2755617b, io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter@65859b44, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7e0f9528, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5f56424d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@d9f5fce, org.springframework.security.web.session.SessionManagementFilter@28b458e6, org.springframework.security.web.access.ExceptionTranslationFilter@11e17893, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@69bc9584]
-2022-08-03 11:00:12.481 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/accesstoken']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:00:12.482 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/accesstoken']
-2022-08-03 11:00:12.482 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/logout']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:00:12.482 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/logout']
-2022-08-03 11:00:12.557 WARN [main] o.s.w.c.s.GenericWebApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.boot.context.properties.ConfigurationPropertiesBindException: Error creating bean with name 'retrieveDatasource': Could not bind properties to 'DataSource' : prefix=spring.retrieveDatasource, ignoreInvalidFields=false, ignoreUnknownFields=true; nested exception is org.springframework.boot.context.properties.source.InvalidConfigurationPropertyNameException: Configuration property name 'spring.retrieveDatasource' is not valid
-2022-08-03 11:00:12.568 INFO [main] o.s.b.a.l.ConditionEvaluationReportLoggingListener : 
+2022-09-27 09:43:46.936 INFO [main] i.d.d.nifi.service.NiFiRestSVCTest : Starting NiFiRestSVCTest using Java 17.0.1 on DESKTOP-E189D2M with PID 14588 (started by dolky in C:\dtonic_dev\D.hub\ingest-module\D.Hub%20Ingest%20Module)
+2022-09-27 09:43:46.936 DEBUG [main] i.d.d.nifi.service.NiFiRestSVCTest : Running with Spring Boot v2.7.2, Spring v5.3.22
+2022-09-27 09:43:46.937 INFO [main] i.d.d.nifi.service.NiFiRestSVCTest : The following 1 profile is active: "dtonic"
+2022-09-27 09:43:59.745 WARN [main] o.s.w.c.s.GenericWebApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'niFiClient' defined in file [C:\dtonic_dev\D.hub\ingest-module\D.Hub%20Ingest%20Module\target\classes\io\dtonic\dhubingestmodule\nifi\client\NiFiClient.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'niFiClientEntity': Invocation of init method failed; nested exception is com.github.hermannpencole.nifi.swagger.ApiException: java.net.SocketTimeoutException: Connect timed out
+2022-09-27 09:43:59.759 INFO [main] o.s.b.a.l.ConditionEvaluationReportLoggingListener : 
 
 Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
-2022-08-03 11:00:12.588 ERROR [main] o.s.b.d.LoggingFailureAnalysisReporter : 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Configuration property name 'spring.retrieveDatasource' is not valid:
-
-    Invalid characters: 'D'
-    Bean: retrieveDatasource
-    Reason: Canonical names should be kebab-case ('-' separated), lowercase alpha-numeric characters and must start with a letter
-
-Action:
-
-Modify 'spring.retrieveDatasource' so that it conforms to the canonical names requirements.
-
-2022-08-03 11:00:12.590 ERROR [main] o.s.test.context.TestContextManager : Caught exception while allowing TestExecutionListener [org.springframework.test.context.web.ServletTestExecutionListener@5a7005d] to prepare test instance [io.dtonic.dhubingestmodule.DHubIngestModuleApplicationTests@45cd8607]
-java.lang.IllegalStateException: Failed to load ApplicationContext
-	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:132)
-	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:124)
-	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:190)
-	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:132)
-	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:248)
-	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:138)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$8(ClassBasedTestDescriptor.java:363)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:368)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$9(ClassBasedTestDescriptor.java:363)
-	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:195)
-	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:177)
-	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1655)
-	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:484)
-	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)
-	at java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:312)
-	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
-	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
-	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:362)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$6(ClassBasedTestDescriptor.java:283)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:282)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$4(ClassBasedTestDescriptor.java:272)
-	at java.base/java.util.Optional.orElseGet(Optional.java:369)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$5(ClassBasedTestDescriptor.java:271)
-	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:31)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:102)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:101)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:66)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$2(NodeTestTask.java:123)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:123)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:90)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220)
-	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188)
-	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124)
-	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418)
-Caused by: org.springframework.boot.context.properties.ConfigurationPropertiesBindException: Error creating bean with name 'retrieveDatasource': Could not bind properties to 'DataSource' : prefix=spring.retrieveDatasource, ignoreInvalidFields=false, ignoreUnknownFields=true; nested exception is org.springframework.boot.context.properties.source.InvalidConfigurationPropertyNameException: Configuration property name 'spring.retrieveDatasource' is not valid
-	at org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor.bind(ConfigurationPropertiesBindingPostProcessor.java:92)
-	at org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor.postProcessBeforeInitialization(ConfigurationPropertiesBindingPostProcessor.java:78)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:440)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1796)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620)
+2022-09-27 09:43:59.785 ERROR [main] o.s.boot.SpringApplication : Application run failed
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'niFiClient' defined in file [C:\dtonic_dev\D.hub\ingest-module\D.Hub%20Ingest%20Module\target\classes\io\dtonic\dhubingestmodule\nifi\client\NiFiClient.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'niFiClientEntity': Invocation of init method failed; nested exception is com.github.hermannpencole.nifi.swagger.ApiException: java.net.SocketTimeoutException: Connect timed out
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:800)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:229)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1372)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1222)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:582)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542)
 	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
 	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
@@ -154,103 +35,265 @@ Caused by: org.springframework.boot.context.properties.ConfigurationPropertiesBi
 	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:132)
 	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:99)
 	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
-	... 67 common frames omitted
-Caused by: org.springframework.boot.context.properties.source.InvalidConfigurationPropertyNameException: Configuration property name 'spring.retrieveDatasource' is not valid
-	at org.springframework.boot.context.properties.source.ConfigurationPropertyName.elementsOf(ConfigurationPropertyName.java:618)
-	at org.springframework.boot.context.properties.source.ConfigurationPropertyName.elementsOf(ConfigurationPropertyName.java:595)
-	at org.springframework.boot.context.properties.source.ConfigurationPropertyName.of(ConfigurationPropertyName.java:586)
-	at org.springframework.boot.context.properties.source.ConfigurationPropertyName.of(ConfigurationPropertyName.java:563)
-	at org.springframework.boot.context.properties.bind.Binder.bind(Binder.java:249)
-	at org.springframework.boot.context.properties.ConfigurationPropertiesBinder.bind(ConfigurationPropertiesBinder.java:95)
-	at org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor.bind(ConfigurationPropertiesBindingPostProcessor.java:89)
-	... 85 common frames omitted
-2022-08-03 11:03:24.332 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Starting DHubIngestModuleApplicationTests using Java 11.0.12 on DESKTOP-L9PPN7S with PID 30328 (started by A in C:\dev\git\d.hub\ingestmanager)
-2022-08-03 11:03:24.333 DEBUG [main] i.d.d.DHubIngestModuleApplicationTests : Running with Spring Boot v2.7.2, Spring v5.3.22
-2022-08-03 11:03:24.333 INFO [main] i.d.d.DHubIngestModuleApplicationTests : The following 1 profile is active: "dev"
-2022-08-03 11:03:26.403 WARN [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration : 
-
-Using generated security password: 1577eceb-7da8-48f5-bc23-64dfc0d689c4
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2022-08-03 11:03:26.712 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4a9b3956, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4217bce6, org.springframework.security.web.context.SecurityContextPersistenceFilter@1491cd6c, io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter@aa752bb, io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter@77fc19cf, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@113dcaf8, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@b5d9f1e, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@643ecfef, org.springframework.security.web.session.SessionManagementFilter@6b25ef1c, org.springframework.security.web.access.ExceptionTranslationFilter@4bf4680c, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@45eab322]
-2022-08-03 11:03:26.749 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/accesstoken']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:03:26.749 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/accesstoken']
-2022-08-03 11:03:26.750 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/logout']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:03:26.750 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/logout']
-2022-08-03 11:03:28.556 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Started DHubIngestModuleApplicationTests in 4.799 seconds (JVM running for 5.967)
-2022-08-03 11:04:18.004 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Starting DHubIngestModuleApplicationTests using Java 11.0.12 on DESKTOP-L9PPN7S with PID 21688 (started by A in C:\dev\git\d.hub\ingestmanager)
-2022-08-03 11:04:18.004 DEBUG [main] i.d.d.DHubIngestModuleApplicationTests : Running with Spring Boot v2.7.2, Spring v5.3.22
-2022-08-03 11:04:18.004 INFO [main] i.d.d.DHubIngestModuleApplicationTests : The following 1 profile is active: "dev"
-2022-08-03 11:04:20.040 WARN [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration : 
-
-Using generated security password: 6fab794d-5ed1-4e17-9a42-55b1abedaf71
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2022-08-03 11:04:20.250 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@2bb31455, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3c16528d, org.springframework.security.web.context.SecurityContextPersistenceFilter@401317a0, io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter@2e45a357, io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter@389a5022, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1201769d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4af7dd6a, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@bb8ead8, org.springframework.security.web.session.SessionManagementFilter@1491cd6c, org.springframework.security.web.access.ExceptionTranslationFilter@17176b18, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@69a373fd]
-2022-08-03 11:04:20.270 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/accesstoken']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:04:20.270 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/accesstoken']
-2022-08-03 11:04:20.270 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/logout']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:04:20.270 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/logout']
-2022-08-03 11:04:21.487 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Started DHubIngestModuleApplicationTests in 3.91 seconds (JVM running for 4.777)
-2022-08-03 11:07:17.673 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Starting DHubIngestModuleApplicationTests using Java 11.0.12 on DESKTOP-L9PPN7S with PID 25808 (started by A in c:\dev\git\d.hub\ingestmanager)
-2022-08-03 11:07:17.673 DEBUG [main] i.d.d.DHubIngestModuleApplicationTests : Running with Spring Boot v2.7.2, Spring v5.3.22
-2022-08-03 11:07:17.674 INFO [main] i.d.d.DHubIngestModuleApplicationTests : The following 1 profile is active: "dev"
-2022-08-03 11:07:19.801 WARN [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration : 
-
-Using generated security password: cb9804c9-757f-47a3-ae7b-df88bc8844bb
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2022-08-03 11:07:20.014 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@1753475d, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@d108406, org.springframework.security.web.context.SecurityContextPersistenceFilter@532dacf5, io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter@799c8758, io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter@6e00837f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@587f4f63, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@660b1a9d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@63e4484d, org.springframework.security.web.session.SessionManagementFilter@39f42d0e, org.springframework.security.web.access.ExceptionTranslationFilter@3181d4de, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@3ef3f661]
-2022-08-03 11:07:20.022 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/accesstoken']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:07:20.022 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/accesstoken']
-2022-08-03 11:07:20.022 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/logout']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:07:20.022 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/logout']
-2022-08-03 11:07:21.355 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Started DHubIngestModuleApplicationTests in 4.14 seconds (JVM running for 5.313)
-2022-08-03 11:08:30.100 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Starting DHubIngestModuleApplicationTests using Java 11.0.12 on DESKTOP-L9PPN7S with PID 23556 (started by A in c:\dev\git\d.hub\ingestmanager)
-2022-08-03 11:08:30.100 DEBUG [main] i.d.d.DHubIngestModuleApplicationTests : Running with Spring Boot v2.7.2, Spring v5.3.22
-2022-08-03 11:08:30.100 INFO [main] i.d.d.DHubIngestModuleApplicationTests : The following 1 profile is active: "dev"
-2022-08-03 11:08:32.380 WARN [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration : 
-
-Using generated security password: 79c42af3-4eb3-4b4b-b84d-9090224c271a
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2022-08-03 11:08:32.552 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3e74fd84, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@147efd9, org.springframework.security.web.context.SecurityContextPersistenceFilter@2cc75b25, io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter@1e120628, io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter@4e4894d, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1544ded3, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3ccb12d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1de5cc88, org.springframework.security.web.session.SessionManagementFilter@7cc2c551, org.springframework.security.web.access.ExceptionTranslationFilter@2dac2e1b, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@5cce40d7]
-2022-08-03 11:08:32.580 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/accesstoken']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:08:32.580 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/accesstoken']
-2022-08-03 11:08:32.581 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/logout']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:08:32.581 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/logout']
-2022-08-03 11:08:33.553 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Started DHubIngestModuleApplicationTests in 3.864 seconds (JVM running for 4.737)
-2022-08-03 11:09:28.200 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Starting DHubIngestModuleApplicationTests using Java 11.0.12 on DESKTOP-L9PPN7S with PID 21944 (started by A in c:\dev\git\d.hub\ingestmanager)
-2022-08-03 11:09:28.201 DEBUG [main] i.d.d.DHubIngestModuleApplicationTests : Running with Spring Boot v2.7.2, Spring v5.3.22
-2022-08-03 11:09:28.201 INFO [main] i.d.d.DHubIngestModuleApplicationTests : The following 1 profile is active: "dev"
-2022-08-03 11:09:30.297 WARN [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration : 
-
-Using generated security password: 1973ae29-038b-4e9a-b20f-4bdd4f4f0bd3
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2022-08-03 11:09:30.490 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@63e4484d, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6a5dd083, org.springframework.security.web.context.SecurityContextPersistenceFilter@660b1a9d, io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter@77663cd7, io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter@1d17423f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2f4d01b6, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@112c2930, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5c70d7f0, org.springframework.security.web.session.SessionManagementFilter@34aa8b61, org.springframework.security.web.access.ExceptionTranslationFilter@1815577b, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@78479f2b]
-2022-08-03 11:09:30.499 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/accesstoken']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:09:30.500 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/accesstoken']
-2022-08-03 11:09:30.500 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/logout']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:09:30.500 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/logout']
-2022-08-03 11:09:31.713 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Started DHubIngestModuleApplicationTests in 3.917 seconds (JVM running for 4.893)
-2022-08-03 11:36:50.838 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Starting DHubIngestModuleApplicationTests using Java 11.0.12 on DESKTOP-L9PPN7S with PID 33448 (started by A in c:\dev\git\d.hub\ingestmanager)
-2022-08-03 11:36:50.839 DEBUG [main] i.d.d.DHubIngestModuleApplicationTests : Running with Spring Boot v2.7.2, Spring v5.3.22
-2022-08-03 11:36:50.839 INFO [main] i.d.d.DHubIngestModuleApplicationTests : The following 1 profile is active: "dev"
-2022-08-03 11:36:53.155 WARN [main] o.s.b.a.s.s.UserDetailsServiceAutoConfiguration : 
-
-Using generated security password: 1ab73652-34e3-48e3-b8c5-717ba20a190c
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2022-08-03 11:36:53.384 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@6a96d639, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@28e94c2, org.springframework.security.web.context.SecurityContextPersistenceFilter@d84b3a2, io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter@3d40498a, io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter@14d1737a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@37c1cfa, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2bcda694, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@482a58c7, org.springframework.security.web.session.SessionManagementFilter@11e17893, org.springframework.security.web.access.ExceptionTranslationFilter@6826b70f, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@4fc6e776]
-2022-08-03 11:36:53.406 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/accesstoken']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:36:53.406 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/accesstoken']
-2022-08-03 11:36:53.407 WARN [main] o.s.s.c.a.web.builders.WebSecurity : You are asking Spring Security to ignore Ant [pattern='/logout']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2022-08-03 11:36:53.407 INFO [main] o.s.s.web.DefaultSecurityFilterChain : Will not secure Ant [pattern='/logout']
-2022-08-03 11:36:54.568 INFO [main] i.d.d.DHubIngestModuleApplicationTests : Started DHubIngestModuleApplicationTests in 4.159 seconds (JVM running for 5.268)
+	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:124)
+	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:190)
+	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:132)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:248)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:138)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$8(ClassBasedTestDescriptor.java:363)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:368)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$9(ClassBasedTestDescriptor.java:363)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:310)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:362)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$6(ClassBasedTestDescriptor.java:283)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:282)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$4(ClassBasedTestDescriptor.java:272)
+	at java.base/java.util.Optional.orElseGet(Optional.java:364)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$5(ClassBasedTestDescriptor.java:271)
+	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:31)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:102)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:101)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$2(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:90)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:95)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:91)
+	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:60)
+	at org.eclipse.jdt.internal.junit5.runner.JUnit5TestReference.run(JUnit5TestReference.java:98)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:40)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:529)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:756)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:452)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:210)
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'niFiClientEntity': Invocation of init method failed; nested exception is com.github.hermannpencole.nifi.swagger.ApiException: java.net.SocketTimeoutException: Connect timed out
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:160)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:440)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1796)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1391)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1311)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:887)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
+	... 89 common frames omitted
+Caused by: com.github.hermannpencole.nifi.swagger.ApiException: java.net.SocketTimeoutException: Connect timed out
+	at com.github.hermannpencole.nifi.swagger.ApiClient.execute(ApiClient.java:885)
+	at com.github.hermannpencole.nifi.swagger.client.AccessApi.createAccessTokenWithHttpInfo(AccessApi.java:170)
+	at com.github.hermannpencole.nifi.swagger.client.AccessApi.createAccessToken(AccessApi.java:155)
+	at io.dtonic.dhubingestmodule.nifi.client.NiFiClientEntity.init(NiFiClientEntity.java:42)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157)
+	... 102 common frames omitted
+Caused by: java.net.SocketTimeoutException: Connect timed out
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:546)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:597)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:633)
+	at com.squareup.okhttp.internal.Platform.connectSocket(Platform.java:120)
+	at com.squareup.okhttp.internal.io.RealConnection.connectSocket(RealConnection.java:141)
+	at com.squareup.okhttp.internal.io.RealConnection.connect(RealConnection.java:112)
+	at com.squareup.okhttp.internal.http.StreamAllocation.findConnection(StreamAllocation.java:184)
+	at com.squareup.okhttp.internal.http.StreamAllocation.findHealthyConnection(StreamAllocation.java:126)
+	at com.squareup.okhttp.internal.http.StreamAllocation.newStream(StreamAllocation.java:95)
+	at com.squareup.okhttp.internal.http.HttpEngine.connect(HttpEngine.java:281)
+	at com.squareup.okhttp.internal.http.HttpEngine.sendRequest(HttpEngine.java:224)
+	at com.squareup.okhttp.Call.getResponse(Call.java:286)
+	at com.squareup.okhttp.Call$ApplicationInterceptorChain.proceed(Call.java:243)
+	at com.squareup.okhttp.Call.getResponseWithInterceptorChain(Call.java:205)
+	at com.squareup.okhttp.Call.execute(Call.java:80)
+	at com.github.hermannpencole.nifi.swagger.ApiClient.execute(ApiClient.java:881)
+	... 112 common frames omitted
+2022-09-27 09:43:59.788 ERROR [main] o.s.test.context.TestContextManager : Caught exception while allowing TestExecutionListener [org.springframework.test.context.web.ServletTestExecutionListener@68df9280] to prepare test instance [io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVCTest@25109608]
+java.lang.IllegalStateException: Failed to load ApplicationContext
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:132)
+	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:124)
+	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:190)
+	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:132)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:248)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:138)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$8(ClassBasedTestDescriptor.java:363)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:368)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$9(ClassBasedTestDescriptor.java:363)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:310)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:362)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$6(ClassBasedTestDescriptor.java:283)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:282)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$4(ClassBasedTestDescriptor.java:272)
+	at java.base/java.util.Optional.orElseGet(Optional.java:364)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$5(ClassBasedTestDescriptor.java:271)
+	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:31)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:102)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:101)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$2(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:90)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:95)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:91)
+	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:60)
+	at org.eclipse.jdt.internal.junit5.runner.JUnit5TestReference.run(JUnit5TestReference.java:98)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:40)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:529)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:756)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:452)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:210)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'niFiClient' defined in file [C:\dtonic_dev\D.hub\ingest-module\D.Hub%20Ingest%20Module\target\classes\io\dtonic\dhubingestmodule\nifi\client\NiFiClient.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'niFiClientEntity': Invocation of init method failed; nested exception is com.github.hermannpencole.nifi.swagger.ApiException: java.net.SocketTimeoutException: Connect timed out
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:800)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:229)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1372)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1222)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:582)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:955)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:918)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:734)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:132)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:99)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
+	... 71 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'niFiClientEntity': Invocation of init method failed; nested exception is com.github.hermannpencole.nifi.swagger.ApiException: java.net.SocketTimeoutException: Connect timed out
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:160)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:440)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1796)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1391)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1311)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:887)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
+	... 89 common frames omitted
+Caused by: com.github.hermannpencole.nifi.swagger.ApiException: java.net.SocketTimeoutException: Connect timed out
+	at com.github.hermannpencole.nifi.swagger.ApiClient.execute(ApiClient.java:885)
+	at com.github.hermannpencole.nifi.swagger.client.AccessApi.createAccessTokenWithHttpInfo(AccessApi.java:170)
+	at com.github.hermannpencole.nifi.swagger.client.AccessApi.createAccessToken(AccessApi.java:155)
+	at io.dtonic.dhubingestmodule.nifi.client.NiFiClientEntity.init(NiFiClientEntity.java:42)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157)
+	... 102 common frames omitted
+Caused by: java.net.SocketTimeoutException: Connect timed out
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:546)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:597)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:633)
+	at com.squareup.okhttp.internal.Platform.connectSocket(Platform.java:120)
+	at com.squareup.okhttp.internal.io.RealConnection.connectSocket(RealConnection.java:141)
+	at com.squareup.okhttp.internal.io.RealConnection.connect(RealConnection.java:112)
+	at com.squareup.okhttp.internal.http.StreamAllocation.findConnection(StreamAllocation.java:184)
+	at com.squareup.okhttp.internal.http.StreamAllocation.findHealthyConnection(StreamAllocation.java:126)
+	at com.squareup.okhttp.internal.http.StreamAllocation.newStream(StreamAllocation.java:95)
+	at com.squareup.okhttp.internal.http.HttpEngine.connect(HttpEngine.java:281)
+	at com.squareup.okhttp.internal.http.HttpEngine.sendRequest(HttpEngine.java:224)
+	at com.squareup.okhttp.Call.getResponse(Call.java:286)
+	at com.squareup.okhttp.Call$ApplicationInterceptorChain.proceed(Call.java:243)
+	at com.squareup.okhttp.Call.getResponseWithInterceptorChain(Call.java:205)
+	at com.squareup.okhttp.Call.execute(Call.java:80)
+	at com.github.hermannpencole.nifi.swagger.ApiClient.execute(ApiClient.java:881)
+	... 112 common frames omitted
