@@ -1,0 +1,226 @@
+{
+  "id": 2,
+  "creator": "admin",
+  "name": "",
+  "detail": "",
+  "status": "Starting",
+  "dataSet": "parkingSensor",
+  "processorGroupId": null,
+  "collector": {
+    "name": "REST API",
+    "completed": false,
+    "NifiComponents": [
+      {
+        "type": "processor",
+        "name": "REST API",
+        "requiredProps": [
+          {
+            "name": "HTTP Method",
+            "detail": "HTTP request method (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS). Arbitrary methods are also supported. Methods other than POST, PUT and PATCH will be sent without a message body.",
+            "defaultValue": ["POST", "GET", "PUT", "PATCH", "DELETE"],
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "Remote URL",
+            "detail": "Remote URL which will be connected to, including scheme, host, port, path.",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "Connection Timeout",
+            "detail": "Max wait time for response from remote service.",
+            "defaultValue": ["5 sec"],
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "Read Timeout",
+            "detail": "Max idle time before closing connection to the remote service.",
+            "defaultValue": ["15 sec"],
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "Idle Timeout",
+            "detail": "Max wait time for response from remote service.",
+            "defaultValue": ["5 mins"],
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "Scheduling",
+            "detail": "Scheduling API call (unit = sec)",
+            "defaultValue": ["30 sec"],
+            "inputValue": null,
+            "isRequired": null
+          }
+        ],
+        "optionalProps": [
+          {
+            "name": "SSL Context Service",
+            "detail": "The SSL Context Service used to provide client certificate information for TLS/SSL (https) connections. It is also used to connect to HTTPS Proxy.",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "Attributes to Send",
+            "detail": "Regular expression that defines which attributes to send as HTTP headers in the request. If not defined, no attributes are sent as headers. Also any dynamic properties set will be sent as headers. The dynamic property key will be the header key and the dynamic property value will be interpreted as expression language will be the header value.",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "Useragent",
+            "detail": "The Useragent identifier sent along with each request",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "Basic Authentication Username",
+            "detail": "The username to be used by the client to authenticate against the Remote URL.  Cannot include control characters (0-31), ':', or DEL (127).",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "Basic Authentication Password",
+            "detail": "The password to be used by the client to authenticate against the Remote URL.",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "oauth2-access-token-provider",
+            "detail": "NULL",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          }
+        ]
+      }
+    ]
+  },
+  "filter": {
+    "name": "filter",
+    "completed": false,
+    "NifiComponents": [
+      {
+        "type": "processor",
+        "name": "Base64Decoder",
+        "requiredProps": [
+          {
+            "name": "isBase64",
+            "detail": null,
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          }
+        ],
+        "optionalProps": []
+      },
+      {
+        "type": "processor",
+        "name": "RootKeyFinder",
+        "requiredProps": [
+          {
+            "name": "root_key",
+            "detail": null,
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          }
+        ],
+        "optionalProps": []
+      }
+    ]
+  },
+  "converter": {
+    "name": "converter",
+    "completed": false,
+    "NifiComponents": [
+      {
+        "type": "processor",
+        "name": "DataSetMapper",
+        "requiredProps": [
+          {
+            "name": "dataSet",
+            "detail": null,
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "dataModel",
+            "detail": null,
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          }
+        ],
+        "optionalProps": []
+      },
+      {
+        "type": "processor",
+        "name": "DataSetProperties",
+        "requiredProps": [
+          {
+            "name": "location",
+            "detail": "GeoProperty",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "parkingAreaId",
+            "detail": "Property",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "parkingLotId",
+            "detail": "Property",
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          }
+        ],
+        "optionalProps": []
+      },
+      {
+        "type": "processor",
+        "name": "IDGenerater",
+        "requiredProps": [
+          {
+            "name": "level1",
+            "detail": null,
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "level2",
+            "detail": null,
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          },
+          {
+            "name": "level3",
+            "detail": null,
+            "defaultValue": null,
+            "inputValue": null,
+            "isRequired": null
+          }
+        ],
+        "optionalProps": []
+      }
+    ]
+  },
+  "createdAt": "2022-09-16 00:58:01.144Z",
+  "modifiedAt": "2022-09-26 07:00:12.424Z"
+}

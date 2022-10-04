@@ -1,0 +1,153 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper">
+  <resultMap id="pipeline" type="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO">
+    <id property="id" column="id" />
+    <result property="creator" column="creator" />
+    <result property="name" column="name" />
+    <result property="detail" column="detail" />
+    <result property="status" column="status" />
+    <result property="dataSet" column="data_set" />
+    <result property="dataModel" column="data_model" />
+    <result property="processorGroupId" column="processor_group_id" />
+    <result property="collector" column="collector" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
+    <result property="filter" column="filter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
+    <result property="converter" column="converter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
+    <result property="createdAt" column="created_at" />
+    <result property="modifiedAt" column="modified_at" />
+  </resultMap>
+  <resultMap id="PropertyVO" type="io.dtonic.dhubingestmodule.nifi.vo.PropertyVO">
+    <result property="nifiType" column="nifi_type" />
+    <result property="nifiName" column="nifi_name" />
+    <result property="adaptorId" column="adaptor_id" />
+    <result property="name" column="property_name" />
+    <result property="detail" column="detail" />
+    <result property="isRequired" column="is_required" />
+    <result property="defaultValue" column="value" typeHandler="io.dtonic.dhubingestmodule.common.handler.ListTypeHandler" />
+  </resultMap>
+  <select id="getPipeline" parameterType="Integer" resultMap="pipeline">
+    SELECT
+      id,
+      creator,
+      name,
+      detail,
+      status,
+      data_set,
+      data_model,
+      processor_group_id,
+      collector,
+      filter,
+      converter,
+      created_at,
+      modified_at
+    FROM pipeline
+    WHERE id = #{id}
+  </select>
+  <update id="changePipelineStatus">
+    UPDATE pipeline 
+    SET status = #{status}, modified_at = now() 
+    WHERE id = #{id}
+  </update>
+  <update id="updatePipeline">
+    UPDATE 
+      pipeline
+    SET 
+      collector = #{collector}, 
+      filter = #{filter},
+      converter = #{converter}, 
+      data_set = #{dataSet},
+      data_model = #{dataModel},
+      processor_group_id = #{processorGroupId},
+      name = #{name}, 
+      detail = #{detail}, 
+      modified_at = now()
+    WHERE id = #{id}
+  </update>
+  <delete id="deletePipeline" parameterType="Integer">
+    DELETE FROM pipeline
+    WHERE id = #{id}
+    </delete>
+  <delete id="deletePipelineDrafts" parameterType="Integer">
+      DELETE FROM temp_pipeline
+      WHERE id = #{id}
+  </delete>
+  <select id="isExists" parameterType="Integer" resultType="boolean">
+    SELECT
+    EXISTS
+    (SELECT * 
+    FROM pipeline where id = #{id})
+  </select>
+  <insert id="createPipeline">
+    INSERT INTO pipeline 
+    ( creator,
+      name,
+      detail, 
+      status, 
+      data_set,
+      data_model,
+      processor_group_id,
+      collector, 
+      filter, 
+      converter, 
+      created_at, 
+      modified_at)
+    VALUES 
+    ( #{creator},
+      #{name},
+      #{detail},
+      #{status},
+      #{dataSet},
+      #{dataModel},
+      #{processGroupId},
+      #{collector},
+      #{filter},
+      #{converter},
+      now(),
+      now())
+    </insert>
+  <select id="getPipelineList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO">
+    SELECT
+       id,
+       name,
+       detail,
+       data_set as dataSet,
+       status,
+       created_at as createdAt,
+       modified_at as modifiedAt
+      FROM pipeline
+      WHERE 1=1
+    ORDER BY id ASC
+  </select>
+  <select id="getDataCollector" resultType="io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO">
+    SELECT 
+      DISTINCT adaptor_name as adaptorName
+    FROM 
+      adaptor
+    WHERE 
+      adaptor_type = 'collector'
+    ORDER BY adaptor_name ASC
+  </select>
+  <select id="getPipelineproperties" resultMap="PropertyVO">
+    SELECT 
+      nifi_type,
+      nifi_name,
+      adaptor_id,
+      property_name ,
+      detail,
+      is_required ,
+	    B.value
+	  FROM 
+      properties A
+	  LEFT JOIN 
+      properties_value B
+	  ON 
+      A.id = B.property_id
+    LEFT JOIN
+      ingest_manager.adaptor C
+    ON
+      C.id = A.adaptor_id
+	  WHERE 
+      A.adaptor_name = #{adaptorName}
+    ORDER BY A.id ASC
+
+  </select>
+</mapper>

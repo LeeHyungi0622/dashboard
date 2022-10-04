@@ -1,7 +1,14 @@
 package io.dtonic.dhubingestmodule.common.configuration;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
@@ -11,6 +18,8 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +59,8 @@ public class RestTemplateConfiguration {
     private Integer validateAfterInactivity;
 
     @Bean
-    public RestTemplate restTemplate() {
+    public RestTemplate restTemplate()
+        throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         RestTemplate restTemplate = new RestTemplate(httpRequestFactory());
         restTemplate
             .getMessageConverters()
@@ -59,16 +69,41 @@ public class RestTemplateConfiguration {
     }
 
     @Bean
-    public ClientHttpRequestFactory httpRequestFactory() {
+    public ClientHttpRequestFactory httpRequestFactory()
+        throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         return new HttpComponentsClientHttpRequestFactory(httpClient());
     }
 
     @Bean
-    public HttpClient httpClient() {
+    public HttpClient httpClient()
+        throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        SSLContext sslContext = new SSLContextBuilder()
+            .loadTrustMaterial(
+                null,
+                new TrustStrategy() {
+                    public boolean isTrusted(X509Certificate[] arg0, String arg1)
+                        throws CertificateException {
+                        return true;
+                    }
+                }
+            )
+            .build();
+
+        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(
+            sslContext,
+            new HostnameVerifier() {
+                @Override
+                public boolean verify(String s, SSLSession sslSession) {
+                    return true;
+                }
+            }
+        );
+
         Registry<ConnectionSocketFactory> registry = RegistryBuilder
             .<ConnectionSocketFactory>create()
             .register("http", PlainConnectionSocketFactory.getSocketFactory())
-            .register("https", SSLConnectionSocketFactory.getSocketFactory())
+            //.register("https", SSLConnectionSocketFactory.getSocketFactory())
+            .register("https", csf)
             .build();
 
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
@@ -93,6 +128,7 @@ public class RestTemplateConfiguration {
             .create()
             .setDefaultRequestConfig(requestConfig)
             .setConnectionManager(connectionManager)
+            .setSSLSocketFactory(csf)
             .build();
     }
 }

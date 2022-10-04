@@ -44,9 +44,21 @@ public class Properties {
     @Value("${cityhub.datacore.manager.url}")
     private String datacoreManagerUrl;
 
+    @Value("${cityhub.datacore.ingestInterface.url}")
+    private String datacoreIngestUrl;
+
     @Value("${cityhub.security.accessRole.user}")
     private String accessRoleUser;
 
     @Value("${spring.security.enabled}")
     private Boolean springSecurityEnabled;
+
+    @Value("${nifi.url}")
+    private String nifiUrl;
+
+    @Value("${nifi.user}")
+    private String nifiUser;
+
+    @Value("${nifi.password}")
+    private String nifiPassword;
 }

@@ -1,6 +1,11 @@
+application:
+  title: D.Hub-Ingest-Manager
+  version: 1.0.0
+
 spring:
   application:
     name: dh-ingest-manager
+
 
   thymeleaf:
     prefix: classpath:/static/
@@ -11,7 +16,7 @@ spring:
 
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://110.45.181.70:5432/postgres?currentSchema=ingest_manager
+    jdbcUrl: jdbc:postgresql://110.45.181.70:5432/postgres?currentSchema=ingest_manager
     username: datacore
     password: datacore
 
@@ -60,6 +65,8 @@ cityhub:
   datacore:
     manager:
       url: http://110.45.181.71:8080
+    ingestInterface:
+      url: http://110.45.181.71:8081
 
 http.pool:
   max.total: 200
@@ -70,6 +77,6 @@ http.pool:
   validate.after.inactivity: 2000
 
 nifi:
-  url: https://110.45.181.70:8443
+  url: https://110.45.181.71:8443
   user: admin
   password: ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB

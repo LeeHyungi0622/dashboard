@@ -38,7 +38,7 @@ module.exports = {
     historyApiFallback: true,
     proxy: {
       '/': {
-        target: 'http://localhost:8083' // api server (development mode)
+        target: 'http://localhost:8099' // api server (development mode)
       }
     }
   },
@@ -83,7 +83,7 @@ module.exports = {
       filename: 'index.html',
       excludeChunks: ['multiple']
     }),
-    new MiniCssExtractPlugin({ filename: FILE_PATH[2] + 'ingestmanager.css' }),
+    new MiniCssExtractPlugin({ filename: FILE_PATH[2] + 'ingestManager.css'}),
     new VueLoaderPlugin(),
     new Stylish(),
     new FriendlyErrorsWebpackPlugin(),
