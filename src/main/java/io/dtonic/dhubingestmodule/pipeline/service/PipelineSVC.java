@@ -51,7 +51,7 @@ public class PipelineSVC {
     @Transactional
     public void createPipeline(Integer id, PipelineVO pipelineVO) {
         String processorGroupId = niFiController.createPipeline(pipelineVO);
-        if (ValidateUtil.isStringEmpty(processorGroupId)) {
+        if (!ValidateUtil.isStringEmpty(processorGroupId)) {
             JSONObject jsonObject = new JSONObject(pipelineVO);
             int result = pipelineMapper.createPipeline(
                 jsonObject.getString("creator"),
