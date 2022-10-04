@@ -88,7 +88,8 @@ import ConfirmPopup from "./components/popup/ConfirmPopup.vue";
 import UserAlertPopup from "./components/popup/UserAlertPopup.vue";
 import AlertPopup from "./components/popup/AlertPopup.vue";
 import EventBus from "@/eventBus/EventBus.js";
-import userInfo from "./json/userInfo.json";
+// import userInfo from "./json/userInfo.json";
+import userInfo from "./js/api/user.js";
 import TempPipelinePopup from "./components/popup/TempPipelinePopup.vue";
 import tempPipeline from "./json/tempPipeline.json";
 
@@ -114,7 +115,7 @@ export default {
         param: "default",
         body: "default",
       },
-      userInfo: userInfo,
+      userInfo: {},
       userAlertContent: {
         title: "default",
         userContent: {
@@ -151,6 +152,8 @@ export default {
     EventBus.$on("show-temp-pipeline-popup", (payload) => {
       this.showTempPipelinePopup(payload);
     });
+    userInfo.getUserInfo().then((res)=>{this.userInfo = res}).catch((err)=>{console.log("Fail to Get User Info", err)})
+    console.log(this.userInfo);
   },
   methods: {
     closeConfirmPopup: function () {
