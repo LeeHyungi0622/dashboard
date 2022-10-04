@@ -12,7 +12,7 @@ spring:
     cache: false
 
   security:
-    enabled: false
+    enabled: true
 
   datasource:
     driverClassName: org.postgresql.Driver
