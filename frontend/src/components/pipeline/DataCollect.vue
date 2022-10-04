@@ -132,7 +132,6 @@ export default {
   },
   props: {
     mode: String,
-    contents: Array,
     convertMode: Function,
   },
   methods: {

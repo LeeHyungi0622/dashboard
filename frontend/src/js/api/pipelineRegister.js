@@ -3,7 +3,7 @@ import axios from "axios";
 class pipelineRegister {
   craetePipelineDraft(requestBody) {
     return axios
-      .post(`/pipeline/drafts`, { data: requestBody })
+      .post(`/pipeline/drafts`, requestBody)
       .then((response) => {
         return response.data;
       })

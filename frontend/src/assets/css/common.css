@@ -294,6 +294,14 @@ select {
   background-color: #2B4F8C;
   color: #ffffff;
 }
+.pipelineButton:disabled{
+  background-color: #C9C9C9;
+  color: #ffffff;
+  width: 13%;
+  padding: 0.5% 0 0.5% 0;
+  border: none;
+}
+
 
 /* pagination */
 .paginationBox {

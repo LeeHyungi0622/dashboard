@@ -40,13 +40,17 @@ export default {
     };
   },
   created() {
+    this.moveRoute("defaultInfo");
     if (this.$route.query.id) {
+      console.log("sdasdsadas");
       pipelineRegisterService
         .getPipelineDraft(this.$route.query.id)
         .then((res) => {
           this.$store.state.pipelineVo = res;
         })
-        .catch((error) => error);
+        .catch((err) =>
+          console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
+        );
     } else {
       pipelineRegisterService
         .getPipelineVo()
@@ -54,28 +58,26 @@ export default {
           this.$store.state.pipelineVo = res;
         })
         .catch((err) => {
-          console.log("PipelinVo 조회에 실패했습니다.", err);
+          console.error("PipelinVo 조회에 실패했습니다.", err);
         });
     }
-    console.log(this.$store.state.pipelineVo);
-    this.moveRoute("defaultInfo");
   },
   methods: {
     moveRoute(name) {
-      let contents = null;
-      if (name == "defaultInfo") {
-        contents = this.defaultInfoContents();
-      } else {
-        contents = this.$store.state.pipelineVo[name].NifiComponents;
-      }
-
-      if (this.$route.name != name) {
+      if (this.$route.name != name && this.$route.query.id) {
         this.$router.push({
           name: name,
           query: { id: this.$route.query.id },
           params: {
-            contents: contents,
-            convertMode: this.nextRoute(),
+            convertMode: this.convertMode,
+            mode: "REGISTER",
+          },
+        });
+      } else if (this.$route.name != name) {
+        this.$router.push({
+          name: name,
+          params: {
+            convertMode: this.convertMode,
             mode: "REGISTER",
           },
         });
@@ -84,31 +86,8 @@ export default {
     convertMode() {
       console.log("REGISTER");
     },
-    defaultInfoContents() {
-      return [
-        {
-          name: "파이프라인 이름",
-          inputValue: this.$store.state.pipelineVo.name,
-        },
-        {
-          name: "파이프라인 정의",
-          inputValue: this.$store.state.pipelineVo.detail,
-        },
-      ];
-    },
     nextRoute() {
-      if (this.$route.name == "defaultInfo") {
-        pipelineRegisterService
-          .craetePipelineDraft(this.$store.state.pipelineVo)
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      } else {
-        pipelineRegisterService.getPipelineDraft(this.reqParam);
-      }
+      pipelineRegisterService.getPipelineDraft(this.reqParam);
     },
     getRouteContents(value) {
       this.contents = value;

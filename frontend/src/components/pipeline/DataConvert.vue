@@ -110,11 +110,11 @@ export default {
         { text: "ID Key", value: "inputValue", sortable: false },
       ],
       dataSetList: dataSetList,
+      contents: this.$store.state.pipelineVo.converter,
     };
   },
   props: {
     mode: String,
-    contents: Array,
     convertMode: Function,
   },
   methods: {

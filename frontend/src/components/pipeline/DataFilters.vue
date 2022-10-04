@@ -27,10 +27,13 @@ export default {
   components: {
     CustomTable,
   },
-
+  data() {
+    return {
+      contents: this.$store.state.pipelineVo.filter,
+    };
+  },
   props: {
     convertMode: Function,
-    contents: Array,
     mode: String,
   },
 };
