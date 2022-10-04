@@ -62,7 +62,7 @@ public class PipelineDraftController {
     }
 
     @GetMapping("/pipeline/drafts/list") // 임시저장 목록 조회
-    public @ResponseBody List<PipelineDraftsListResponseVO> getPipelineDraftsList(
+    public List<PipelineDraftsListResponseVO> getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
         PipelineListRetrieveVO pipelineListRetrieveVO
@@ -70,25 +70,36 @@ public class PipelineDraftController {
         return pipelineDraftSVC.getPipelineDraftsList();
     }
 
-    @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create)
-    public void upsertPipelineDrafts(
+    @PostMapping("/pipeline/drafts") // <기본정보입력> 다음버튼 누를시 (파이프라인 create) or 매 생성 과정중 "다음" 누를 시
+    public int upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody String requestBody
     ) {
         JSONObject jsonObject = new JSONObject(requestBody);
 
-        if (jsonObject.has("id") && pipelineDraftSVC.isExistsDrafts(jsonObject.getInt("id"))) {
-            pipelineDraftSVC.updatePipelineDrafts(jsonObject);
-            response.setStatus(HttpStatus.OK.value());
+        if (!jsonObject.isNull("id")) {
+            if (pipelineDraftSVC.isExistsDrafts(jsonObject.getInt("id"))) {
+                pipelineDraftSVC.updatePipelineDrafts(jsonObject);
+                response.setStatus(HttpStatus.OK.value());
+            }
         } else {
-            pipelineDraftSVC.createPipelineDrafts(
-                jsonObject.getString("name"),
-                jsonObject.getString("creator"),
-                jsonObject.getString("detail")
-            );
-            response.setStatus(HttpStatus.CREATED.value());
+            if (!pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name"))) {
+                int result = pipelineDraftSVC.createPipelineDrafts(
+                    jsonObject.getString("name"),
+                    jsonObject.getString("creator"),
+                    jsonObject.getString("detail")
+                );
+                response.setStatus(HttpStatus.CREATED.value());
+                return result;
+            } else {
+                throw new BadRequestException(
+                    DataCoreUiCode.ErrorCode.ALREADY_EXISTS,
+                    "PipelineName already Exists"
+                );
+            }
         }
+        return 0;
     }
 
     @Transactional

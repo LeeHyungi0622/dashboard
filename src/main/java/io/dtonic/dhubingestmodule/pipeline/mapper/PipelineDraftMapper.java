@@ -32,8 +32,12 @@ public interface PipelineDraftMapper {
         @Param("name") String name,
         @Param("detail") String detail,
         @Param("dataSet") String dataSet,
+        @Param("dataModel") String dataModel,
         @Param("flowJsonString") String flowJsonString,
         @Param("nifiFlowType") String nifiFlowType
     );
     NiFiComponentVO getAdaptorinfo(@Param("adaptorId") Integer adaptorId);
+
+    Integer getPipelineIdByname(@Param("name") String name);
+    Boolean isExistsNameDrafts(@Param("name") String name);
 }

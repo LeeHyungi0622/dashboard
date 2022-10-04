@@ -46,8 +46,7 @@ public class PipelineController {
     public List<PipelineListResponseVO> getPipelineList(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        PipelineListRetrieveVO pipelineListRetrieveVO
+        @RequestHeader(HttpHeaders.ACCEPT) String accept
     ) {
         return pipelineSVC.getPipelineList();
     }
@@ -66,7 +65,7 @@ public class PipelineController {
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @PathVariable Integer id,
+        @PathVariable Integer id, //삭제할 임시파이프라인 id
         @RequestBody PipelineVO pipelineVO
     ) {
         pipelineSVC.createPipeline(id, pipelineVO);
@@ -135,7 +134,7 @@ public class PipelineController {
     public PipelineVO getPipelineProperties(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestParam(name = "page") Integer page,
+        @RequestParam(name = "page") String page,
         @RequestParam(name = "pipelineid") Integer pipelineid,
         @RequestParam(name = "adaptorName") String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid

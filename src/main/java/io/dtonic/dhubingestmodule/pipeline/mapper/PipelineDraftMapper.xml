@@ -5,7 +5,8 @@
     <result property="creator" column="creator" />
     <result property="name" column="name" />
     <result property="detail" column="detail" />
-    <result property="data_set" column="data_set" />
+    <result property="dataSet" column="data_set" />
+    <result property="dataModel" column="data_model" />
     <result property="collector" column="collector" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
     <result property="filter" column="filter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
     <result property="converter" column="converter" typeHandler="io.dtonic.dhubingestmodule.common.handler.JsonTypeHandler" />
@@ -25,7 +26,8 @@
       creator,
       name,
       detail,
-      data_set as dataSet,
+      data_set,
+      data_model,
       collector,
       filter,
       converter,
@@ -40,7 +42,8 @@
       creator,
       name,
       detail,
-      data_set as dataSet,
+      data_set,
+      data_model,
       collector,
       filter,
       converter,
@@ -56,8 +59,30 @@
       ORDER BY id DESC LIMIT 1 
   </select>
   <insert id="createPipelineDrafts" parameterType="String">
-    INSERT INTO temp_pipeline(name, creator, detail, created_at, modified_at) VALUES (#{name}, #{creator}, #{detail}, now(), now())
+    INSERT INTO 
+      temp_pipeline
+      (
+        name,
+        creator,
+        detail, 
+        created_at
+        )
+      VALUES 
+      (
+        #{name}, 
+        #{creator}, 
+        #{detail}, 
+        now()
+        )
   </insert>
+  <select id="getPipelineIdByname" parameterType="String" resultType="Integer">
+    SELECT 
+      id
+    FROM
+      temp_pipeline
+    WHERE
+      name = #{name}
+  </select>
   <update id="updatePipelineDrafts">
     UPDATE temp_pipeline
     <if test="'collector'.equals(nifiFlowType)">SET collector = #{flowJsonString},</if>
@@ -77,6 +102,12 @@
     (SELECT * 
     FROM temp_pipeline where id = #{id})
   </select>
+  <select id="isExistsNameDrafts" parameterType="String" resultType="boolean">
+    SELECT
+    EXISTS
+    (SELECT * 
+    FROM temp_pipeline where name = #{name})
+    </select>
   <select id="getDataCollector" resultType="String">
     SELECT 
       DISTINCT adaptor_name as adaptorName

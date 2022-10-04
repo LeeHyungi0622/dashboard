@@ -12,6 +12,7 @@ import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineDraftMapper;
 import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import io.dtonic.dhubingestmodule.util.ValidateUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,14 +34,16 @@ public class PipelineDraftSVC {
     @Autowired
     private DataSetSVC datasetsvc;
 
-    public void createPipelineDrafts(String name, String creator, String detail) {
-        int result = pipelineDraftMapper.createPipelineDrafts(name, creator, detail);
-        if (result != 1) {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
-                "Create Pipeline Error"
-            );
-        }
+    public int createPipelineDrafts(String name, String creator, String detail) {
+        pipelineDraftMapper.createPipelineDrafts(name, creator, detail);
+        int Pipelineid = pipelineDraftMapper.getPipelineIdByname(name);
+        // if (result != 1) {
+        //     throw new BadRequestException(
+        //         DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
+        //         "Create Pipeline Error"
+        //     );
+        // }
+        return Pipelineid;
     }
 
     public List<String> getDataCollector() {
@@ -107,7 +110,7 @@ public class PipelineDraftSVC {
             if (propertyVO.get(i).getIsRequired()) {
                 if (
                     propertyVO.get(i).getDefaultValue().size() > 0 &&
-                    isStringEmpty(propertyVO.get(i).getInputValue())
+                    ValidateUtil.isStringEmpty(propertyVO.get(i).getInputValue())
                 ) {
                     propertyVO.get(i).setInputValue(propertyVO.get(i).getDefaultValue().get(0));
                 }
@@ -132,12 +135,16 @@ public class PipelineDraftSVC {
 
     @Transactional
     public void deletePipelineDrafts(Integer id) {
-        int result = pipelineDraftMapper.deletePipelineDrafts(id);
-        if (result != 1) {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.BAD_REQUEST,
-                "Delete Pipeline Error"
-            );
+        try {
+            int result = pipelineDraftMapper.deletePipelineDrafts(id);
+            if (result != 1) {
+                throw new BadRequestException(
+                    DataCoreUiCode.ErrorCode.BAD_REQUEST,
+                    "Not Exist to Delete Pipeline ID"
+                );
+            }
+        } catch (Exception e) {
+            log.error("Fail to Delete Pipeline in DB : PipelineID = {}", id, e);
         }
     }
 
@@ -158,6 +165,7 @@ public class PipelineDraftSVC {
                 jsonObject.getString("detail"),
                 null,
                 null,
+                null,
                 nifiFlowType
             );
             // collector, filter, converter 내의 processor의 필수 properties 값이 모두 채워졌는지 확인
@@ -167,11 +175,11 @@ public class PipelineDraftSVC {
             String flowJsonString = jsonObject.getJSONObject(nifiFlowType).toString();
 
             JSONObject jObject = new JSONObject(flowJsonString);
-            int nifiComponentLength = jObject.getJSONArray("NifiComponents").length();
+            int nifiComponentLength = jObject.getJSONArray("nifiComponents").length();
 
             for (int i = 0; i < nifiComponentLength; i++) {
                 JSONObject jObj = new JSONObject(
-                    jObject.getJSONArray("NifiComponents").get(i).toString()
+                    jObject.getJSONArray("nifiComponents").get(i).toString()
                 );
                 JSONArray properties = jObj.getJSONArray("requiredProps");
                 for (idx = 0; idx < properties.length(); idx++) {
@@ -204,6 +212,7 @@ public class PipelineDraftSVC {
                     jsonObject.getString("name"),
                     jsonObject.getString("detail"),
                     null,
+                    null,
                     flowJsonString,
                     nifiFlowType
                 );
@@ -213,6 +222,7 @@ public class PipelineDraftSVC {
                     jsonObject.getString("name"),
                     jsonObject.getString("detail"),
                     jsonObject.getString("dataSet"),
+                    jsonObject.getString("dataModel"),
                     flowJsonString,
                     nifiFlowType
                 );
@@ -268,7 +278,7 @@ public class PipelineDraftSVC {
         return pipelineDraftMapper.isExistsDrafts(id);
     }
 
-    static boolean isStringEmpty(String str) {
-        return str == null || str.isEmpty();
+    public Boolean isExistsNameDrafts(String name) {
+        return pipelineDraftMapper.isExistsNameDrafts(name);
     }
 }
