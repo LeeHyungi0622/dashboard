@@ -69,6 +69,12 @@ public class PipelineDraftSVC {
                 dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId());
                 NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
                 for (int i = 0; i < dataModelVO.getAttributes().size(); i++) {
+                    if (dataModelVO.getAttributes().get(i).getHasUnitCode()) {
+                        PropertyVO propertyVO = new PropertyVO();
+                        propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                        propertyVO.setDetail("unitCode");
+                        niFiComponentVO.getRequiredProps().add(propertyVO);
+                    }
                     PropertyVO propertyVO = new PropertyVO();
                     propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
                     propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());

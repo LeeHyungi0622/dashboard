@@ -37,7 +37,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         CLIENTS.remove(session.getId());
     }
 
-    @Scheduled(fixedDelay = 3000, initialDelay = 3000)
+    //@Scheduled(fixedDelay = 3000, initialDelay = 3000)
     public void updatePipelineStatus() throws Exception {
         List<PipelineListResponseVO> result = pipelineSVC.getPipelineList();
 

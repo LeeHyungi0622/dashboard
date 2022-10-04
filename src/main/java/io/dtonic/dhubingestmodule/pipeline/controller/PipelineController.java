@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
+// pipeline 앞에 prefix 접두사
 public class PipelineController {
 
     @Autowired
@@ -37,7 +38,7 @@ public class PipelineController {
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
 
-    @GetMapping("/pipeline/complete/list") // PipeLine List 조회
+    @GetMapping("/pipelines/completed") // PipeLine List 조회
     public List<PipelineListResponseVO> getPipelineList(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -55,7 +56,7 @@ public class PipelineController {
      * @return
      */
     @Transactional
-    @PostMapping("/pipeline/complete/{id}") // PipeLine 생성시 "등록완료"
+    @PostMapping("/pipelines/completed/{id}") // PipeLine 생성시 "등록완료"
     public void createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,

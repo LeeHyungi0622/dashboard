@@ -75,7 +75,7 @@ public class PipelineSVC {
     @Transactional
     public List<PipelineListResponseVO> getPipelineList() {
         List<PipelineListResponseVO> pipelineListVOs = pipelineMapper.getPipelineList();
-        for (int i = 0; i < pipelineListVOs.size(); i++) {
+        for (int i = 0; i < pipelineListVOs.size(); i++) { //stream foreach 사용하기
             PipelineVO pipeline = getPipelineVOById(pipelineListVOs.get(i).getId());
             Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
                 pipeline.getProcessorGroupId()
