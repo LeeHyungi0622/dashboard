@@ -20,20 +20,21 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-          "
+          " 
           class="fs14"
         >
-          <div class="search" style="height: 20px">
-            <!-- <select>
+          <div class="search" style="height: 30px">
+            <select style="width: 10%" @change="settingFilter('pipelineFilter', $event)">
                 <option
-                  v-for="(item, index) in pipelineListFilterList"
+                  v-for="([title, val], index) in pipelineListFilterList"
                   :key="index"
+                  :value="val"
                 >
-                  {{ item == "" ? "전체" : item }}
+                  {{ title }}
                 </option>
-              </select> -->
-            <input type="text" class="mgL12" />
-            <button class="mgL12">검색</button>
+              </select>
+            <input type="text" class="mgL12" v-model="pipelineFilterInput"/>
+            <button class="mgL12" @click="actionFilter()">검색</button>
             <select name="" id="" class="mgL12" v-model="perPage">
               <option value="5">5개씩 표시</option>
               <option value="10">10개씩 표시</option>
@@ -41,7 +42,7 @@
           </div>
           <v-data-table
             :headers="headers"
-            :items="filteritems"
+            :items="vuetifyData"
             :items-per-page="parseInt(perPage)"
             :page="currentPage"
             item-key="id"
@@ -114,6 +115,7 @@
 
 <script>
 import tempPipelineListService from "../../js/api/tempPipelineList";
+import EventBus from "@/eventBus/EventBus.js";
 export default {
   props: {
     contents: {
@@ -132,6 +134,7 @@ export default {
     tempPipelineListService
       .getTempPipelineList()
       .then((res) => {
+        this.$store.state.tempPipelineList = res;
         this.vuetifyData = res;
       })
       .catch((error) => error);
@@ -139,15 +142,8 @@ export default {
   computed: {
     totalPage() {
       return Math.floor(
-        (this.filteritems.length + parseInt(this.perPage)) / this.perPage
+        (this.vuetifyData.length + parseInt(this.perPage)) / this.perPage
       );
-    },
-    filteritems() {
-      return this.vuetifyData.filter((i) => {
-        return (
-          !this.selectedFilter || i[this.selectedFilter] == this.searchValue
-        );
-      });
     },
   },
   data() {
@@ -162,6 +158,9 @@ export default {
         { text: "불러오기", value: "readAction", sortable: false },
         { text: "삭제", value: "deleteAction", sortable: false },
       ],
+      pipelineListFilterList: [["전체",""], ["파이프라인 이름","name"]],
+      pipelineFilterInput: "",
+      pipelineFilter: null,
       searchValue: "",
       selectedFilter: "",
       dialog: true,
@@ -193,22 +192,53 @@ export default {
       this.currentPage = this.totalPage;
     },
     deleteTempPipeline(item) {
-      console.log("Delete Temp Pipeline", item);
-      this.close();
+      let alertPayload = {
+        title: "파이프라인 삭제",
+        text:
+          item.name +
+          " 파이프라인이 삭제됩니다." +
+          "<br/> <br/> 계속 진행하시겠습니까?",
+        url: "deleteTemp",
+        id: item.id
+      };
+      EventBus.$emit("show-confirm-popup", alertPayload);
     },
     goPipelineRegister(item) {
       if (item == `default`) {
+        this.$store.state.pipelineVo = [],
         this.$router.push({
           name: "pipelineRegister",
         });
       } else if (this.$route.name != "pipelineRegister") {
+        this.$store.state.pipelineVo.id = item.id;
         this.$router.push({
           name: "pipelineRegister",
-          query: { id: item.id },
         });
       }
       this.close();
     },
+    settingFilter(filter, event) {
+      if(filter == "status"){
+        this.selectedFilter = filter;
+        this.searchValue = event.target.value;
+      }
+      else{
+        this.pipelineFilter = event.target.value;
+      }
+    },
+    actionFilter(){
+      this.vuetifyData = this.$store.state.tempPipelineList;
+        if(this.pipelineFilter){
+          this.vuetifyData = this.$store.state.tempPipelineList.filter((i) => {
+          return (
+            i[this.pipelineFilter].includes(this.pipelineFilterInput) 
+          );
+        });
+        }
+        else{
+          this.vuetifyData = this.$store.state.tempPipelineList;
+        }
+    }
   },
 };
 </script>

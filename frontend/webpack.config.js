@@ -31,11 +31,12 @@ module.exports = {
   devtool: 'inline-source-map',
   devServer: {
     clientLogLevel: 'warning',
-    contentBase: './dist',
+    contentBase: './dist/',
     // compress: true,
     host: HOST || config.dev.host,
     port: PORT || config.dev.port,
     historyApiFallback: true,
+    hot: true,
     proxy: {
       '/': {
         target: 'http://localhost:8099' // api server (development mode)
@@ -57,10 +58,10 @@ module.exports = {
         }
       }, {
         test: /.s[a|c]ss$/,
-        use: ['vue-style-loader', 'css-loader', 'sass-loader']
+        use: ['vue-style-loader', 'css-loader', 'sass-loader','url-loader']
       }, {
         test: /\.css$/,
-        use: ['vue-style-loader', MiniCssExtractPlugin.loader, 'css-loader'],
+        use: ['vue-style-loader', MiniCssExtractPlugin.loader, 'css-loader','url-loader'],
       }, {
         test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: 'url-loader',

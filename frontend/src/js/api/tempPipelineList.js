@@ -9,6 +9,15 @@ class tempPipelineList {
       })
       .catch((error) => error);
   }
+  getPipelineList() {
+    return axios
+      .get(`/pipeline/complete/list`, {})
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => error);
+  }
+
 }
 
 export default new tempPipelineList();

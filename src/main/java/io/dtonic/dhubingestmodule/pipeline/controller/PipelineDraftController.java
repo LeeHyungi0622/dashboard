@@ -9,7 +9,6 @@ import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j
 public class PipelineDraftController {
 
     @Autowired
@@ -97,17 +95,17 @@ public class PipelineDraftController {
     }
 
     @Transactional
-    @GetMapping("/pipelines/drafts/properties/{id}") //<데이터수집, 정제, 변환> 다음버튼 누를시
+    @GetMapping("/pipeline/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
     public PipelineVO getPipelineDraftsProperties(
         HttpServletRequest request,
         HttpServletResponse response,
-        @PathVariable Integer id,
+        @RequestParam(name = "pipelineid") Integer pipelineid,
         @RequestParam(name = "page") String page, //collector, filter, converter
         @RequestParam(name = "adaptorName") String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid
     ) {
         PipelineVO pipelineVO = pipelineDraftSVC.getPipelineDraftsProperties(
-            id,
+            pipelineid,
             page,
             adaptorName,
             datasetid

@@ -7,13 +7,20 @@ export const store = new Vuex.Store({
   state() {
     return {
       pipelineList: [],
-      pipelineVo: {},
-      userInfo: {
-        userId: "cityhub10",
-        name: "홍길동",
-        nickName: "홍길동",
-        phone: "010-1234-5678",
+      tempPipelineList: [],
+      pipelineVo: {
       },
+      userInfo: {
+        userId: "",
+        name: "",
+        nickName: "",
+        phone: "",
+      },
+      pipelineInfo: [
+
+      ],
+      tableShowMode: "", // REGISTER , UPDATE
+      tableUpdateFlag: false
     };
   },
   mutations: {
