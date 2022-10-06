@@ -22,6 +22,8 @@ public interface PipelineDraftMapper {
 
     Boolean isExistsDrafts(@Param("id") Integer id);
 
+    int getPipelineIDbyName(@Param("name") String name);
+
     int createPipelineDrafts(
         @Param("name") String name,
         @Param("creator") String creator,

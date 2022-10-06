@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -682,10 +683,9 @@ public class NiFiRestSVC {
      */
     public void uploadTemplate() {
         try {
-            File[] tempFile = new ClassPathResource("template/").getFile().listFiles();
-            for (File file : tempFile) {
-                Resource template = new FileSystemResource(file);
-
+            Resource[] resources = new PathMatchingResourcePatternResolver()
+            .getResources("classpath:template/*.xml");
+            for (Resource template : resources) {
                 List<String> paths = new ArrayList<String>();
                 paths.add("process-groups");
                 paths.add("root");
@@ -708,9 +708,9 @@ public class NiFiRestSVC {
                     String.class
                 );
                 if (result == null) {
-                    log.info("{} is already Exist", file.getName());
+                    log.info("{} is already Exist", template);
                 } else {
-                    log.info("Upload Template Name : [{}]", file.getName());
+                    log.info("Upload Template Name : [{}]", template);
                 }
             }
         } catch (IOException e) {
