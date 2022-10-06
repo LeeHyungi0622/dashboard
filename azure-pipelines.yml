@@ -58,7 +58,7 @@ stages:
             steps:
               - task: CopyFiles@2
                 inputs:
-                  SourceFolder: '$(Agent.BuildDirectory)/ingestManager/jars'
-                  Contents: '$(ArtifactId).jar'
+                  SourceFolder: '$(Agent.BuildDirectory)'
+                  Contents: '**.jar'
                   TargetFolder: '$(baseFolder)'
                   Overwrite: true
