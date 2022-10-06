@@ -48,6 +48,6 @@ stages:
             steps:
               - task: CopyFiles@2
                 inputs:
-                  SourceFolder: '$(Agent.BuildDirectory)/target'
+                  SourceFolder: '$(Build.SourcesDirectory)/target'
                   Contents: '$(AdvancedAnalysisJarFile)'
                   TargetFolder: '$(baseFolder)'
