@@ -1,10 +1,10 @@
 package io.dtonic.dhubingestmodule.common.code;
 
 public enum PipelineStatusCode {
-    PIPELINE_STATUS_STOPPED("Stopped"),
-    PIPELINE_STATUS_STARTING("Starting"),
-    PIPELINE_STATUS_RUN("Run"),
-    PIPELINE_STATUS_STOPPING("Stopping"),
+    PIPELINE_STATUS_STOPPED("STOPPED"),
+    PIPELINE_STATUS_STARTING("STARTING"),
+    PIPELINE_STATUS_RUN("RUNNING"),
+    PIPELINE_STATUS_STOPPING("STOPPING"),
     PIPELINE_NIFISTATUS_RUNNING("Running"),
     PIPELINE_NIFISTATUS_STOP("Stop");
 

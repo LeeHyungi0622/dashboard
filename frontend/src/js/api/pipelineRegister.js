@@ -9,17 +9,17 @@ class pipelineRegister {
       })
       .catch((error) => error);
   }
-  getPipelineDraft(id) {
+  getPipelineVo() {
     return axios
-      .get(`/pipeline/drafts/${id}`, {})
+      .get(`/pipeline/drafts/create`, {})
       .then((response) => {
         return response.data;
       })
       .catch((error) => error);
   }
-  getPipelineVo() {
+  getPipelineDraft(id) {
     return axios
-      .get(`/pipeline/drafts/create`, {})
+      .get(`/pipeline/drafts/${id}`, {})
       .then((response) => {
         return response.data;
       })

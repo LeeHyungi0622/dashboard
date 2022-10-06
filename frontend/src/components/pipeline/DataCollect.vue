@@ -84,16 +84,15 @@ export default {
     selectedCollectValue() {
       if (this.mode == "REGISTER") {
         collectorService
-          .getPipelineDraft({
+          .getPipelineComplete({
             adaptorName: this.selectedCollectValue,
-            pipelineid: this.$route.query.id,
-            page: 1,
+            pipelineid: this.$store.state.pipelineVo,
+            page: "collector",
           })
           .then((res) => {
-            console.log(res);
             this.$store.state.pipelineVo.collector = res.collector;
             this.collectorData =
-              this.$store.state.pipelineVo.collector.NifiComponents;
+              this.$store.state.pipelineVo.collector.nifiComponents;
           })
           .catch((error) => {
             console.error(error);
@@ -102,14 +101,14 @@ export default {
         collectorService
           .getPipelineComplete({
             adaptorName: this.selectedCollectValue,
-            pipelineid: this.$route.query.id,
+            pipelineid: this.$store.state.pipelineVo,
             page: 1,
           })
           .then((res) => {
             console.log(res);
             this.$store.state.pipelineVo.collector = res.collector;
             this.collectorData =
-              this.$store.state.pipelineVo.collector.NifiComponents;
+              this.$store.state.pipelineVo.collector.nifiComponents;
           })
           .catch((err) => {
             console.error(err);
@@ -139,7 +138,6 @@ export default {
       collectorService
         .getCollectorList()
         .then((res) => {
-          console.log(res.dataSetId);
           this.collectorContents.value.datas = res;
         })
         .catch((err) => {

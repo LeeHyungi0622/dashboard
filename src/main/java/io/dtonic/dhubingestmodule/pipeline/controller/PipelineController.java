@@ -168,6 +168,7 @@ public class PipelineController {
                 "Pipeline is not Exist"
             );
         } else {
+            log.info("{}", status);
             if (
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||

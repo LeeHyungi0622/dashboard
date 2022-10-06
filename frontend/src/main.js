@@ -6,9 +6,12 @@ import vuetify from "@/plugins/vuetify.js";
 import css from "@/assets/css/common.css";
 import { store } from "./vuex/store";
 
-const ws = new WebSocket("ws://192.168.1.95:8099/webpipeline");
+const ws = new WebSocket("ws://localhost:8099/webpipeline");
 
 Axios.defaults.baseURL = "http://localhost:8099";
+Axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+Axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
+Axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*';
 
 Vue.config.productionTip = false;
 Vue.prototype.$axios = Axios;

@@ -1,20 +1,13 @@
 package io.dtonic.dhubingestmodule.common.handler;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
-@Slf4j
 public class JsonTypeHandler<T extends Object> extends BaseTypeHandler<T> {
 
     private static final ObjectMapper mapper = new ObjectMapper();

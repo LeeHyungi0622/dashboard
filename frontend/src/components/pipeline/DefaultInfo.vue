@@ -57,14 +57,15 @@ export default {
   methods: {
     nextRoute() {
       this.$store.state.pipelineVo.name = this.contents[0].inputValue;
-      this.$store.state.pipelineVo.creator = "홍길동";
+      this.$store.state.pipelineVo.creator = this.$store.state.userInfo.userId;
       this.$store.state.pipelineVo.detail = this.contents[1].inputValue;
       pipelineRegisterService
         .craetePipelineDraft(this.$store.state.pipelineVo)
         .then((res) => {
+          console.log(res);
+          this.$store.state.pipelineVo = res;
           this.$router.push({
             name: "collector",
-            query: { id: res },
             params: {
               convertMode: this.convertMode,
               mode: "REGISTER",

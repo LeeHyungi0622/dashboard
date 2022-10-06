@@ -11,10 +11,11 @@
 
       <v-list-item
         v-for="([title, path], i) in admins"
-        :class="path == activationRoutePath ? `activationNav` : ``"
+        :class="path == activationRoutePath || checkNav(path) ? `activationNav` : ``"
         :key="i"
         link
         @click="moveRoute(path)"
+        :disabled="path == activationRoutePath || checkNav(path)"
       >
         <v-list-item-title
           style="color: white"
@@ -42,6 +43,15 @@ export default {
         this.$router.push(path);
       }
     },
+    checkNav(path){
+      if(path == "/pipelineRegister"){
+        if(this.activationRoutePath == "/defaultInfo" || this.activationRoutePath == "/collector" || this.activationRoutePath == "/converter" || this.activationRoutePath == "/filter"|| this.activationRoutePath == "/completed"){
+          return true;
+        }
+        return false;
+      }
+      return false;
+    }
   },
 };
 </script>

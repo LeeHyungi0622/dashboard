@@ -2,8 +2,6 @@ package io.dtonic.dhubingestmodule.dataset.controller;
 
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
-import io.dtonic.dhubingestmodule.dataset.vo.DataSetListResponseVO;
-import io.dtonic.dhubingestmodule.dataset.vo.DataSetPropertiesResponseVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetResponseVO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

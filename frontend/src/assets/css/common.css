@@ -19,7 +19,7 @@ body {font-family: 'Nanum Gothic', sans-serif !important; margin: 0px; padding: 
 }
 
 select {
-  background-image: url("@/assets/img/drop-down.svg");
+  background-image: url("../img/drop-down.svg");
   background-position: 95%;
   padding-left: 7px;
 }
@@ -320,7 +320,7 @@ select {
   width: 32px;
   height: 32px;
   margin-top: 9%;
-  background-image: url("@/assets/img/keyboard_double_arrow_left_24dp.svg");
+  background-image: url("../img/keyboard_double_arrow_left_24dp.svg");
   background-position: center;
 }
 
@@ -329,7 +329,7 @@ select {
   width: 32px;
   height: 32px;
   margin-top: 9%;
-  background-image: url("@/assets/img/keyboard_double_arrow_left_24dp.svg");
+  background-image: url("../img/keyboard_double_arrow_left_24dp.svg");
   background-position: center;
   opacity: .6;
   pointer-events: none;
@@ -345,7 +345,7 @@ select {
   width: 32px;
   height: 32px;
   margin-top: 9%;
-  background-image: url("@/assets/img/keyboard_double_arrow_right_24dp.svg");
+  background-image: url("../img/keyboard_double_arrow_right_24dp.svg");
   background-position: center; 
 }
 
@@ -353,7 +353,7 @@ select {
   width: 32px;
   height: 32px;
   margin-top: 9%;
-  background-image: url("@/assets/img/keyboard_double_arrow_right_24dp.svg");
+  background-image: url("../img/keyboard_double_arrow_right_24dp.svg");
   background-position: center; 
   opacity: .6;
   pointer-events: none;
@@ -363,7 +363,7 @@ select {
   width: 32px;
   height: 32px;
   margin-top: 9%;
-  background-image: url("@/assets/img/keyboard_double_arrow_right_24dp.svg");
+  background-image: url("../img/keyboard_double_arrow_right_24dp.svg");
   background-position: center; 
   opacity: .6;
   pointer-events: none;
@@ -416,6 +416,11 @@ select {
 
 .activationNav {
   background-color: #ffffff;
+  border-radius:  50px 0 0 50px;
+}
+
+.activationNavBoxBtn {
+  background-color: #2b4f8c;
   border-radius:  50px 0 0 50px;
 }
 
@@ -639,6 +644,28 @@ select {
   position: relative;
 }
 .pipelineCreateNavBox .navBoxBtn:hover {
+  background-color: #2B4F8C;
+  border: 1px solid #DFDFDF;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  color: white;
+  width:13%;
+  height: 50px;
+  position: relative;
+}
+.pipelineCreateNavBox .activeLastbtn {
+  background-color: #2B4F8C;
+  border: 1px solid #DFDFDF;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  color: white;
+  width:13%;
+  height: 50px;
+  position: relative;
+}
+.pipelineCreateNavBox .activeNavBoxBtn {
   background-color: #2B4F8C;
   border: 1px solid #DFDFDF;
   justify-content: center;

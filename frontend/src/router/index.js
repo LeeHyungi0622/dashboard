@@ -30,7 +30,6 @@ const routes = [
           contents: route.params.contents,
           convertMode: route.params.convertMode,
           mode: route.params.mode,
-          id: route.params.id,
         }),
       },
       {
@@ -56,6 +55,16 @@ const routes = [
       {
         path: "/filter",
         name: "filter",
+        component: datafilters,
+        props: (route) => ({
+          contents: route.params.contents,
+          convertMode: route.params.convertMode,
+          mode: route.params.mode,
+        }),
+      },
+      {//TODO
+        path: "/completed",
+        name: "completed",
         component: datafilters,
         props: (route) => ({
           contents: route.params.contents,
