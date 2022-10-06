@@ -75,41 +75,61 @@ public class PipelineSVC {
     @Transactional
     public List<PipelineListResponseVO> getPipelineList() {
         List<PipelineListResponseVO> pipelineListVOs = pipelineMapper.getPipelineList();
-        for (int i = 0; i < pipelineListVOs.size(); i++) { //stream foreach 사용하기
-            PipelineVO pipeline = getPipelineVOById(pipelineListVOs.get(i).getId());
-            Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
-                pipeline.getProcessorGroupId()
-            );
-            if (!ValidateUtil.isMapEmpty(nifiStatus)) {
-                String curStatus = pipelineListVOs.get(i).getStatus(); // 현재 DB status값
-                if (
-                    curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
-                    curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()) ||
-                    curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode())
-                ) {
-                    if ( //case: DB=Starting, Nifi=Running
-                        curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) &&
-                        nifiStatus.get("Stopped") == 0 &&
-                        nifiStatus.get("Invaild") == 0
-                    ) {
-                        pipeline.setStatus(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
-                    } else if ( //case: DB=Stopping, Nifi=Stopped
-                        curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()) &&
-                        nifiStatus.get("Running") == 0 &&
-                        nifiStatus.get("Invaild") == 0
-                    ) {
-                        pipeline.setStatus(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode());
-                    } else if ( //case: DB=Run, Nifi=Running
-                        curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) &&
-                        nifiStatus.get("Stopped") != 0 ||
-                        nifiStatus.get("Invaild") != 0
-                    ) {
-                        pipeline.setStatus(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode());
+        pipelineListVOs
+            .parallelStream()
+            .forEach(
+                pipelineVO -> {
+                    PipelineVO pipeline = getPipelineVOById(pipelineVO.getId());
+                    Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
+                        pipeline.getProcessorGroupId()
+                    );
+                    if (!ValidateUtil.isMapEmpty(nifiStatus)) {
+                        String curStatus = pipelineVO.getStatus(); // 현재 DB status값
+                        if (
+                            curStatus.equals(
+                                PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()
+                            ) ||
+                            curStatus.equals(
+                                PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()
+                            ) ||
+                            curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode())
+                        ) {
+                            if ( //case: DB=Starting, Nifi=Running
+                                curStatus.equals(
+                                    PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()
+                                ) &&
+                                nifiStatus.get("Stopped") == 0 &&
+                                nifiStatus.get("Invaild") == 0
+                            ) {
+                                pipeline.setStatus(
+                                    PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()
+                                );
+                            } else if ( //case: DB=Stopping, Nifi=Stopped
+                                curStatus.equals(
+                                    PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()
+                                ) &&
+                                nifiStatus.get("Running") == 0 &&
+                                nifiStatus.get("Invaild") == 0
+                            ) {
+                                pipeline.setStatus(
+                                    PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()
+                                );
+                            } else if ( //case: DB=Run, Nifi=Running
+                                curStatus.equals(
+                                    PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()
+                                ) &&
+                                nifiStatus.get("Stopped") != 0 ||
+                                nifiStatus.get("Invaild") != 0
+                            ) {
+                                pipeline.setStatus(
+                                    PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()
+                                );
+                            }
+                            changePipelineStatus(pipeline.getId(), pipeline.getStatus());
+                        }
                     }
-                    changePipelineStatus(pipeline.getId(), pipeline.getStatus());
                 }
-            }
-        }
+            );
         return pipelineListVOs;
     }
 
