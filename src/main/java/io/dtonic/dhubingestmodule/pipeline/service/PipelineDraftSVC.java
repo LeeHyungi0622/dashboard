@@ -32,7 +32,7 @@ public class PipelineDraftSVC {
     @Autowired
     private DataSetSVC datasetsvc;
 
-    public void createPipelineDrafts(String name, String creator, String detail) {
+    public int createPipelineDrafts(String name, String creator, String detail) {
         int result = pipelineDraftMapper.createPipelineDrafts(name, creator, detail);
         if (result != 1) {
             throw new BadRequestException(
@@ -40,6 +40,7 @@ public class PipelineDraftSVC {
                 "Create Draft Pipeline error in DB"
             );
         }
+        return pipelineDraftMapper.getPipelineIDbyName(name);
     }
 
     public List<String> getDataCollector() {

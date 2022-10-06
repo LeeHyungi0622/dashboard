@@ -75,6 +75,14 @@
         now()
         )
   </insert>
+  <select id="getPipelineIDbyName" parameterType="String" resultType="Integer">
+    SELECT
+      id
+    FROM
+      temp_pipeline
+    WHERE
+      name = #{name}
+  </select>
   <select id="getPipelineIdByname" parameterType="String" resultType="Integer">
     SELECT 
       id

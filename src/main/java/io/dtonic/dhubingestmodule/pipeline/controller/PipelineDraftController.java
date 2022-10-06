@@ -68,7 +68,7 @@ public class PipelineDraftController {
 
     // 파이프라인 생성 중 "다음" 누를시 사용되는 API , 해당 임시파이프라인 upsert처리
     @PostMapping("/pipeline/drafts")
-    public void upsertPipelineDrafts(
+    public int upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody String requestBody
@@ -79,10 +79,11 @@ public class PipelineDraftController {
             if (pipelineDraftSVC.isExistsDrafts(jsonObject.getInt("id"))) {
                 pipelineDraftSVC.updatePipelineDrafts(jsonObject);
                 response.setStatus(HttpStatus.OK.value());
+                return jsonObject.getInt("id");
             }
         } else {
             if (!pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name"))) {
-                pipelineDraftSVC.createPipelineDrafts(
+                return pipelineDraftSVC.createPipelineDrafts(
                     jsonObject.getString("name"),
                     jsonObject.getString("creator"),
                     jsonObject.getString("detail")
@@ -94,6 +95,7 @@ public class PipelineDraftController {
                 );
             }
         }
+        return 0;
     }
 
     @Transactional
