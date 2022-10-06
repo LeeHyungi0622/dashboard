@@ -48,7 +48,7 @@ stages:
             steps:
               - task: CopyFiles@2
                 inputs:
-                  SourceFolder: '$(Agent.BuildDirectory)/target/**.jar'
+                  SourceFolder: '$(Agent.BuildDirectory)/**.jar'
                   #Contents: '$(AdvancedAnalysisJarFile)'
                   TargetFolder: '$(baseFolder)'
                   Overwrite: true
