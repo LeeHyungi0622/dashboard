@@ -50,15 +50,23 @@ stages:
         name: "IngestManager-Testbed"
         resourceType: VirtualMachine
       variables:
-        baseFolder: /usr/local/lib/ingestManager/ingestManager
+        baseFolder: /usr/local/lib/ingestManager
         AdvancedAnalysisJarFile: $[ stageDependencies.AdvancedAnalysisService.build.outputs['buildResult.jarFileName'] ]
       strategy:
         runOnce:
           deploy:
             steps:
+              - task: CmdLine@2
+                inputs:
+                  script: 'chmod 777 ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar'
+                  workingDirectory: '$(Agent.BuildDirectory)'
               - task: CopyFiles@2
                 inputs:
                   SourceFolder: '$(Agent.BuildDirectory)/ingestManager/jars'
                   Contents: '**.jar'
-                  TargetFolder: '$(Agent.BuildDirectory)'
+                  TargetFolder: '$(baseFolder)'
                   Overwrite: true
+              - task: CmdLine@2
+                inputs:
+                  script: 'chmod +x ./start_ingestManager.sh && sh ./start_ingestManager.sh'
+                  workingDirectory: '$(baseFolder)'
