@@ -60,6 +60,11 @@ stages:
                 inputs:
                   script: 'chmod 777 ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar'
                   workingDirectory: '$(Agent.BuildDirectory)'
+              - task: CopyFiles@2
+                inputs:
+                  SourceFolder: '$(Build.SourcesDirectory)/ingestManager/jars'
+                  Contents: '**.jar'
+                  TargetFolder: '$(Build.ArtifactStagingDirectory)/ingestManager/jars/docker'
               #- task: CmdLine@2
                 #inputs:
                   #script: 'cp ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /usr/local/lib/ingestManager/ingestManager'
