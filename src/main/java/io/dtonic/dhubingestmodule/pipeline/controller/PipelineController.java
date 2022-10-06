@@ -12,7 +12,6 @@ import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j
 // pipeline 앞에 prefix 접두사
 public class PipelineController {
 
@@ -84,13 +82,12 @@ public class PipelineController {
         HttpServletResponse response,
         @RequestBody PipelineVO pipelineVO,
         @PathVariable Integer id
-    )
-        throws JsonMappingException, JsonProcessingException {
+    ) {
         // validation check
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
-                "Pipeline is not Exist"
+                "Pipeline is not Exist "
             );
         } else {
             pipelineSVC.updatePipeline(id, pipelineVO);
@@ -132,17 +129,11 @@ public class PipelineController {
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestParam(name = "page") String page,
-        @RequestParam(name = "pipelineid") Integer pipelineid,
+        @RequestParam(name = "id") Integer id,
         @RequestParam(name = "adaptorName") String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid
     ) {
-        PipelineVO pipelineVO = pipelineSVC.getPipelineProperties(
-            pipelineid,
-            page,
-            adaptorName,
-            datasetid
-        );
-        return pipelineVO;
+        return pipelineSVC.getPipelineProperties(id, page, adaptorName, datasetid);
     }
 
     /**
@@ -163,7 +154,7 @@ public class PipelineController {
         @RequestParam(value = "status") String status
     ) {
         // validation check
-        if (!pipelineSVC.isExists(id)) {
+        if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
                 "Pipeline is not Exist"
@@ -203,7 +194,7 @@ public class PipelineController {
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
     ) {
-        if (!pipelineSVC.isExists(id)) {
+        if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
                 "Pipeline is not Exist"

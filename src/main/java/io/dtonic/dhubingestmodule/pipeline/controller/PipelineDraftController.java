@@ -9,7 +9,6 @@ import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j
 public class PipelineDraftController {
 
     @Autowired
@@ -36,8 +34,7 @@ public class PipelineDraftController {
         HttpServletRequest request,
         HttpServletResponse response
     ) {
-        PipelineVO pipelineVO = new PipelineVO();
-        return pipelineVO;
+        return new PipelineVO();
     }
 
     /**
@@ -76,11 +73,15 @@ public class PipelineDraftController {
         JSONObject jsonObject = new JSONObject(requestBody);
         PipelineVO pipelineVO = new PipelineVO();
         if (!jsonObject.isNull("id")) {
-            if (pipelineDraftSVC.isExistsDrafts(jsonObject.getInt("id"))) {
+            if (Boolean.TRUE.equals(pipelineDraftSVC.isExistsDrafts(jsonObject.getInt("id")))) {
                 return pipelineDraftSVC.updatePipelineDrafts(jsonObject);
             }
         } else {
-            if (!pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name"))) {
+            if (
+                Boolean.FALSE.equals(
+                    pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name"))
+                )
+            ) {
                 return pipelineDraftSVC.createPipelineDrafts(
                     jsonObject.getString("name"),
                     jsonObject.getString("creator"),
@@ -97,22 +98,16 @@ public class PipelineDraftController {
     }
 
     @Transactional
-    @GetMapping("/pipelines/drafts/properties/{id}") //<데이터수집, 정제, 변환> 다음버튼 누를시
+    @GetMapping("/pipelines/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
     public PipelineVO getPipelineDraftsProperties(
         HttpServletRequest request,
         HttpServletResponse response,
-        @PathVariable Integer id,
+        @RequestParam(name = "id", required = false) Integer id,
         @RequestParam(name = "page") String page, //collector, filter, converter
         @RequestParam(name = "adaptorName") String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid
     ) {
-        PipelineVO pipelineVO = pipelineDraftSVC.getPipelineDraftsProperties(
-            id,
-            page,
-            adaptorName,
-            datasetid
-        );
-        return pipelineVO;
+        return pipelineDraftSVC.getPipelineDraftsProperties(id, page, adaptorName, datasetid);
     }
 
     @Transactional
