@@ -120,6 +120,7 @@ import pipelineListService from "../../js/api/pipelineList";
 import EventBus from "@/eventBus/EventBus.js";
 import pipelineListData from "../../json/pipelineList.json";
 import tempPipeline from "../../json/tempPipeline.json";
+import pipelineUpdateService from "../../js/api/pipelineUpdate";
 export default {
   mounted() {
     console.log(this.$ws);
@@ -133,6 +134,7 @@ export default {
       .catch((err) => {
         console.log("PipelineList 조회에 실패하였습니다.", err);
       });
+    this.$store.state.pipelineVo = {};
   },
 
   computed: {
@@ -205,14 +207,22 @@ export default {
       };
       EventBus.$emit("show-confirm-popup", alertPayload);
     },
-    //TODO : store로 이전.
     goPipelineDetailEdit(item) {
+      pipelineUpdateService
+      .getPipelineListById(item.id)
+      .then((res) => {
+        this.$store.state.pipelineVo = res;
+        this.$store.state.tableShowMode = "UPDATE";
+      })
+      .catch((err) => {
+        console.log("PipelinListById 조회에 실패했습니다.", err);
+      });
       this.$router.push({
         name: "pipelineUpdate",
-        query: { id: item.id },
       });
     },
     goPipelineRegister() {
+      this.$store.state.tableShowMode = "REGISTER";
       this.$router.push({
         name: "pipelineRegister",
       });

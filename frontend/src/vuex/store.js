@@ -16,6 +16,11 @@ export const store = new Vuex.Store({
         nickName: "",
         phone: "",
       },
+      pipelineInfo: [
+
+      ],
+      tableShowMode: "", // REGISTER , UPDATE
+      tableUpdateFlag: false
     };
   },
   mutations: {

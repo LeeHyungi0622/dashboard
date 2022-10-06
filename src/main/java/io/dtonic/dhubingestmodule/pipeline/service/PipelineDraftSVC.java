@@ -49,20 +49,20 @@ public class PipelineDraftSVC {
 
     public PipelineVO getPipelineDraftsProperties(
         Integer pipelineid,
-        Integer page,
+        String page,
         String adaptorName,
         String datasetid
     ) {
         PipelineVO pipelineVO = pipelineDraftMapper.getPipelineDrafts(pipelineid);
         AdaptorVO adaptorVO = getPipelineproperties(adaptorName);
         switch (page) {
-            case 1: //수집기 선택시 (수집 pipelineVO 속성 리턴)
+            case "collector": //수집기 선택시 (수집 pipelineVO 속성 리턴)
                 pipelineVO.setCollector(adaptorVO);
                 break;
-            case 2: //수집에서 다음 누를때(정제 pipelineVO 속성 리턴)
+            case "filter": //수집에서 다음 누를때(정제 pipelineVO 속성 리턴)
                 pipelineVO.setFilter(adaptorVO);
                 break;
-            case 3: //데이터셋 선택시 (변환 pipelineVO 속성 리턴)
+            case "converter": //데이터셋 선택시 (변환 pipelineVO 속성 리턴)
                 DataModelVO dataModelVO = datasetsvc.getDataModelId( //model ID 가져오기
                     datasetid
                 );

@@ -11,11 +11,11 @@
 
       <v-list-item
         v-for="([title, path], i) in admins"
-        :class="path == activationRoutePath || checkNav(path) ? `activationNav` : ``"
+        :class="path == activationRoutePath ? `activationNav` : ``"
         :key="i"
         link
         @click="moveRoute(path)"
-        :disabled="path == activationRoutePath || checkNav(path)"
+        :disabled="path == activationRoutePath"
       >
         <v-list-item-title
           style="color: white"
@@ -40,18 +40,10 @@ export default {
   methods: {
     moveRoute(path) {
       if (this.activationRoutePath != path) {
+        this.$store.state.tableShowMode = "REGISTER";
         this.$router.push(path);
       }
     },
-    checkNav(path){
-      if(path == "/pipelineRegister"){
-        if(this.activationRoutePath == "/defaultInfo" || this.activationRoutePath == "/collector" || this.activationRoutePath == "/converter" || this.activationRoutePath == "/filter"|| this.activationRoutePath == "/completed"){
-          return true;
-        }
-        return false;
-      }
-      return false;
-    }
   },
 };
 </script>

@@ -3,7 +3,7 @@ import axios from "axios";
 class pipelineList {
   getPipelineList() {
     return axios
-      .get(`/pipeline/complete/list`, {})
+      .get(`/pipelines/completed`, {})
       .then((response) => {
         return response.data;
       })
@@ -19,7 +19,7 @@ class pipelineList {
   }
   deletePipeline(id){
     return axios
-    .delete(`/pipeline/complete/${id}`)
+    .delete(`/pipelines/completed/${id}`)
     .then((response) => {
       return response.data;
     })

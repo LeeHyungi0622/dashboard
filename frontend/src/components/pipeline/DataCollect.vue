@@ -84,9 +84,9 @@ export default {
     selectedCollectValue() {
       if (this.mode == "REGISTER") {
         collectorService
-          .getPipelineComplete({
+          .getPipelineDraft({
             adaptorName: this.selectedCollectValue,
-            pipelineid: this.$store.state.pipelineVo,
+            pipelineid: this.$store.state.pipelineVo.id,
             page: "collector",
           })
           .then((res) => {
@@ -101,7 +101,7 @@ export default {
         collectorService
           .getPipelineComplete({
             adaptorName: this.selectedCollectValue,
-            pipelineid: this.$store.state.pipelineVo,
+            pipelineid: this.$store.state.pipelineVo.id,
             page: 1,
           })
           .then((res) => {

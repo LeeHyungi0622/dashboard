@@ -3,16 +3,16 @@
     <div style="justify-content: space-between; display: flex" class="fsb14">
       <div class="fsb16" style="color: #2b4f8c">데이터 파이프라인 기본정보</div>
       <button
-        v-if="mode == `UPDATE`"
+        v-if="$store.state.tableShowMode == `UPDATE`"
         class="pipelineUpdateButton"
-        @click="convertMode('defaultInfo')"
+        @click="changeUpdateFlag"
       >
-        {{ mode == "UPDATE" ? "수정완료" : "수정" }}
+        {{ $store.state.tableUpdateFlag ? "수정완료" : "수정" }}
       </button>
     </div>
-    <custom-table :contents="contents" :mode="mode" />
+    <custom-table :contents="sendInfo" />
     <div
-      v-if="mode == `REGISTER`"
+      v-if="$store.state.tableShowMode == `REGISTER`"
       class="mgT12"
       style="display: flex; justify-content: right"
     >
@@ -35,23 +35,27 @@ export default {
   components: {
     CustomTable,
   },
+  // props: {
+  //   contents: Array
+  // },
 
-  props: {
-    mode: String,
-    convertMode: Function,
+  computed: {
+    updatePipeline(){
+      return this.$store.state.pipelineVo;
+    }
   },
   data() {
     return {
-      contents: [
-        {
-          name: "파이프라인 이름",
-          inputValue: this.$store.state.pipelineVo.name,
-        },
-        {
-          name: "파이프라인 정의",
-          inputValue: this.$store.state.pipelineVo.detail,
-        },
-      ],
+      // contents: [
+      //   {
+      //     name: "파이프라인 이름",
+      //     inputValue: this.updatePipeline.name,
+      //   },
+      //   {
+      //     name: "파이프라인 정의",
+      //     inputValue: this.updatePipeline.detail,
+      //   },
+      // ],
     };
   },
   methods: {
@@ -65,16 +69,27 @@ export default {
           console.log(res);
           this.$store.state.pipelineVo = res;
           this.$router.push({
-            name: "collector",
-            params: {
-              convertMode: this.convertMode,
-              mode: "REGISTER",
-            },
+            name: "collector"
           });
         })
         .catch((err) => {
           console.error(err);
         });
+    },
+    changeUpdateFlag(){
+      this.$store.state.tableUpdateFlag = !this.$store.state.tableUpdateFlag;
+    },
+    sendInfo(){
+      return [
+        {
+          name: "파이프라인 이름",
+          inputValue: this.updatePipeline.name,
+        },
+        {
+          name: "파이프라인 정의",
+          inputValue: this.updatePipeline.detail,
+        },
+      ];
     },
   },
 };
