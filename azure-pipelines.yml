@@ -30,14 +30,6 @@ stages:
           effectivePomSkip: false
           sonarQubeRunAnalysis: false
         displayName: 'IngestManager Packaging'
-      - task: CopyFiles@2
-        inputs:
-          SourceFolder: "$(Agent.BuildDirectory)/target"
-          Contents: "*.jar"
-          TargetFolder: "$(baseFolder)/target"
-          Overwrite: true
-      displayName:  'Copy jar file to baseFolder'
-            
 
 - stage: TestbedRelease
   #condition: and(succeeded(), eq(variables.isDevelop, true))
