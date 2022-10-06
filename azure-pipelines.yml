@@ -21,15 +21,15 @@ stages:
     - job: build
       steps:
       - task: Maven@3
-      inputs:
-	      mavenPomFile: '$(Build.SourcesDirectory)/pom.xml' # Maven Pom.xml 경로
-	      publishJUnitResults: false 
-	      javaHomeOption: 'JDKVersion'
-	      mavenVersionOption: 'Default'
-	      mavenAuthenticateFeed: false
-	      effectivePomSkip: false
-	      sonarQubeRunAnalysis: false
-      displayName: 'IngestManager Packaging'
+        inputs:
+          mavenPomFile: '$(Build.SourcesDirectory)/pom.xml' # Maven Pom.xml 경로
+          publishJUnitResults: false 
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+        displayName: 'IngestManager Packaging'
       - task: CopyFiles@2
         inputs:
           SourceFolder: "$(Agent.BuildDirectory)/target"
@@ -37,7 +37,7 @@ stages:
           TargetFolder: "$(baseFolder)/target"
           Overwrite: true
       displayName:  'Copy jar file to baseFolder'
-            echo "##vso[task.setvariable variable=jarFileName;isOutput=true]$(ArtifactId)-$(BuildVersion).jar"
+            
 
 - stage: TestbedRelease
   #condition: and(succeeded(), eq(variables.isDevelop, true))
