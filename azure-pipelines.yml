@@ -60,10 +60,10 @@ stages:
                 inputs:
                   script: 'chmod 777 ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar'
                   workingDirectory: '$(Agent.BuildDirectory)'
-              - task: CmdLine@2
-                inputs:
-                  script: 'cp ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /usr/local/lib/ingestManager/ingestManager'
-                  workingDirectory: '$(Agent.BuildDirectory)'
+              #- task: CmdLine@2
+                #inputs:
+                  #script: 'cp ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /usr/local/lib/ingestManager/ingestManager'
+                  #workingDirectory: '$(Agent.BuildDirectory)'
               - task: CmdLine@2
                 inputs:
                   script: 'chmod +x ./start_ingestManager.sh && sh ./start_ingestManager.sh'
