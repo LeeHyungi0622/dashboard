@@ -60,5 +60,5 @@ stages:
                 inputs:
                   SourceFolder: '$(Agent.BuildDirectory)/ingestManager/jars'
                   Contents: '**.jar'
-                  TargetFolder: '$(baseFolder)'
+                  TargetFolder: '$(Agent.BuildDirectory)'
                   Overwrite: true
