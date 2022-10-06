@@ -78,7 +78,7 @@ public class PipelineController {
      * @return
      */
 
-    @PutMapping("/pipeline/complete/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
+    @PutMapping("/pipelines/completed/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
     public void updatePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -109,7 +109,7 @@ public class PipelineController {
      * @throws JsonProcessingException
      * @throws JsonMappingException
      */
-    @GetMapping("/pipeline/complete/{id}") // PipeLine 상세 조회
+    @GetMapping("/pipelines/completed/{id}") // PipeLine 상세 조회
     public PipelineVO getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -119,7 +119,7 @@ public class PipelineController {
         return pipelineSVC.getPipelineVOById(id);
     }
 
-    @GetMapping("/pipeline/collectors") // 데이터수집기 리스트 리턴
+    @GetMapping("/pipelines/collectors") // 데이터수집기 리스트 리턴
     public List<String> getPipelinecollectors(
         HttpServletRequest request,
         HttpServletResponse response
@@ -127,7 +127,7 @@ public class PipelineController {
         return pipelineDraftSVC.getDataCollector();
     }
 
-    @GetMapping("/pipeline/complete/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
+    @GetMapping("/pipelines/completed/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
     public PipelineVO getPipelineProperties(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -154,7 +154,7 @@ public class PipelineController {
      * @param id       retrieve Pipeline id
      * @return
      */
-    @PutMapping("/pipeline/run-status/{id}") // PipeLine status 업데이트
+    @PutMapping("/pipelines/run-status/{id}") // PipeLine status 업데이트
     public void UpdatePipelineStatus(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -197,7 +197,7 @@ public class PipelineController {
      * @param id       retrieve Pipeline id
      * @return
      */
-    @DeleteMapping("/pipeline/complete/{id}") // PipeLine 삭제
+    @DeleteMapping("/pipelines/completed/{id}") // PipeLine 삭제
     public void deletePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
