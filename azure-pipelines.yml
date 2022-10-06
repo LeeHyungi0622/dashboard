@@ -58,14 +58,8 @@ stages:
             steps:
               - task: CmdLine@2
                 inputs:
-                  script: 'chmod 777 ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar'
+                  script: 'chmod 777 ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar && mv ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar //usr/local/lib/ingestManager/ingestManager'
                   workingDirectory: '$(Agent.BuildDirectory)'
-              - task: CopyFiles@2
-                inputs:
-                  SourceFolder: '$(Agent.BuildDirectory)/ingestManager/jars'
-                  Contents: '**.jar'
-                  TargetFolder: '$(baseFolder)'
-                  Overwrite: true
               - task: CmdLine@2
                 inputs:
                   script: 'chmod +x ./start_ingestManager.sh && sh ./start_ingestManager.sh'
