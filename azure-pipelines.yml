@@ -56,10 +56,6 @@ stages:
             steps:
               - task: CopyFiles@2
                 inputs:
-                  SourceFolder: '$(Agent.BuildDirectory)/advanced-analysis/jars'
+                  SourceFolder: '$(Agent.BuildDirectory)/target'
                   Contents: '$(AdvancedAnalysisJarFile)'
-                  TargetFolder: '$(baseFolder)/azure_artifacts/advanced-analysis'
-              - task: Bash@3
-                inputs:
-                  targetType: 'inline'
-                  script: '$(baseFolder)/azure_artifacts/advanced-analysis/run-app.sh $(AdvancedAnalysisJarFile)'
+                  TargetFolder: '$(baseFolder)'
