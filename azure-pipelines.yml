@@ -71,5 +71,9 @@ stages:
                   #workingDirectory: '$(Agent.BuildDirectory)'
               - task: CmdLine@2
                 inputs:
-                  script: 'chmod +x ./start_ingestManager.sh && sh ./start_ingestManager.sh'
+                  script: 'chmod 777 ./start_ingestManager.sh && sh ./start_ingestManager.sh'
                   workingDirectory: '$(Agent.BuildDirectory)'
+              - task: CmdLine@2
+                inputs:
+                    script: 'sh ./start_ingestManager.sh'
+                    workingDirectory: '$(Agent.BuildDirectory)'
