@@ -1,0 +1,65 @@
+# see: https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/deploy-linux-vm?view=azure-devops&tabs=java
+variables:
+  isDevelop: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
+  deployDir: "/home/azure-deploy-agent/test"
+
+trigger:
+  - develop
+
+# build agent pool default가 dtonic꺼
+# see: https://dev.azure.com/dtonic/_settings/agentpools
+pool:
+  name: default
+
+stages: 
+- stage: AdvancedAnalysisService  
+  displayName: Build advanced ingestManager service
+  #variables:
+  #  BuildVersion: $[ stageDependencies.Versioning.setVersion.outputs['gitversionexecute.GitVersion.SemVer'] ]
+  #  ArtifactId: eiss-gov-associate
+  jobs:
+    - job: build
+      steps:
+      - task: Maven@3
+      inputs:
+	      mavenPomFile: '$(Build.SourcesDirectory)/pom.xml' # Maven Pom.xml 경로
+	      publishJUnitResults: false 
+	      javaHomeOption: 'JDKVersion'
+	      mavenVersionOption: 'Default'
+	      mavenAuthenticateFeed: false
+	      effectivePomSkip: false
+	      sonarQubeRunAnalysis: false
+      displayName: 'IngestManager Packaging'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: "$(Agent.BuildDirectory)/target"
+          Contents: "*.jar"
+          TargetFolder: "$(baseFolder)/target"
+          Overwrite: true
+      displayName:  'Copy jar file to baseFolder'
+            echo "##vso[task.setvariable variable=jarFileName;isOutput=true]$(ArtifactId)-$(BuildVersion).jar"
+
+- stage: TestbedRelease
+  #condition: and(succeeded(), eq(variables.isDevelop, true))
+  jobs:
+    - deployment: ncpEissTestDt
+      # 배포할 Envornment
+      environment:
+        name: "IngestManager-Testbed"
+        resourceType: VirtualMachine
+      variables:
+        baseFolder: /usr/local/lib/ingestManager/ingestManager
+        AdvancedAnalysisJarFile: $[ stageDependencies.AdvancedAnalysisService.build.outputs['buildResult.jarFileName'] ]
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: CopyFiles@2
+                inputs:
+                  SourceFolder: '$(Agent.BuildDirectory)/advanced-analysis/jars'
+                  Contents: '$(AdvancedAnalysisJarFile)'
+                  TargetFolder: '$(baseFolder)/azure_artifacts/advanced-analysis'
+              - task: Bash@3
+                inputs:
+                  targetType: 'inline'
+                  script: '$(baseFolder)/azure_artifacts/advanced-analysis/run-app.sh $(AdvancedAnalysisJarFile)'

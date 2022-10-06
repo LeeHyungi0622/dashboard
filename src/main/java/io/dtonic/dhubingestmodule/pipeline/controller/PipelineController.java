@@ -5,19 +5,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
-import io.dtonic.dhubingestmodule.common.exception.ResourceNotFoundException;
-import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
-import io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
+// pipeline 앞에 prefix 접두사
 public class PipelineController {
 
     @Autowired
@@ -42,7 +38,7 @@ public class PipelineController {
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
 
-    @GetMapping("/pipeline/complete/list") // PipeLine List 조회
+    @GetMapping("/pipelines/completed") // PipeLine List 조회
     public List<PipelineListResponseVO> getPipelineList(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -60,7 +56,7 @@ public class PipelineController {
      * @return
      */
     @Transactional
-    @PostMapping("/pipeline/complete/{id}") // PipeLine "등록완료"
+    @PostMapping("/pipelines/completed/{id}") // PipeLine 생성시 "등록완료"
     public void createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -91,14 +87,15 @@ public class PipelineController {
     )
         throws JsonMappingException, JsonProcessingException {
         // validation check
-        if (!pipelineSVC.isExists(id)) {
+        if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             throw new BadRequestException(
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
                 "Pipeline is not Exist"
             );
+        } else {
+            pipelineSVC.updatePipeline(id, pipelineVO);
+            response.setStatus(HttpStatus.OK.value());
         }
-        pipelineSVC.updatePipeline(id, pipelineVO);
-        response.setStatus(HttpStatus.OK.value());
     }
 
     /**
@@ -130,7 +127,7 @@ public class PipelineController {
         return pipelineDraftSVC.getDataCollector();
     }
 
-    @GetMapping("/pipeline/complete/properties") // 파이프라인 수정시 DataSet, Collector 선택시 호출
+    @GetMapping("/pipeline/complete/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
     public PipelineVO getPipelineProperties(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -158,7 +155,7 @@ public class PipelineController {
      * @return
      */
     @PutMapping("/pipeline/run-status/{id}") // PipeLine status 업데이트
-    public void stopPipeline(
+    public void UpdatePipelineStatus(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
@@ -171,15 +168,23 @@ public class PipelineController {
                 DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
                 "Pipeline is not Exist"
             );
-        }
-        if (
-            status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
-            status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||
-            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()) ||
-            status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
-        ) pipelineSVC.changePipelineStatus(id, status); // stop pipeline
+        } else {
+            if (
+                status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
+                status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||
+                status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()) ||
+                status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
+            ) {
+                pipelineSVC.changePipelineStatus(id, status);
+            } else {
+                throw new BadRequestException(
+                    DataCoreUiCode.ErrorCode.BAD_REQUEST,
+                    "Status name is invalid"
+                );
+            }
 
-        response.setStatus(HttpStatus.OK.value());
+            response.setStatus(HttpStatus.OK.value());
+        }
     }
 
     /**
