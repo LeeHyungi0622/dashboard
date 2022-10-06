@@ -48,7 +48,7 @@ stages:
             steps:
               - task: CopyFiles@2
                 inputs:
-                  SourceFolder: '$(Build.SourcesDirectory)/target'
-                  Contents: '**.jar'
+                  SourceFolder: '/azp/agent/_work/7/s/target'
+                  Contents: 'd-hub-ingest-module-0.0.1-SNAPSHOT.jar'
                   TargetFolder: '$(baseFolder)'
                   Overwrite: true
