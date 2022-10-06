@@ -31,11 +31,12 @@ module.exports = {
   devtool: 'inline-source-map',
   devServer: {
     clientLogLevel: 'warning',
-    contentBase: './dist',
+    contentBase: './dist/',
     // compress: true,
     host: HOST || config.dev.host,
     port: PORT || config.dev.port,
     historyApiFallback: true,
+    hot: true,
     proxy: {
       '/': {
         target: 'http://localhost:8099' // api server (development mode)

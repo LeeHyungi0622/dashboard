@@ -98,16 +98,22 @@ public class PipelineDraftController {
     }
 
     @Transactional
-    @GetMapping("/pipelines/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
+    @GetMapping("/pipeline/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
     public PipelineVO getPipelineDraftsProperties(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestParam(name = "id", required = false) Integer id,
+        @RequestParam(name = "pipelineid") Integer pipelineid,
         @RequestParam(name = "page") String page, //collector, filter, converter
         @RequestParam(name = "adaptorName") String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid
     ) {
-        return pipelineDraftSVC.getPipelineDraftsProperties(id, page, adaptorName, datasetid);
+        PipelineVO pipelineVO = pipelineDraftSVC.getPipelineDraftsProperties(
+            pipelineid,
+            page,
+            adaptorName,
+            datasetid
+        );
+        return pipelineVO;
     }
 
     @Transactional

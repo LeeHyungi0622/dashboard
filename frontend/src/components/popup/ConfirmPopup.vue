@@ -13,15 +13,15 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-          "
+          " 
           class="fs14"
         >
           <div v-html="contents.text"></div>
         </v-card-text>
 
         <v-card-actions>
-          <button class="fs14" @click="close">예</button>
-          <button class="mgL12 fs14" @click="close">아니요</button>
+          <button class="fs14" @click="closeConfirm">예</button>
+          <button class="mgL12 fs14" @click="closeCancel">아니요</button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -40,6 +40,7 @@ export default {
           url: null,
           param: null,
           body: null,
+          id: null,
         };
       },
       required: true,
@@ -51,8 +52,11 @@ export default {
     };
   },
   methods: {
-    close() {
-      this.$emit("close-confirm-popup");
+    closeConfirm() {
+      this.$emit("close-confirm-popup", this.contents);
+    },
+    closeCancel() {
+      this.$emit("close-cancel-popup");
     },
   },
 };

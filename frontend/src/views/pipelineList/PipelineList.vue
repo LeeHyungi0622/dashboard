@@ -6,27 +6,28 @@
         <div class="searchBox">
           <div class="activationFilter">
             <p>동작</p>
-            <select @change="settingFilter('activationStatus', $event)">
+            <select @change="settingFilter('status', $event)">
               <option
-                v-for="(item, index) in activationStatusList"
+                v-for="([title, val], index) in activationStatusList"
                 :key="index"
-                :value="item"
+                :value="val"
               >
-                {{ item == "" ? "전체" : item }}
+                {{ title }}
               </option>
             </select>
           </div>
           <div class="search">
-            <select style="width: 10%">
+            <select style="width: 10%" @change="settingFilter('pipelineFilter', $event)">
               <option
-                v-for="(item, index) in pipelineListFilterList"
+                v-for="([title, val], index) in pipelineListFilterList"
                 :key="index"
+                :value="val"
               >
-                {{ item == "" ? "전체" : item }}
+                {{ title }}
               </option>
             </select>
-            <input type="text" class="mgL12" />
-            <button class="mgL12">검색</button>
+            <input type="text" class="mgL12" v-model="pipelineFilterInput" />
+            <button class="mgL12" @click="actionFilter()">검색</button>
             <select name="" id="" class="mgL12" v-model="perPage">
               <option value="10">10개씩 표시</option>
               <option value="20">20개씩 표시</option>
@@ -41,7 +42,6 @@
           :page="currentPage"
           item-key="id"
           class="pipelineTable mgT12"
-          :search="searchValue"
           :hide-default-footer="true"
           style="text-align: center"
         >
@@ -55,9 +55,8 @@
                   @click="
                     pipelineStatusAlertShows(
                       item.name,
-                      item.status.toUpperCase() == 'STARING' ||
-                        item.status.toUpperCase() == 'STOPPED'
-                        ? 'STARTING'
+                      item.status.toUpperCase() == 'RUNNING'
+                        ? 'STOPING'
                         : 'STARTING',
                       item.id
                     )
@@ -121,6 +120,7 @@ import pipelineListService from "../../js/api/pipelineList";
 import EventBus from "@/eventBus/EventBus.js";
 import pipelineListData from "../../json/pipelineList.json";
 import tempPipeline from "../../json/tempPipeline.json";
+import pipelineUpdateService from "../../js/api/pipelineUpdate";
 export default {
   mounted() {
     console.log(this.$ws);
@@ -129,10 +129,12 @@ export default {
       .getPipelineList()
       .then((res) => {
         this.$store.state.pipelineList = res;
+        this.filteritems = res;
       })
       .catch((err) => {
         console.log("PipelineList 조회에 실패하였습니다.", err);
       });
+    this.$store.state.pipelineVo = {};
   },
 
   computed: {
@@ -141,22 +143,18 @@ export default {
         (this.filteritems.length + parseInt(this.perPage)) / this.perPage
       );
     },
-    filteritems() {
-      return this.$store.state.pipelineList.filter((i) => {
-        return (
-          !this.selectedFilter || i[this.selectedFilter] === this.searchValue
-        );
-      });
-    },
   },
   data() {
     return {
+      filteritems: [],
+      pipelineFilterInput: "",
+      pipelineFilter: null,
       perPage: 10,
       currentPage: 1,
       total: 15,
       tempPipeline: tempPipeline,
-      activationStatusList: ["", "Run", "Starting", "Stopped", "Stopping"],
-      pipelineListFilterList: ["", "파이프라인 이름", "적재Dataset"],
+      activationStatusList: [["전체",""], ["Run","Run"], ["Starting","Starting"], ["Stopped","Stopped"], ["Stopping","Stopping"]],
+      pipelineListFilterList: [["전체",""], ["파이프라인 이름","name"], ["적재Dataset","dataSet"]],
       searchValue: null,
       pipelineListData: pipelineListData,
     };
@@ -181,7 +179,7 @@ export default {
     },
     pipelineStatusAlertShows(name, status, id) {
       let alertPayload = {
-        title: "파이프라인 삭제",
+        title: "파이프라인 Status 수정",
         text:
           name +
           " 파이프라인의 " +
@@ -190,31 +188,43 @@ export default {
           "로 변경됩니다." +
           "<br/> <br/> 계속 진행하시겠습니까?",
         id: id,
+        url: "update",
+        body: status
       };
       EventBus.$emit("show-confirm-popup", alertPayload);
     },
     deletePipeline(item) {
       let alertPayload = {
-        title: "파이프라인 Status 수정",
+        title: "파이프라인 삭제",
         text:
           item.name +
           " 파이프라인을 삭제하기 위해" +
           "<br/>프로세서를 중지하고 <br/>" +
           "잔여 Queue가 모두 삭제됩니다." +
           "<br/> <br/> 계속 진행하시겠습니까?",
+        url: "deleteComplete",
+        id: item.id
       };
-      console.log(item);
       EventBus.$emit("show-confirm-popup", alertPayload);
     },
     goPipelineDetailEdit(item) {
+      pipelineUpdateService
+      .getPipelineListById(item.id)
+      .then((res) => {
+        this.$store.state.pipelineVo = res;
+        this.$store.state.tableShowMode = "UPDATE";
+      })
+      .catch((err) => {
+        console.log("PipelinListById 조회에 실패했습니다.", err);
+      });
       this.$router.push({
         name: "pipelineUpdate",
-        query: { id: item.id },
       });
     },
     goPipelineRegister() {
+      this.$store.state.tableShowMode = "REGISTER";
       this.$router.push({
-        name: "pipelineCreate",
+        name: "pipelineRegister",
       });
     },
 
@@ -239,10 +249,47 @@ export default {
       this.message = "";
     },
     settingFilter(filter, event) {
-      console.log(filter, event.target.value);
-      this.selectedFilter = filter;
-      this.searchValue = event.target.value;
+      if(filter == "status"){
+        this.selectedFilter = filter;
+        this.searchValue = event.target.value;
+      }
+      else{
+        this.pipelineFilter = event.target.value;
+      }
     },
+    actionFilter(){
+      this.filteritems = this.$store.state.pipelineList;
+      
+      if(this.searchValue){
+        if(this.pipelineFilter){
+          this.filteritems = this.$store.state.pipelineList.filter((i) => {
+          return (
+            i[this.selectedFilter] === this.searchValue && i[this.pipelineFilter].includes(this.pipelineFilterInput) 
+          );
+        });
+        console.log(this.filteritems);
+        }
+        else{
+          this.filteritems = this.$store.state.pipelineList.filter((i) => {
+          return (
+            i[this.selectedFilter] === this.searchValue 
+          );
+        });
+        }
+      }
+      else{
+        if(this.pipelineFilter){
+          this.filteritems = this.$store.state.pipelineList.filter((i) => {
+          return (
+            i[this.pipelineFilter].includes(this.pipelineFilterInput) 
+          );
+        });
+        }
+        else{
+          this.filteritems = this.$store.state.pipelineList;
+        }
+      }
+    }
   },
 };
 </script>

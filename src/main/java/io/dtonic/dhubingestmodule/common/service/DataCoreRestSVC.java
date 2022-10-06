@@ -51,10 +51,11 @@ public class DataCoreRestSVC {
      */
     protected URI getUrl(String nifiUrl, List<String> paths, Map<String, Object> params) {
         String integratedPath = "";
-
-        for (String path : paths) {
-            integratedPath += "/";
-            integratedPath += path;
+        if (paths != null) {
+            for (String path : paths) {
+                integratedPath += "/";
+                integratedPath += path;
+            }
         }
 
         UriComponentsBuilder builder = UriComponentsBuilder

@@ -15,6 +15,7 @@
         :key="i"
         link
         @click="moveRoute(path)"
+        :disabled="path == activationRoutePath"
       >
         <v-list-item-title
           style="color: white"
@@ -39,6 +40,7 @@ export default {
   methods: {
     moveRoute(path) {
       if (this.activationRoutePath != path) {
+        this.$store.state.tableShowMode = "REGISTER";
         this.$router.push(path);
       }
     },
