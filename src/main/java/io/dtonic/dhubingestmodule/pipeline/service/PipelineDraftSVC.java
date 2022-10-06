@@ -32,7 +32,7 @@ public class PipelineDraftSVC {
     @Autowired
     private DataSetSVC datasetsvc;
 
-    public void createPipelineDrafts(String name, String creator, String detail) {
+    public PipelineVO createPipelineDrafts(String name, String creator, String detail) {
         int result = pipelineDraftMapper.createPipelineDrafts(name, creator, detail);
         if (result != 1) {
             throw new BadRequestException(
@@ -40,6 +40,7 @@ public class PipelineDraftSVC {
                 "Create Draft Pipeline error in DB"
             );
         }
+        return getPipelineDrafts(pipelineDraftMapper.getPipelineIDbyName(name));
     }
 
     public List<String> getDataCollector() {
@@ -69,6 +70,12 @@ public class PipelineDraftSVC {
                 dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId());
                 NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
                 for (int i = 0; i < dataModelVO.getAttributes().size(); i++) {
+                    if (dataModelVO.getAttributes().get(i).getHasUnitCode()) {
+                        PropertyVO propertyVO = new PropertyVO();
+                        propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                        propertyVO.setDetail("unitCode");
+                        niFiComponentVO.getRequiredProps().add(propertyVO);
+                    }
                     PropertyVO propertyVO = new PropertyVO();
                     propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
                     propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
@@ -141,10 +148,11 @@ public class PipelineDraftSVC {
     }
 
     @Transactional
-    public void updatePipelineDrafts(JSONObject jsonObject) {
+    public PipelineVO updatePipelineDrafts(JSONObject jsonObject) {
         parseJSON(jsonObject, "collector");
         parseJSON(jsonObject, "filter");
         parseJSON(jsonObject, "converter");
+        return getPipelineDrafts(jsonObject.getInt("id"));
     }
 
     @Transactional
