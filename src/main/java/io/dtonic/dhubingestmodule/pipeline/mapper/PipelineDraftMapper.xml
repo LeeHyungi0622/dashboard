@@ -65,13 +65,15 @@
         name,
         creator,
         detail, 
-        created_at
+        created_at,
+        modified_at
         )
       VALUES 
       (
         #{name}, 
         #{creator}, 
         #{detail}, 
+        now(),
         now()
         )
   </insert>

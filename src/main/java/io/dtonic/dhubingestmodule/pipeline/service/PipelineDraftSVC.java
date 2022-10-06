@@ -32,7 +32,7 @@ public class PipelineDraftSVC {
     @Autowired
     private DataSetSVC datasetsvc;
 
-    public int createPipelineDrafts(String name, String creator, String detail) {
+    public PipelineVO createPipelineDrafts(String name, String creator, String detail) {
         int result = pipelineDraftMapper.createPipelineDrafts(name, creator, detail);
         if (result != 1) {
             throw new BadRequestException(
@@ -40,7 +40,7 @@ public class PipelineDraftSVC {
                 "Create Draft Pipeline error in DB"
             );
         }
-        return pipelineDraftMapper.getPipelineIDbyName(name);
+        return getPipelineDrafts(pipelineDraftMapper.getPipelineIDbyName(name));
     }
 
     public List<String> getDataCollector() {
@@ -148,10 +148,11 @@ public class PipelineDraftSVC {
     }
 
     @Transactional
-    public void updatePipelineDrafts(JSONObject jsonObject) {
+    public PipelineVO updatePipelineDrafts(JSONObject jsonObject) {
         parseJSON(jsonObject, "collector");
         parseJSON(jsonObject, "filter");
         parseJSON(jsonObject, "converter");
+        return getPipelineDrafts(jsonObject.getInt("id"));
     }
 
     @Transactional
