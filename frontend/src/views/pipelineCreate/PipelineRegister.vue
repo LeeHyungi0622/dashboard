@@ -1,7 +1,7 @@
 <template>
   <div style="width: 95%">
     <div class="pipelineCreateNavBox mgT20">
-      <button class="navBoxBtn">
+      <button class="navBoxBtn" @click="actionFilter()">
         <div class="numberBox">1</div>
         <div>기본정보 입력</div>
       </button>
