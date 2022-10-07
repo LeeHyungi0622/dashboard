@@ -12,6 +12,7 @@ import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,11 +24,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-// pipeline 앞에 prefix 접두사
+@Slf4j
+@RequestMapping(path = "pipelines")
 public class PipelineController {
 
     @Autowired
@@ -36,7 +39,7 @@ public class PipelineController {
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
 
-    @GetMapping("/pipelines/completed") // PipeLine List 조회
+    @GetMapping("/completed") // PipeLine List 조회
     public List<PipelineListResponseVO> getPipelineList(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -54,7 +57,7 @@ public class PipelineController {
      * @return
      */
     @Transactional
-    @PostMapping("/pipelines/completed/{id}") // PipeLine 생성시 "등록완료"
+    @PostMapping("/completed/{id}") // PipeLine 생성시 "등록완료"
     public void createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -76,7 +79,7 @@ public class PipelineController {
      * @return
      */
 
-    @PutMapping("/pipelines/completed/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
+    @PutMapping("/completed/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
     public void updatePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -106,7 +109,7 @@ public class PipelineController {
      * @throws JsonProcessingException
      * @throws JsonMappingException
      */
-    @GetMapping("/pipelines/completed/{id}") // PipeLine 상세 조회
+    @GetMapping("/completed/{id}") // PipeLine 상세 조회
     public PipelineVO getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -116,7 +119,7 @@ public class PipelineController {
         return pipelineSVC.getPipelineVOById(id);
     }
 
-    @GetMapping("/pipelines/collectors") // 데이터수집기 리스트 리턴
+    @GetMapping("/collectors") // 데이터수집기 리스트 리턴
     public List<String> getPipelinecollectors(
         HttpServletRequest request,
         HttpServletResponse response
@@ -124,7 +127,7 @@ public class PipelineController {
         return pipelineDraftSVC.getDataCollector();
     }
 
-    @GetMapping("/pipelines/completed/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
+    @GetMapping("/completed/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
     public PipelineVO getPipelineProperties(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -145,7 +148,7 @@ public class PipelineController {
      * @param id       retrieve Pipeline id
      * @return
      */
-    @PutMapping("/pipelines/run-status/{id}") // PipeLine status 업데이트
+    @PutMapping("/run-status/{id}") // PipeLine status 업데이트
     public void UpdatePipelineStatus(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -187,7 +190,7 @@ public class PipelineController {
      * @param id       retrieve Pipeline id
      * @return
      */
-    @DeleteMapping("/pipelines/completed/{id}") // PipeLine 삭제
+    @DeleteMapping("/completed/{id}") // PipeLine 삭제
     public void deletePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
