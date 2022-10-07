@@ -35,7 +35,6 @@ frontend/node/
 
 ### logs ###
 logs/
-logging.base.dir_IS_UNDEFINED
 
 ### front build ###
 src/main/resources/static/
