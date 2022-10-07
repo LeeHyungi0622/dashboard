@@ -1,5 +1,6 @@
 package io.dtonic.dhubingestmodule.pipeline.service;
 
+import io.dtonic.dhubingestmodule.common.code.AdaptorName;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
@@ -13,8 +14,8 @@ import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import io.dtonic.dhubingestmodule.util.ValidateUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-@Slf4j
 public class PipelineDraftSVC {
 
     @Autowired
@@ -55,37 +55,33 @@ public class PipelineDraftSVC {
     ) {
         PipelineVO pipelineVO = pipelineDraftMapper.getPipelineDrafts(pipelineid);
         AdaptorVO adaptorVO = getPipelineproperties(adaptorName);
-        switch (page) {
-            case "collector": //수집기 선택시 (수집 pipelineVO 속성 리턴)
-                pipelineVO.setCollector(adaptorVO);
-                break;
-            case "filter": //수집에서 다음 누를때(정제 pipelineVO 속성 리턴)
-                pipelineVO.setFilter(adaptorVO);
-                break;
-            case "converter": //데이터셋 선택시 (변환 pipelineVO 속성 리턴)
-                DataModelVO dataModelVO = datasetsvc.getDataModelId( //model ID 가져오기
-                    datasetid
-                );
-                pipelineVO.setDataModel(dataModelVO.getId());
-                dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId());
-                NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
-                for (int i = 0; i < dataModelVO.getAttributes().size(); i++) {
-                    if (dataModelVO.getAttributes().get(i).getHasUnitCode()) {
-                        PropertyVO propertyVO = new PropertyVO();
-                        propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
-                        propertyVO.setDetail("unitCode");
-                        niFiComponentVO.getRequiredProps().add(propertyVO);
-                    }
+        if (page.equals(AdaptorName.ADAPTOR_NAME_COLLECTOR.getCode())) {
+            pipelineVO.setCollector(adaptorVO);
+        } else if (page.equals(AdaptorName.ADAPTOR_NAME_FILTER.getCode())) {
+            pipelineVO.setFilter(adaptorVO);
+        } else if (page.equals(AdaptorName.ADAPTOR_NAME_CONVERTER.getCode())) {
+            DataModelVO dataModelVO = datasetsvc.getDataModelId( //model ID 가져오기
+                datasetid
+            );
+            pipelineVO.setDataModel(dataModelVO.getId());
+            dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId());
+            NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
+            for (int i = 0; i < dataModelVO.getAttributes().size(); i++) {
+                if (Boolean.TRUE.equals(dataModelVO.getAttributes().get(i).getHasUnitCode())) {
                     PropertyVO propertyVO = new PropertyVO();
                     propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
-                    propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
+                    propertyVO.setDetail("unitCode");
                     niFiComponentVO.getRequiredProps().add(propertyVO);
-                    niFiComponentVO.setName("DataSetProps");
-                    niFiComponentVO.setType("Processor");
                 }
-                adaptorVO.getNifiComponents().add(niFiComponentVO);
-                pipelineVO.setConverter(adaptorVO);
-                break;
+                PropertyVO propertyVO = new PropertyVO();
+                propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
+                niFiComponentVO.getRequiredProps().add(propertyVO);
+                niFiComponentVO.setName("DataSetProps");
+                niFiComponentVO.setType("Processor");
+            }
+            adaptorVO.getNifiComponents().add(niFiComponentVO);
+            pipelineVO.setConverter(adaptorVO);
         }
 
         return pipelineVO;
@@ -94,12 +90,12 @@ public class PipelineDraftSVC {
     //adaptor의 속성값 가져오기
     public AdaptorVO getPipelineproperties(String adaptorName) {
         NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
-        List<NiFiComponentVO> niFiComponentVOs = new ArrayList<NiFiComponentVO>();
+        List<NiFiComponentVO> niFiComponentVOs = new ArrayList<>();
         List<PropertyVO> propertyVO = pipelineDraftMapper.getPipelineproperties(adaptorName);
         AdaptorVO adaptorVO = new AdaptorVO();
         Integer cur_adaptor_id = propertyVO.get(0).getAdaptorId();
         for (int i = 0; i < propertyVO.size(); i++) {
-            if (propertyVO.get(i).getAdaptorId() != cur_adaptor_id) {
+            if (!Objects.equals(propertyVO.get(i).getAdaptorId(), cur_adaptor_id)) {
                 niFiComponentVO.setName(
                     pipelineDraftMapper.getAdaptorinfo(cur_adaptor_id).getName()
                 );
@@ -110,9 +106,9 @@ public class PipelineDraftSVC {
                 niFiComponentVOs.add(niFiComponentVO);
                 niFiComponentVO = new NiFiComponentVO();
             }
-            if (propertyVO.get(i).getIsRequired()) {
+            if (Boolean.TRUE.equals(propertyVO.get(i).getIsRequired())) {
                 if (
-                    propertyVO.get(i).getDefaultValue().size() > 0 &&
+                    !propertyVO.get(i).getDefaultValue().isEmpty() &&
                     ValidateUtil.isStringEmpty(propertyVO.get(i).getInputValue())
                 ) {
                     propertyVO.get(i).setInputValue(propertyVO.get(i).getDefaultValue().get(0));
@@ -149,9 +145,9 @@ public class PipelineDraftSVC {
 
     @Transactional
     public PipelineVO updatePipelineDrafts(JSONObject jsonObject) {
-        parseJSON(jsonObject, "collector");
-        parseJSON(jsonObject, "filter");
-        parseJSON(jsonObject, "converter");
+        parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_COLLECTOR.getCode());
+        parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_FILTER.getCode());
+        parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_CONVERTER.getCode());
         return getPipelineDrafts(jsonObject.getInt("id"));
     }
 
