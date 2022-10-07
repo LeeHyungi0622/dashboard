@@ -205,12 +205,12 @@ export default {
     },
     goPipelineRegister(item) {
       if (item == `default`) {
-        this.$store.state.pipelineVo = [],
+        this.$store.state.registerPipeline = {},
         this.$router.push({
           name: "pipelineRegister",
         });
       } else if (this.$route.name != "pipelineRegister") {
-        this.$store.state.pipelineVo.id = item.id;
+        this.$store.state.registerPipeline.id = item.id;
         this.$router.push({
           name: "pipelineRegister",
         });

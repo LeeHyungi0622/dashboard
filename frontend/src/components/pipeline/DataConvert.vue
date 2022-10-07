@@ -2,8 +2,11 @@
   <div class="pipelineUpdateContentBox">
     <div style="justify-content: space-between; display: flex">
       <div class="pipelineUpdateMainTitle fsb16">데이터 변환</div>
-      <button class="pipelineUpdateButton" @click="convertMode('convert')">
-        {{ mode == "UPDATE" ? "수정완료" : "수정" }}
+      <button class="pipelineUpdateButton" 
+      v-if="$store.state.tableShowMode == `UPDATE`"
+      @click="changeUpdateFlag"
+      >
+        {{ $store.state.tableUpdateFlag == "UPDATE" ? "수정완료" : "수정" }}
       </button>
     </div>
     <div class="customTableMainArea">
@@ -15,7 +18,7 @@
           <div>
             <select
               style="padding: 0px 20px 0px 20px"
-              @change="selectedDataSet($event)"
+              v-model="selectedConverterValue"
             >
               <option
                 v-for="(item, key) in dataSetList.dataSetId"
@@ -30,40 +33,57 @@
       </div>
     </div>
 
+    <div class="customTableMainArea">
+      <div class="customTable">
+        <div class="header fsb12">
+          <p>Date Type Format Setting</p>
+        </div>
+        <div class="value">
+          <div>
+            <input
+            v-if="$store.state.tableShowMode == 'UPDATE' || $store.state.tableShowMode == 'REGISTER'"
+          />
+          <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <v-data-table
       :headers="convertHeaders"
-      :items="getVuetifyContents('DataSetProperties')[0].requiredProps"
+      :items="convProps"
       class="pipelineUpdateConvertVFT"
       :hide-default-footer="true"
       style="text-align: center"
       ><template v-slot:[`item.inputValue`]="{ item }">
         <input
-          v-if="mode == 'UPDATE' || mode == 'REGISTER'"
+          v-if="$store.state.tableShowMode == 'UPDATE' || $store.state.tableShowMode == 'REGISTER'"
           v-model="item.inputValue"
         />
         <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
       </template>
     </v-data-table>
+
     <div class="pipelineUpdateSubTitle fsb14">ID 생성 규칙 설정</div>
     <div class="customTableBox fsb12">{{ generationKey }}</div>
 
     <v-data-table
       :headers="IdHeaders"
-      :items="getVuetifyContents('IDGenerater')[0].requiredProps"
+      :items="convId"
       class="pipelineUpdateIdVFT"
       :hide-default-footer="true"
       style="text-align: center"
     >
       <template v-slot:[`item.inputValue`]="{ item }">
         <input
-          v-if="mode == 'UPDATE' || mode == 'REGISTER'"
+          v-if="$store.state.tableShowMode == 'UPDATE' || $store.state.tableShowMode == 'REGISTER'"
           v-model="item.inputValue"
         />
         <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
       </template>
     </v-data-table>
     <div
-      v-if="mode == `REGISTER`"
+      v-if="$store.state.tableShowMode == `REGISTER`"
       class="mgT12"
       style="display: flex; justify-content: right"
     >
@@ -75,18 +95,80 @@
 </template>
 
 <script>
-import dataSetList from "../../json/dataSetList.json";
+import collectorService from "../../js/api/collector";
+import dataSetService from "../../js/api/dataSet";
 export default {
+  created() {
+    this.getDataSet();
+  },
   computed: {
     generationKey() {
       let last = "";
-      this.getVuetifyContents("IDGenerater")[0].requiredProps.forEach(
-        (item) => (last += "${" + item.inputValue + "}")
-      );
+      // this.getVuetifyContents("IDGenerater")[0].requiredProps.forEach(
+      //   (item) => (last += "${" + item.inputValue + "}")
+      // );
 
-      return "Generated key : urn:datahub:${datamodel ID}" + last;
+      return "Generated key : urn:datahub:"+ this.$store.state.registerPipeline.dataModel + last;
     },
+
   },
+  watch: {
+    selectedConverterValue(){
+      if (this.$store.state.tableShowMode == "REGISTER") {
+        collectorService
+          .getPipelineDraft({
+            pipelineid: this.$store.state.registerPipeline.id,
+            adaptorName: "converter",
+            page: "converter",
+            datasetid: this.selectedConverterValue
+          })
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.converterData = 
+            this.$store.state.registerPipeline.converter;
+            this.convProps = this.convertDataSetProps(this.converterData);
+            this.convertId(this.converterData);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        collectorService
+          .getPipelineComplete({
+            adaptorName: "converter",
+            pipelineid: this.$store.state.completedPipeline.id,
+            page: "converter",
+            datasetid: this.selectedConverterValue
+          })
+          .then((res) => {
+            this.$store.state.completedPipeline= res;
+            this.converterData =
+              this.$store.state.completedPipeline.converter;
+            this.convProps = this.convertDataSetProps(this.converterData);
+            this.convertId(this.converterData);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    },
+    convProps(){
+      if(this.convProps != null){
+        for(var prop of this.convProps){
+              var nifiPropList = [];
+              for(var nifiProp of this.rawDataSetProps.requiredProps){
+                if(nifiProp.name == prop.name.split('(')[0]){
+                  nifiProp.inputValue = prop.inputValue;
+                  nifiPropList.push({name:nifiProp.name,detail:prop.detail,inputValue:prop.inputValue});
+                }
+              }
+              this.rawDataSetProps.requiredProps = nifiPropList;
+          }
+
+      }
+    }
+  },
+  
   data() {
     return {
       convertHeaders: [
@@ -109,21 +191,53 @@ export default {
         },
         { text: "ID Key", value: "inputValue", sortable: false },
       ],
-      dataSetList: dataSetList,
-      contents: this.$store.state.pipelineVo.converter,
+      dataSetList: [],
+      converterData: {
+        nifiComponents: [],
+      },
+      selectedConverterValue: {},
+      convProps: [],
+      convId: [],
+      rawDataSetProps: {}
     };
   },
-  props: {
-    mode: String,
-    convertMode: Function,
-  },
   methods: {
-    selectedDataSet(event) {
-      this.$emit("selected-data-set", event.target.value);
+    convertDataSetProps(data){
+      var convertProps = [];
+      for(var nifi of data.nifiComponents){
+        if(nifi.name == 'DataSetProps'){
+          this.rawDataSetProps = nifi;
+          this.rawDataSetProps.requiredProps = nifi.requiredProps;
+          for(var prop of nifi.requiredProps){
+            const name = prop.name + "(" + prop.detail + ")";
+            const inputValue = "";
+            const convertProp = {name : name, detail:prop.detail ,inputValue: inputValue};
+            convertProps.push(convertProp);
+          }
+        }
+      }
+      return convertProps;
     },
-    getVuetifyContents(propertyName) {
-      return this.contents.filter((item) => item.name == propertyName);
+    convertId(data){
+      for(var nifi of data.nifiComponents){
+        if(nifi.name == 'IDGenerater'){
+          this.convId = nifi.requiredProps;
+        }
+      }
     },
+    changeUpdateFlag(){
+      this.$store.state.tableUpdateFlag = !this.$store.state.tableUpdateFlag;
+    },
+    getDataSet(){
+      dataSetService.getDataSet()
+        .then((res)=>{
+          console.log(res);
+          this.dataSetList = res;
+        })
+        .catch((error) => {
+            console.error(error);
+          });
+    }
   },
 };
 </script>

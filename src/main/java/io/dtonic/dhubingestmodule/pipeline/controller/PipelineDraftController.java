@@ -101,7 +101,7 @@ public class PipelineDraftController {
         HttpServletResponse response,
         @RequestParam(name = "pipelineid") Integer pipelineid,
         @RequestParam(name = "page") String page, //collector, filter, converter
-        @RequestParam(name = "adaptorName") String adaptorName,
+        @RequestParam(name = "adaptorName", required = false) String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid
     ) {
         PipelineVO pipelineVO = pipelineDraftSVC.getPipelineDraftsProperties(

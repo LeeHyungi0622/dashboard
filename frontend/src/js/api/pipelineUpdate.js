@@ -3,7 +3,7 @@ import axios from "axios";
 class pipelineUpdate {
   getPipelineListById(id) {
     return axios
-      .get(`/pipeline/complete/${id}`, {})
+      .get(`/pipelines/completed/${id}`, {})
       .then((response) => {
         return response.data;
       })

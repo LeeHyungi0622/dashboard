@@ -3,7 +3,7 @@
     <div class="customTable" v-for="(content, key) in contents" :key="key">
       <div class="header fsb12">
         <p v-if="content.name">{{ content.name }}</p>
-        <button v-if="content.desc">
+        <button v-if="content.detail">
           <img style="padding: 15px" src="../../assets/img/Help.svg" />
         </button>
       </div>
@@ -78,5 +78,16 @@ export default {
   props: {
     contents: Array
   },
+  data() {
+    return {
+      showDetail : false
+    };
+  },
+  methods:{
+    showDetailPopup(){
+      this.showDetail = !this.showDetail;
+
+    }
+  }
 };
 </script>

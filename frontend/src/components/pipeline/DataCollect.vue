@@ -2,8 +2,11 @@
   <div class="pipelineUpdateContentBox">
     <div style="justify-content: space-between; display: flex">
       <div class="pipelineUpdateMainTitle fsb16">데이터 수집</div>
-      <button class="pipelineUpdateButton" @click="convertMode('collect')">
-        {{ mode == "UPDATE" ? "수정완료" : "수정" }}
+      <button class="pipelineUpdateButton" 
+      v-if="$store.state.tableShowMode == `UPDATE`"
+      @click="changeUpdateFlag"
+      >
+        {{ $store.state.tableUpdateFlag == "UPDATE" ? "수정완료" : "수정" }}
       </button>
     </div>
     <div class="customTableMainArea">
@@ -42,7 +45,7 @@
               v-model="selectedSettingValue"
             >
               <option
-                v-for="(item, key) in collectorData"
+                v-for="(item, key) in collectorData.nifiComponents"
                 :key="key"
                 :value="item"
               >
@@ -55,17 +58,22 @@
     </div>
 
     <div class="pipelineUpdateSubTitle fsb14">필수 설정 값</div>
-    <custom-table :contents="selectedSettingValue.requiredProps" :mode="mode" />
+    <custom-table :contents="selectedSettingValue.requiredProps" />
     <div class="pipelineUpdateSubTitle fsb14">선택 설정 값</div>
-    <custom-table :contents="selectedSettingValue.optionalProps" :mode="mode" />
+    <custom-table :contents="selectedSettingValue.optionalProps" />
     <div
-      v-if="mode == `REGISTER`"
+      v-if="$store.state.tableShowMode == `REGISTER`"
       class="mgT12"
       style="display: flex; justify-content: right"
     >
       <button class="pipelineButton">이전</button>
       <button class="pipelineButton mgL12">임시 저장</button>
-      <button class="pipelineButton mgL12" @click="nextRoute()">다음</button>
+      <button
+        class="pipelineButton mgL12"
+        @click="nextRoute()"
+      >
+        다음
+      </button>
     </div>
   </div>
 </template>
@@ -80,19 +88,20 @@ export default {
   created() {
     this.getCollector();
   },
+  
   watch: {
     selectedCollectValue() {
-      if (this.mode == "REGISTER") {
+      if (this.$store.state.tableShowMode == "REGISTER") {
         collectorService
           .getPipelineDraft({
             adaptorName: this.selectedCollectValue,
-            pipelineid: this.$store.state.pipelineVo.id,
+            pipelineid: this.$store.state.registerPipeline.id,
             page: "collector",
           })
           .then((res) => {
-            this.$store.state.pipelineVo.collector = res.collector;
+            this.$store.state.registerPipeline = res;
             this.collectorData =
-              this.$store.state.pipelineVo.collector.nifiComponents;
+              this.$store.state.registerPipeline.collector;
           })
           .catch((error) => {
             console.error(error);
@@ -101,14 +110,14 @@ export default {
         collectorService
           .getPipelineComplete({
             adaptorName: this.selectedCollectValue,
-            pipelineid: this.$store.state.pipelineVo.id,
-            page: 1,
+            pipelineid: this.$store.state.completedPipeline.id,
+            page: "collector",
           })
           .then((res) => {
             console.log(res);
-            this.$store.state.pipelineVo.collector = res.collector;
+            this.$store.state.completedPipeline= res;
             this.collectorData =
-              this.$store.state.pipelineVo.collector.nifiComponents;
+              this.$store.state.completedPipeline.collector;
           })
           .catch((err) => {
             console.error(err);
@@ -130,8 +139,7 @@ export default {
     };
   },
   props: {
-    mode: String,
-    convertMode: Function,
+    contents: Array
   },
   methods: {
     getCollector() {
@@ -144,6 +152,22 @@ export default {
           console.log("collector 목록의 조회에 실패했습니다.", err);
         });
     },
+    changeUpdateFlag(){
+      this.$store.state.tableUpdateFlag = !this.$store.state.tableUpdateFlag;
+    },
+    nextRoute(){
+      this.$store.state.registerPipeline.collector = this.collectorData;
+      collectorService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
+          this.$store.state.showRegisterMode = 'filter';
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   },
 };
 </script>

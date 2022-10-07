@@ -3,7 +3,7 @@ import axios from "axios";
 class tempPipelineList {
   getTempPipelineList() {
     return axios
-      .get(`/pipeline/drafts/list`, {})
+      .get(`/pipelines/drafts/list`, {})
       .then((response) => {
         return response.data;
       })
