@@ -19,7 +19,7 @@ class collector {
   }
   getPipelineDraft(params) {
     return axios
-      .get(`/pipeline/drafts/properties`, { params: params })
+      .get(`/pipelines/drafts/properties`, { params: params })
       .then((response) => {
         return response.data;
       })

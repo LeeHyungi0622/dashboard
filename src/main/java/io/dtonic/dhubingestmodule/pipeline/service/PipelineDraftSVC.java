@@ -73,6 +73,12 @@ public class PipelineDraftSVC {
                     propertyVO.setDetail("unitCode");
                     niFiComponentVO.getRequiredProps().add(propertyVO);
                 }
+                if (dataModelVO.getAttributes().get(i).getValueType().equals("Date")) {
+                    PropertyVO propertyVO = new PropertyVO();
+                    propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                    propertyVO.setDetail("Date Format");
+                    niFiComponentVO.getRequiredProps().add(propertyVO);
+                }
                 PropertyVO propertyVO = new PropertyVO();
                 propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
                 propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());

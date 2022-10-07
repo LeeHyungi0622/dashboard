@@ -25,6 +25,14 @@ class pipelineRegister {
       })
       .catch((error) => error);
   }
+  postPipelineDraft(requestBody) {
+    return axios
+      .post(`/pipelines/drafts`, requestBody)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => error);
+  }
 }
 
 export default new pipelineRegister();

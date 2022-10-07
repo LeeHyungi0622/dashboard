@@ -17,8 +17,8 @@
       class="mgT12"
       style="display: flex; justify-content: right"
     >
-      <button class="pipelineButton">이전</button>
-      <button class="pipelineButton mgL12">임시 저장</button>
+    <button class="pipelineButton" @click="beforeRoute()" >이전</button>
+    <button class="pipelineButton mgL12" @click="saveDraft()" >임시 저장</button>
       <button
         class="pipelineButton mgL12"
         @click="nextRoute()"
@@ -53,7 +53,7 @@ export default {
           .getPipelineDraft({
             pipelineid: this.$store.state.registerPipeline.id,
             adaptorName: "filter",
-            page: "filter",
+            page: "FILTER",
           })
           .then((res) => {
             this.$store.state.registerPipeline = res;
@@ -68,7 +68,7 @@ export default {
           .getPipelineComplete({
             adaptorName: "filter",
             pipelineid: this.$store.state.completedPipeline.id,
-            page: "filter",
+            page: "FILTER",
           })
           .then((res) => {
             console.log(res);
@@ -89,6 +89,31 @@ export default {
           console.log(res);
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'convertor';
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    beforeRoute(){
+      this.$store.state.registerPipeline.filter = this.filterData;
+      collectorService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
+          this.$store.state.showRegisterMode = 'collector';
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    saveDraft(){
+      this.$store.state.registerPipeline.filter = this.filterData;
+      collectorService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
         })
         .catch((err) => {
           console.error(err);

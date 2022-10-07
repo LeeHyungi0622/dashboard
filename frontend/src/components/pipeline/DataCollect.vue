@@ -96,7 +96,7 @@ export default {
           .getPipelineDraft({
             adaptorName: this.selectedCollectValue,
             pipelineid: this.$store.state.registerPipeline.id,
-            page: "collector",
+            page: "COLLECTOR",
           })
           .then((res) => {
             this.$store.state.registerPipeline = res;
@@ -111,7 +111,7 @@ export default {
           .getPipelineComplete({
             adaptorName: this.selectedCollectValue,
             pipelineid: this.$store.state.completedPipeline.id,
-            page: "collector",
+            page: 'COLLECTOR',
           })
           .then((res) => {
             console.log(res);

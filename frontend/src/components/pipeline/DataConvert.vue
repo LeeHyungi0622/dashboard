@@ -33,22 +33,6 @@
       </div>
     </div>
 
-    <div class="customTableMainArea">
-      <div class="customTable">
-        <div class="header fsb12">
-          <p>Date Type Format Setting</p>
-        </div>
-        <div class="value">
-          <div>
-            <input
-            v-if="$store.state.tableShowMode == 'UPDATE' || $store.state.tableShowMode == 'REGISTER'"
-          />
-          <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <v-data-table
       :headers="convertHeaders"
       :items="convProps"
@@ -87,8 +71,8 @@
       class="mgT12"
       style="display: flex; justify-content: right"
     >
-      <button class="pipelineButton">이전</button>
-      <button class="pipelineButton mgL12">임시 저장</button>
+      <button class="pipelineButton" @click="beforeRoute()" >이전</button>
+      <button class="pipelineButton mgL12" @click="saveDraft()" >임시 저장</button>
       <button class="pipelineButton mgL12" @click="nextRoute()">다음</button>
     </div>
   </div>
@@ -104,10 +88,13 @@ export default {
   computed: {
     generationKey() {
       let last = "";
-      // this.getVuetifyContents("IDGenerater")[0].requiredProps.forEach(
-      //   (item) => (last += "${" + item.inputValue + "}")
-      // );
-
+      if(this.convId != null){
+        for(var level of this.convId){
+          if(level.inputValue != null){
+            last = last + ":${"+level.inputValue+"}";
+          }
+        }
+      }
       return "Generated key : urn:datahub:"+ this.$store.state.registerPipeline.dataModel + last;
     },
 
@@ -119,7 +106,7 @@ export default {
           .getPipelineDraft({
             pipelineid: this.$store.state.registerPipeline.id,
             adaptorName: "converter",
-            page: "converter",
+            page: "CONVERTER",
             datasetid: this.selectedConverterValue
           })
           .then((res) => {
@@ -137,7 +124,7 @@ export default {
           .getPipelineComplete({
             adaptorName: "converter",
             pipelineid: this.$store.state.completedPipeline.id,
-            page: "converter",
+            page: "CONVERTER",
             datasetid: this.selectedConverterValue
           })
           .then((res) => {
@@ -237,6 +224,47 @@ export default {
         .catch((error) => {
             console.error(error);
           });
+    },
+    nextRoute(){
+      this.$store.state.registerPipeId = this.generationKey;
+      // this.$store.state.registerPipeline.collector = this.collectorData;
+      collectorService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
+          this.$store.state.showRegisterMode = 'complete';
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    beforeRoute(){
+      this.$store.state.registerPipeId = this.generationKey;
+      // this.$store.state.registerPipeline.collector = this.collectorData;
+      collectorService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
+          this.$store.state.showRegisterMode = 'filter';
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    saveDraft(){
+      this.$store.state.registerPipeId = this.generationKey;
+      this.$store.state.registerPipeline.collector = this.collectorData;
+      collectorService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     }
   },
 };

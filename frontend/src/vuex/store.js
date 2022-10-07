@@ -24,6 +24,7 @@ export const store = new Vuex.Store({
       tableShowMode: "", // REGISTER , UPDATE
       tableUpdateFlag: false,
       showRegisterMode: "",
+      registerPipeId: ""
     };
   },
   mutations: {

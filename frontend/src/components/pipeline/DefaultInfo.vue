@@ -16,7 +16,13 @@
       class="mgT12"
       style="display: flex; justify-content: right"
     >
-      <button class="pipelineButton mgL12">임시 저장</button>
+      <button 
+        class="pipelineButton mgL12" 
+        @click="saveDraft()" 
+        :disabled="!this.contents[0].inputValue"
+      >
+        임시 저장
+      </button>
       <button
         class="pipelineButton mgL12"
         @click="nextRoute()"
@@ -35,8 +41,39 @@ export default {
   components: {
     CustomTable,
   },
-  props: {
-    contents: Array
+  computed:{
+    contents(){
+      if(this.$store.state.tableShowMode == `UPDATE`){
+        return this.completedContents;
+      }
+      else{
+        return this.registerContents;
+      }
+    },
+  },
+  data() {
+    return {
+      registerContents: [
+        {
+          name: "파이프라인 이름",
+          inputValue: this.$store.state.registerPipeline.name,
+        },
+        {
+          name: "파이프라인 정의",
+          inputValue: this.$store.state.registerPipeline.detail,
+        },
+      ],
+      completedContents: [
+        {
+          name: "파이프라인 이름",
+          inputValue: this.$store.state.completedPipeline.name,
+        },
+        {
+          name: "파이프라인 정의",
+          inputValue: this.$store.state.completedPipeline.detail,
+        },
+      ],
+    };
   },
   methods: {
     nextRoute() {
@@ -57,6 +94,21 @@ export default {
     changeUpdateFlag(){
       this.$store.state.tableUpdateFlag = !this.$store.state.tableUpdateFlag;
     },
+    saveDraft(){
+      this.$store.state.registerPipeline.name = this.contents[0].inputValue;
+      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+      this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
+      pipelineRegisterService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    
   },
 };
 </script>

@@ -11,7 +11,7 @@ class tempPipelineList {
   }
   getPipelineList() {
     return axios
-      .get(`/pipeline/complete/list`, {})
+      .get(`/pipelines/completed/list`, {})
       .then((response) => {
         return response.data;
       })

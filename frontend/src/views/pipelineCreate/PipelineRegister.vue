@@ -3,13 +3,13 @@
     <div class="pipelineCreateNavBox mgT20">
       <button :class="$store.state.showRegisterMode == 'info'? 'activationBtn':'navBoxBtn'" 
       @click="convertMode('info')"
-      :disabled="$store.state.showRegisterMode == 'info'">
+      :disabled="!($store.state.showRegisterMode == 'info')">
         <div class="numberBox">1</div>
         <div>기본정보 입력</div>
       </button>
       <button :class="$store.state.showRegisterMode == 'collector'? 'activationBtn':'navBoxBtn'" 
       @click="convertMode('collector')"
-      :disabled="$store.state.showRegisterMode == 'collector'">
+      :disabled="!$store.state.showRegisterMode == 'collector'">
         <div class="numberBox">2</div>
         <div>데이터 수집</div>
       </button>
@@ -31,8 +31,7 @@
     </div>
     <div style="margin: 3%">
         <default-info 
-        v-if="$store.state.showRegisterMode == 'info'"
-        :contents="contents"/>
+        v-if="$store.state.showRegisterMode == 'info'"/>
         <data-collect
         v-if="$store.state.showRegisterMode == 'collector'"
         :contents="contents"/>
@@ -41,6 +40,9 @@
         :contents="contents"/>
         <data-convert
         v-if="$store.state.showRegisterMode == 'convertor'"
+        />
+        <complete-pipe
+        v-if="$store.state.showRegisterMode == 'complete'"
         />
     </div>
   </div>
@@ -52,12 +54,14 @@ import DefaultInfo from "../../components/pipeline/DefaultInfo.vue";
 import DataCollect from "../../components/pipeline/DataCollect.vue";
 import DataFilters from "../../components/pipeline/DataFilters.vue";
 import DataConvert from "../../components/pipeline/DataConvert.vue";
+import CompletePipe from "../../components/pipeline/CompletePipe.vue";
 export default {
   components: {
     DataConvert,
     DefaultInfo,
     DataCollect,
     DataFilters,
+    CompletePipe,
   },
   data() {
     return {
