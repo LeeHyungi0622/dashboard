@@ -1,9 +1,9 @@
 package io.dtonic.dhubingestmodule.common.code;
 
 public enum AdaptorName {
-    ADAPTOR_NAME_COLLECTOR("COLLECTOR"),
-    ADAPTOR_NAME_FILTER("FILTER"),
-    ADAPTOR_NAME_CONVERTER("CONVERTER");
+    ADAPTOR_NAME_COLLECTOR("collector"),
+    ADAPTOR_NAME_FILTER("filter"),
+    ADAPTOR_NAME_CONVERTER("converter");
 
     private String code;
 
