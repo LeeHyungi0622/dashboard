@@ -3,20 +3,26 @@
     <div style="justify-content: space-between; display: flex" class="fsb14">
       <div class="fsb16" style="color: #2b4f8c">데이터 파이프라인 기본정보</div>
       <button
-        v-if="mode == `UPDATE`"
+        v-if="$store.state.tableShowMode == `UPDATE`"
         class="pipelineUpdateButton"
-        @click="convertMode('defaultInfo')"
+        @click="changeUpdateFlag"
       >
-        {{ mode == "UPDATE" ? "수정완료" : "수정" }}
+        {{ $store.state.tableUpdateFlag ? "수정완료" : "수정" }}
       </button>
     </div>
-    <custom-table :contents="contents" :mode="mode" />
+    <custom-table :contents="contents" />
     <div
-      v-if="mode == `REGISTER`"
+      v-if="$store.state.tableShowMode == `REGISTER`"
       class="mgT12"
       style="display: flex; justify-content: right"
     >
-      <button class="pipelineButton mgL12">임시 저장</button>
+      <button 
+        class="pipelineButton mgL12" 
+        @click="saveDraft()" 
+        :disabled="!this.contents[0].inputValue"
+      >
+        임시 저장
+      </button>
       <button
         class="pipelineButton mgL12"
         @click="nextRoute()"
@@ -35,46 +41,74 @@ export default {
   components: {
     CustomTable,
   },
-
-  props: {
-    mode: String,
-    convertMode: Function,
+  computed:{
+    contents(){
+      if(this.$store.state.tableShowMode == `UPDATE`){
+        return this.completedContents;
+      }
+      else{
+        return this.registerContents;
+      }
+    },
   },
   data() {
     return {
-      contents: [
+      registerContents: [
         {
           name: "파이프라인 이름",
-          inputValue: this.$store.state.pipelineVo.name,
+          inputValue: this.$store.state.registerPipeline.name,
         },
         {
           name: "파이프라인 정의",
-          inputValue: this.$store.state.pipelineVo.detail,
+          inputValue: this.$store.state.registerPipeline.detail,
+        },
+      ],
+      completedContents: [
+        {
+          name: "파이프라인 이름",
+          inputValue: this.$store.state.completedPipeline.name,
+        },
+        {
+          name: "파이프라인 정의",
+          inputValue: this.$store.state.completedPipeline.detail,
         },
       ],
     };
   },
   methods: {
     nextRoute() {
-      this.$store.state.pipelineVo.name = this.contents[0].inputValue;
-      this.$store.state.pipelineVo.creator = "홍길동";
-      this.$store.state.pipelineVo.detail = this.contents[1].inputValue;
+      this.$store.state.registerPipeline.name = this.contents[0].inputValue;
+      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+      this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
       pipelineRegisterService
-        .craetePipelineDraft(this.$store.state.pipelineVo)
+        .craetePipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          this.$router.push({
-            name: "collector",
-            query: { id: res },
-            params: {
-              convertMode: this.convertMode,
-              mode: "REGISTER",
-            },
-          });
+          console.log(res);
+          this.$store.state.registerPipeline = res;
+          this.$store.state.showRegisterMode = 'collector';
         })
         .catch((err) => {
           console.error(err);
         });
     },
+    changeUpdateFlag(){
+      this.$store.state.tableUpdateFlag = !this.$store.state.tableUpdateFlag;
+    },
+    saveDraft(){
+      this.$store.state.registerPipeline.name = this.contents[0].inputValue;
+      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+      this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
+      pipelineRegisterService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    
   },
 };
 </script>

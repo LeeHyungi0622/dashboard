@@ -104,12 +104,17 @@ public class PipelineDraftController {
     public PipelineVO getPipelineDraftsProperties(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestParam(name = "id", required = false) Integer id,
+        @RequestParam(name = "pipelineid", required = false) Integer pipelineid,
         @RequestParam(name = "page") String page, //collector, filter, converter
-        @RequestParam(name = "adaptorName") String adaptorName,
+        @RequestParam(name = "adaptorName", required = false) String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid
     ) {
-        return pipelineDraftSVC.getPipelineDraftsProperties(id, page, adaptorName, datasetid);
+        return pipelineDraftSVC.getPipelineDraftsProperties(
+            pipelineid,
+            page,
+            adaptorName,
+            datasetid
+        );
     }
 
     @Transactional

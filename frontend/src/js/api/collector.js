@@ -3,7 +3,7 @@ import axios from "axios";
 class collector {
   getCollectorList() {
     return axios
-      .get(`/pipeline/collectors`, {})
+      .get(`/pipelines/collectors`, {})
       .then((response) => {
         return response.data;
       })
@@ -11,7 +11,7 @@ class collector {
   }
   getPipelineComplete(params) {
     return axios
-      .get(`/pipeline/complete/properties`, { params: params })
+      .get(`/pipelines/completed/properties`, { params: params })
       .then((response) => {
         return response.data;
       })
@@ -19,7 +19,15 @@ class collector {
   }
   getPipelineDraft(params) {
     return axios
-      .get(`/pipeline/drafts/properties`, { params: params })
+      .get(`/pipelines/drafts/properties`, { params: params })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => error);
+  }
+  postPipelineDraft(requestBody) {
+    return axios
+      .post(`/pipelines/drafts`, requestBody)
       .then((response) => {
         return response.data;
       })

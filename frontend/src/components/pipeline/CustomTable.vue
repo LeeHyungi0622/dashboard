@@ -3,7 +3,7 @@
     <div class="customTable" v-for="(content, key) in contents" :key="key">
       <div class="header fsb12">
         <p v-if="content.name">{{ content.name }}</p>
-        <button v-if="content.desc">
+        <button v-if="content.detail">
           <img style="padding: 15px" src="../../assets/img/Help.svg" />
         </button>
       </div>
@@ -13,7 +13,7 @@
           class="disf"
           v-if="
             content.name == `isBase64` &&
-            (mode == `UPDATE` || mode == `REGISTER`)
+            ($store.state.tableUpdateFlag || $store.state.tableShowMode == `REGISTER`)
           "
         >
           <input
@@ -30,7 +30,7 @@
           />Off
         </div>
         <!-- 수정이나 등록시 -->
-        <div v-else-if="mode == `UPDATE` || mode == `REGISTER`">
+        <div v-else-if="$store.state.tableUpdateFlag || $store.state.tableShowMode == `REGISTER`">
           <select
             style="padding: 0px 20px 0px 20px"
             v-if="Array.isArray(content.inputValue)"
@@ -76,8 +76,18 @@
 <script>
 export default {
   props: {
-    contents: Array,
-    mode: String,
+    contents: Array
   },
+  data() {
+    return {
+      showDetail : false
+    };
+  },
+  methods:{
+    showDetailPopup(){
+      this.showDetail = !this.showDetail;
+
+    }
+  }
 };
 </script>

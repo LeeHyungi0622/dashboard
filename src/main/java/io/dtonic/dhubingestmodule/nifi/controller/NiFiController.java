@@ -231,6 +231,10 @@ public class NiFiController {
             if (e.getHasObservedAt()) {
                 subAttribute.put("observedAt", "${observedAt}");
             }
+            //TODO
+            if (e.getHasUnitCode()) {
+                subAttribute.put("unitCode", "${observedAt}");
+            }
             entity.put(e.getName(), subAttribute);
         }
         entities.add(entity);
@@ -271,8 +275,8 @@ public class NiFiController {
             } else if (a.getValueType().equals("Boolean")) {
                 e.put("value", "=toBoolean");
                 ae.put(a.getName(), e);
-            } else if (a.getValueType().equals("Date")) {
-                e.put("value", "=toBoolean");
+            } else if (a.getValueType().equals("BigDecimal")) {
+                e.put("value", "=toDouble");
                 ae.put(a.getName(), e);
             }
         }

@@ -20,7 +20,7 @@
               <button style="padding: 0 0 0 12px" v-bind="attrs" v-on="on">
                 <div style="display: flex">
                   <img src="@/assets/img/user.svg" alt="user" />
-                  <div style="padding: 0 10px 0 10px">홍길동(cityhub10)님</div>
+                  <div style="padding: 0 10px 0 10px">{{displayUser}}</div>
                   <img src="@/assets/img/drop-down.svg" alt="user" />
                 </div>
               </button>
@@ -63,6 +63,7 @@
       v-if="confirmShowFlag"
       :contents="confirmContent"
       @close-confirm-popup="closeConfirmPopup"
+      @close-cancel-popup="closeCancelPopup"
     ></confirm-popup>
     <user-alert-popup
       v-if="userAlertShowFlag"
@@ -88,8 +89,8 @@ import ConfirmPopup from "./components/popup/ConfirmPopup.vue";
 import UserAlertPopup from "./components/popup/UserAlertPopup.vue";
 import AlertPopup from "./components/popup/AlertPopup.vue";
 import EventBus from "@/eventBus/EventBus.js";
-// import userInfo from "./json/userInfo.json";
-import userInfo from "./js/api/user.js";
+import UserInfo from "./js/api/user.js";
+import PipelineList from "./js/api/pipelineList.js";
 import TempPipelinePopup from "./components/popup/TempPipelinePopup.vue";
 import tempPipeline from "./json/tempPipeline.json";
 
@@ -99,12 +100,15 @@ export default {
     UserAlertPopup,
     ConfirmPopup,
     AlertPopup,
-    TempPipelinePopup,
+    TempPipelinePopup
   },
   computed: {
     activationRoutePath() {
       return this.$route.path;
     },
+    displayUser(){
+      return this.$store.state.userInfo.name +"(" +this.$store.state.userInfo.userId+")님";
+    }
   },
   data() {
     return {
@@ -114,25 +118,25 @@ export default {
         url: "default",
         param: "default",
         body: "default",
+        id: "default"
       },
-      userInfo: {},
       userAlertContent: {
         title: "default",
         userContent: {
           userId: { key: null, value: null },
           name: { key: null, value: null },
-          phone: { key: null, value: null },
-        },
+          phone: { key: null, value: null }
+        }
       },
       alertContent: {
         title: "입력값 오류",
-        text: "입력값에 오류가 있습니다. <br/>구분자 혹은  값을 입력해주세요",
+        text: "입력값에 오류가 있습니다. <br/>구분자 혹은  값을 입력해주세요"
       },
       tempPipelineContent: {
         title: "임시저장 파이프라인",
         subTitle: " 파이프라인 목록",
         data: tempPipeline,
-        filterList: [],
+        filterList: []
       },
       show: true,
       tempPipelineShowFlag: false,
@@ -141,8 +145,8 @@ export default {
       alertShowFlag: false,
       menu: [
         ["사용자 정보", "userInfo"],
-        ["로그아웃", "logout"],
-      ],
+        ["로그아웃", "logout"]
+      ]
     };
   },
   created() {
@@ -152,11 +156,41 @@ export default {
     EventBus.$on("show-temp-pipeline-popup", (payload) => {
       this.showTempPipelinePopup(payload);
     });
-    userInfo.getUserInfo().then((res)=>{this.userInfo = res}).catch((err)=>{console.log("Fail to Get User Info", err)})
-    console.log(this.userInfo);
+    UserInfo.getUserInfo()
+      .then((res) => {
+        this.$store.state.userInfo.name = res.name;
+        this.$store.state.userInfo.userId = res.userId;
+        this.$store.state.userInfo.nickName = res.nickName;
+        this.$store.state.userInfo.phone = res.phone;
+      })
+      .catch((err) => {
+        console.log("Fail to Get User Info", err);
+      });
   },
   methods: {
-    closeConfirmPopup: function () {
+    closeConfirmPopup: function (val) {
+      if(val.url == "update"){
+        PipelineList.putPipelineStatus(val.id, val.body)
+      }
+      else if(val.url == "deleteComplete"){
+        PipelineList.deletePipeline(val.id);
+      }
+      else if(val.url == "deleteTemp"){
+        PipelineList.deleteTempPipeline(val.id).then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            PipelineList.getTempPipelineList()
+            .then((res) => {
+              this.$store.state.tempPipelineList = res;
+            })
+            .catch((error) => error);
+          }
+        })
+        .catch((error) => error);
+      }
+      this.confirmShowFlag = false;
+    },
+    closeCancelPopup: function () {
       this.confirmShowFlag = false;
     },
 
@@ -167,6 +201,7 @@ export default {
       this.confirmContent.url = payload.url;
       this.confirmContent.param = payload.param;
       this.confirmContent.body = payload.body;
+      this.confirmContent.id = payload.id;
     },
     closeUserAlertPopup: function () {
       this.userAlertShowFlag = false;
@@ -175,11 +210,11 @@ export default {
       this.userAlertShowFlag = true;
       this.userAlertContent.title = "사용자 정보";
       this.userAlertContent.userContent.userId.key = "사용자 아이디";
-      this.userAlertContent.userContent.userId.value = this.userInfo.userId;
+      this.userAlertContent.userContent.userId.value = this.$store.state.userInfo.userId;
       this.userAlertContent.userContent.name.key = "사용자 이름";
-      this.userAlertContent.userContent.name.value = this.userInfo.name;
+      this.userAlertContent.userContent.name.value = this.$store.state.userInfo.name;
       this.userAlertContent.userContent.phone.key = "사용자 연락처";
-      this.userAlertContent.userContent.phone.value = this.userInfo.phone;
+      this.userAlertContent.userContent.phone.value = this.$store.state.userInfo.phone;
     },
     closeAlertPopup: function () {
       this.alertShowFlag = false;
@@ -201,10 +236,19 @@ export default {
       if (mode == "userInfo") {
         this.showUserAlertPopup();
       } else {
-        console.log("logout!!!!");
+        UserInfo.sendLogOut()
+        .then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            location.replace('/');
+          }
+      })
+      .catch((err) => {
+        console.log("Fail to logout", err);
+      });
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
