@@ -3,7 +3,7 @@ import axios from "axios";
 class pipelineRegister {
   craetePipelineDraft(requestBody) {
     return axios
-      .post(`/pipeline/drafts`, requestBody)
+      .post(`/pipelines/drafts`, requestBody)
       .then((response) => {
         return response.data;
       })
@@ -11,7 +11,7 @@ class pipelineRegister {
   }
   getPipelineVo() {
     return axios
-      .get(`/pipeline/drafts/create`, {})
+      .get(`/pipelines/drafts/create`, {})
       .then((response) => {
         return response.data;
       })
@@ -19,7 +19,15 @@ class pipelineRegister {
   }
   getPipelineDraft(id) {
     return axios
-      .get(`/pipeline/drafts/${id}`, {})
+      .get(`/pipelines/drafts/${id}`, {})
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => error);
+  }
+  postPipelineDraft(requestBody) {
+    return axios
+      .post(`/pipelines/drafts`, requestBody)
       .then((response) => {
         return response.data;
       })

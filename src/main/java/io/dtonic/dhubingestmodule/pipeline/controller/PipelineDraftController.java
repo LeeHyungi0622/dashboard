@@ -20,16 +20,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(path = "pipelines")
 public class PipelineDraftController {
 
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
 
-    @GetMapping("/pipelines/drafts/create") // 파이프라인 생성 첫 시작 API, (front에서 빈 Pipeline VO가 필요)
+    @GetMapping("/drafts/create") // 파이프라인 생성 첫 시작 API, (front에서 빈 Pipeline VO가 필요)
     public PipelineVO createPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response
@@ -45,7 +47,7 @@ public class PipelineDraftController {
      * @param id retrieve Pipeline id
      * @return Pipeline object
      */
-    @GetMapping("/pipelines/drafts/{id}") // 임시저장 상세 조회
+    @GetMapping("/drafts/{id}") // 임시저장 상세 조회
     public PipelineVO getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -54,7 +56,7 @@ public class PipelineDraftController {
         return pipelineDraftSVC.getPipelineDrafts(id);
     }
 
-    @GetMapping("/pipelines/drafts/list") // 임시저장 목록 조회
+    @GetMapping("/drafts/list") // 임시저장 목록 조회
     public List<PipelineDraftsListResponseVO> getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -64,7 +66,7 @@ public class PipelineDraftController {
     }
 
     // 파이프라인 생성 중 "다음" 누를시 사용되는 API , 해당 임시파이프라인 upsert처리
-    @PostMapping("/pipelines/drafts")
+    @PostMapping("/drafts")
     public PipelineVO upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -98,26 +100,25 @@ public class PipelineDraftController {
     }
 
     @Transactional
-    @GetMapping("/pipeline/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
+    @GetMapping("/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
     public PipelineVO getPipelineDraftsProperties(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestParam(name = "pipelineid") Integer pipelineid,
+        @RequestParam(name = "pipelineid", required = false) Integer pipelineid,
         @RequestParam(name = "page") String page, //collector, filter, converter
-        @RequestParam(name = "adaptorName") String adaptorName,
+        @RequestParam(name = "adaptorName", required = false) String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid
     ) {
-        PipelineVO pipelineVO = pipelineDraftSVC.getPipelineDraftsProperties(
+        return pipelineDraftSVC.getPipelineDraftsProperties(
             pipelineid,
             page,
             adaptorName,
             datasetid
         );
-        return pipelineVO;
     }
 
     @Transactional
-    @DeleteMapping("/pipelines/drafts/{id}") // 임시저장 삭제
+    @DeleteMapping("/drafts/{id}") // 임시저장 삭제
     public void deletePipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,

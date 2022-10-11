@@ -95,10 +95,16 @@
   </select>
   <update id="updatePipelineDrafts">
     UPDATE temp_pipeline
-    <if test="'collector'.equals(nifiFlowType)">SET collector = #{flowJsonString},</if>
-    <if test="'filter'.equals(nifiFlowType)">SET filter = #{flowJsonString},</if>
-    <if test="'converter'.equals(nifiFlowType)">SET converter = #{flowJsonString}, data_set = #{dataSet},</if>
-    <if test="'converter'.equals(nifiFlowType)"></if>
+    SET
+    <if test="'collector'.equals(nifiFlowType)">
+      collector = #{flowJsonString},
+    </if>
+    <if test="'filter'.equals(nifiFlowType)">
+      filter = #{flowJsonString},
+    </if>
+    <if test="'converter'.equals(nifiFlowType)">
+      converter = #{flowJsonString}, data_set = #{dataSet},
+    </if>
     name = #{name}, detail = #{detail}, modified_at = now()
     WHERE id = #{id}
   </update>

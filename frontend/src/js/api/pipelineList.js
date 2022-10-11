@@ -9,9 +9,17 @@ class pipelineList {
       })
       .catch((error) => error);
   }
+  getTempPipelineList() {
+    return axios
+      .get(`/pipelines/drafts/list`, {})
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => error);
+  }
   putPipelineStatus(id, status) {
     return axios
-      .put(`/pipeline/run-status/${id}`, null, { params : {status: status }})
+      .put(`/pipelines/run-status/${id}`, null, { params : {status: status }})
       .then((response) => {
         return response.data;
       })
@@ -27,7 +35,7 @@ class pipelineList {
   }
   deleteTempPipeline(id){
     return axios
-    .delete(`/pipeline/drafts/${id}`)
+    .delete(`/pipelines/drafts/${id}`)
     .then((response) => {
       return response.data;
     })

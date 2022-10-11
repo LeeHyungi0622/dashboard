@@ -169,7 +169,6 @@ export default {
   },
   methods: {
     closeConfirmPopup: function (val) {
-      console.log(val)
       if(val.url == "update"){
         PipelineList.putPipelineStatus(val.id, val.body)
       }
@@ -177,7 +176,17 @@ export default {
         PipelineList.deletePipeline(val.id);
       }
       else if(val.url == "deleteTemp"){
-        PipelineList.deleteTempPipeline(val.id);
+        PipelineList.deleteTempPipeline(val.id).then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            PipelineList.getTempPipelineList()
+            .then((res) => {
+              this.$store.state.tempPipelineList = res;
+            })
+            .catch((error) => error);
+          }
+        })
+        .catch((error) => error);
       }
       this.confirmShowFlag = false;
     },

@@ -134,7 +134,7 @@ export default {
       .catch((err) => {
         console.log("PipelineList 조회에 실패하였습니다.", err);
       });
-    this.$store.state.pipelineVo = {};
+    this.$store.state.registerPipeline = {};
   },
 
   computed: {
@@ -211,7 +211,7 @@ export default {
       pipelineUpdateService
       .getPipelineListById(item.id)
       .then((res) => {
-        this.$store.state.pipelineVo = res;
+        this.$store.state.completedPipeline = res;
         this.$store.state.tableShowMode = "UPDATE";
       })
       .catch((err) => {

@@ -8,7 +8,9 @@ export const store = new Vuex.Store({
     return {
       pipelineList: [],
       tempPipelineList: [],
-      pipelineVo: {
+      registerPipeline: {
+      },
+      completedPipeline: {
       },
       userInfo: {
         userId: "",
@@ -20,7 +22,9 @@ export const store = new Vuex.Store({
 
       ],
       tableShowMode: "", // REGISTER , UPDATE
-      tableUpdateFlag: false
+      tableUpdateFlag: false,
+      showRegisterMode: "",
+      registerPipeId: ""
     };
   },
   mutations: {

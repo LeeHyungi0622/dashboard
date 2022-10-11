@@ -6,17 +6,16 @@
     <div style="margin: 3%">
       <default-info :contents="defaultInfoContents()"/>
       <data-collect
-        v-if="$store.state.pipelineVo['collector']"
+        v-if="$store.state.completedPipeline['collector']"
         :contents="getContents('collector')"
       />
       <data-filters
-        v-if="$store.state.pipelineVo['filter']"
+        v-if="updatePipeline['filter']"
         :contents="getContents('filter')"
       />
       <data-convert
-        v-if="$store.state.pipelineVo['converter']"
+        v-if="$store.state.completedPipeline['converter']"
         :contents="getContents('converter')"
-        @selected-data-set="selectedDataSetFunction"
       />
       <div class="pipelineUpdateBtnBox mgT12">
         <button class="pipelineUpdateButton" @click="goPipelineList()">
@@ -41,19 +40,12 @@ export default {
   },
   computed: {
     updatePipeline(){
-      return this.$store.state.pipelineVo;
+      return this.$store.state.completedPipeline;
     }
   },
   data() {
     return {
-      // updatePipeline: {},
       selectedDataSet: "",
-      mode: {
-        defaultInfo: "",
-        collect: "",
-        refine: "",
-        convert: "",
-      },
     };
   },
   methods: {
@@ -61,7 +53,7 @@ export default {
       this.selectedDataSet = value;
     },
     getContents(contentsName) {
-      return this.$store.state.pipelineVo[contentsName].NifiComponents;
+      return this.$store.state.completedPipeline[contentsName].NifiComponents;
     },
 
     goPipelineList() {
