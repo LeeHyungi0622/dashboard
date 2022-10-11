@@ -215,6 +215,7 @@ public class PipelineSVC {
             DataModelVO dataModelVO = dataSetSVC.getDataModelId( //model ID 가져오기
                 datasetid
             );
+            pipelineVO.setDataSet(datasetid);
             pipelineVO.setDataModel(dataModelVO.getId());
             dataModelVO = dataSetSVC.getDataModelProperties(dataModelVO.getId());
             NiFiComponentVO niFiComponentVO = new NiFiComponentVO();

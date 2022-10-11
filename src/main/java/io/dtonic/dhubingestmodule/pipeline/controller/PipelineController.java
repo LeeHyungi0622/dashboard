@@ -12,7 +12,6 @@ import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j
 @RequestMapping(path = "pipelines")
 public class PipelineController {
 
@@ -163,7 +161,6 @@ public class PipelineController {
                 "Pipeline is not Exist"
             );
         } else {
-            log.info("{}", status);
             if (
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||
