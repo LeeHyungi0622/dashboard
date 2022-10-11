@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS ingest_manager.properties
     adaptor_id integer,
     property_name text COLLATE pg_catalog."default",
     detail text COLLATE pg_catalog."default",
-    is_required boolean,  
+    is_required boolean,
+    adaptor_name text COLLATE pg_catalog."default",
     CONSTRAINT properties_pkey PRIMARY KEY (id),
     CONSTRAINT properties_fkey FOREIGN KEY (adaptor_id)
         REFERENCES ingest_manager.adaptor (id) MATCH SIMPLE
