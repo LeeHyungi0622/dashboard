@@ -5,7 +5,9 @@
     </div>
     <div class="pipelineUpdateSubTitle fsb14">데이터 파이프라인 기본 정보
     </div>
-    <custom-table :contents="infoContents" />
+    
+    <custom-table :contents="infoContents"/>
+
     <div class="pipelineUpdateSubTitle fsb14">데이터 수집 정보
     </div>
     <custom-table :contents="collectorContents" />
@@ -19,10 +21,10 @@
       class="mgT12"
       style="display: flex; justify-content: right"
     >
-      <button class="pipelineButton mgL12">이전</button>
+      <button class="pipelineButton mgL12" @click="beforeRoute()">이전</button>
       <button
         class="pipelineButton mgL12"
-        @click="nextRoute()"
+        @click="saveComplete()"
       >
         등록완료
       </button>
@@ -37,57 +39,87 @@ export default {
   components: {
     CustomTable
   },
-  props: {},
   data: () => ({
-    infoContents: [
-        {
+    infoContents: [        
+      {
           name: "파이프라인 이름",
-          inputValue: this.$store.state.registerPipeline.name,
+          inputValue: "",
         },
         {
           name: "파이프라인 정의",
-          inputValue: this.$store.state.registerPipeline.detail,
-        },
-      ],
-      collectorContents: [
-        {
-          name: "데이터 수집",
-          inputValue: this.$store.state.registerPipeline.collector.name,
+          inputValue: "",
         }
       ],
-      filterContents: [
-        {
+    collectorContents: [
+      {
+        name: "데이터 수집",
+        inputValue: "",
+      }
+    ],
+    filterContents: [
+      {
           name: "Base64 Decoder",
-          inputValue: this.$store.state.registerPipeline.name,
+          inputValue: "",
         },
         {
           name: "Message Root",
-          inputValue: this.$store.state.registerPipeline.detail,
-        },
-      ],
-      converterContents: [
-        {
+          inputValue: "",
+        }
+    ],
+    converterContents: [
+      {
           name: "DataSet",
-          inputValue: this.$store.state.registerPipeline.dataSet,
+          inputValue: "",
         },
         {
           name: "생성된 ID Key",
-          inputValue: this.$store.state.registerPipeId,
-        },
-      ],
+          inputValue: "",
+        }
+    ],
   }),
-  watch: {},
   created() {
-    PipelineRegister.getPipelineDraft(this.$store.state.registerPipeline.id)
-    .then((res) => {
-        this.$store.state.registerPipeline = res;
+    this.getDraftPl();
+    this.$store.state.tableShowMode = 'UPDATE';
+  },
+  mounted() {
+  },
+  methods: {
+    getDraftPl(){
+      PipelineRegister.getPipelineDraft(this.$store.state.registerPipeline.id)
+      .then((res) => {
+        this.infoContents[0].inputValue = res.name;
+        this.infoContents[1].inputValue = res.detail;
+        this.collectorContents[0].inputValue = res.collector.name;
+        this.filterContents[0].inputValue = res.collector.name;
+        this.filterContents[1].inputValue = res.collector.name;
+        this.converterContents[0].inputValue = res.collector.name;
+        this.converterContents[1].inputValue = res.collector.name;
+
       })
       .catch((err) =>
       console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
       );
+    },
+    beforeRoute(){
+      this.$store.state.tableShowMode = 'REGISTER';
+      this.$store.state.showRegisterMode = 'converter';
+
+    },
+    saveComplete(){
+      PipelineRegister
+        .postPipelineCompleted(this.$store.state.registerPipeline.id, this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+        //TODO PopUP
+      this.$router.push({
+          name: "pipelineList"
+        });
+    }
   },
-  mounted() {},
-  methods: {},
 };
 </script>
 

@@ -2,54 +2,47 @@
   <div style="width: 95%">
     <div class="pipelineCreateNavBox mgT20">
       <button :class="$store.state.showRegisterMode == 'info'? 'activationBtn':'navBoxBtn'" 
-      @click="convertMode('info')"
-      :disabled="!($store.state.showRegisterMode == 'info')">
+      disabled>
         <div class="numberBox">1</div>
         <div>기본정보 입력</div>
       </button>
       <button :class="$store.state.showRegisterMode == 'collector'? 'activationBtn':'navBoxBtn'" 
-      @click="convertMode('collector')"
-      :disabled="!$store.state.showRegisterMode == 'collector'">
+      disabled>
         <div class="numberBox">2</div>
         <div>데이터 수집</div>
       </button>
-      <button :class="$store.state.showRegisterMode == 'filter'? 'activationBtn':'navBoxBtn'" @click="convertMode('filter')"
-      :disabled="$store.state.showRegisterMode == 'filter'">
+      <button :class="$store.state.showRegisterMode == 'filter'? 'activationBtn':'navBoxBtn'" 
+      disabled>
         <div class="numberBox">3</div>
         데이터 정제
       </button>
-      <button :class="$store.state.showRegisterMode == 'convertor'? 'activationBtn':'navBoxBtn'" @click="convertMode('convertor')"
-      :disabled="$store.state.showRegisterMode == 'convertor'">
+      <button :class="$store.state.showRegisterMode == 'convertor'? 'activationBtn':'navBoxBtn'" 
+      disabled>
         <div class="numberBox">4</div>
         데이터 변환
       </button>
-      <button :class="$store.state.showRegisterMode == 'complete'? 'activationBtn':'lastbtn'" @click="convertMode('complete')"
-      :disabled="$store.state.showRegisterMode == 'complete'">
+      <button :class="$store.state.showRegisterMode == 'complete'? 'activationBtn':'lastbtn'" 
+      disabled>
         <div class="numberBox">5</div>
         요약 및 등록완료
       </button>
     </div>
     <div style="margin: 3%">
-        <default-info 
+        <default-info :item-id="this.itemId"
         v-if="$store.state.showRegisterMode == 'info'"/>
         <data-collect
-        v-if="$store.state.showRegisterMode == 'collector'"
-        :contents="contents"/>
+        v-if="$store.state.showRegisterMode == 'collector'"/>
         <data-filters
-        v-if="$store.state.showRegisterMode == 'filter'"
-        :contents="contents"/>
+        v-if="$store.state.showRegisterMode == 'filter'"/>
         <data-convert
-        v-if="$store.state.showRegisterMode == 'convertor'"
-        />
+        v-if="$store.state.showRegisterMode == 'convertor'"/>
         <complete-pipe
-        v-if="$store.state.showRegisterMode == 'complete'"
-        />
+        v-if="$store.state.showRegisterMode == 'complete'"/>
     </div>
   </div>
 </template>
 
 <script>
-import pipelineRegisterService from "../../js/api/pipelineRegister";
 import DefaultInfo from "../../components/pipeline/DefaultInfo.vue";
 import DataCollect from "../../components/pipeline/DataCollect.vue";
 import DataFilters from "../../components/pipeline/DataFilters.vue";
@@ -65,31 +58,21 @@ export default {
   },
   data() {
     return {
-      title: "데이터 파이프라인 기본정보",
-      showModule: "",
     };
   },
-  created() {
+  props: {
+    itemId: String
+  },
+  mounted() {
+    this.$store.state.tableShowMode = "REGISTER";
     this.$store.state.showRegisterMode = "info";
-    if (this.$store.state.registerPipeline.id) {
-      pipelineRegisterService
-      .getPipelineDraft(this.$store.state.registerPipeline.id)
-      .then((res) => {
-        this.$store.state.registerPipeline = res;
-      })
-      .catch((err) =>
-      console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
-      );
-    } else {
-      pipelineRegisterService
-      .getPipelineVo()
-      .then((res) => {
-        this.$store.state.registerPipeline = res;
-      })
-      .catch((err) => {
-        console.error("PipelinVo 조회에 실패했습니다.", err);
-      });
-    }
+    this.$store.state.tableUpdateFlag = false;
+    this.$store.state.infoTableUpdateFlag = true;
+    this.$store.state.collectorTableUpdateFlag = true;
+    this.$store.state.filterTableUpdateFlag = true;
+    this.$store.state.convertorTableUpdateFlag = true;
+
+    console.log(this.$route.params)
   },
   methods: {
     convertMode(val) {

@@ -13,6 +13,12 @@ const routes = [
     component: pipelineList,
   },
   {
+    path: "/pipelineRegister/:itemId",
+    name: "pipelineRegister",
+    component: PipelineRegister,
+    props: true,
+  },
+  {
     path: "/pipelineRegister",
     name: "pipelineRegister",
     component: PipelineRegister,

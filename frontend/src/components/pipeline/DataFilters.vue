@@ -6,11 +6,11 @@
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag"
       >
-        {{ $store.state.tableUpdateFlag == "UPDATE" ? "수정완료" : "수정" }}
+        {{ $store.state.filterTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
     </div>
     <div v-for="(item, key) in filterData.nifiComponents" :key="key">
-      <custom-table :contents="item.requiredProps" />
+      <custom-table :contents="item.requiredProps" :table-update-flag="$store.state.filterTableUpdateFlag"/>
     </div>
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
@@ -41,11 +41,12 @@ export default {
   data() {
     return {
       filterData: {},
+      getPipeline: {},
     };
   },
   methods:{
     changeUpdateFlag(){
-      this.$store.state.tableUpdateFlag = !this.$store.state.tableUpdateFlag;
+      this.$store.state.filterTableUpdateFlag = !this.$store.state.filterTableUpdateFlag;
     },
     getFilter(){
       if (this.$store.state.tableShowMode == "REGISTER") {
@@ -53,7 +54,7 @@ export default {
           .getPipelineDraft({
             pipelineid: this.$store.state.registerPipeline.id,
             adaptorName: "filter",
-            page: "FILTER",
+            page: "filter",
           })
           .then((res) => {
             this.$store.state.registerPipeline = res;
@@ -68,7 +69,7 @@ export default {
           .getPipelineComplete({
             adaptorName: "filter",
             id: this.$store.state.completedPipeline.id,
-            page: "FILTER",
+            page: "filter",
           })
           .then((res) => {
             console.log(res);

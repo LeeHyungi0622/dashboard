@@ -10,6 +10,8 @@ export const store = new Vuex.Store({
       tempPipelineList: [],
       registerPipeline: {
       },
+      registerFilterBase64: false,
+      registerFilterRoot: "",
       completedPipeline: {
       },
       completedPlId: "",
@@ -19,9 +21,7 @@ export const store = new Vuex.Store({
         nickName: "",
         phone: "",
       },
-      pipelineInfo: [
-
-      ],
+      pipelineInfo: [],
       tableShowMode: "", // REGISTER , UPDATE
       tableUpdateFlag: false,
       infoTableUpdateFlag: false,

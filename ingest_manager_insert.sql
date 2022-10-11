@@ -1,6 +1,6 @@
 -- 220926 nifi_type 컬럼 제거
 -- REST Server colloector 구간
-INSERT INTO ingest_manager.adaptor (adaptor_type, adaptor_name, nifi_name, nifi_type) values ('collector', 'Rest Server', 'Rest Server', 'Processor');
+INSERT INTO ingest_manager.adaptor (adaptor_type, adaptor_name, nifi_name, nifi_type) values ('collector', 'REST Server', 'REST Server', 'Processor');
 
 INSERT INTO ingest_manager.properties (adaptor_name, adaptor_id, property_name, detail, is_required, adaptor_name) values( (SELECT adaptor_name FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), (SELECT id FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), 'Base Path', 'Base path for incoming connections', true, 'Rest Server');
 INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELECT id FROM ingest_manager.properties ORDER BY ID DESC LIMIT 1), null );
@@ -33,7 +33,7 @@ INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELEC
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- REST API collector 구간
-INSERT INTO ingest_manager.adaptor (adaptor_type, adaptor_name, nifi_name, nifi_type) values ('collector', 'Rest API', 'Rest API', 'Processor');
+INSERT INTO ingest_manager.adaptor (adaptor_type, adaptor_name, nifi_name, nifi_type) values ('collector', 'REST API', 'REST API', 'Processor');
 
 INSERT INTO ingest_manager.properties (adaptor_name, adaptor_id, property_name, detail, is_required, adaptor_name) values( (SELECT adaptor_name FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), (SELECT id FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), 'HTTP Method', 'HTTP request method (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS). Arbitrary methods are also supported. Methods other than POST, PUT and PATCH will be sent without a message body.', true, 'Rest API');
 INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELECT id FROM ingest_manager.properties ORDER BY ID DESC LIMIT 1), null );

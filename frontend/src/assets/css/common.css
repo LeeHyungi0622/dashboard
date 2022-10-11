@@ -632,17 +632,7 @@ select {
   height: 50px;
   position: relative;
 }
-.pipelineCreateNavBox .lastbtn:hover {
-  background-color: #2B4F8C;
-  border: 1px solid #DFDFDF;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  color: white;
-  width:13%;
-  height: 50px;
-  position: relative;
-}
+
 .pipelineCreateNavBox .activationBtn {
   background-color: #2B4F8C;
   border: 1px solid #DFDFDF;
@@ -654,17 +644,7 @@ select {
   height: 50px;
   position: relative;
 }
-.pipelineCreateNavBox .navBoxBtn:hover {
-  background-color: #2B4F8C;
-  border: 1px solid #DFDFDF;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  color: white;
-  width:13%;
-  height: 50px;
-  position: relative;
-}
+
 .pipelineCreateNavBox .activeLastbtn {
   background-color: #2B4F8C;
   border: 1px solid #DFDFDF;
@@ -687,11 +667,11 @@ select {
   height: 50px;
   position: relative;
 }
-.pipelineCreateNavBox .navBoxBtn:hover::before {
+.pipelineCreateNavBox .activationBtn::before {
   content: "";
   right: -15px;
   border-top: 7px solid transparent; 
-  border-left: 17px solid #2B4F8C; 
+  border-left: 17px solid #2B4F8C;
   border-right: 0px solid transparent; 
   border-bottom: 7px solid transparent;
   z-index: 2;
@@ -720,39 +700,7 @@ select {
   height:25px;
   margin-right: 10px;
 }
-.pipelineCreateNavBox .navBoxBtn:hover >  .numberBox{
-  background-color: rgba( 255, 255, 255 ,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100px;
-  color: white;
-  width:25px;
-  height:25px;
-  margin-right: 10px;
-}
-.pipelineCreateNavBox .lastbtn:hover >  .numberBox{
-  background-color: rgba( 255, 255, 255 ,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100px;
-  color: white;
-  width:25px;
-  height:25px;
-  margin-right: 10px;
-}
-.pipelineCreateNavBox .navBoxBtn:hover >  .numberBox{
-  background-color: rgba( 255, 255, 255 ,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100px;
-  color: white;
-  width:25px;
-  height:25px;
-  margin-right: 10px;
-}
+
 .pipelineCreateNavBox .navBoxBtn:after {
   right: -17px;
   border-top: 7px solid transparent; 
