@@ -32,6 +32,7 @@
 
 <script>
 import CustomTable from "./CustomTable.vue";
+import PipelineRegister from "../../js/api/pipelineRegister";
 export default {
   components: {
     CustomTable
@@ -76,7 +77,15 @@ export default {
       ],
   }),
   watch: {},
-  created() {},
+  created() {
+    PipelineRegister.getPipelineDraft(this.$store.state.registerPipeline.id)
+    .then((res) => {
+        this.$store.state.registerPipeline = res;
+      })
+      .catch((err) =>
+      console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
+      );
+  },
   mounted() {},
   methods: {},
 };

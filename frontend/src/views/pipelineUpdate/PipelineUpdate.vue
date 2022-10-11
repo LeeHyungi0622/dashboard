@@ -4,13 +4,12 @@
       <p class="fsb16">데이터 파이프라인 상세/수정</p>
     </div>
     <div style="margin: 3%">
-      <default-info :contents="defaultInfoContents()"/>
+      <default-info/>
       <data-collect
         v-if="$store.state.completedPipeline['collector']"
         :contents="getContents('collector')"
       />
       <data-filters
-        v-if="updatePipeline['filter']"
         :contents="getContents('filter')"
       />
       <data-convert
@@ -31,6 +30,7 @@ import DefaultInfo from "../../components/pipeline/DefaultInfo.vue";
 import DataCollect from "../../components/pipeline/DataCollect.vue";
 import DataFilters from "../../components/pipeline/DataFilters.vue";
 import DataConvert from "../../components/pipeline/DataConvert.vue";
+import pipelineUpdateService from "../../js/api/pipelineUpdate";
 export default {
   components: {
     DataConvert,
@@ -38,10 +38,16 @@ export default {
     DataCollect,
     DataFilters,
   },
-  computed: {
-    updatePipeline(){
-      return this.$store.state.completedPipeline;
-    }
+  mounted(){
+    pipelineUpdateService
+      .getPipelineListById(this.$store.state.completedPlId)
+      .then((res) => {
+        this.$store.state.completedPipeline = res;
+        this.$store.state.tableShowMode = "UPDATE";
+      })
+      .catch((err) => {
+        console.log("PipelinListById 조회에 실패했습니다.", err);
+      });
   },
   data() {
     return {
@@ -60,19 +66,6 @@ export default {
       this.$router.push({
         name: "pipelineList",
       });
-    },
-
-    defaultInfoContents() {
-      return [
-        {
-          name: "파이프라인 이름",
-          inputValue: this.updatePipeline.name,
-        },
-        {
-          name: "파이프라인 정의",
-          inputValue: this.updatePipeline.detail,
-        },
-      ];
     },
   },
 };

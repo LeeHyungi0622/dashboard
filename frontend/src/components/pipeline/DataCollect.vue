@@ -19,6 +19,7 @@
             <select
               style="padding: 0px 20px 0px 20px"
               v-model="selectedCollectValue"
+              @change="callCollectorProps($event)"
             >
               <option
                 v-for="(item, key) in collectorContents.value.datas"
@@ -45,7 +46,7 @@
               v-model="selectedSettingValue"
             >
               <option
-                v-for="(item, key) in collectorData.nifiComponents"
+                v-for="(item, key) in getPipeline.collector.nifiComponents"
                 :key="key"
                 :value="item"
               >
@@ -87,44 +88,61 @@ export default {
   },
   created() {
     this.getCollector();
+    if(this.$store.state.tableShowMode == `UPDATE`){
+      this.getPipeline = this.$store.state.completedPipeline;
+    }
+    else{
+      this.getPipeline = this.$store.state.registerPipeline;
+    }
+    if (this.getPipeline.collector.name) {
+      this.selectedCollectValue = this.getPipeline.collector.name;
+      this.selectedSettingValue = this.getPipeline.collector.nifiComponents;
+    }
+    else{
+      this.selectedCollectValue = {};
+      this.selectedSettingValue = {};
+    }
   },
-  
-  watch: {
-    selectedCollectValue() {
-      if (this.$store.state.tableShowMode == "REGISTER") {
-        collectorService
-          .getPipelineDraft({
-            adaptorName: this.selectedCollectValue,
-            pipelineid: this.$store.state.registerPipeline.id,
-            page: "COLLECTOR",
-          })
-          .then((res) => {
-            this.$store.state.registerPipeline = res;
-            this.collectorData =
-              this.$store.state.registerPipeline.collector;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } else {
-        collectorService
-          .getPipelineComplete({
-            adaptorName: this.selectedCollectValue,
-            pipelineid: this.$store.state.completedPipeline.id,
-            page: 'COLLECTOR',
-          })
-          .then((res) => {
-            console.log(res);
-            this.$store.state.completedPipeline= res;
-            this.collectorData =
-              this.$store.state.completedPipeline.collector;
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      }
-    },
+  mounted(){
+
   },
+  computed:{
+
+  },
+  // watch: {
+  //   selectedCollectValue() {
+  //     if (this.$store.state.tableShowMode == "REGISTER") {
+  //       collectorService
+  //         .getPipelineDraft({
+  //           adaptorName: this.selectedCollectValue,
+  //           pipelineid: this.$store.state.registerPipeline.id,
+  //           page: "COLLECTOR",
+  //         })
+  //         .then((res) => {
+  //           this.$store.state.registerPipeline = res;
+  //           this.collectorData =
+  //             this.$store.state.registerPipeline.collector;
+  //         })
+  //         .catch((error) => {
+  //           console.error(error);
+  //         });
+  //     } 
+  //     else{
+  //       collectorService
+  //         .getPipelineComplete({
+  //           adaptorName: this.selectedCollectValue,
+  //           pipelineid: this.$store.state.completedPipeline.id,
+  //           page: 'COLLECTOR',
+  //         })
+  //         .then((res) => {
+  //           return res.collector;
+  //         })
+  //         .catch((err) => {
+  //           console.error(err);
+  //         });
+  //     }
+  //   },
+  // },
   data() {
     return {
       collectorContents: {
@@ -133,13 +151,10 @@ export default {
           datas: [],
         },
       },
+      getPipeline: {},
       selectedCollectValue: {},
       selectedSettingValue: {},
-      collectorData: {},
     };
-  },
-  props: {
-    contents: Array
   },
   methods: {
     getCollector() {
@@ -151,6 +166,42 @@ export default {
         .catch((err) => {
           console.log("collector 목록의 조회에 실패했습니다.", err);
         });
+    },
+    callCollectorProps(event){
+      if(this.$store.state.tableShowMode == `UPDATE`){
+        return this.completedContents(event.target.value);
+      }
+      else{
+        return this.registerContents(event.target.value);
+      }
+    },
+    completedContents(val){
+      collectorService
+          .getPipelineComplete({
+            adaptorName: val,
+            pipelineid: this.getPipeline.id,
+            page: 'COLLECTOR',
+          })
+          .then((res) => {
+            return res.collector;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+    },
+    registerContents(val){
+      collectorService
+          .getPipelineDraft({
+            adaptorName: val,
+            pipelineid: this.getPipeline.id,
+            page: "COLLECTOR",
+          })
+          .then((res) => {
+            return res.collector;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
     },
     changeUpdateFlag(){
       this.$store.state.tableUpdateFlag = !this.$store.state.tableUpdateFlag;
