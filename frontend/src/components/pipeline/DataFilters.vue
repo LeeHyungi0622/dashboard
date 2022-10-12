@@ -67,7 +67,7 @@ export default {
         collectorService
           .getPipelineComplete({
             adaptorName: "filter",
-            pipelineid: this.$store.state.completedPipeline.id,
+            id: this.$store.state.completedPipeline.id,
             page: "FILTER",
           })
           .then((res) => {

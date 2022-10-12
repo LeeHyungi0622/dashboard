@@ -79,6 +79,7 @@
               <v-pagination
                 v-model="currentPage"
                 :length="totalPage"
+                :total-visible="7"
                 color="#2B4F8C"
               ></v-pagination>
               <div class="lastPageBtnBox">

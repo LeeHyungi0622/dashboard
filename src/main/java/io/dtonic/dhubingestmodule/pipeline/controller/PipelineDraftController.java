@@ -80,9 +80,10 @@ public class PipelineDraftController {
             }
         } else {
             if (
-                Boolean.FALSE.equals(
+                Boolean.TRUE.equals(
                     pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name"))
-                )
+                ) &&
+                !jsonObject.isNull("name")
             ) {
                 return pipelineDraftSVC.createPipelineDrafts(
                     jsonObject.getString("name"),

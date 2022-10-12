@@ -12,6 +12,7 @@ export const store = new Vuex.Store({
       },
       completedPipeline: {
       },
+      completedPlId: "",
       userInfo: {
         userId: "",
         name: "",
@@ -23,6 +24,10 @@ export const store = new Vuex.Store({
       ],
       tableShowMode: "", // REGISTER , UPDATE
       tableUpdateFlag: false,
+      infoTableUpdateFlag: false,
+      collectorTableUpdateFlag: false,
+      filterTableUpdateFlag: false,
+      convertorTableUpdateFlag: false,
       showRegisterMode: "",
       registerPipeId: ""
     };

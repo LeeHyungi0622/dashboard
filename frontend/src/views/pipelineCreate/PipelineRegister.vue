@@ -67,16 +67,6 @@ export default {
     return {
       title: "데이터 파이프라인 기본정보",
       showModule: "",
-            contents: [
-        {
-          name: "파이프라인 이름",
-          inputValue: this.$store.state.registerPipeline.name,
-        },
-        {
-          name: "파이프라인 정의",
-          inputValue: this.$store.state.registerPipeline.detail,
-        },
-      ],
     };
   },
   created() {

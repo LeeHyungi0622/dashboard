@@ -44,26 +44,7 @@ export default {
   computed:{
     contents(){
       if(this.$store.state.tableShowMode == `UPDATE`){
-        return this.completedContents;
-      }
-      else{
-        return this.registerContents;
-      }
-    },
-  },
-  data() {
-    return {
-      registerContents: [
-        {
-          name: "파이프라인 이름",
-          inputValue: this.$store.state.registerPipeline.name,
-        },
-        {
-          name: "파이프라인 정의",
-          inputValue: this.$store.state.registerPipeline.detail,
-        },
-      ],
-      completedContents: [
+        return [
         {
           name: "파이프라인 이름",
           inputValue: this.$store.state.completedPipeline.name,
@@ -72,8 +53,21 @@ export default {
           name: "파이프라인 정의",
           inputValue: this.$store.state.completedPipeline.detail,
         },
-      ],
-    };
+      ]
+      }
+      else{
+        return [
+        {
+          name: "파이프라인 이름",
+          inputValue: this.$store.state.registerPipeline.name,
+        },
+        {
+          name: "파이프라인 정의",
+          inputValue: this.$store.state.registerPipeline.detail,
+        },
+      ]
+      }
+    },
   },
   methods: {
     nextRoute() {
@@ -92,7 +86,7 @@ export default {
         });
     },
     changeUpdateFlag(){
-      this.$store.state.tableUpdateFlag = !this.$store.state.tableUpdateFlag;
+      this.$store.state.infoTableUpdateFlag = !this.$store.state.infoTableUpdateFlag;
     },
     saveDraft(){
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
