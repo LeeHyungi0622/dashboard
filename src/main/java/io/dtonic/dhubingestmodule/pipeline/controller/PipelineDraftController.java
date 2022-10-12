@@ -85,7 +85,7 @@ public class PipelineDraftController<T> {
             }
         } else {
             if (
-                Boolean.TRUE.equals(
+                Boolean.FALSE.equals(
                     pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name"))
                 ) &&
                 !jsonObject.isNull("name")

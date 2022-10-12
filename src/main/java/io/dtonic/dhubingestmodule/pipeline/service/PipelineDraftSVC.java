@@ -75,6 +75,7 @@ public class PipelineDraftSVC {
                 datasetid
             );
             pipelineVO.setDataModel(dataModelVO.getId());
+            pipelineVO.setDataSet(datasetid);
             dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId());
             NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
             for (int i = 0; i < dataModelVO.getAttributes().size(); i++) {
