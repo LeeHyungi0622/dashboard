@@ -22,6 +22,7 @@
       <button
         class="pipelineButton mgL12"
         @click="nextRoute()"
+        :disabled="!isCompleted"
       >
         다음
       </button>
@@ -43,6 +44,23 @@ export default {
       filterData: {},
       getPipeline: {},
     };
+  },
+  computed:{
+    isCompleted(){
+      if(this.filterData){
+        for(var nifi of this.filterData.nifiComponents){
+          if(nifi.requiredProps){
+            for(var prop of nifi.requiredProps){
+              if(prop.inputValue == null || prop.inputValue == ""){
+                return false;
+              }
+            }
+          }
+        }
+        return true;
+      }
+      return false;
+    }
   },
   methods:{
     changeUpdateFlag(){

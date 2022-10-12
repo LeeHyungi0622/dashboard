@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import CustomTable from "../../components/pipeline/CustomTable.vue";
 import pipelineRegisterService from "../../js/api/pipelineRegister";
 export default {
@@ -67,7 +66,30 @@ export default {
       .catch((err) =>
       console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
       );
-    } else {
+    }
+    else if(this.$store.state.registerPipeline.id){ // 최초 등록시 collector에서 이전버튼 에러 해결
+      pipelineRegisterService
+      .getPipelineDraft(this.$store.state.registerPipeline.id)
+      .then((res) => {
+        this.$store.state.registerPipeline = res;
+        if(this.$store.state.tableShowMode == `UPDATE`){
+        this.contents[0].inputValue = this.$store.state.completedPipeline.name;
+        this.contents[1].inputValue = this.$store.state.completedPipeline.detail;
+      }
+      else{
+        if(this.$store.state.registerPipeline.name){
+          this.contents[0].inputValue = this.$store.state.registerPipeline.name;
+        }
+        if(this.$store.state.registerPipeline.detail){
+          this.contents[1].inputValue = this.$store.state.registerPipeline.detail;
+        }
+      }
+      })
+      .catch((err) =>
+      console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
+      );
+    }
+    else {
       pipelineRegisterService
       .getPipelineVo()
       .then((res) => {
@@ -111,6 +133,7 @@ export default {
       }
     },
     nextRoute() {
+      console.log("next route",this.$store.state.registerPipeline)
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
       this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
@@ -131,12 +154,14 @@ export default {
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
       this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
-      axios.post(`/pipelines/drafts`, this.$store.state.registerPipeline)
-      .then((res) => {
-          this.$store.state.registerPipeline = res.data;
-      })
-      .catch((error) => error);
-
+      pipelineRegisterService
+        .craetePipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          this.$store.state.registerPipeline = res;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
     
   },

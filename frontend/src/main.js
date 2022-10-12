@@ -6,9 +6,9 @@ import vuetify from "@/plugins/vuetify.js";
 import css from "@/assets/css/common.css";
 import { store } from "./vuex/store";
 
-const ws = new WebSocket("ws://localhost:8099/webpipeline");
+const ws = new WebSocket("ws://192.168.1.205:8099/webpipeline");
 
-Axios.defaults.baseURL = "http://localhost:8099";
+Axios.defaults.baseURL = "http://192.168.1.205:8099";
 Axios.defaults.headers['Access-Control-Allow-Origin'] = '*';
 
 Vue.config.productionTip = false;

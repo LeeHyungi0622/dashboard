@@ -159,7 +159,8 @@ export default {
       convId: [],
       rawDataSetProps: {},
       rawIdNifi: {},
-      getPipeline: {}
+      getPipeline: {},
+      selectDataModel: ""
     };
   },
   methods: {
@@ -235,6 +236,7 @@ export default {
             datasetid: val
           })
           .then((res) => {
+            this.$store.state.completedPipeline = res;
             this.getPipeline = res;
             this.convProps = this.convertDataSetProps(this.getPipeline.converter);
             this.convertId(this.getPipeline.converter);
@@ -252,6 +254,7 @@ export default {
             datasetid: val
           })
           .then((res) => {
+            this.$store.state.registerPipeline = res;
             this.getPipeline = res;
             this.convProps = this.convertDataSetProps(this.getPipeline.converter);
             this.convertId(this.getPipeline.converter);

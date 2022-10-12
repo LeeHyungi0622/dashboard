@@ -52,7 +52,7 @@
             style="text-align: center; width: 100%"
           >
             <template v-slot:[`item.readAction`]="{ item }">
-              <button @click="goPipelineRegister(item)">보기</button>
+              <button @click="goPipelineRegister(item)">이동</button>
             </template>
             <template v-slot:[`item.deleteAction`]="{ item }">
               <button @click="deleteTempPipeline(item)">삭제</button>

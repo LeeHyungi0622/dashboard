@@ -143,6 +143,7 @@ public class NiFiController {
         AdaptorVO result = ngsiLdNiFi.getConverter();
         result.getNifiComponents().add(ngsiLdFormater);
         result.getNifiComponents().add(convertType);
+        result.getNifiComponents().add(dateFormater);
 
         return result;
     }
@@ -297,24 +298,29 @@ public class NiFiController {
     private NiFiComponentVO convertDateType(AdaptorVO convertor, String dataModelId)
         throws JsonProcessingException {
         DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(dataModelId);
-        // List<PropertyVO> DateList = convertor.getNifiComponents(/
+        List<PropertyVO> DateList = new ArrayList<>();
+        NiFiComponentVO convertDateTypeProc = new NiFiComponentVO();
+        convertDateTypeProc.setName("ConvertDateType");
+        convertDateTypeProc.setType("Processor");
         for (Attribute a : dataModelInfo.getAttributes()) {
-            // PropertyVO prop = new PropertyVO();
             if (a.getValueType().equals("Date")) {
                 for (NiFiComponentVO nifi : convertor.getNifiComponents()) {
-                    if (nifi.getName().equals("ConvertDateType")) {
+                    if (nifi.getName().equals("DataSetProps")) {
                         for (PropertyVO prop : nifi.getRequiredProps()) {
-                            if (prop.getName().equals("DateFormat")) {
+                            if (prop.getDetail().equals("Date Format")) {
+                                prop.setName(a.getName());
                                 prop.setInputValue(
                                     "${" +
                                     a.getName() +
                                     ":toDate(\"" +
                                     prop.getInputValue() +
-                                    "\"):format(\"yyyy-MM-dd'T'HH:mm:ssXXX\", \"GMT\")}"
+                                    "\", \"GMT\"):format(\"yyyy-MM-dd'T'HH:mm:ssXXX\", \"GMT\")}"
                                 );
+                                DateList.add(prop);
                             }
                         }
-                        return nifi;
+                        convertDateTypeProc.setRequiredProps(DateList);
+                        return convertDateTypeProc;
                     }
                 }
             }
