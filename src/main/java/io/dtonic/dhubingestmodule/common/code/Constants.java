@@ -52,7 +52,11 @@ public class Constants {
         "yyyy-MM-dd'T'HH:mm:ss.SSSSXXX",
         "yyyy-MM-dd'T'HH:mm:ss.SSSSSXXX",
         "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",
-        "yyyy-MM-dd'T'HH:mm:ss,SSSXXX",
+        "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+        "yyyy-MM-dd'T'HH:mm:ss.SSS",
+        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+        "yyyy-MM-dd HH:mm:ss.SSS'Z'",
+        "yyyy-MM-dd HH:mm:ss.SSS",
         "HH:mm:ss z" // 하위 호환
     };
 }

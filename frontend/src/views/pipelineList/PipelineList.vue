@@ -134,6 +134,7 @@ export default {
       .catch((err) => {
         console.log("PipelineList 조회에 실패하였습니다.", err);
       });
+    this.$store.state.tableShowMode = "";
     this.$store.state.registerPipeline = {};
     this.$store.state.completedPipeline = {};
   },
@@ -154,7 +155,7 @@ export default {
       currentPage: 1,
       total: 15,
       tempPipeline: tempPipeline,
-      activationStatusList: [["전체",""], ["Run","Run"], ["Starting","Starting"], ["Stopped","Stopped"], ["Stopping","Stopping"]],
+      activationStatusList: [["전체",""], ["RUN","RUN"], ["STARTING","STARTING"], ["STOPPED","STOPPED"], ["STOPPING","STOPPING"]],
       pipelineListFilterList: [["전체",""], ["파이프라인 이름","name"], ["적재Dataset","dataSet"]],
       searchValue: null,
       pipelineListData: pipelineListData,
@@ -260,7 +261,6 @@ export default {
             i[this.selectedFilter] === this.searchValue && i[this.pipelineFilter].includes(this.pipelineFilterInput) 
           );
         });
-        console.log(this.filteritems);
         }
         else{
           this.filteritems = this.$store.state.pipelineList.filter((i) => {

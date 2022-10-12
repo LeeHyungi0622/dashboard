@@ -34,7 +34,7 @@
                 </option>
               </select>
             <input type="text" class="mgL12" v-model="pipelineFilterInput"/>
-            <button class="mgL12" @click="actionFilter()">검색</button>
+            <!-- <button class="mgL12" @click="actionFilter()">검색</button> -->
             <select name="" id="" class="mgL12" v-model="perPage">
               <option value="5">5개씩 표시</option>
               <option value="10">10개씩 표시</option>
@@ -140,12 +140,39 @@ export default {
       })
       .catch((error) => error);
   },
+  watch:{
+    // vuetifyData(){
+    //   if(this.pipelineFilter){
+    //       this.vuetifyData = this.$store.state.tempPipelineList.filter((i) => {
+    //       return (
+    //         i[this.pipelineFilter].includes(this.pipelineFilterInput) 
+    //       );
+    //     });
+    //     }
+    //     else{
+    //       this.vuetifyData = this.$store.state.tempPipelineList;
+    //     }
+    // }
+  },
   computed: {
     totalPage() {
       return Math.floor(
         (this.vuetifyData.length + parseInt(this.perPage)) / this.perPage
       );
     },
+    vuetifyData(){
+      if(this.pipelineFilter){
+          const data = this.$store.state.tempPipelineList.filter((i) => {
+          return (
+            i[this.pipelineFilter].includes(this.pipelineFilterInput) 
+          );
+        });
+        return data;
+        }
+        else{
+          return this.$store.state.tempPipelineList;
+        }
+    }
   },
   data() {
     return {
@@ -160,6 +187,7 @@ export default {
         { text: "삭제", value: "deleteAction", sortable: false },
       ],
       pipelineListFilterList: [["전체",""], ["파이프라인 이름","name"]],
+      // vuetifyData: [],
       pipelineFilterInput: "",
       pipelineFilter: null,
       searchValue: "",
@@ -167,7 +195,6 @@ export default {
       dialog: true,
       perPage: 5,
       currentPage: 1,
-      vuetifyData: [],
       total: 0,
       imgSrc: {
         x: require("../../assets/img/x.svg"),
@@ -212,8 +239,12 @@ export default {
         });
       } else if (this.$route.name != "pipelineRegister") {
         this.$store.state.registerPipeline.id = item.id;
+        this.$store.state.tableShowMode = "REGISTER";
+        this.$store.state.showRegisterMode = "info";
+
         this.$router.push({
-          name: "pipelineRegister",
+          path: "pipelineRegister/" + item.id,
+
         });
       }
       this.close();
@@ -227,19 +258,18 @@ export default {
         this.pipelineFilter = event.target.value;
       }
     },
-    actionFilter(){
-      this.vuetifyData = this.$store.state.tempPipelineList;
-        if(this.pipelineFilter){
-          this.vuetifyData = this.$store.state.tempPipelineList.filter((i) => {
-          return (
-            i[this.pipelineFilter].includes(this.pipelineFilterInput) 
-          );
-        });
-        }
-        else{
-          this.vuetifyData = this.$store.state.tempPipelineList;
-        }
-    }
+    // actionFilter(){
+    //     if(this.pipelineFilter){
+    //       this.vuetifyData = this.$store.state.tempPipelineList.filter((i) => {
+    //       return (
+    //         i[this.pipelineFilter].includes(this.pipelineFilterInput) 
+    //       );
+    //     });
+    //     }
+    //     else{
+    //       this.vuetifyData = this.$store.state.tempPipelineList;
+    //     }
+    // }
   },
 };
 </script>

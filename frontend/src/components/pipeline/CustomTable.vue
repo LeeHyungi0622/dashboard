@@ -13,7 +13,7 @@
           class="disf"
           v-if="
             content.name == `isBase64` &&
-            ($store.state.tableUpdateFlag || $store.state.tableShowMode == `REGISTER`)
+            (tableUpdateFlag || $store.state.tableShowMode == `REGISTER`)
           "
         >
           <input
@@ -30,7 +30,7 @@
           />Off
         </div>
         <!-- 수정이나 등록시 -->
-        <div v-else-if="$store.state.tableUpdateFlag || $store.state.tableShowMode == `REGISTER`">
+        <div v-else-if="tableUpdateFlag || $store.state.tableShowMode == `REGISTER`">
           <select
             style="padding: 0px 20px 0px 20px"
             v-if="Array.isArray(content.inputValue)"
@@ -76,7 +76,8 @@
 <script>
 export default {
   props: {
-    contents: Array
+    contents: Array,
+    tableUpdateFlag: Boolean
   },
   data() {
     return {

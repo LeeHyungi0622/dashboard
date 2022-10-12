@@ -20,7 +20,7 @@
         <button class="pipelineUpdateButton" @click="goPipelineList()">
           목록으로
         </button>
-        <button class="pipelineUpdateButton mgL12">저장</button>
+        <button class="pipelineUpdateButton mgL12" @click="updatePipeline()">저장</button>
       </div>
     </div>
   </div>
@@ -38,16 +38,22 @@ export default {
     DataCollect,
     DataFilters,
   },
-  mounted(){
+  
+  created(){
+    this.$store.state.tableShowMode = "UPDATE";
     pipelineUpdateService
       .getPipelineListById(this.$store.state.completedPlId)
       .then((res) => {
         this.$store.state.completedPipeline = res;
-        this.$store.state.tableShowMode = "UPDATE";
       })
       .catch((err) => {
         console.log("PipelinListById 조회에 실패했습니다.", err);
       });
+    this.$store.state.infoTableUpdateFlag = false;
+    this.$store.state.collectorTableUpdateFlag = false;
+    this.$store.state.filterTableUpdateFlag = false;
+    this.$store.state.convertorTableUpdateFlag = false;
+
   },
   data() {
     return {
@@ -67,6 +73,9 @@ export default {
         name: "pipelineList",
       });
     },
+    updatePipeline(){
+      
+    }
   },
 };
 </script>

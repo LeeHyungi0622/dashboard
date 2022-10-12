@@ -25,11 +25,19 @@ class pipelineRegister {
       })
       .catch((error) => error);
   }
+  postPipelineCompleted(id, requestBody) {
+    return axios
+      .post(`/pipelines/completed/${id}`, requestBody)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => error);
+  }
   postPipelineDraft(requestBody) {
     return axios
       .post(`/pipelines/drafts`, requestBody)
       .then((response) => {
-        return response.data;
+        return response;
       })
       .catch((error) => error);
   }
