@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "pipelines")
-public class PipelineDraftController {
+public class PipelineDraftController<T> {
 
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
@@ -48,41 +49,46 @@ public class PipelineDraftController {
      * @return Pipeline object
      */
     @GetMapping("/drafts/{id}") // 임시저장 상세 조회
-    public PipelineVO getPipelineDrafts(
+    public ResponseEntity getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @PathVariable Integer id
     ) {
-        return pipelineDraftSVC.getPipelineDrafts(id);
+        ResponseEntity result = pipelineDraftSVC.getPipelineDrafts(id);
+        return result;
     }
 
     @GetMapping("/drafts/list") // 임시저장 목록 조회
-    public List<PipelineDraftsListResponseVO> getPipelineDraftsList(
+    public ResponseEntity getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
         PipelineListRetrieveVO pipelineListRetrieveVO
     ) {
-        return pipelineDraftSVC.getPipelineDraftsList();
+        ResponseEntity result = pipelineDraftSVC.getPipelineDraftsList();
+        return result;
     }
 
     // 파이프라인 생성 중 "다음" 누를시 사용되는 API , 해당 임시파이프라인 upsert처리
     @PostMapping("/drafts")
-    public PipelineVO upsertPipelineDrafts(
+    public ResponseEntity upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody String requestBody
     ) {
         JSONObject jsonObject = new JSONObject(requestBody);
         PipelineVO pipelineVO = new PipelineVO();
+        ResponseEntity result;
         if (!jsonObject.isNull("id")) {
             if (Boolean.TRUE.equals(pipelineDraftSVC.isExistsDrafts(jsonObject.getInt("id")))) {
-                return pipelineDraftSVC.updatePipelineDrafts(jsonObject);
+                result = pipelineDraftSVC.updatePipelineDrafts(jsonObject);
+                return result;
             }
         } else {
             if (
                 Boolean.FALSE.equals(
                     pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name"))
-                )
+                ) &&
+                !jsonObject.isNull("name")
             ) {
                 return pipelineDraftSVC.createPipelineDrafts(
                     jsonObject.getString("name"),
@@ -90,18 +96,21 @@ public class PipelineDraftController {
                     jsonObject.getString("detail")
                 );
             } else {
-                throw new BadRequestException(
-                    DataCoreUiCode.ErrorCode.ALREADY_EXISTS,
-                    "PipelineName already Exists"
-                );
+                return (ResponseEntity<T>) ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("PipelineName already Exists");
+                // throw new BadRequestException(
+                //     DataCoreUiCode.ErrorCode.ALREADY_EXISTS,
+                //     "PipelineName already Exists"
+                // );
             }
         }
-        return pipelineVO;
+        return ResponseEntity.ok().body(pipelineVO);
     }
 
     @Transactional
     @GetMapping("/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
-    public PipelineVO getPipelineDraftsProperties(
+    public ResponseEntity getPipelineDraftsProperties(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestParam(name = "pipelineid", required = false) Integer pipelineid,
@@ -109,23 +118,24 @@ public class PipelineDraftController {
         @RequestParam(name = "adaptorName", required = false) String adaptorName,
         @RequestParam(name = "datasetid", required = false) String datasetid
     ) {
-        return pipelineDraftSVC.getPipelineDraftsProperties(
+        ResponseEntity result = pipelineDraftSVC.getPipelineDraftsProperties(
             pipelineid,
             page,
             adaptorName,
             datasetid
         );
+        return result;
     }
 
     @Transactional
     @DeleteMapping("/drafts/{id}") // 임시저장 삭제
-    public void deletePipelineDrafts(
+    public ResponseEntity deletePipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
     ) {
-        pipelineDraftSVC.deletePipelineDrafts(id);
-        response.setStatus(HttpStatus.OK.value());
+        ResponseEntity result = pipelineDraftSVC.deletePipelineDrafts(id);
+        return result;
     }
 }
