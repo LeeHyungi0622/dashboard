@@ -103,7 +103,7 @@
       filter = #{flowJsonString},
     </if>
     <if test="'converter'.equals(nifiFlowType)">
-      converter = #{flowJsonString}, data_set = #{dataSet},
+      converter = #{flowJsonString}, data_set = #{dataSet}, data_model = #{dataModel},
     </if>
     name = #{name}, detail = #{detail}, modified_at = now()
     WHERE id = #{id}

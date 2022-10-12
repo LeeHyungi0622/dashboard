@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     //@Scheduled(fixedDelay = 3000, initialDelay = 3000)
     public void updatePipelineStatus() throws Exception {
-        List<PipelineListResponseVO> result = pipelineSVC.getPipelineList();
+        ResponseEntity result = pipelineSVC.getPipelineList();
 
         CLIENTS
             .entrySet()
@@ -48,7 +49,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     try {
                         arg
                             .getValue()
-                            .sendMessage(new TextMessage(mapper.writeValueAsString(result)));
+                            .sendMessage(
+                                new TextMessage(mapper.writeValueAsString(result.getBody()))
+                            );
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
