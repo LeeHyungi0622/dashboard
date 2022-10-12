@@ -100,6 +100,8 @@ public class PipelineDraftSVC {
             }
             adaptorVO.getNifiComponents().add(niFiComponentVO);
             pipelineVO.setConverter(adaptorVO);
+        } else {
+            return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body("invalid Page name");
         }
 
         return ResponseEntity.ok().body(pipelineVO);
