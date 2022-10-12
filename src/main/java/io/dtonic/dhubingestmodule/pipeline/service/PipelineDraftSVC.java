@@ -293,7 +293,7 @@ public class PipelineDraftSVC {
             //     "Pipeline Not Exist in DB"
             // );
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(result);
     }
 
     public Boolean isExistsDrafts(Integer id) {
