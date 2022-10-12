@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "pipelines")
-public class PipelineController {
+public class PipelineController<T> {
 
     @Autowired
     private PipelineSVC pipelineSVC;
@@ -38,7 +39,7 @@ public class PipelineController {
     private PipelineDraftSVC pipelineDraftSVC;
 
     @GetMapping("/completed") // PipeLine List 조회
-    public List<PipelineListResponseVO> getPipelineList(
+    public ResponseEntity<T> getPipelineList(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept
@@ -56,7 +57,7 @@ public class PipelineController {
      */
     @Transactional
     @PostMapping("/completed/{id}") // PipeLine 생성시 "등록완료"
-    public void createPipeline(
+    public ResponseEntity createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
@@ -64,7 +65,7 @@ public class PipelineController {
         @RequestBody PipelineVO pipelineVO
     ) {
         pipelineSVC.createPipeline(id, pipelineVO);
-        response.setStatus(HttpStatus.CREATED.value());
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -78,7 +79,7 @@ public class PipelineController {
      */
 
     @PutMapping("/completed/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
-    public void updatePipeline(
+    public ResponseEntity updatePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody PipelineVO pipelineVO,
@@ -86,13 +87,14 @@ public class PipelineController {
     ) {
         // validation check
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
-                "Pipeline is not Exist "
-            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist ");
+            // throw new BadRequestException(
+            //     DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
+            //     "Pipeline is not Exist "
+            // );
         } else {
             pipelineSVC.updatePipeline(id, pipelineVO);
-            response.setStatus(HttpStatus.OK.value());
+            return ResponseEntity.ok().build();
         }
     }
 
@@ -108,7 +110,7 @@ public class PipelineController {
      * @throws JsonMappingException
      */
     @GetMapping("/completed/{id}") // PipeLine 상세 조회
-    public PipelineVO getPipelineById(
+    public ResponseEntity<T> getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
@@ -126,7 +128,7 @@ public class PipelineController {
     }
 
     @GetMapping("/completed/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
-    public PipelineVO getPipelineProperties(
+    public ResponseEntity<T> getPipelineProperties(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestParam(name = "page") String page,
@@ -147,7 +149,7 @@ public class PipelineController {
      * @return
      */
     @PutMapping("/run-status/{id}") // PipeLine status 업데이트
-    public void UpdatePipelineStatus(
+    public ResponseEntity UpdatePipelineStatus(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
@@ -156,10 +158,11 @@ public class PipelineController {
     ) {
         // validation check
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
-                "Pipeline is not Exist"
-            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
+            // throw new BadRequestException(
+            //     DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
+            //     "Pipeline is not Exist"
+            // );
         } else {
             if (
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
@@ -169,13 +172,14 @@ public class PipelineController {
             ) {
                 pipelineSVC.changePipelineStatus(id, status);
             } else {
-                throw new BadRequestException(
-                    DataCoreUiCode.ErrorCode.BAD_REQUEST,
-                    "Status name is invalid"
-                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status name is invalid");
+                // throw new BadRequestException(
+                //     DataCoreUiCode.ErrorCode.BAD_REQUEST,
+                //     "Status name is invalid"
+                // );
             }
 
-            response.setStatus(HttpStatus.OK.value());
+            return ResponseEntity.ok().build();
         }
     }
 
@@ -189,20 +193,21 @@ public class PipelineController {
      * @return
      */
     @DeleteMapping("/completed/{id}") // PipeLine 삭제
-    public void deletePipeline(
+    public ResponseEntity deletePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
     ) {
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
-            throw new BadRequestException(
-                DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
-                "Pipeline is not Exist"
-            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
+            // throw new BadRequestException(
+            //     DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
+            //     "Pipeline is not Exist"
+            // );
         }
         // delete pipeline
         pipelineSVC.deletePipeline(id);
-        response.setStatus(HttpStatus.OK.value());
+        return ResponseEntity.ok().build();
     }
 }
