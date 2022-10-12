@@ -67,7 +67,7 @@ public class ApplicationSecurity {
                 .and()
                 .exceptionHandling()
                 .and()
-                .addFilterBefore(
+                .addFilterAfter(
                     new JwtAuthenticationFilter(authenticationEntryPoint(), ingestManagerSVC),
                     BasicAuthenticationFilter.class
                 )
