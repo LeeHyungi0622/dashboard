@@ -6,6 +6,7 @@
         v-if="$store.state.tableShowMode == `UPDATE`"
         class="pipelineUpdateButton"
         @click="changeUpdateFlag"
+        :disabled="!this.contents[0].inputValue || !this.contents[1].inputValue"
       >
         {{ $store.state.infoTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
@@ -35,7 +36,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import CustomTable from "../../components/pipeline/CustomTable.vue";
 import pipelineRegisterService from "../../js/api/pipelineRegister";
 export default {
@@ -49,6 +49,29 @@ export default {
     if (this.itemId) { // 임시저장 call
       pipelineRegisterService
       .getPipelineDraft(this.itemId)
+      .then((res) => {
+        this.$store.state.registerPipeline = res;
+        if(this.$store.state.tableShowMode == `UPDATE`){
+          this.contents[0].inputValue = this.$store.state.completedPipeline.name;
+          this.contents[1].inputValue = this.$store.state.completedPipeline.detail;
+        }
+        else{
+          console.log(this.$store.state.registerPipeline.name)
+          if(this.$store.state.registerPipeline.name){
+            this.contents[0].inputValue = this.$store.state.registerPipeline.name;
+          }
+          if(this.$store.state.registerPipeline.detail){
+            this.contents[1].inputValue = this.$store.state.registerPipeline.detail;
+          }
+        }
+      })
+      .catch((err) =>
+      console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
+      );
+    }
+    else if(this.$store.state.registerPipeline.id){ // 최초 등록시 collector에서 이전버튼 에러 해결
+      pipelineRegisterService
+      .getPipelineDraft(this.$store.state.registerPipeline.id)
       .then((res) => {
         this.$store.state.registerPipeline = res;
         if(this.$store.state.tableShowMode == `UPDATE`){
@@ -67,7 +90,8 @@ export default {
       .catch((err) =>
       console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
       );
-    } else {
+    }
+    else {
       pipelineRegisterService
       .getPipelineVo()
       .then((res) => {
@@ -117,8 +141,15 @@ export default {
       pipelineRegisterService
         .craetePipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          this.$store.state.registerPipeline = res;
-          this.$store.state.showRegisterMode = 'collector';
+          console.log(res);
+          let isFail = res.body == "PipelineName already Exists";
+          if(!isFail){
+            this.$store.state.registerPipeline = res.data;
+            this.$store.state.showRegisterMode = 'collector';
+          }
+          else{
+            alert.apply("Pipeline이름이 중복됩니다.");
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -126,17 +157,21 @@ export default {
     },
     changeUpdateFlag(){
       this.$store.state.infoTableUpdateFlag = !this.$store.state.infoTableUpdateFlag;
+      this.$store.state.completedPipeline.name = this.contents[0].inputValue;
+      this.$store.state.completedPipeline.detail = this.contents[1].inputValue;
     },
     saveDraft(){
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
       this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
-      axios.post(`/pipelines/drafts`, this.$store.state.registerPipeline)
-      .then((res) => {
-          this.$store.state.registerPipeline = res.data;
-      })
-      .catch((error) => error);
-
+      pipelineRegisterService
+        .craetePipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          this.$store.state.registerPipeline = res;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
     
   },

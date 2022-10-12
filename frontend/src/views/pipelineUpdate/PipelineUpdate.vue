@@ -4,12 +4,15 @@
       <p class="fsb16">데이터 파이프라인 상세/수정</p>
     </div>
     <div style="margin: 3%">
-      <default-info/>
+      <default-info
+        v-if="$store.state.completedPipeline.name"
+      />
       <data-collect
         v-if="$store.state.completedPipeline['collector']"
         :contents="getContents('collector')"
       />
       <data-filters
+        v-if="$store.state.completedPipeline['filter']"
         :contents="getContents('filter')"
       />
       <data-convert
@@ -74,7 +77,14 @@ export default {
       });
     },
     updatePipeline(){
-      
+      pipelineUpdateService
+      .updateConpletedPipeline(this.$store.state.completedPipeline.id,this.$store.state.completedPipeline)
+      .catch((err) => {
+        console.log("Update Pipeline에 실패했습니다.", err);
+      });
+      this.$router.push({
+        name: "pipelineList",
+      });
     }
   },
 };

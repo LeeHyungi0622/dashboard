@@ -27,7 +27,16 @@
         요약 및 등록완료
       </button>
     </div>
+
     <div style="margin: 3%">
+      <div class="pipelineBtnBox mgT12">
+        <button class="pipelineButton" @click="tempPipelineShows">
+          임시저장 파이프라인 목록
+        </button>
+        <button class="pipelineButton mgL12" @click="goPipelineList">
+          파이프라인 목록
+        </button>
+      </div>
         <default-info :item-id="this.itemId"
         v-if="$store.state.showRegisterMode == 'info'"/>
         <data-collect
@@ -48,6 +57,7 @@ import DataCollect from "../../components/pipeline/DataCollect.vue";
 import DataFilters from "../../components/pipeline/DataFilters.vue";
 import DataConvert from "../../components/pipeline/DataConvert.vue";
 import CompletePipe from "../../components/pipeline/CompletePipe.vue";
+import EventBus from "@/eventBus/EventBus.js";
 export default {
   components: {
     DataConvert,
@@ -77,6 +87,17 @@ export default {
   methods: {
     convertMode(val) {
       this.$store.state.showRegisterMode = val;
+    },
+    goPipelineList(){
+      this.$router.push({
+          name: "pipelineList"
+        });
+    },
+    tempPipelineShows() {
+      let alertPayload = {
+        contents: this.$store.state.tempPipeline,
+      };
+      EventBus.$emit("show-temp-pipeline-popup", alertPayload);
     },
   },
 };

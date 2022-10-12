@@ -52,7 +52,7 @@
             style="text-align: center; width: 100%"
           >
             <template v-slot:[`item.readAction`]="{ item }">
-              <button @click="goPipelineRegister(item)">보기</button>
+              <button @click="goPipelineRegister(item)">이동</button>
             </template>
             <template v-slot:[`item.deleteAction`]="{ item }">
               <button @click="deleteTempPipeline(item)">삭제</button>
@@ -244,6 +244,16 @@ export default {
 
         this.$router.push({
           path: "pipelineRegister/" + item.id,
+
+        });
+      }
+      else{
+        this.$store.state.registerPipeline.id = item.id;
+        this.$store.state.tableShowMode = "REGISTER";
+        this.$store.state.showRegisterMode = "info";
+
+        this.$router.push({
+          path: "/pipelineRegister/" + item.id,
 
         });
       }

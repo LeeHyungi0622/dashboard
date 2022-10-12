@@ -90,10 +90,10 @@ export default {
         this.infoContents[0].inputValue = res.name;
         this.infoContents[1].inputValue = res.detail;
         this.collectorContents[0].inputValue = res.collector.name;
-        this.filterContents[0].inputValue = res.collector.name;
-        this.filterContents[1].inputValue = res.collector.name;
-        this.converterContents[0].inputValue = res.collector.name;
-        this.converterContents[1].inputValue = res.collector.name;
+        this.filterContents[0].inputValue = this.$store.state.filterBase;
+        this.filterContents[1].inputValue = this.$store.state.filterRootKey;
+        this.converterContents[0].inputValue = this.$store.state.convertDataSet;
+        this.converterContents[1].inputValue = this.$store.state.registerPipeId;
 
       })
       .catch((err) =>
@@ -102,8 +102,7 @@ export default {
     },
     beforeRoute(){
       this.$store.state.tableShowMode = 'REGISTER';
-      this.$store.state.showRegisterMode = 'converter';
-
+      this.$store.state.showRegisterMode = 'convertor';
     },
     saveComplete(){
       PipelineRegister

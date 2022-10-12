@@ -5,6 +5,7 @@
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag"
+      :disabled="!isCompleted"
       >
         {{ $store.state.collectorTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
@@ -73,11 +74,12 @@
       class="mgT12"
       style="display: flex; justify-content: right"
     >
-      <button class="pipelineButton">이전</button>
-      <button class="pipelineButton mgL12">임시 저장</button>
+      <button class="pipelineButton" @click="beforeRoute()">이전</button>
+      <button class="pipelineButton mgL12"  @click="saveDraft()">임시 저장</button>
       <button
         class="pipelineButton mgL12"
         @click="nextRoute()"
+        :disabled="!isCompleted"
       >
         다음
       </button>
@@ -110,7 +112,24 @@ export default {
         this.selectedSettingValue = {};
       }
     }
-
+  },
+  computed:{
+    isCompleted(){
+      console.log(this.getPipeline.collector);
+      if(this.getPipeline.collector){
+        for(var nifi of this.getPipeline.collector.nifiComponents){
+          if(nifi.requiredProps){
+            for(var prop of nifi.requiredProps){
+              if(prop.inputValue == null || prop.inputValue == ""){
+                return false;
+              }
+            }
+          }
+        }
+        return true;
+      }
+      return false;
+    }
   },
   data() {
     return {
@@ -139,8 +158,7 @@ export default {
     callCollectorProps(event){
       if(this.$store.state.tableShowMode == `UPDATE`){
         this.completedContents(event.target.value);
-      }
-      else{
+      } else{
         this.registerContents(event.target.value);
       }
     },
@@ -148,7 +166,7 @@ export default {
       collectorService
           .getPipelineComplete({
             adaptorName: val,
-            pipelineid: this.getPipeline.id,
+            id: this.getPipeline.id,
             page: 'collector',
           })
           .then((res) => {
@@ -174,6 +192,7 @@ export default {
     },
     changeUpdateFlag(){
       this.$store.state.collectorTableUpdateFlag = !this.$store.state.collectorTableUpdateFlag;
+      this.$store.state.completedPipeline = this.getPipeline;
     },
     nextRoute(){
       this.$store.state.registerPipeline= this.getPipeline;
@@ -182,6 +201,31 @@ export default {
         .then((res) => {
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'filter';
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    beforeRoute(){
+      this.$store.state.registerPipeline = this.getPipeline;
+      collectorService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
+          this.$store.state.showRegisterMode = 'info';
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    saveDraft(){
+      this.$store.state.registerPipeline = this.getPipeline;
+      collectorService
+        .postPipelineDraft(this.$store.state.registerPipeline)
+        .then((res) => {
+          console.log(res);
+          this.$store.state.registerPipeline = res;
         })
         .catch((err) => {
           console.error(err);

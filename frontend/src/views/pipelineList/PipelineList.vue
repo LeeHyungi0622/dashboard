@@ -208,6 +208,7 @@ export default {
         id: item.id
       };
       EventBus.$emit("show-confirm-popup", alertPayload);
+      
     },
     goPipelineDetailEdit(item) {
       this.$store.state.completedPlId = item.id;

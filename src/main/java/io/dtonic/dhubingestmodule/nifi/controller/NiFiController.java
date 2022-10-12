@@ -128,40 +128,54 @@ public class NiFiController {
         // ID 생성
         String id = idGenerater(convertor);
         // Convert NGSI LD
-        PipelineVO ngsiLdNiFi = setAttribute(convertor);
+        NiFiComponentVO ngsiLdNiFi = setAttribute(convertor.getConverter());
         NiFiComponentVO ngsiLdFormater = convertNgsiLdData(
             convertor.getDataModel(),
             convertor.getDataSet(),
             id
         );
-        NiFiComponentVO convertType = convertValueType(convertor.getDataModel());
         NiFiComponentVO dateFormater = convertDateType(
             convertor.getConverter(),
             convertor.getDataModel()
         );
+        NiFiComponentVO convertType = convertValueType(convertor.getDataModel());
         // NiFi Components Setting
-        AdaptorVO result = ngsiLdNiFi.getConverter();
-        result.getNifiComponents().add(ngsiLdFormater);
-        result.getNifiComponents().add(convertType);
+        AdaptorVO result = new AdaptorVO();
+        List<NiFiComponentVO> resNifi = new ArrayList<>();
+        resNifi.add(ngsiLdNiFi);
+        resNifi.add(ngsiLdFormater);
+        resNifi.add(convertType);
+        resNifi.add(dateFormater);
+        result.setNifiComponents(resNifi);
+        result.setName(convertor.getConverter().getName());
 
         return result;
     }
 
-    private PipelineVO setAttribute(PipelineVO convertor) {
-        for (NiFiComponentVO nifi : convertor.getConverter().getNifiComponents()) {
+    private NiFiComponentVO setAttribute(AdaptorVO convertor) {
+        NiFiComponentVO dataSetPropComp = new NiFiComponentVO();
+        dataSetPropComp.setName("DataSetProps");
+        dataSetPropComp.setType("processor");
+        List<PropertyVO> dataSetProps = new ArrayList<>();
+        for (NiFiComponentVO nifi : convertor.getNifiComponents()) {
             if (nifi.getName().equals("DataSetProps")) {
                 for (PropertyVO prop : nifi.getRequiredProps()) {
-                    String convertInput = prop.getInputValue().replace("\"", "");
-
-                    prop.setInputValue("$." + convertInput);
+                    if (prop.getDetail() != "Date Format" || prop.getDetail() != "unitCode") {
+                        PropertyVO newProp = new PropertyVO();
+                        newProp.setName(prop.getName());
+                        String convertInput = prop.getInputValue().replace("\"", "");
+                        newProp.setInputValue("$." + convertInput);
+                        dataSetProps.add(newProp);
+                    }
                 }
             }
         }
-        return convertor;
+        dataSetPropComp.setRequiredProps(dataSetProps);
+        return dataSetPropComp;
     }
 
     private String idGenerater(PipelineVO convertor) {
-        String id = "urn:datahub:" + convertor.getDataModel() + ":";
+        String id = "urn:datahub:" + convertor.getDataModel();
         for (NiFiComponentVO nifi : convertor.getConverter().getNifiComponents()) {
             if (nifi.getName().equals("IDGenerater")) {
                 if (nifi.getRequiredProps().size() == 0) {
@@ -173,13 +187,13 @@ public class NiFiController {
                             if (i < nifi.getRequiredProps().size() - 1) {
                                 id =
                                     id +
-                                    "${" +
+                                    ":${" +
                                     nifi
                                         .getRequiredProps()
                                         .get(i)
                                         .getInputValue()
                                         .replace("\"", "") +
-                                    "}:";
+                                    "}";
                             } else {
                                 id =
                                     id +
@@ -297,24 +311,30 @@ public class NiFiController {
     private NiFiComponentVO convertDateType(AdaptorVO convertor, String dataModelId)
         throws JsonProcessingException {
         DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(dataModelId);
-        // List<PropertyVO> DateList = convertor.getNifiComponents(/
+        List<PropertyVO> DateList = new ArrayList<>();
+        NiFiComponentVO convertDateTypeProc = new NiFiComponentVO();
+        convertDateTypeProc.setName("ConvertDateType");
+        convertDateTypeProc.setType("Processor");
         for (Attribute a : dataModelInfo.getAttributes()) {
-            // PropertyVO prop = new PropertyVO();
             if (a.getValueType().equals("Date")) {
                 for (NiFiComponentVO nifi : convertor.getNifiComponents()) {
-                    if (nifi.getName().equals("ConvertDateType")) {
+                    if (nifi.getName().equals("DataSetProps")) {
                         for (PropertyVO prop : nifi.getRequiredProps()) {
-                            if (prop.getName().equals("DateFormat")) {
+                            if (prop.getDetail().equals("Date Format")) {
+                                prop.setName(a.getName());
+                                log.info("prop Data = {}", prop);
                                 prop.setInputValue(
                                     "${" +
                                     a.getName() +
                                     ":toDate(\"" +
                                     prop.getInputValue() +
-                                    "\"):format(\"yyyy-MM-dd'T'HH:mm:ssXXX\", \"GMT\")}"
+                                    "\", \"GMT\"):format(\"yyyy-MM-dd'T'HH:mm:ssXXX\", \"GMT\")}"
                                 );
+                                DateList.add(prop);
                             }
                         }
-                        return nifi;
+                        convertDateTypeProc.setRequiredProps(DateList);
+                        return convertDateTypeProc;
                     }
                 }
             }

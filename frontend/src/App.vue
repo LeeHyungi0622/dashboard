@@ -6,8 +6,8 @@
     <v-system-bar
       app
       style="
-        height: 7%;
-        background-color: #ffff;
+        height: 7%; 
+        background-color: #ffff; 
         border-bottom: 1px solid #2b4f8c;
       "
     >
@@ -54,7 +54,7 @@
     <v-main>
       <v-container fluid fill-height style="padding: 0">
         <v-layout justify-center style="display: block">
-          <router-view></router-view>
+          <router-view :key="$route.fullPath"></router-view>
           <footer></footer>
         </v-layout>
       </v-container>
@@ -174,6 +174,7 @@ export default {
       }
       else if(val.url == "deleteComplete"){
         PipelineList.deletePipeline(val.id);
+        this.$router.go();
       }
       else if(val.url == "deleteTemp"){
         PipelineList.deleteTempPipeline(val.id).then((res) => {

@@ -5,7 +5,7 @@ class pipelineRegister {
     return axios
       .post(`/pipelines/drafts`, requestBody)
       .then((response) => {
-        return response.data;
+        return response;
       })
       .catch((error) => error);
   }
