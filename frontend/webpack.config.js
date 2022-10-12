@@ -64,10 +64,11 @@ module.exports = {
         use: ['vue-style-loader', MiniCssExtractPlugin.loader, 'css-loader'],
       }, {
         test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: 'url-loader',
+        loader: 'file-loader',
         options: {
           name: FILE_PATH[1] + '[hash].[ext]',
-          limit: 10000
+          limit: 10000,
+          esModule: false
         }
       }, {
         test: '/.js$/',
