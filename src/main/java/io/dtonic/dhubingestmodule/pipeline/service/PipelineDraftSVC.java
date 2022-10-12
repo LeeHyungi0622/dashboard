@@ -100,9 +100,11 @@ public class PipelineDraftSVC {
             }
             adaptorVO.getNifiComponents().add(niFiComponentVO);
             pipelineVO.setConverter(adaptorVO);
+        } else {
+            return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body("invalid Page name");
         }
 
-        return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(pipelineVO);
+        return ResponseEntity.ok().body(pipelineVO);
     }
 
     //adaptor의 속성값 가져오기
