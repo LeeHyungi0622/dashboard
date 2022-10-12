@@ -46,8 +46,8 @@ datacore:
 
 cityhub:
   client:
-    clientId: hIYMmh5P8axkdKmlPnfI
-    clientSecret: yHJXdrg8ZRWhfJ7AByBkZfwTj3VcE8LI
+    clientId: JfZssZQAPUig5AO48kKK
+    clientSecret: umb2rX64PXQz03KOFJDKuDq17vDruOjU
     userAuthorizationUri: http://110.45.181.72:30000/oauth2.0/authorize
     accessTokenUri: http://110.45.181.72:30000/oauth2.0/token
     publicKeyUri: http://110.45.181.72:30000/security/publickey
