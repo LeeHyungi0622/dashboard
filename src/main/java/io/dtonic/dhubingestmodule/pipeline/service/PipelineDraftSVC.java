@@ -102,7 +102,7 @@ public class PipelineDraftSVC {
             pipelineVO.setConverter(adaptorVO);
         }
 
-        return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(pipelineVO);
+        return ResponseEntity.ok().body(pipelineVO);
     }
 
     //adaptor의 속성값 가져오기
