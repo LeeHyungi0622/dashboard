@@ -69,6 +69,7 @@ module.exports = {
           name: FILE_PATH[1] + '[hash].[ext]',
           limit: 10000,
           esModule: false
+          
         }
       }, {
         test: '/.js$/',
