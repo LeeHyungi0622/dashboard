@@ -5,6 +5,7 @@
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag"
+      :disabled="!isCompleted"
       >
         {{ $store.state.filterTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
@@ -41,7 +42,7 @@ export default {
   },
   data() {
     return {
-      filterData: {},
+      filterData: [],
       getPipeline: {},
     };
   },
@@ -68,39 +69,34 @@ export default {
     },
     getFilter(){
       if (this.$store.state.tableShowMode == "REGISTER") {
-        collectorService
-          .getPipelineDraft({
-            pipelineid: this.$store.state.registerPipeline.id,
-            adaptorName: "filter",
-            page: "filter",
-          })
-          .then((res) => {
-            this.$store.state.registerPipeline = res;
-            this.filterData =
+        if(this.$store.state.registerPipeline.filter != null){
+          this.filterData = this.$store.state.registerPipeline.filter;
+        }
+        else{
+          collectorService
+            .getPipelineDraft({
+              pipelineid: this.$store.state.registerPipeline.id,
+              adaptorName: "filter",
+              page: "filter",
+            })
+            .then((res) => {
+              console.log("this is filter res",res);
+              this.$store.state.registerPipeline = res;
+              this.filterData =
               this.$store.state.registerPipeline.filter;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } else {
-        collectorService
-          .getPipelineComplete({
-            adaptorName: "filter",
-            id: this.$store.state.completedPipeline.id,
-            page: "filter",
-          })
-          .then((res) => {
-            console.log(res);
-            this.$store.state.completedPipeline= res;
-            this.filterData =
+              console.log("this is filter data",this.filterData);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+      } else if (this.$store.state.tableShowMode == "UPDATE"){
+        this.filterData =
               this.$store.state.completedPipeline.filter;
-          })
-          .catch((err) => {
-            console.error(err);
-          });
       }
     },
     nextRoute(){
+      this.checkCompletedPage();
       this.$store.state.registerPipeline.filter = this.filterData;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
@@ -137,6 +133,20 @@ export default {
         .catch((err) => {
           console.error(err);
         });
+    },
+    checkCompletedPage(){
+      for(var nifi of this.filterData.nifiComponents){
+          if(nifi.requiredProps){
+            for(var prop of nifi.requiredProps){
+              if(prop.name == "isBase64"){
+                this.$store.state.filterBase = prop.inputValue;
+              }
+              else if(prop.name == "root_key"){
+                this.$store.state.filterRootKey = prop.inputValue;
+              }
+            }
+          }
+        }
     }
   }
 };

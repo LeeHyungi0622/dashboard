@@ -4,7 +4,8 @@
       <div class="pipelineUpdateMainTitle fsb16">데이터 변환</div>
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
-      @click="changeUpdateFlag"
+      @click="changeUpdateFlag" 
+      :disabled="!isCompleted"
       >
         {{ $store.state.convertorTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
@@ -75,7 +76,7 @@
     >
       <button class="pipelineButton" @click="beforeRoute()" >이전</button>
       <button class="pipelineButton mgL12" @click="saveDraft()" >임시 저장</button>
-      <button class="pipelineButton mgL12" @click="nextRoute()">다음</button>
+      <button class="pipelineButton mgL12" @click="nextRoute()" :disabled="!isCompleted">다음</button>
     </div>
   </div>
 </template>
@@ -90,16 +91,14 @@ export default {
       this.getPipeline = this.$store.state.completedPipeline;
       this.selectedConverterValue = this.getPipeline.dataSet;
       this.convProps = this.convertDataSetProps(this.getPipeline.converter);
-      console.log(this.convProps);
-      this.convId = this.convertId(this.getPipeline.converter);
-      console.log(this.convId);
+      this.convertId(this.getPipeline.converter);
     }
     else{
       this.getPipeline = this.$store.state.registerPipeline;
       if (this.getPipeline.converter != null) {
         this.selectedConverterValue = this.getPipeline.dataSet;
         this.convProps = this.convertDataSetProps(this.getPipeline.converter);
-        this.convId = this.convertId(this.getPipeline.converter);
+        this.convertId(this.getPipeline.converter);
       }
     }
   },
@@ -110,7 +109,9 @@ export default {
         if(this.convId != null){
           for(var relevel of this.convId){
             if(relevel.inputValue != null){
-              last = last + ":${"+relevel.inputValue+"}";
+              if(relevel.inputValue != ""){
+                last = last + ":${"+relevel.inputValue+"}";
+              }
             }
           }
         }
@@ -121,12 +122,32 @@ export default {
         if(this.convId != null){
           for(var level of this.convId){
             if(level.inputValue != null){
-              last = last + ":${"+level.inputValue+"}";
+              if(level.inputValue != ""){
+                last = last + ":${"+level.inputValue+"}";
+              }
             }
           }
         }
         return "Generated key : urn:datahub:"+ this.getPipeline.dataModel + last;
       }
+    },
+    isCompleted(){
+      if(this.convProps.length != 0 && this.convId.length != 0){
+        for(let prop of this.convProps){
+          if(prop.inputValue == null || prop.inputValue == ""){
+            return false;
+          }
+        }
+        for(let prop of this.convId){
+          if(prop.name == "level1"){
+            if(prop.inputValue == null || prop.inputValue == ""){
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+      return false;
     }
 
   },
@@ -166,41 +187,45 @@ export default {
   methods: {
     convertToProps(){
       if(this.convProps != null){
-        for(var prop of this.convProps){
-              var nifiPropList = [];
-              for(var nifiProp of this.rawDataSetProps.requiredProps){
-                if(nifiProp.name == prop.name.split('(')[0]){
-                  nifiProp.inputValue = prop.inputValue;
-                  nifiPropList.push({name:nifiProp.name,detail:prop.detail,inputValue:prop.inputValue});
-                }
-              }
-              this.rawDataSetProps.requiredProps = nifiPropList;
+        for(let nifiProp of this.rawDataSetProps.requiredProps){
+          for(let prop of this.convProps){
+            if(nifiProp.name == prop.name.split('(')[0] && nifiProp.detail == prop.detail){
+                nifiProp.inputValue = prop.inputValue;
+            }
           }
+        }
       }
     },
     convertToId(){
       if(this.convId != null){
-        for(var id of this.convId){
-              var nifiPropList = [];
-              for(var nifiProp of this.rawIdNifi.requiredProps){
-                if(nifiProp.name == id.name){
-                  nifiProp.inputValue = id.inputValue;
-                  nifiPropList.push({name:nifiProp.name,detail:id.detail,inputValue:id.inputValue});
-                }
-              }
-              this.rawIdNifi.requiredProps = nifiPropList;
+        for(let nifiProp of this.rawIdNifi.requiredProps){
+          for(let id of this.convId){
+            if(nifiProp.name == id.name){
+              nifiProp.inputValue = id.inputValue;
+            }
           }
+        }
       }
     },
     convertDataSetProps(data){
-      var convertProps = [];
-      for(var nifi of data.nifiComponents){
+      let convertProps = [];
+      for(let nifi of data.nifiComponents){
         if(nifi.name == 'DataSetProps'){
           this.rawDataSetProps = nifi;
           this.rawDataSetProps.requiredProps = nifi.requiredProps;
-          for(var prop of nifi.requiredProps){
+          for(let prop of nifi.requiredProps){
             const name = prop.name + "(" + prop.detail + ")";
-            const inputValue = "";
+            let inputValue;
+            if(prop.detail == "Date Format"){
+              if(prop.inputValue == null || prop.inputValue == ""){
+                inputValue = "";
+              } else {
+                inputValue = prop.inputValue.split("\"")[1];
+              }
+              }
+              else{
+                inputValue = prop.inputValue;
+              }
             const convertProp = {name : name, detail:prop.detail ,inputValue: inputValue};
             convertProps.push(convertProp);
           }
@@ -218,6 +243,13 @@ export default {
     },
     changeUpdateFlag(){
       this.$store.state.convertorTableUpdateFlag = !this.$store.state.convertorTableUpdateFlag;
+      this.convertToProps();
+      this.convertToId();
+      let convertNifi = []
+      convertNifi.push(this.rawDataSetProps);
+      convertNifi.push(this.rawIdNifi);
+      this.getPipeline.converter.nifiComponents = convertNifi;
+      this.$store.state.completedPipeline = this.getPipeline;
     },
     callConvertorProps(event){
       if(this.$store.state.tableShowMode == `UPDATE`){
@@ -275,8 +307,10 @@ export default {
     nextRoute(){
       this.convertToProps();
       this.convertToId();
-      this.$store.state.registerPipeId = this.generationKey;
-      var convertNifi = []
+      console.log(this.generationKey.split(":", 2));
+      this.$store.state.registerPipeId = this.generationKey.split(" ")[3];
+      this.$store.state.convertDataSet = this.selectedConverterValue;
+      let convertNifi = []
       convertNifi.push(this.rawDataSetProps);
       convertNifi.push(this.rawIdNifi);
       this.getPipeline.converter.nifiComponents = convertNifi;
@@ -295,8 +329,8 @@ export default {
     beforeRoute(){
       this.convertToProps();
       this.convertToId();
-      this.$store.state.registerPipeId = this.generationKey;
-      var convertNifi = []
+      this.$store.state.registerPipeId = this.generationKey.split(":")[1];
+      let convertNifi = []
       convertNifi.push(this.rawDataSetProps);
       convertNifi.push(this.rawIdNifi);
       this.getPipeline.converter.nifiComponents = convertNifi;
@@ -316,7 +350,7 @@ export default {
       this.convertToProps();
       this.convertToId();
       this.$store.state.registerPipeId = this.generationKey;
-      var convertNifi = []
+      let convertNifi = []
       convertNifi.push(this.rawDataSetProps);
       convertNifi.push(this.rawIdNifi);
       this.getPipeline.converter.nifiComponents = convertNifi;

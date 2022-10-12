@@ -247,6 +247,16 @@ export default {
 
         });
       }
+      else{
+        this.$store.state.registerPipeline.id = item.id;
+        this.$store.state.tableShowMode = "REGISTER";
+        this.$store.state.showRegisterMode = "info";
+
+        this.$router.push({
+          path: "/pipelineRegister/" + item.id,
+
+        });
+      }
       this.close();
     },
     settingFilter(filter, event) {

@@ -6,6 +6,7 @@
         v-if="$store.state.tableShowMode == `UPDATE`"
         class="pipelineUpdateButton"
         @click="changeUpdateFlag"
+        :disabled="!this.contents[0].inputValue || !this.contents[1].inputValue"
       >
         {{ $store.state.infoTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
@@ -51,17 +52,18 @@ export default {
       .then((res) => {
         this.$store.state.registerPipeline = res;
         if(this.$store.state.tableShowMode == `UPDATE`){
-        this.contents[0].inputValue = this.$store.state.completedPipeline.name;
-        this.contents[1].inputValue = this.$store.state.completedPipeline.detail;
-      }
-      else{
-        if(this.$store.state.registerPipeline.name){
-          this.contents[0].inputValue = this.$store.state.registerPipeline.name;
+          this.contents[0].inputValue = this.$store.state.completedPipeline.name;
+          this.contents[1].inputValue = this.$store.state.completedPipeline.detail;
         }
-        if(this.$store.state.registerPipeline.detail){
-          this.contents[1].inputValue = this.$store.state.registerPipeline.detail;
+        else{
+          console.log(this.$store.state.registerPipeline.name)
+          if(this.$store.state.registerPipeline.name){
+            this.contents[0].inputValue = this.$store.state.registerPipeline.name;
+          }
+          if(this.$store.state.registerPipeline.detail){
+            this.contents[1].inputValue = this.$store.state.registerPipeline.detail;
+          }
         }
-      }
       })
       .catch((err) =>
       console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
@@ -133,15 +135,21 @@ export default {
       }
     },
     nextRoute() {
-      console.log("next route",this.$store.state.registerPipeline)
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
       this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
       pipelineRegisterService
         .craetePipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          this.$store.state.registerPipeline = res;
-          this.$store.state.showRegisterMode = 'collector';
+          console.log(res);
+          let isFail = res.body == "PipelineName already Exists";
+          if(!isFail){
+            this.$store.state.registerPipeline = res.data;
+            this.$store.state.showRegisterMode = 'collector';
+          }
+          else{
+            alert.apply("Pipeline이름이 중복됩니다.");
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -149,6 +157,8 @@ export default {
     },
     changeUpdateFlag(){
       this.$store.state.infoTableUpdateFlag = !this.$store.state.infoTableUpdateFlag;
+      this.$store.state.completedPipeline.name = this.contents[0].inputValue;
+      this.$store.state.completedPipeline.detail = this.contents[1].inputValue;
     },
     saveDraft(){
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;

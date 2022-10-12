@@ -5,6 +5,7 @@
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag"
+      :disabled="!isCompleted"
       >
         {{ $store.state.collectorTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
@@ -157,8 +158,7 @@ export default {
     callCollectorProps(event){
       if(this.$store.state.tableShowMode == `UPDATE`){
         this.completedContents(event.target.value);
-      }
-      else{
+      } else{
         this.registerContents(event.target.value);
       }
     },
@@ -166,7 +166,7 @@ export default {
       collectorService
           .getPipelineComplete({
             adaptorName: val,
-            pipelineid: this.getPipeline.id,
+            id: this.getPipeline.id,
             page: 'collector',
           })
           .then((res) => {
@@ -192,6 +192,7 @@ export default {
     },
     changeUpdateFlag(){
       this.$store.state.collectorTableUpdateFlag = !this.$store.state.collectorTableUpdateFlag;
+      this.$store.state.completedPipeline = this.getPipeline;
     },
     nextRoute(){
       this.$store.state.registerPipeline= this.getPipeline;

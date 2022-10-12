@@ -11,7 +11,7 @@ class pipelineUpdate {
   }
   updateConpletedPipeline(id, requestBody) {
     return axios
-      .get(`/pipelines/completed/${id}`, requestBody)
+      .put(`/pipelines/completed/${id}`, requestBody)
       .then((response) => {
         return response.data;
       })

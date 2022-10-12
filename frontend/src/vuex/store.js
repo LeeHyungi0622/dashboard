@@ -10,8 +10,6 @@ export const store = new Vuex.Store({
       tempPipelineList: [],
       registerPipeline: {
       },
-      registerFilterBase64: false,
-      registerFilterRoot: "",
       completedPipeline: {
       },
       completedPlId: "",
@@ -29,7 +27,10 @@ export const store = new Vuex.Store({
       filterTableUpdateFlag: false,
       convertorTableUpdateFlag: false,
       showRegisterMode: "",
-      registerPipeId: ""
+      filterBase: false,
+      filterRootKey: "",
+      convertDataSet: "",
+      registerPipeId: "",
     };
   },
   mutations: {
