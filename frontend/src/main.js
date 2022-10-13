@@ -9,7 +9,7 @@ import { store } from "./vuex/store";
 const ws = new WebSocket("ws://localhost:8099/webpipeline");
 
 Axios.defaults.baseURL = "http://localhost:8099";
-// Axios.defaults.headers['Access-Control-Allow-Origin'] = '*';
+Axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 Axios.defaults.headers.common['Authorization'] = 'testCode' // 수정예정
 Axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'
 Axios.defaults.headers.timeout = 60000
