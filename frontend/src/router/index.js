@@ -8,7 +8,13 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
+    path: '/',
+    name: 'Login',
+    component: null,
+    redirect: "/list",
+  },
+  {
+    path: "/list",
     name: "pipelineList",
     component: pipelineList,
   },
