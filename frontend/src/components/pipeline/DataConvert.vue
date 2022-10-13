@@ -238,8 +238,12 @@ export default {
       selectedConverterValue: {},
       convProps: [],
       convId: [],
-      rawDataSetProps: {},
-      rawIdNifi: {},
+      rawDataSetProps: {
+        requiredProps: []
+      },
+      rawIdNifi: {
+        requiredProps: []
+      },
       getPipeline: {},
       selectDataModel: ""
     };
@@ -397,13 +401,15 @@ export default {
       }
     },
     beforeRoute(){
-      this.convertToProps();
-      this.convertToId();
-      this.$store.state.registerPipeId = this.generationKey.split(":")[1];
-      let convertNifi = []
-      convertNifi.push(this.rawDataSetProps);
-      convertNifi.push(this.rawIdNifi);
-      this.getPipeline.converter.nifiComponents = convertNifi;
+      if(this.rawDataSetProps.requiredProps.length != 0){
+        this.convertToProps();
+        this.convertToId();
+        let convertNifi = []
+        convertNifi.push(this.rawDataSetProps);
+        convertNifi.push(this.rawIdNifi);
+        this.getPipeline.converter.nifiComponents = convertNifi;
+      }
+        this.$store.state.registerPipeId = this.generationKey.split(":")[1];
       this.$store.state.registerPipeline = this.getPipeline;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
@@ -416,13 +422,15 @@ export default {
         });
     },
     saveDraft(){
-      this.convertToProps();
-      this.convertToId();
+      if(this.rawDataSetProps.requiredProps.length != 0){
+        this.convertToProps();
+        this.convertToId();
+        let convertNifi = []
+        convertNifi.push(this.rawIdNifi);
+        convertNifi.push(this.rawDataSetProps);
+        this.getPipeline.converter.nifiComponents = convertNifi;
+      }
       this.$store.state.registerPipeId = this.generationKey;
-      let convertNifi = []
-      convertNifi.push(this.rawDataSetProps);
-      convertNifi.push(this.rawIdNifi);
-      this.getPipeline.converter.nifiComponents = convertNifi;
       this.$store.state.registerPipeline = this.getPipeline;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
