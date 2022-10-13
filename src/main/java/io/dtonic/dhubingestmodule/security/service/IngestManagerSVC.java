@@ -10,6 +10,7 @@ import io.dtonic.dhubingestmodule.util.ConvertUtil;
 import io.dtonic.dhubingestmodule.util.CryptoUtil;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.HashMap;
@@ -289,7 +290,7 @@ public class IngestManagerSVC {
 
         if (principal != null) {
             String userId = principal.toString();
-            paths.add("/");
+            List<String> paths = new ArrayList<>();
             paths.add(userId);
             Map<String, String> headers = new HashMap<String, String>();
             headers.put(
