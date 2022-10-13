@@ -56,7 +56,6 @@ export default {
           this.contents[1].inputValue = this.$store.state.completedPipeline.detail;
         }
         else{
-          console.log(this.$store.state.registerPipeline.name)
           if(this.$store.state.registerPipeline.name){
             this.contents[0].inputValue = this.$store.state.registerPipeline.name;
           }
@@ -141,7 +140,6 @@ export default {
       pipelineRegisterService
         .craetePipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          console.log(res);
           let isFail = res.body == "PipelineName already Exists";
           if(!isFail){
             this.$store.state.registerPipeline = res.data;

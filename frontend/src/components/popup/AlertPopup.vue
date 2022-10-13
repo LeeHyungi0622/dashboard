@@ -36,6 +36,7 @@ export default {
         return {
           title: null,
           text: null,
+          url: null,
         };
       },
       required: true,

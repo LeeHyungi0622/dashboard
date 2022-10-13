@@ -82,7 +82,6 @@ export default {
     this.$store.state.filterTableUpdateFlag = true;
     this.$store.state.convertorTableUpdateFlag = true;
 
-    console.log(this.$route.params)
   },
   methods: {
     convertMode(val) {

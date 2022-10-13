@@ -107,9 +107,6 @@ export default {
     saveComplete(){
       PipelineRegister
         .postPipelineCompleted(this.$store.state.registerPipeline.id, this.$store.state.registerPipeline)
-        .then((res) => {
-          console.log(res);
-        })
         .catch((err) => {
           console.error(err);
         });

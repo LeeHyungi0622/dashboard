@@ -33,6 +33,7 @@
 <script>
 import CustomTable from "./CustomTable.vue";
 import collectorService from "../../js/api/collector";
+import EventBus from "@/eventBus/EventBus.js";
 export default {
   components: {
     CustomTable,
@@ -61,6 +62,43 @@ export default {
         return true;
       }
       return false;
+    },
+    isVaild(){
+      if(this.filterData){
+        for(let nifi of this.filterData.nifiComponents){
+          if(nifi.requiredProps){
+            for(let prop of nifi.requiredProps){
+              if(prop.name == "root_key"){
+                if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
+                  return false;
+                }
+                else{
+                  if((prop.inputValue.split("\"").length - 1)%2 != 0){
+                    return false;
+                  }
+                  else{
+                    for(var e = 0; e < prop.inputValue.split("\"").length; e+=2){
+                      if(e == 0 || e == prop.inputValue.split("\"").length-1){
+                        if(prop.inputValue.split("\"")[e] != ""){
+                          return false;
+                        }
+                      }
+                      else{
+                        if(prop.inputValue.split("\"")[e] != "."){
+                          return false;
+                        }
+                      }
+                      return true;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        return false;
+      }
+      return false;
     }
   },
   methods:{
@@ -80,11 +118,9 @@ export default {
               page: "filter",
             })
             .then((res) => {
-              console.log("this is filter res",res);
               this.$store.state.registerPipeline = res;
               this.filterData =
               this.$store.state.registerPipeline.filter;
-              console.log("this is filter data",this.filterData);
             })
             .catch((error) => {
               console.error(error);
@@ -96,25 +132,35 @@ export default {
       }
     },
     nextRoute(){
-      this.checkCompletedPage();
-      this.$store.state.registerPipeline.filter = this.filterData;
-      collectorService
-        .postPipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          console.log(res);
-          this.$store.state.registerPipeline = res;
-          this.$store.state.showRegisterMode = 'convertor';
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      if(this.isVaild){
+        this.checkCompletedPage();
+        this.$store.state.registerPipeline.filter = this.filterData;
+        collectorService
+          .postPipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.$store.state.showRegisterMode = 'convertor';
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+      else{
+        let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 입력 값에 오류가 있습니다. " +
+            "<br/>구분자 혹은 입력 값을 확인해 주십시오.",
+          url: "not Vaild",
+        };
+        EventBus.$emit("show-alert-popup", alertPayload);
+      }
     },
     beforeRoute(){
       this.$store.state.registerPipeline.filter = this.filterData;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          console.log(res);
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'collector';
         })
@@ -127,7 +173,6 @@ export default {
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          console.log(res);
           this.$store.state.registerPipeline = res;
         })
         .catch((err) => {
@@ -147,7 +192,8 @@ export default {
             }
           }
         }
-    }
+    },
+
   }
 };
 </script>

@@ -1,9 +1,9 @@
 import axios from "axios";
-
+import { APIHandler } from './api-handler.js';
 class userInfo {
   getUserInfo() {
     return axios
-      .get(`/user`, {})
+      .get(APIHandler.buildUrl(['user']))
       .then((response) => {
         return response.data;
       })
@@ -11,7 +11,7 @@ class userInfo {
   }
   sendLogOut() {
     return axios
-      .get(`/logout`, {})
+      .get(APIHandler.buildUrl(['logout']))
       .then((response) => {
         return response.data;
       })

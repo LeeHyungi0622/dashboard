@@ -115,7 +115,6 @@ export default {
   },
   computed:{
     isCompleted(){
-      console.log(this.getPipeline.collector);
       if(this.getPipeline.collector){
         for(var nifi of this.getPipeline.collector.nifiComponents){
           if(nifi.requiredProps){
@@ -211,7 +210,6 @@ export default {
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          console.log(res);
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'info';
         })
@@ -224,7 +222,6 @@ export default {
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          console.log(res);
           this.$store.state.registerPipeline = res;
         })
         .catch((err) => {

@@ -84,6 +84,7 @@
 <script>
 import collectorService from "../../js/api/collector";
 import dataSetService from "../../js/api/dataSet";
+import EventBus from "@/eventBus/EventBus.js";
 export default {
   created() {
     this.getDataSet();
@@ -148,8 +149,67 @@ export default {
         return true;
       }
       return false;
+    },
+    isVaild(){
+      let isOkProps = false;
+      let isOkId = false;
+      if(this.convProps.length != 0 && this.convId.length != 0){
+        for(let prop of this.convProps){
+          if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
+            return false;
+          }
+          else{
+            if((prop.inputValue.split("\"").length - 1)%2 != 0){
+              return false;
+            }
+            else{
+              for(let e = 0; e < prop.inputValue.split("\"").length; e+=2){
+                if(e == 0 || e == prop.inputValue.split("\"").length-1){
+                  if(prop.inputValue.split("\"")[e] != ""){
+                    return false;
+                  }
+                }
+                else{
+                  if(prop.inputValue.split("\"")[e] != "."){
+                    return false;
+                  }
+                }
+              }
+              isOkProps = true;
+            }
+          }
+        }
+        for(let id of this.convId){
+          if(id.inputValue){
+            if(!id.inputValue.includes("\"") || id.inputValue.includes(" ") || id.inputValue.includes("\"\"")){
+              return false;
+            }
+            else{
+              if((id.inputValue.split("\"").length - 1)%2 != 0){
+                return false;
+              }
+              else{
+                for(let e = 0; e < id.inputValue.split("\"").length; e+=2){
+                if(e == 0 || e == id.inputValue.split("\"").length-1){
+                  if(id.inputValue.split("\"")[e] != ""){
+                    return false;
+                  }
+                }
+                else{
+                  if(id.inputValue.split("\"")[e] != "."){
+                    return false;
+                  }
+                }
+              }
+                isOkId = true;
+              }
+            }
+          }
+        }
+        if(isOkProps && isOkId) return true;
+      }
+      return false;
     }
-
   },
  
   data() {
@@ -305,9 +365,9 @@ export default {
           });
     },
     nextRoute(){
+      if(this.isVaild){
       this.convertToProps();
       this.convertToId();
-      console.log(this.generationKey.split(":", 2));
       this.$store.state.registerPipeId = this.generationKey.split(" ")[3];
       this.$store.state.convertDataSet = this.selectedConverterValue;
       let convertNifi = []
@@ -318,13 +378,23 @@ export default {
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          console.log(res);
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'complete';
         })
         .catch((err) => {
           console.error(err);
         });
+      }
+      else{
+        let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 입력 값에 오류가 있습니다. " +
+            "<br/>구분자 혹은 입력 값을 확인해 주십시오.",
+          url: "not Vaild",
+        };
+        EventBus.$emit("show-alert-popup", alertPayload);
+      }
     },
     beforeRoute(){
       this.convertToProps();
@@ -338,7 +408,6 @@ export default {
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          console.log(res);
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'filter';
         })
@@ -358,7 +427,6 @@ export default {
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          console.log(res);
           this.$store.state.registerPipeline = res;
         })
         .catch((err) => {

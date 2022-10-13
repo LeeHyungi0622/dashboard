@@ -120,6 +120,11 @@ export default {
         body: "default",
         id: "default"
       },
+      alertContent: {
+        title: "default",
+        text: "default",
+        url: "default"
+      },
       userAlertContent: {
         title: "default",
         userContent: {
@@ -127,10 +132,6 @@ export default {
           name: { key: null, value: null },
           phone: { key: null, value: null }
         }
-      },
-      alertContent: {
-        title: "입력값 오류",
-        text: "입력값에 오류가 있습니다. <br/>구분자 혹은  값을 입력해주세요"
       },
       tempPipelineContent: {
         title: "임시저장 파이프라인",
@@ -150,6 +151,9 @@ export default {
     };
   },
   created() {
+    EventBus.$on("show-alert-popup", (payload) => {
+      this.showAlertPopup(payload);
+    });
     EventBus.$on("show-confirm-popup", (payload) => {
       this.showconfirmPopup(payload);
     });
@@ -220,11 +224,11 @@ export default {
     closeAlertPopup: function () {
       this.alertShowFlag = false;
     },
-    showAlertPopup() {
-      this.userAlertShowFlag = true;
-      this.alertContent.title = "입력값 오류";
-      this.alertContent.text =
-        "입력값에 오류가 있습니다. <br/>구분자 혹은  값을 입력해주세요";
+    showAlertPopup(payload) {
+      this.alertShowFlag = true;
+      this.alertContent.title = payload.title;
+      this.alertContent.text = payload.text;
+      this.alertContent.url = payload.url;
     },
     closeTempPipelinePopup: function () {
       this.tempPipelineShowFlag = false;

@@ -34,6 +34,7 @@ import DataCollect from "../../components/pipeline/DataCollect.vue";
 import DataFilters from "../../components/pipeline/DataFilters.vue";
 import DataConvert from "../../components/pipeline/DataConvert.vue";
 import pipelineUpdateService from "../../js/api/pipelineUpdate";
+import EventBus from "@/eventBus/EventBus.js";
 export default {
   components: {
     DataConvert,
@@ -82,10 +83,19 @@ export default {
       .catch((err) => {
         console.log("Update Pipeline에 실패했습니다.", err);
       });
+      let alertPayload = {
+        title: "저장 완료",
+        text:
+        this.$store.state.completedPipeline.name +
+          " 파이프라인의 " +
+          "<br/>수정이 완료되었습니다.",
+        url: "completedUpdate",
+      };
       this.$router.push({
-        name: "pipelineList",
-      });
-    }
+          name: "pipelineList",
+        });
+      EventBus.$emit("show-alert-popup", alertPayload);
+    },
   },
 };
 </script>
