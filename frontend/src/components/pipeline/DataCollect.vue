@@ -115,7 +115,7 @@ export default {
   },
   computed:{
     isCompleted(){
-      if(this.getPipeline.collector){
+      if(this.getPipeline.collector!= null){
         for(var nifi of this.getPipeline.collector.nifiComponents){
           if(nifi.requiredProps){
             for(var prop of nifi.requiredProps){
@@ -127,7 +127,9 @@ export default {
         }
         return true;
       }
-      return false;
+      else{
+        return false;
+      }
     }
   },
   data() {
@@ -138,7 +140,11 @@ export default {
           datas: [],
         },
       },
-      getPipeline: {},
+      getPipeline: {
+        collector: {
+          nifiComponents: null,
+        }
+      },
       selectedCollectValue: null,
       selectedSettingValue: {},
     };

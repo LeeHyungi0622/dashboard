@@ -3,16 +3,29 @@
     <div class="customTable" v-for="(content, key) in contents" :key="key">
       <div class="header fsb12">
         <p v-if="content.name">{{ content.name }}</p>
-        <button v-if="content.detail">
+        <button v-if="content.detail" @click="showTooltip(content.detail)">
           <img style="padding: 15px" src="../../assets/img/Help.svg" />
         </button>
       </div>
+      <v-snackbar v-model="flag">
+        {{showDetail}}
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="pink"
+            text
+            v-bind="attrs"
+            @click="flag = false"
+          >
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
       <div class="value">
         <!-- BASE64 DECODER -->
         <div
           class="disf"
           v-if="
-            content.name == `isBase64` &&
+          content.name == `isBase64` &&
             (tableUpdateFlag || $store.state.tableShowMode == `REGISTER`)
           "
         >
@@ -31,29 +44,23 @@
         </div>
         <!-- 수정이나 등록시 -->
         <div v-else-if="tableUpdateFlag || $store.state.tableShowMode == `REGISTER`">
-          <select
-            style="padding: 0px 20px 0px 20px"
-            v-if="Array.isArray(content.inputValue)"
-            v-model="content.inputValue"
-          >
-            <option
-              v-for="(item, key) in content.value.datas"
-              :key="key"
-              :value="item"
+          <div v-if="Array.isArray(content.defaultValue)">
+            <select
+              class="disf"
+              style="padding: 0px 20px 0px 20px"
+              v-if="content.defaultValue.length > 1"
+              v-model="content.inputValue"
             >
-              {{ item }}
-            </option>
-          </select>
-          <select
-            style="padding: 0px 20px 0px 20px"
-            v-else-if="
-              content.inputValue === 'true' || content.inputValue === 'false'
-            "
-            v-model="content.inputValue"
-          >
-            <option value="true">true</option>
-            <option value="false">false</option>
-          </select>
+              <option
+                v-for="(item, key) in content.defaultValue"
+                :key="key"
+                :value="item"
+              >
+                {{ item }}
+              </option>
+            </select>
+            <input v-else type="text" v-model="content.inputValue" />
+          </div>
           <input v-else type="text" v-model="content.inputValue" />
         </div>
         <!-- BASE64인데 수정 아닐시 -->
@@ -81,13 +88,16 @@ export default {
   },
   data() {
     return {
-      showDetail : false
+      flag : false,
+      showDetail: "",
     };
   },
+  mounted(){
+  },
   methods:{
-    showDetailPopup(){
-      this.showDetail = !this.showDetail;
-
+    showTooltip(val){
+      this.showDetail = val;
+      this.flag = true;
     }
   }
 };

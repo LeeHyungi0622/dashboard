@@ -42,7 +42,7 @@
           </div>
           <v-data-table
             :headers="headers"
-            :items="vuetifyData"
+            :items="convVuetifyData"
             :items-per-page="parseInt(perPage)"
             :page="currentPage"
             class="pipelineTable mgT12"
@@ -139,34 +139,20 @@ export default {
       })
       .catch((error) => error);
   },
-  watch:{
-    // vuetifyData(){
-    //   if(this.pipelineFilter){
-    //       this.vuetifyData = this.$store.state.tempPipelineList.filter((i) => {
-    //       return (
-    //         i[this.pipelineFilter].includes(this.pipelineFilterInput) 
-    //       );
-    //     });
-    //     }
-    //     else{
-    //       this.vuetifyData = this.$store.state.tempPipelineList;
-    //     }
-    // }
-  },
   computed: {
     totalPage() {
       return Math.floor(
-        (this.vuetifyData.length + parseInt(this.perPage)) / this.perPage
+        (this.convVuetifyData.length + parseInt(this.perPage)) / this.perPage
       );
     },
-    vuetifyData(){
+    convVuetifyData(){
       let idx = 0;
-      for(let row of this.$store.state.tempPipelineList){
+      for(let row of this.vuetifyData){
         row['idx'] = idx;
         idx ++;
       }
       if(this.pipelineFilter){
-          const data = this.$store.state.tempPipelineList.filter((i) => {
+          const data = this.vuetifyData.filter((i) => {
           return (
             i[this.pipelineFilter].includes(this.pipelineFilterInput) 
           );
@@ -177,10 +163,10 @@ export default {
           idx ++;
         }
         return data;
-        }
+      }
       else{
-          return this.$store.state.tempPipelineList;
-        }
+        return this.vuetifyData;
+      }
     }
   },
   data() {
@@ -196,7 +182,7 @@ export default {
         { text: "삭제", value: "deleteAction", sortable: false },
       ],
       pipelineListFilterList: [["전체",""], ["파이프라인 이름","name"]],
-      // vuetifyData: [],
+      vuetifyData: [],
       pipelineFilterInput: "",
       pipelineFilter: null,
       searchValue: "",
@@ -277,18 +263,6 @@ export default {
         this.pipelineFilter = event.target.value;
       }
     },
-    // actionFilter(){
-    //     if(this.pipelineFilter){
-    //       this.vuetifyData = this.$store.state.tempPipelineList.filter((i) => {
-    //       return (
-    //         i[this.pipelineFilter].includes(this.pipelineFilterInput) 
-    //       );
-    //     });
-    //     }
-    //     else{
-    //       this.vuetifyData = this.$store.state.tempPipelineList;
-    //     }
-    // }
   },
 };
 </script>
