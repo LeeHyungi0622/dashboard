@@ -40,7 +40,6 @@
           :items="filteritems"
           :items-per-page="parseInt(perPage)"
           :page="currentPage"
-          item-key="id"
           class="pipelineTable mgT12"
           :hide-default-footer="true"
           style="text-align: center"
@@ -138,7 +137,15 @@ export default {
     this.$store.state.registerPipeline = {};
     this.$store.state.completedPipeline = {};
   },
-
+  watch:{
+    filteritems(){
+      let idx = 0;
+      for(let row of this.filteritems){
+        row['idx'] = idx;
+        idx ++;
+      }
+    },
+  },
   computed: {
     totalPage() {
       return Math.floor(
@@ -219,7 +226,7 @@ export default {
     goPipelineRegister() {
       this.$store.state.tableShowMode = "REGISTER";
       this.$router.push({
-        name: "pipelineRegister",
+        path: "/pipelineRegister/new",
       });
     },
 
@@ -254,7 +261,7 @@ export default {
     },
     actionFilter(){
       this.filteritems = this.$store.state.pipelineList;
-      
+
       if(this.searchValue){
         if(this.pipelineFilter){
           this.filteritems = this.$store.state.pipelineList.filter((i) => {

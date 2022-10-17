@@ -11,7 +11,7 @@
 
       <v-list-item
         v-for="([title, path], i) in admins"
-        :class="path == activationRoutePath ? `activationNav` : ``"
+        :class="activationRoutePath.includes(path) ? `activationNav` : ``"
         :key="i"
         link
         @click="moveRoute(path)"
@@ -39,9 +39,15 @@ export default {
   }),
   methods: {
     moveRoute(path) {
+
       if (this.activationRoutePath != path) {
+      if(path == "/pipelineRegister"){
+        this.$store.state.tableShowMode = "REGISTER";
+        this.$router.push(path + "/new");
+      } else {
         this.$store.state.tableShowMode = "REGISTER";
         this.$router.push(path);
+      }
       }
     },
   },

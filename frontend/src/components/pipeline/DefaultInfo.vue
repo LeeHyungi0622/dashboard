@@ -38,6 +38,7 @@
 <script>
 import CustomTable from "../../components/pipeline/CustomTable.vue";
 import pipelineRegisterService from "../../js/api/pipelineRegister";
+import EventBus from "@/eventBus/EventBus.js";
 export default {
   props: {
     itemId: String
@@ -47,26 +48,28 @@ export default {
   },
   mounted() {
     if (this.itemId) { // 임시저장 call
-      pipelineRegisterService
-      .getPipelineDraft(this.itemId)
-      .then((res) => {
-        this.$store.state.registerPipeline = res;
-        if(this.$store.state.tableShowMode == `UPDATE`){
-          this.contents[0].inputValue = this.$store.state.completedPipeline.name;
-          this.contents[1].inputValue = this.$store.state.completedPipeline.detail;
-        }
-        else{
-          if(this.$store.state.registerPipeline.name){
-            this.contents[0].inputValue = this.$store.state.registerPipeline.name;
+      if(this.itemId != "new"){
+        pipelineRegisterService
+        .getPipelineDraft(this.itemId)
+        .then((res) => {
+          this.$store.state.registerPipeline = res;
+          if(this.$store.state.tableShowMode == `UPDATE`){
+            this.contents[0].inputValue = this.$store.state.completedPipeline.name;
+            this.contents[1].inputValue = this.$store.state.completedPipeline.detail;
           }
-          if(this.$store.state.registerPipeline.detail){
-            this.contents[1].inputValue = this.$store.state.registerPipeline.detail;
+          else{
+            if(this.$store.state.registerPipeline.name){
+              this.contents[0].inputValue = this.$store.state.registerPipeline.name;
+            }
+            if(this.$store.state.registerPipeline.detail){
+              this.contents[1].inputValue = this.$store.state.registerPipeline.detail;
+            }
           }
-        }
-      })
-      .catch((err) =>
-      console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
-      );
+        })
+        .catch((err) =>
+        console.error("임시저장 Pipeline 조회에 실패했습니다.", err)
+        );
+      }
     }
     else if(this.$store.state.registerPipeline.id){ // 최초 등록시 collector에서 이전버튼 에러 해결
       pipelineRegisterService
@@ -140,13 +143,13 @@ export default {
       pipelineRegisterService
         .craetePipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          let isFail = res.body == "PipelineName already Exists";
-          if(!isFail){
+          console.log(res.status);
+          if(res.status != 400){
             this.$store.state.registerPipeline = res.data;
             this.$store.state.showRegisterMode = 'collector';
           }
           else{
-            alert.apply("Pipeline이름이 중복됩니다.");
+            this.showInvaildPipelineName();
           }
         })
         .catch((err) => {
@@ -171,7 +174,17 @@ export default {
           console.error(err);
         });
     },
-    
+    showInvaildPipelineName(){
+      let alertPayload = {
+            title: "입력 값 오류",
+            text:
+              " 임시저장 파이프라인 목록 중  " +
+              "<br/>같은 이름의 파이프라인이 존재합니다.",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
+
+    }
   },
 };
 </script>

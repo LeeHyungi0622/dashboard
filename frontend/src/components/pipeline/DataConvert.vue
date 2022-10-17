@@ -10,6 +10,19 @@
         {{ $store.state.convertorTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
     </div>
+    <div class="customTableMainArea" v-if="$store.state.tableShowMode != `UPDATE`">
+      <div class="customTable">
+        <div class="header fsb12">
+          <p>Root Key</p>
+        </div>
+        <div class="value ">
+          <div style="padding: 0px 20px 0px 20px">
+            {{ $store.state.filterRootKey }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pipelineUpdateSubTitle fsb14">원천 데이터 변환 규칙 설정</div>
     <div class="customTableMainArea">
       <div class="customTable">
         <div class="header fsb12">
@@ -155,27 +168,32 @@ export default {
       let isOkId = false;
       if(this.convProps.length != 0 && this.convId.length != 0){
         for(let prop of this.convProps){
-          if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
-            return false;
+          if(prop.detail == "Date Format" || prop.detail == "unitCode"){
+            continue;
           }
           else{
-            if((prop.inputValue.split("\"").length - 1)%2 != 0){
+            if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
               return false;
             }
             else{
-              for(let e = 0; e < prop.inputValue.split("\"").length; e+=2){
-                if(e == 0 || e == prop.inputValue.split("\"").length-1){
-                  if(prop.inputValue.split("\"")[e] != ""){
-                    return false;
-                  }
-                }
-                else{
-                  if(prop.inputValue.split("\"")[e] != "."){
-                    return false;
-                  }
-                }
+              if((prop.inputValue.split("\"").length - 1)%2 != 0){
+                return false;
               }
-              isOkProps = true;
+              else{
+                for(let e = 0; e < prop.inputValue.split("\"").length; e+=2){
+                  if(e == 0 || e == prop.inputValue.split("\"").length-1){
+                    if(prop.inputValue.split("\"")[e] != ""){
+                      return false;
+                    }
+                  }
+                  else{
+                    if(prop.inputValue.split("\"")[e] != "."){
+                      return false;
+                    }
+                  }
+                }
+                isOkProps = true;
+              }
             }
           }
         }

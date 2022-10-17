@@ -1,9 +1,6 @@
 package io.dtonic.dhubingestmodule.pipeline.service;
 
-import com.nimbusds.oauth2.sdk.Response;
 import io.dtonic.dhubingestmodule.common.code.AdaptorName;
-import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
-import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
@@ -17,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.http11.Http11AprProtocol;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -204,8 +200,16 @@ public class PipelineDraftSVC {
                 );
                 JSONArray properties = jObj.getJSONArray("requiredProps");
                 for (idx = 0; idx < properties.length(); idx++) {
-                    if (properties.getJSONObject(idx).isNull("inputValue")) {
+                    if (
+                        properties.getJSONObject(idx).getString("name") == "level2" ||
+                        properties.getJSONObject(idx).getString("name") == "level3"
+                    ) {
                         break;
+                    } else if (
+                        properties.getJSONObject(idx).isNull("inputValue") ||
+                        properties.getJSONObject(idx).getString("inputValue") == ""
+                    ) {
+                        continue;
                     }
                 }
 

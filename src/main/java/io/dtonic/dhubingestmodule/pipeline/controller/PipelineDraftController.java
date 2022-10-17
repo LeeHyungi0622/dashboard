@@ -1,12 +1,8 @@
 package io.dtonic.dhubingestmodule.pipeline.controller;
 
-import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
-import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineDraftsListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
@@ -70,7 +66,7 @@ public class PipelineDraftController<T> {
 
     // 파이프라인 생성 중 "다음" 누를시 사용되는 API , 해당 임시파이프라인 upsert처리
     @PostMapping("/drafts")
-    public ResponseEntity upsertPipelineDrafts(
+    public ResponseEntity<PipelineVO> upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestBody String requestBody
@@ -85,9 +81,7 @@ public class PipelineDraftController<T> {
             }
         } else {
             if (
-                Boolean.FALSE.equals(
-                    pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name"))
-                ) &&
+                !pipelineDraftSVC.isExistsNameDrafts(jsonObject.getString("name")) &&
                 !jsonObject.isNull("name")
             ) {
                 return pipelineDraftSVC.createPipelineDrafts(
@@ -95,15 +89,10 @@ public class PipelineDraftController<T> {
                     jsonObject.getString("creator"),
                     jsonObject.getString("detail")
                 );
-            } else {
-                return (ResponseEntity<T>) ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("PipelineName already Exists");
-                // throw new BadRequestException(
-                //     DataCoreUiCode.ErrorCode.ALREADY_EXISTS,
-                //     "PipelineName already Exists"
-                // );
-            }
+            } else return new ResponseEntity<>(pipelineVO, HttpStatus.BAD_REQUEST);
+            // return (ResponseEntity<T>) ResponseEntity
+            //     .status(HttpStatus.BAD_REQUEST)
+            //     .body("PipelineName already Exists");
         }
         return ResponseEntity.ok().body(pipelineVO);
     }

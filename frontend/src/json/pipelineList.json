@@ -1,6 +1,6 @@
 {
   "headers": [
-    { "text": "NO", "value": "id", "sortable": false },
+    { "text": "NO", "value": "idx", "sortable": false },
     { "text": "파이프라인 이름", "value": "name", "sortable": false },
     { "text": "적재 DataSet", "value": "dataSet", "sortable": false },
     {

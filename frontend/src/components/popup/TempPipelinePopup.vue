@@ -45,7 +45,6 @@
             :items="vuetifyData"
             :items-per-page="parseInt(perPage)"
             :page="currentPage"
-            item-key="id"
             class="pipelineTable mgT12"
             :search="searchValue"
             :hide-default-footer="true"
@@ -161,15 +160,25 @@ export default {
       );
     },
     vuetifyData(){
+      let idx = 0;
+      for(let row of this.$store.state.tempPipelineList){
+        row['idx'] = idx;
+        idx ++;
+      }
       if(this.pipelineFilter){
           const data = this.$store.state.tempPipelineList.filter((i) => {
           return (
             i[this.pipelineFilter].includes(this.pipelineFilterInput) 
           );
         });
+        let idx = 0;
+        for(let row of data){
+          row['idx'] = idx;
+          idx ++;
+        }
         return data;
         }
-        else{
+      else{
           return this.$store.state.tempPipelineList;
         }
     }
@@ -177,7 +186,7 @@ export default {
   data() {
     return {
       headers: [
-        { text: "NO", value: "id", sortable: false },
+        { text: "NO", value: "idx", sortable: false },
         { text: "파이프라인 이름", value: "name", sortable: false },
         { text: "최종 수정일시", value: "modifiedAt", sortable: false },
         { text: "데이터 수집 설정", value: "isCollector", sortable: false },
@@ -235,7 +244,7 @@ export default {
       if (item == `default`) {
         this.$store.state.registerPipeline = {},
         this.$router.push({
-          name: "pipelineRegister",
+          path: "/pipelineRegister/new",
         });
       } else if (this.$route.name != "pipelineRegister") {
         this.$store.state.registerPipeline.id = item.id;

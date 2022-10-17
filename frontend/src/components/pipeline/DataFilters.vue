@@ -10,6 +10,7 @@
         {{ $store.state.filterTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
     </div>
+    
     <div v-for="(item, key) in filterData.nifiComponents" :key="key">
       <custom-table :contents="item.requiredProps" :table-update-flag="$store.state.filterTableUpdateFlag"/>
     </div>
@@ -77,20 +78,20 @@ export default {
                     return false;
                   }
                   else{
-                    for(var e = 0; e < prop.inputValue.split("\"").length; e+=2){
+                    for(let e = 0; e < prop.inputValue.split("\"").length; e++){
                       if(e == 0 || e == prop.inputValue.split("\"").length-1){
                         if(prop.inputValue.split("\"")[e] != ""){
                           return false;
                         }
                       }
-                      else{
+                      else if(e % 2 == 0){
                         if(prop.inputValue.split("\"")[e] != "."){
                           return false;
                         }
                       }
-                      return true;
                     }
                   }
+                  return true;
                 }
               }
             }
@@ -134,6 +135,7 @@ export default {
     nextRoute(){
       if(this.isVaild){
         this.checkCompletedPage();
+        
         this.$store.state.registerPipeline.filter = this.filterData;
         collectorService
           .postPipelineDraft(this.$store.state.registerPipeline)
