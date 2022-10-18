@@ -137,6 +137,7 @@ export default {
       }
     },
     nextRoute() {
+      this.$store.state.overlay = true;
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
       this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
@@ -147,6 +148,7 @@ export default {
           if(res.status != 400){
             this.$store.state.registerPipeline = res.data;
             this.$store.state.showRegisterMode = 'collector';
+            this.$store.state.overlay = false;
           }
           else{
             this.showInvaildPipelineName();
@@ -162,6 +164,7 @@ export default {
       this.$store.state.completedPipeline.detail = this.contents[1].inputValue;
     },
     saveDraft(){
+      this.$store.state.overlay = true;
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
       this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
@@ -169,6 +172,8 @@ export default {
         .craetePipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
           this.$store.state.registerPipeline = res;
+          this.$store.state.overlay = false;
+          this.showDraftCompleted();
         })
         .catch((err) => {
           console.error(err);
@@ -183,7 +188,15 @@ export default {
             url: "not Vaild",
           };
           EventBus.$emit("show-alert-popup", alertPayload);
-
+    },
+    showDraftCompleted(){
+      let alertPayload = {
+            title: "임시저장",
+            text:
+              "임시저장 성공",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
     }
   },
 };

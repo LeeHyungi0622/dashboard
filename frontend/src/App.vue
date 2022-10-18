@@ -5,7 +5,7 @@
   >
     <v-system-bar
       app
-      style="
+      style=" 
         height: 7%; 
         background-color: #ffff; 
         border-bottom: 1px solid #2b4f8c;
@@ -55,27 +55,11 @@
       <v-container fluid fill-height style="padding: 0">
         <v-layout justify-center style="display: block">
           <router-view :key="$route.fullPath"></router-view>
-          <v-footer
-          height="150"
-          color="white"
-          app
-          inset
-          >
-          <img src="./assets/img/DHub.svg" style="height: 40px;" />
-          <span style="padding: 20px">
-            디토닉㈜
-            <br/> 
-            대표이사 : 전용주  |  주소 : 경기도 안양시 동안구 시민대로 248번길 25(관양동, 경기창조산업안양센터)
-            <br/> 
-            사업자등록번호 : 264-81-37380
-            <br/> 
-            대표전화 : 031-689-4770     |     팩스 : 031-422-1161
-            <br/> 
-            COPYRIGHT &copy; Dtonic Dtonic CO. LTD. All RIGHTS RESERVED.</span>
-        </v-footer>
+
         </v-layout>
       </v-container>
     </v-main>
+    <Footer/>
     <confirm-popup
       v-if="confirmShowFlag"
       :contents="confirmContent"
@@ -97,6 +81,7 @@
       @close-temp-pipeline-popup="closeTempPipelinePopup"
       :contents="tempPipelineContent"
     ></temp-pipeline-popup>
+    <Loading />
   </v-app>
 </template>
 
@@ -110,6 +95,8 @@ import UserInfo from "./js/api/user.js";
 import PipelineList from "./js/api/pipelineList.js";
 import TempPipelinePopup from "./components/popup/TempPipelinePopup.vue";
 import tempPipeline from "./json/tempPipeline.json";
+import Loading from "./components/loading/loadingBar.vue";
+import Footer from "./components/footer/footer.vue";
 
 export default {
   components: {
@@ -117,7 +104,9 @@ export default {
     UserAlertPopup,
     ConfirmPopup,
     AlertPopup,
-    TempPipelinePopup
+    TempPipelinePopup,
+    Loading,
+    Footer
   },
   computed: {
     activationRoutePath() {
@@ -164,7 +153,8 @@ export default {
       menu: [
         ["사용자 정보", "userInfo"],
         ["로그아웃", "logout"]
-      ]
+      ],
+      overlay: false,
     };
   },
   created() {
@@ -191,7 +181,12 @@ export default {
   methods: {
     closeConfirmPopup: function (val) {
       if(val.url == "update"){
-        PipelineList.putPipelineStatus(val.id, val.body)
+        if(val.body == 'RUN'){
+          PipelineList.putPipelineStatus(val.id, 'STOPPING')
+        }
+        else{
+          PipelineList.putPipelineStatus(val.id, 'STARTING')
+        }
       }
       else if(val.url == "deleteComplete"){
         PipelineList.deletePipeline(val.id);
@@ -204,6 +199,7 @@ export default {
             PipelineList.getTempPipelineList()
             .then((res) => {
               this.$store.state.tempPipelineList = res;
+              this.tempPipelineShowFlag = false;
             })
             .catch((error) => error);
           }

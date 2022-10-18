@@ -387,6 +387,7 @@ export default {
           });
     },
     nextRoute(){
+      this.$store.state.overlay = true;
       if(this.isVaild){
       this.convertToProps();
       this.convertToId();
@@ -402,6 +403,7 @@ export default {
         .then((res) => {
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'complete';
+          this.$store.state.overlay = false;
         })
         .catch((err) => {
           console.error(err);
@@ -415,10 +417,12 @@ export default {
             "<br/>구분자 혹은 입력 값을 확인해 주십시오.",
           url: "not Vaild",
         };
+        this.$store.state.overlay = false;
         EventBus.$emit("show-alert-popup", alertPayload);
       }
     },
     beforeRoute(){
+      this.$store.state.overlay = true;
       if(this.rawDataSetProps.requiredProps.length != 0){
         this.convertToProps();
         this.convertToId();
@@ -434,12 +438,14 @@ export default {
         .then((res) => {
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'filter';
+          this.$store.state.overlay = false;
         })
         .catch((err) => {
           console.error(err);
         });
     },
     saveDraft(){
+      this.$store.state.overlay = true;
       if(this.rawDataSetProps.requiredProps.length != 0){
         this.convertToProps();
         this.convertToId();
@@ -454,10 +460,21 @@ export default {
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
           this.$store.state.registerPipeline = res;
+          this.$store.state.overlay = false;
+          this.showDraftCompleted();
         })
         .catch((err) => {
           console.error(err);
         });
+    },
+    showDraftCompleted(){
+      let alertPayload = {
+            title: "임시저장",
+            text:
+              "임시저장 성공",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
     }
   },
 };

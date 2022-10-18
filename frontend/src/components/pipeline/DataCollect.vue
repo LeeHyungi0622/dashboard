@@ -90,6 +90,7 @@
 <script>
 import CustomTable from "../../components/pipeline/CustomTable.vue";
 import collectorService from "../../js/api/collector";
+import EventBus from "@/eventBus/EventBus.js";
 export default {
   components: {
     CustomTable,
@@ -151,10 +152,12 @@ export default {
   },
   methods: {
     getCollector() {
+      this.$store.state.overlay = true;
       collectorService
         .getCollectorList()
         .then((res) => {
           this.collectorContents.value.datas = res;
+          this.$store.state.overlay = false;
         })
         .catch((err) => {
           console.log("collector 목록의 조회에 실패했습니다.", err);
@@ -168,6 +171,7 @@ export default {
       }
     },
     completedContents(val){
+      this.$store.state.overlay = true;
       collectorService
           .getPipelineComplete({
             adaptorName: val,
@@ -176,12 +180,14 @@ export default {
           })
           .then((res) => {
             this.getPipeline = res;
+            this.$store.state.overlay = false;
           })
           .catch((err) => {
             console.error(err);
           });
     },
     registerContents(val){
+      this.$store.state.overlay = true;
       collectorService
           .getPipelineDraft({
             adaptorName: val,
@@ -190,6 +196,7 @@ export default {
           })
           .then((res) => {
             this.getPipeline = res;
+            this.$store.state.overlay = false;
           })
           .catch((error) => {
             console.error(error);
@@ -200,39 +207,55 @@ export default {
       this.$store.state.completedPipeline = this.getPipeline;
     },
     nextRoute(){
+      this.$store.state.overlay = true;
       this.$store.state.registerPipeline= this.getPipeline;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'filter';
+          this.$store.state.overlay = false;
         })
         .catch((err) => {
           console.error(err);
         });
     },
     beforeRoute(){
+      this.$store.state.overlay = true;
       this.$store.state.registerPipeline = this.getPipeline;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'info';
+          this.$store.state.overlay = false;
         })
         .catch((err) => {
           console.error(err);
         });
     },
     saveDraft(){
+      this.$store.state.overlay = true;
       this.$store.state.registerPipeline = this.getPipeline;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
           this.$store.state.registerPipeline = res;
+          this.$store.state.overlay = false;
+          this.showDraftCompleted();
         })
         .catch((err) => {
           console.error(err);
         });
+    },
+    showDraftCompleted(){
+      let alertPayload = {
+            title: "임시저장",
+            text:
+              "임시저장 성공",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
     }
   },
 };

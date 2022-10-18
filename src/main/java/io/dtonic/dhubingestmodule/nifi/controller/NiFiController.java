@@ -145,7 +145,9 @@ public class NiFiController {
         resNifi.add(ngsiLdNiFi);
         resNifi.add(ngsiLdFormater);
         resNifi.add(convertType);
-        resNifi.add(dateFormater);
+        if (dateFormater != null) {
+            resNifi.add(dateFormater);
+        }
         result.setNifiComponents(resNifi);
         result.setName(convertor.getConverter().getName());
 
@@ -365,6 +367,7 @@ public class NiFiController {
         if (NiFiComponents.size() < 1) {
             log.error("Empty NiFi Components In Request Pipeline");
         }
+        log.info("{}", NiFiComponents);
         for (NiFiComponentVO component : NiFiComponents) {
             if (
                 component.getType().equals("processor") || component.getType().equals("Processor")
@@ -377,7 +380,7 @@ public class NiFiController {
                 // Update Controllers Properties in Adaptor
                 niFiRestSVC.updateControllersInAdaptor(processorGroupId, component);
             } else {
-                log.error("Not Found NiFi Component Type");
+                log.error("{} Not Found NiFi Component Type");
             }
         }
     }
@@ -416,8 +419,15 @@ public class NiFiController {
         try {
             niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
             String processGroupId = createPipeline(pipelineVO);
-            deletePipeline(pipelineVO.getProcessorGroupId());
-            return processGroupId;
+            if (deletePipeline(pipelineVO.getProcessorGroupId())) {
+                return processGroupId;
+            } else {
+                log.error(
+                    "Fail to delete Pipeline in NiFi : processGroupId = [{}]",
+                    pipelineVO.getProcessorGroupId()
+                );
+                return null;
+            }
         } catch (Exception e) {
             log.error("Fail to update Pipeline in NiFi : processGroupId = [{}]", pipelineVO, e);
             return null;
@@ -452,7 +462,6 @@ public class NiFiController {
         // Check Token Expired
         niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
 
-        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
         if (niFiRestSVC.stopProcessorGroup(processorGroupId)) {
             log.info("Success Stop Pipeline : Processor Group ID = {}", processorGroupId);
             return true;

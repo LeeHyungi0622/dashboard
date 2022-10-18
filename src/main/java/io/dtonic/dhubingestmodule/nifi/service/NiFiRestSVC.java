@@ -30,6 +30,7 @@ import org.apache.nifi.web.api.entity.FunnelEntity;
 import org.apache.nifi.web.api.entity.InstantiateTemplateRequestEntity;
 import org.apache.nifi.web.api.entity.PortEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupEntity;
+import org.apache.nifi.web.api.entity.ProcessGroupFlowEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupStatusEntity;
 import org.apache.nifi.web.api.entity.ProcessorEntity;
 import org.apache.nifi.web.api.entity.ProcessorRunStatusEntity;
@@ -331,52 +332,46 @@ public class NiFiRestSVC {
         paths.add("flow");
         paths.add("process-groups");
         paths.add(processorGroupId);
-        paths.add("status");
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json");
 
-        // Map<String, Object> params = new HashMap<>();
-        // params.put("includeAncestorGroups", false);
-        // params.put("includeDescendantGroups", true);
+        Map<String, Object> params = new HashMap<>();
+        params.put("uiOnly", true);
 
         ResponseEntity<String> result = dataCoreRestSVC.get(
             niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
             paths,
             headers,
             null,
-            null,
+            params,
             niFiClientEntity.getAccessToken(),
             String.class
         );
 
-        ProcessGroupStatusEntity resultEntity = nifiObjectMapper.readValue(
+        ProcessGroupFlowEntity resultEntity = nifiObjectMapper.readValue(
             result.getBody(),
-            ProcessGroupStatusEntity.class
+            ProcessGroupFlowEntity.class
         );
+        log.info("{}", resultEntity);
         return getNumberOfProcessorStatus(resultEntity);
     }
 
     protected Map<String, Integer> getNumberOfProcessorStatus(
-        ProcessGroupStatusEntity processGroupStatus
+        ProcessGroupFlowEntity processGroupStatus
     ) {
         Map<String, Integer> result = new HashMap<>();
         Integer runCnt = 0;
         Integer stopCnt = 0;
         Integer invaildCnt = 0;
         try {
-            for (ProcessorStatusSnapshotEntity processorStatus : processGroupStatus
-                .getProcessGroupStatus()
-                .getAggregateSnapshot()
-                .getProcessorStatusSnapshots()) {
-                String status = processorStatus.getProcessorStatusSnapshot().getRunStatus();
-                if (status.equals("Stopped")) {
-                    stopCnt++;
-                } else if (status.equals("Running")) {
-                    runCnt++;
-                } else {
-                    invaildCnt++;
-                }
+            for (ProcessGroupEntity processorStatus : processGroupStatus
+                .getProcessGroupFlow()
+                .getFlow()
+                .getProcessGroups()) {
+                runCnt += processorStatus.getRunningCount();
+                stopCnt += processorStatus.getStoppedCount();
+                invaildCnt += processorStatus.getInvalidCount();
             }
             result.put("Running", runCnt);
             result.put("Stopped", stopCnt);

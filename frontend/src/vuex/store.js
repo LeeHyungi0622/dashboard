@@ -31,6 +31,7 @@ export const store = new Vuex.Store({
       filterRootKey: "",
       convertDataSet: "",
       registerPipeId: "",
+      overlay: false
     };
   },
   mutations: {

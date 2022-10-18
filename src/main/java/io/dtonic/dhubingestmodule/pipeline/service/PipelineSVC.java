@@ -18,6 +18,7 @@ import io.dtonic.dhubingestmodule.util.ValidateUtil;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PipelineSVC {
@@ -44,7 +46,7 @@ public class PipelineSVC {
     @Transactional
     public ResponseEntity createPipeline(Integer id, PipelineVO pipelineVO) {
         String processorGroupId = niFiController.createPipeline(pipelineVO);
-        if (!ValidateUtil.isStringEmpty(processorGroupId)) {
+        if (processorGroupId != null) {
             JSONObject jsonObject = new JSONObject(pipelineVO);
             int result = pipelineMapper.createPipeline(
                 jsonObject.getString("creator"),
@@ -87,6 +89,7 @@ public class PipelineSVC {
                     Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
                         pipeline.getProcessorGroupId()
                     );
+                    log.info("{}", nifiStatus);
                     if (!ValidateUtil.isMapEmpty(nifiStatus)) {
                         String curStatus = pipelineVO.getStatus(); // 현재 DB status값
                         if (
@@ -105,6 +108,7 @@ public class PipelineSVC {
                                 nifiStatus.get(NifiStatusCode.NIFI_STATUS_STOPPED.getCode()) == 0 &&
                                 nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0
                             ) {
+                                log.info("{}", PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
                                 pipeline.setStatus(
                                     PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()
                                 );
@@ -157,6 +161,8 @@ public class PipelineSVC {
             Nifiresult = niFiController.runPipeline(pipelineVO.getProcessorGroupId());
         } else if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())) {
             Nifiresult = niFiController.stopPipeline(pipelineVO.getProcessorGroupId());
+        } else {
+            Nifiresult = true;
         }
         if (Nifiresult) {
             int result = pipelineMapper.changePipelineStatus(id, status);
@@ -164,10 +170,6 @@ public class PipelineSVC {
                 return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Change Pipeline Status Error in DB");
-                // throw new BadRequestException(
-                //     DataCoreUiCode.ErrorCode.BAD_REQUEST,
-                //     "Change Pipeline Status Error in DB"
-                // );
             } else {
                 return ResponseEntity.ok().build();
             }
@@ -185,10 +187,6 @@ public class PipelineSVC {
                 return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Delete Pipeline Error in DB");
-                // throw new BadRequestException(
-                //     DataCoreUiCode.ErrorCode.BAD_REQUEST,
-                //     "Delete Pipeline Error in DB"
-                // );
             } else {
                 return ResponseEntity.ok().build();
             }
@@ -200,7 +198,7 @@ public class PipelineSVC {
     @Transactional
     public ResponseEntity updatePipeline(Integer id, PipelineVO pipelineVO) {
         String processorGroupId = niFiController.updatePipeline(pipelineVO);
-        if (ValidateUtil.isStringEmpty(processorGroupId)) {
+        if (processorGroupId != null) {
             JSONObject jsonObject = new JSONObject(pipelineVO);
             int result = pipelineMapper.updatePipeline(
                 jsonObject.getInt("id"),
@@ -213,13 +211,9 @@ public class PipelineSVC {
                 jsonObject.getJSONObject(AdaptorName.ADAPTOR_NAME_FILTER.getCode()).toString(),
                 jsonObject.getJSONObject(AdaptorName.ADAPTOR_NAME_CONVERTER.getCode()).toString()
             );
-
+            log.debug("result : {}", result);
             if (result != 1) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Update Pipeline Error");
-                // throw new BadRequestException(
-                //     DataCoreUiCode.ErrorCode.CREATE_ENTITY_TABLE_ERROR,
-                //     "Update Pipeline Error"
-                // );
             } else {
                 return ResponseEntity.ok().build();
             }

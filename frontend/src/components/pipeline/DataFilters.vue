@@ -133,6 +133,7 @@ export default {
       }
     },
     nextRoute(){
+      this.$store.state.overlay = true;
       if(this.isVaild){
         this.checkCompletedPage();
         
@@ -142,6 +143,7 @@ export default {
           .then((res) => {
             this.$store.state.registerPipeline = res;
             this.$store.state.showRegisterMode = 'convertor';
+            this.$store.state.overlay = false;
           })
           .catch((err) => {
             console.error(err);
@@ -155,27 +157,33 @@ export default {
             "<br/>구분자 혹은 입력 값을 확인해 주십시오.",
           url: "not Vaild",
         };
+        this.$store.state.overlay = false;
         EventBus.$emit("show-alert-popup", alertPayload);
       }
     },
     beforeRoute(){
+      this.$store.state.overlay = true;
       this.$store.state.registerPipeline.filter = this.filterData;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
           this.$store.state.registerPipeline = res;
           this.$store.state.showRegisterMode = 'collector';
+          this.$store.state.overlay = false;
         })
         .catch((err) => {
           console.error(err);
         });
     },
     saveDraft(){
+      this.$store.state.overlay = true;
       this.$store.state.registerPipeline.filter = this.filterData;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
           this.$store.state.registerPipeline = res;
+          this.$store.state.overlay = false;
+          this.showDraftCompleted();
         })
         .catch((err) => {
           console.error(err);
@@ -195,7 +203,15 @@ export default {
           }
         }
     },
-
+    showDraftCompleted(){
+      let alertPayload = {
+            title: "임시저장",
+            text:
+              "임시저장 성공",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
+    }
   }
 };
 </script>

@@ -88,10 +88,6 @@ public class PipelineController<T> {
         // validation check
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist ");
-            // throw new BadRequestException(
-            //     DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
-            //     "Pipeline is not Exist "
-            // );
         } else {
             pipelineSVC.updatePipeline(id, pipelineVO);
             return ResponseEntity.ok().build();

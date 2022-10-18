@@ -48,6 +48,7 @@
         <complete-pipe
         v-if="$store.state.showRegisterMode == 'complete'"/>
     </div>
+
   </div>
 </template>
 
@@ -68,6 +69,7 @@ export default {
   },
   data() {
     return {
+      overlay: false,
     };
   },
   props: {
@@ -98,6 +100,9 @@ export default {
       };
       EventBus.$emit("show-temp-pipeline-popup", alertPayload);
     },
+    showOverlay(val){
+      this.overlay = val;
+    }
   },
 };
 </script>

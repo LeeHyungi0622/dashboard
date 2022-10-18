@@ -7,19 +7,7 @@
           <img style="padding: 15px" src="../../assets/img/Help.svg" />
         </button>
       </div>
-      <v-snackbar v-model="flag">
-        {{showDetail}}
-        <template v-slot:action="{ attrs }">
-          <v-btn
-            color="pink"
-            text
-            v-bind="attrs"
-            @click="flag = false"
-          >
-            Close
-          </v-btn>
-        </template>
-      </v-snackbar>
+      
       <div class="value">
         <!-- BASE64 DECODER -->
         <div
@@ -77,6 +65,19 @@
         <div style="padding-left: 20px" v-else>{{ content.inputValue }}</div>
       </div>
     </div>
+    <v-snackbar v-model="flag" light>
+      {{showDetail}}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="pink"
+          text
+          v-bind="attrs"
+          @click="flag = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 

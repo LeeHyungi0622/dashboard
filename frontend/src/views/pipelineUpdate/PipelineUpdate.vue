@@ -26,6 +26,7 @@
         <button class="pipelineUpdateButton mgL12" @click="updatePipeline()">저장</button>
       </div>
     </div>
+    <Footer/>
   </div>
 </template>
 <script>
@@ -78,11 +79,13 @@ export default {
       });
     },
     updatePipeline(){
+      this.$store.state.overlay = true;
       pipelineUpdateService
       .updateConpletedPipeline(this.$store.state.completedPipeline.id,this.$store.state.completedPipeline)
       .catch((err) => {
         console.log("Update Pipeline에 실패했습니다.", err);
       });
+      this.$store.state.overlay = false;
       let alertPayload = {
         title: "저장 완료",
         text:

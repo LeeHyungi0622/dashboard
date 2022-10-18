@@ -54,15 +54,13 @@
                   @click="
                     pipelineStatusAlertShows(
                       item.name,
-                      item.status.toUpperCase() == 'RUNNING'
-                        ? 'STOPING'
-                        : 'STARTING',
+                      item.status.toUpperCase(),
                       item.id
                     )
                   "
                   :disabled="item.status.toUpperCase().includes('ING')"
                 >
-                  {{ item.status }}
+                  {{ showStatusBtn(item.status.toUpperCase()) }}
                 </button>
               </div>
             </div>
@@ -119,9 +117,9 @@ import pipelineListService from "../../js/api/pipelineList";
 import EventBus from "@/eventBus/EventBus.js";
 import pipelineListData from "../../json/pipelineList.json";
 import tempPipeline from "../../json/tempPipeline.json";
-
 export default {
   mounted() {
+    this.$store.state.overlay = true;
     console.log(this.$ws);
     this.connect();
     pipelineListService
@@ -136,6 +134,7 @@ export default {
     this.$store.state.tableShowMode = "";
     this.$store.state.registerPipeline = {};
     this.$store.state.completedPipeline = {};
+    this.$store.state.overlay = false;
   },
   watch:{
     filteritems(){
@@ -152,6 +151,7 @@ export default {
         (this.filteritems.length + parseInt(this.perPage)) / this.perPage
       );
     },
+
   },
   data() {
     return {
@@ -173,7 +173,23 @@ export default {
     getpipelineList() {
       pipelineListService.getPipelineList();
     },
-
+    showStatusBtn(status){
+      if(status == 'RUN'){
+        return '중지';
+      }
+      else if(status == 'STOPPED'){
+        return '실행';
+      }
+      else if(status == 'STOPPING'){
+        return '중지 중';
+      }
+      else if(status == 'STARTING'){
+        return '실행 중';
+      }
+      else {
+        return '';
+      }
+    },
     firstPage() {
       this.currentPage = 1;
     },
@@ -193,7 +209,7 @@ export default {
           name +
           " 파이프라인의 " +
           "<br/>실행 상태가 " +
-          status +
+          this.showStatusBtn(status) +
           "로 변경됩니다." +
           "<br/> <br/> 계속 진행하시겠습니까?",
         id: id,
@@ -239,6 +255,7 @@ export default {
     getMessage() {
       this.$ws.onmessage = ({ data }) => {
         this.$store.state.pipelineList = JSON.parse(data);
+        this.filteritems = JSON.parse(data);
         console.log("메세지 수신", JSON.parse(data));
       };
     },
