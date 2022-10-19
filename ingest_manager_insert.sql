@@ -45,7 +45,7 @@ INSERT INTO ingest_manager.properties (adaptor_id, property_name, detail, is_req
 INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELECT id FROM ingest_manager.properties ORDER BY ID DESC LIMIT 1), '5 sec' );
 INSERT INTO ingest_manager.properties (adaptor_id, property_name, detail, is_required, adaptor_name) values((SELECT id FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), 'Read Timeout', 'Max wait time for response from remote service.', true, 'REST API');
 INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELECT id FROM ingest_manager.properties ORDER BY ID DESC LIMIT 1), '15 sec' );
-INSERT INTO ingest_manager.properties (adaptor_id, property_name, detail, is_required, adaptor_name) values((SELECT id FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), 'Idle Timeout', 'Max idle time before closing connection to the remote service.', true, 'REST API');
+INSERT INTO ingest_manager.properties (adaptor_id, property_name, detail, is_required, adaptor_name) values((SELECT id FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), 'idle-timeout', 'Max idle time before closing connection to the remote service.', true, 'REST API');
 INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELECT id FROM ingest_manager.properties ORDER BY ID DESC LIMIT 1), '5 mins' );
 INSERT INTO ingest_manager.properties (adaptor_id, property_name, detail, is_required, adaptor_name) values((SELECT id FROM ingest_manager.adaptor ORDER BY ID DESC LIMIT 1), 'max-idle-connections', 'Max number of idle connections to keep open.', true, 'REST API');
 INSERT INTO ingest_manager.properties_value (property_id, value) values ( (SELECT id FROM ingest_manager.properties ORDER BY ID DESC LIMIT 1), '5' );
