@@ -31,7 +31,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/pipelineUpdate",
+    path: "/pipelineUpdate/:itemId",
     name: "pipelineUpdate",
     component: pipelineUpdate,
     props: true,

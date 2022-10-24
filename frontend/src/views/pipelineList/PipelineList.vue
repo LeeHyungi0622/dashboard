@@ -236,8 +236,8 @@ export default {
     goPipelineDetailEdit(item) {
       this.$store.state.completedPlId = item.id;
       this.$router.push({
-        name: "pipelineUpdate",
-      });
+          path: "pipelineUpdate/" + item.id,
+        });
     },
     goPipelineRegister() {
       this.$store.state.tableShowMode = "REGISTER";
@@ -256,7 +256,6 @@ export default {
       this.$ws.onmessage = ({ data }) => {
         this.$store.state.pipelineList = JSON.parse(data);
         this.filteritems = JSON.parse(data);
-        console.log("메세지 수신", JSON.parse(data));
       };
     },
     disconnect() {

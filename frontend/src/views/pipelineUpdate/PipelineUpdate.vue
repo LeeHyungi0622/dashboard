@@ -47,7 +47,7 @@ export default {
   created(){
     this.$store.state.tableShowMode = "UPDATE";
     pipelineUpdateService
-      .getPipelineListById(this.$store.state.completedPlId)
+      .getPipelineListById(this.itemId)
       .then((res) => {
         this.$store.state.completedPipeline = res;
       })
@@ -64,6 +64,9 @@ export default {
     return {
       selectedDataSet: "",
     };
+  },
+  props: {
+    itemId: String
   },
   methods: {
     selectedDataSetFunction(value) {
