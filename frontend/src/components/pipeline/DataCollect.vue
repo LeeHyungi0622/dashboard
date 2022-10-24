@@ -60,11 +60,41 @@
         </div>
       </div>
     </div>
-
+    <div class="pipelineUpdateMainTitle fsb16" style="padding: 20px 20px 0px 0px" v-if="selectedCollectValue !='REST Server'">수집 주기 설정</div>
+    <div class="customTableMainArea" v-if="selectedCollectValue !='REST Server'">
+      <div class="customTable">
+        <div class="header fsb12">
+          <p>모드 선택</p>
+        </div>
+        <div class="value">
+          <div>
+            <select
+              style="padding: 0px 20px 0px 20px"
+              v-model="schedulingMode"
+              :disabled="!$store.state.collectorTableUpdateFlag"
+            >
+            <option value="Timer driven">Timer driven</option>
+            <option value="CRON driven">CRON driven</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="customTable"  v-if="schedulingMode">
+        <div class="header fsb12">
+          <p>상세 설정</p>
+        </div>
+        <div class="value">
+          <div>
+            <input type="text" v-model="schedulingDetail" />
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="pipelineUpdateSubTitle fsb14">필수 설정 값</div>
     <custom-table 
     :contents="selectedSettingValue.requiredProps" 
     :table-update-flag="$store.state.collectorTableUpdateFlag"/>
+    
     <div class="pipelineUpdateSubTitle fsb14">선택 설정 값</div>
     <custom-table 
     :contents="selectedSettingValue.optionalProps" 
@@ -91,6 +121,8 @@
 import CustomTable from "../../components/pipeline/CustomTable.vue";
 import collectorService from "../../js/api/collector";
 import EventBus from "@/eventBus/EventBus.js";
+import CronVaildator from 'cron-expression-validator';
+
 export default {
   components: {
     CustomTable,
@@ -101,16 +133,52 @@ export default {
       this.getPipeline = this.$store.state.completedPipeline;
       this.selectedCollectValue = this.getPipeline.collector.name;
       this.selectedSettingValue = this.getPipeline.collector.nifiComponents[0];
+      for(let nifi of this.getPipeline.collector.nifiComponents){
+        if(nifi.requiredProps){
+          for(let prop of nifi.requiredProps){
+            if(prop.name == "Scheduling"){
+                this.schedulingMode = prop.detail;
+                this.schedulingDetail = prop.inputValue;
+            }
+          }
+        }
+      }
     }
     else{
       this.getPipeline = this.$store.state.registerPipeline;
       if (this.getPipeline.collector != null) {
         this.selectedCollectValue = this.getPipeline.collector.name;
         this.selectedSettingValue = this.getPipeline.collector.nifiComponents[0];
+        for(let nifi of this.getPipeline.collector.nifiComponents){
+        if(nifi.requiredProps){
+          for(let prop of nifi.requiredProps){
+            if(prop.name == "Scheduling"){
+                this.schedulingMode = prop.detail;
+                this.schedulingDetail = prop.inputValue;
+            }
+          }
+        }
+      }
       }
       else{
         this.selectedCollectValue = {};
         this.selectedSettingValue = {};
+      }
+    }
+  },
+  watch:{
+    schedulingDetail(){
+        if(this.getPipeline.collector!= null){
+          for(var nifi of this.getPipeline.collector.nifiComponents){
+            if(nifi.requiredProps){
+              for(var prop of nifi.requiredProps){
+                if(prop.name == "Scheduling"){                  
+                  prop.detail = this.schedulingMode;
+                  prop.inputValue = this.schedulingDetail;
+                }
+              }
+            }
+          }
       }
     }
   },
@@ -131,6 +199,15 @@ export default {
       else{
         return false;
       }
+    },
+    isSchedulingVaild(){
+      if(this.schedulingMode == "Timer driven"){
+        return this.schedulingDetail.includes("sec");
+      }
+      else if(this.schedulingMode == "CRON driven"){
+        return CronVaildator.isValidCronExpression(this.schedulingDetail);
+      }
+      else return false;
     }
   },
   data() {
@@ -148,6 +225,8 @@ export default {
       },
       selectedCollectValue: null,
       selectedSettingValue: {},
+      schedulingMode: "",
+      schedulingDetail: "",
     };
   },
   methods: {
@@ -208,17 +287,32 @@ export default {
     },
     nextRoute(){
       this.$store.state.overlay = true;
-      this.$store.state.registerPipeline= this.getPipeline;
-      collectorService
-        .postPipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          this.$store.state.registerPipeline = res;
-          this.$store.state.showRegisterMode = 'filter';
-          this.$store.state.overlay = false;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      if(this.isSchedulingVaild){
+        this.$store.state.registerPipeline= this.getPipeline;
+        collectorService
+          .postPipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.$store.state.showRegisterMode = 'filter';
+            this.$store.state.overlay = false;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+      else {
+        let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 입력 값에 오류가 있습니다. " +
+            "<br/>수집 주기 설정 입력 값을 확인해 주십시오." +
+            "<br/>Timer Input Example : OOO sec" +
+            "<br/>CRON Input Example : * * * * * ? *",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+      }
     },
     beforeRoute(){
       this.$store.state.overlay = true;
@@ -256,7 +350,7 @@ export default {
             url: "not Vaild",
           };
           EventBus.$emit("show-alert-popup", alertPayload);
-    }
+    },
   },
 };
 </script>
