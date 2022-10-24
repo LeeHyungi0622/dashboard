@@ -10,10 +10,15 @@
         {{ $store.state.filterTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
     </div>
-    
+    <div class="pipelineUpdateSubTitle fsb14">Base64 Decoder</div>
     <div v-for="(item, key) in filterData.nifiComponents" :key="key">
-      <custom-table :contents="item.requiredProps" :table-update-flag="$store.state.filterTableUpdateFlag"/>
+      <custom-table v-if="item.name == 'Base64Decoder'" :contents="item.requiredProps" :table-update-flag="$store.state.filterTableUpdateFlag"/>
     </div>
+    <div class="pipelineUpdateSubTitle fsb14">Root Key Finder</div>
+    <div v-for="(item, key) in filterData.nifiComponents" :key="key">
+      <custom-table v-if="item.name == 'RootKeyFinder'" :contents="item.requiredProps" :table-update-flag="$store.state.filterTableUpdateFlag"/>
+    </div>
+    
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
       class="mgT12"
@@ -70,6 +75,9 @@ export default {
           if(nifi.requiredProps){
             for(let prop of nifi.requiredProps){
               if(prop.name == "root_key"){
+                if(prop.inputValue == 'origin') {
+                  return true;
+                }
                 if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
                   return false;
                 }

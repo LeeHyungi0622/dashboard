@@ -1,7 +1,13 @@
 <template>
   <div class="customTableMainArea">
     <div class="customTable" v-for="(content, key) in contents" :key="key">
-      <div class="header fsb12">
+      <div class="header fsb12" v-if="content.name == 'isBase64'">
+        <p> Base64Decoder 설정 </p>
+      </div>
+      <div class="header fsb12" v-else-if="content.name == 'root_key'">
+        <p> Root Key 설정 </p>
+      </div>
+      <div class="header fsb12" v-else>
         <p v-if="content.name">{{ content.name }}</p>
         <button v-if="content.detail" @click="showTooltip(content.detail)">
           <img style="padding: 15px" src="../../assets/img/Help.svg" />
@@ -35,7 +41,7 @@
           <div v-if="Array.isArray(content.defaultValue)">
             <select
               class="disf"
-              style="padding: 0px 20px 0px 20px"
+              style="padding: 0px 20px 0px 20px;"
               v-if="content.defaultValue.length > 1"
               v-model="content.inputValue"
             >
