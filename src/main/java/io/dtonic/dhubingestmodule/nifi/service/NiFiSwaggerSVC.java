@@ -288,13 +288,14 @@ public class NiFiSwaggerSVC {
         for (PropertyVO property : properies) {
             if (property.getName().equals("Scheduling")) {
                 if (property.getDetail().equals("Timer driven")) {
-                    processor.getComponent().getConfig().setSchedulingStrategy("Timer driven");
+                    processor.getComponent().getConfig().setSchedulingStrategy("TIMER_DRIVEN");
                     processor
                         .getComponent()
                         .getConfig()
                         .setSchedulingPeriod(property.getInputValue());
+                    log.debug("{}", processor);
                 } else if (property.getDetail().equals("CRON driven")) {
-                    processor.getComponent().getConfig().setSchedulingStrategy("CRON driven");
+                    processor.getComponent().getConfig().setSchedulingStrategy("CRON_DRIVEN");
                     processor
                         .getComponent()
                         .getConfig()
