@@ -73,11 +73,10 @@ public class PipelineDraftController<T> {
     ) {
         JSONObject jsonObject = new JSONObject(requestBody);
         PipelineVO pipelineVO = new PipelineVO();
-        ResponseEntity result;
         if (!jsonObject.isNull("id")) {
             if (Boolean.TRUE.equals(pipelineDraftSVC.isExistsDrafts(jsonObject.getInt("id")))) {
-                result = pipelineDraftSVC.updatePipelineDrafts(jsonObject);
-                return result;
+                PipelineVO result = pipelineDraftSVC.updatePipelineDrafts(jsonObject);
+                return ResponseEntity.ok().body(result);
             }
         } else {
             if (

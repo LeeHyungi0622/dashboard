@@ -139,18 +139,18 @@ export default {
     nextRoute() {
       this.$store.state.overlay = true;
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
-      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+      this.$store.state.registerPipeline.creator = localStorage.getItem("userId");
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
       pipelineRegisterService
         .craetePipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          console.log(res.status);
           if(res.status != 400){
             this.$store.state.registerPipeline = res.data;
             this.$store.state.showRegisterMode = 'collector';
             this.$store.state.overlay = false;
           }
           else{
+            this.$store.state.overlay = false;
             this.showInvaildPipelineName();
           }
         })
@@ -166,12 +166,12 @@ export default {
     saveDraft(){
       this.$store.state.overlay = true;
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
-      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+      this.$store.state.registerPipeline.creator = localStorage.getItem("userId");
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
       pipelineRegisterService
         .craetePipelineDraft(this.$store.state.registerPipeline)
         .then((res) => {
-          this.$store.state.registerPipeline = res;
+          this.$store.state.registerPipeline = res.data;
           this.$store.state.overlay = false;
           this.showDraftCompleted();
         })

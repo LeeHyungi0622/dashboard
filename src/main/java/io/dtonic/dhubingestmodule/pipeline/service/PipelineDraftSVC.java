@@ -164,12 +164,12 @@ public class PipelineDraftSVC {
     }
 
     @Transactional
-    public ResponseEntity updatePipelineDrafts(JSONObject jsonObject) {
+    public PipelineVO updatePipelineDrafts(JSONObject jsonObject) {
         parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_COLLECTOR.getCode());
         parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_FILTER.getCode());
         parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_CONVERTER.getCode());
         PipelineVO pipeline = (PipelineVO) getPipelineDrafts(jsonObject.getInt("id")).getBody();
-        return ResponseEntity.ok().body(pipeline);
+        return pipeline;
     }
 
     @Transactional
