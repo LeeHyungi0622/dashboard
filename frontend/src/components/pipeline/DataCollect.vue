@@ -201,13 +201,18 @@ export default {
       }
     },
     isSchedulingVaild(){
-      if(this.schedulingMode == "Timer driven"){
-        return this.schedulingDetail.includes("sec");
+      if(this.selectedCollectValue !='REST Server'){
+        if(this.schedulingMode == "Timer driven"){
+          return this.schedulingDetail.includes("sec");
+        }
+        else if(this.schedulingMode == "CRON driven"){
+          return CronVaildator.isValidCronExpression(this.schedulingDetail);
+        }
+        else return false;
       }
-      else if(this.schedulingMode == "CRON driven"){
-        return CronVaildator.isValidCronExpression(this.schedulingDetail);
+      else {
+        return true;
       }
-      else return false;
     }
   },
   data() {

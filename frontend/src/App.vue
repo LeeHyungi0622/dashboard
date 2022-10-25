@@ -55,7 +55,6 @@
       <v-container fluid fill-height style="padding: 0">
         <v-layout justify-center style="display: block">
           <router-view :key="$route.fullPath"></router-view>
-
         </v-layout>
       </v-container>
     </v-main>
@@ -113,7 +112,7 @@ export default {
       return this.$route.path;
     },
     displayUser(){
-      return this.$store.state.userInfo.name +"(" +this.$store.state.userInfo.userId+")님";
+      return localStorage.getItem("userName") +"(" +localStorage.getItem("userId")+")님";
     }
   },
   data() {
@@ -169,10 +168,10 @@ export default {
     });
     UserInfo.getUserInfo()
       .then((res) => {
-        this.$store.state.userInfo.name = res.name;
-        this.$store.state.userInfo.userId = res.userId;
-        this.$store.state.userInfo.nickName = res.nickName;
-        this.$store.state.userInfo.phone = res.phone;
+        localStorage.setItem("userName", res.name);
+        localStorage.setItem("userId", res.userId);
+        localStorage.setItem("userNicname", res.nickName);
+        localStorage.setItem("userPhone", res.phone);
       })
       .catch((err) => {
         console.log("Fail to Get User Info", err);
@@ -228,11 +227,11 @@ export default {
       this.userAlertShowFlag = true;
       this.userAlertContent.title = "사용자 정보";
       this.userAlertContent.userContent.userId.key = "사용자 아이디";
-      this.userAlertContent.userContent.userId.value = this.$store.state.userInfo.userId;
+      this.userAlertContent.userContent.userId.value = localStorage.getItem("userId");
       this.userAlertContent.userContent.name.key = "사용자 이름";
-      this.userAlertContent.userContent.name.value = this.$store.state.userInfo.name;
+      this.userAlertContent.userContent.name.value = localStorage.getItem("userName");
       this.userAlertContent.userContent.phone.key = "사용자 연락처";
-      this.userAlertContent.userContent.phone.value = this.$store.state.userInfo.phone;
+      this.userAlertContent.userContent.phone.value = localStorage.getItem("userPhone");
     },
     closeAlertPopup: function () {
       this.alertShowFlag = false;
@@ -258,6 +257,7 @@ export default {
         .then((res) => {
           let isSuccess = res.status === 200 || 201 || 204;
           if(isSuccess){
+            localStorage.clear();
             location.replace('/');
           }
       })

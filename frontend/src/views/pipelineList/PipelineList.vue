@@ -207,9 +207,9 @@ export default {
         title: "파이프라인 Status 수정",
         text:
           name +
-          " 파이프라인의 " +
-          "<br/>실행 상태가 " +
-          this.showStatusBtn(status) +
+          " 파이프라인의 상태가" +
+          "<br/> <b> " +
+          this.showStatusBtn(status) + "</b> " +
           "로 변경됩니다." +
           "<br/> <br/> 계속 진행하시겠습니까?",
         id: id,
