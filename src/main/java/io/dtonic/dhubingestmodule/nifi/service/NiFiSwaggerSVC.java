@@ -287,14 +287,14 @@ public class NiFiSwaggerSVC {
             .getProperties();
         for (PropertyVO property : properies) {
             if (property.getName().equals("Scheduling")) {
-                if (property.getDetail().equals("Timer driven")) {
+                if (property.getDetail().equals("TIMER_DRIVEN")) {
                     processor.getComponent().getConfig().setSchedulingStrategy("TIMER_DRIVEN");
                     processor
                         .getComponent()
                         .getConfig()
                         .setSchedulingPeriod(property.getInputValue());
                     log.debug("{}", processor);
-                } else if (property.getDetail().equals("CRON driven")) {
+                } else if (property.getDetail().equals("CRON_DRIVEN")) {
                     processor.getComponent().getConfig().setSchedulingStrategy("CRON_DRIVEN");
                     processor
                         .getComponent()
@@ -306,7 +306,7 @@ public class NiFiSwaggerSVC {
                     String convertStr = property.getInputValue().replace("\"", "");
                     processorProperties.put(property.getName(), convertStr);
                 } else if (property.getInputValue().equals("origin")) {
-                    processorProperties.put(property.getName(), "");
+                    processorProperties.put(property.getName(), " ");
                 } else {
                     processorProperties.put(property.getName(), " ");
                 }

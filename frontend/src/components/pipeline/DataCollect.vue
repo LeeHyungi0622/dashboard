@@ -73,8 +73,8 @@
               v-model="schedulingMode"
               :disabled="!$store.state.collectorTableUpdateFlag"
             >
-            <option value="Timer driven">Timer driven</option>
-            <option value="CRON driven">CRON driven</option>
+            <option value="TIMER_DRIVEN">Timer driven</option>
+            <option value="CRON_DRIVEN">CRON driven</option>
             </select>
           </div>
         </div>
@@ -202,10 +202,10 @@ export default {
     },
     isSchedulingVaild(){
       if(this.selectedCollectValue !='REST Server'){
-        if(this.schedulingMode == "Timer driven"){
+        if(this.schedulingMode == "TIMER_DRIVEN"){
           return this.schedulingDetail.includes("sec");
         }
-        else if(this.schedulingMode == "CRON driven"){
+        else if(this.schedulingMode == "CRON_DRIVEN"){
           return CronVaildator.isValidCronExpression(this.schedulingDetail);
         }
         else return false;

@@ -301,8 +301,6 @@ export default {
             if(prop.detail == "Date Format"){
               if(prop.inputValue == null || prop.inputValue == ""){
                 inputValue = "";
-              } else {
-                inputValue = prop.inputValue.split("\"")[1];
               }
               }
               else{

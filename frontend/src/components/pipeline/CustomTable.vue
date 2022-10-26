@@ -7,14 +7,14 @@
       <div class="header fsb12" v-else-if="content.name == 'root_key'">
         <p> Root Key 설정 </p>
       </div>
-      <div class="header fsb12" v-else>
+      <div class="header fsb12" v-else-if="content.name != 'Scheduling'">
         <p v-if="content.name">{{ content.name }}</p>
         <button v-if="content.detail" @click="showTooltip(content.detail)">
           <img style="padding: 15px" src="../../assets/img/Help.svg" />
         </button>
       </div>
       
-      <div class="value">
+      <div class="value" v-if="content.name != 'Scheduling'">
         <!-- BASE64 DECODER -->
         <div
           class="disf"
