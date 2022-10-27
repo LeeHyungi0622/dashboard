@@ -249,14 +249,7 @@ public class NiFiRestSVC {
     ) {
         Map<String, String> setUpProperties = controller.getComponent().getProperties();
         for (PropertyVO property : properies) {
-            if (property.getName().equals("Database Connection URL")) {
-                setUpProperties.replace(
-                    property.getName(),
-                    setUpProperties.get("Database Connection URL") + property.getInputValue()
-                );
-            } else {
-                setUpProperties.replace(property.getName(), property.getInputValue());
-            }
+            setUpProperties.replace(property.getName(), property.getInputValue());
         }
         log.info("Properties : {}", setUpProperties);
         controller.getComponent().setProperties(setUpProperties);

@@ -131,6 +131,12 @@ public class PipelineDraftSVC {
                 }
                 niFiComponentVO.getRequiredProps().add(propertyVO.get(i));
             } else {
+                if (
+                    !propertyVO.get(i).getDefaultValue().isEmpty() &&
+                    ValidateUtil.isStringEmpty(propertyVO.get(i).getInputValue())
+                ) {
+                    propertyVO.get(i).setInputValue(propertyVO.get(i).getDefaultValue().get(0));
+                }
                 niFiComponentVO.getOptionalProps().add(propertyVO.get(i));
             }
             if (i == propertyVO.size() - 1) {
@@ -198,23 +204,37 @@ public class PipelineDraftSVC {
                 JSONObject jObj = new JSONObject(
                     jObject.getJSONArray("nifiComponents").get(i).toString()
                 );
-                JSONArray properties = jObj.getJSONArray("requiredProps");
-                for (idx = 0; idx < properties.length(); idx++) {
-                    if (
-                        properties.getJSONObject(idx).getString("name") == "level2" ||
-                        properties.getJSONObject(idx).getString("name") == "level3"
-                    ) {
-                        break;
-                    } else if (
-                        properties.getJSONObject(idx).isNull("inputValue") ||
-                        properties.getJSONObject(idx).getString("inputValue") == ""
-                    ) {
-                        continue;
+                if (jObj.getString("name") == "IDGenerater") {
+                    JSONArray properties = jObj.getJSONArray("requiredProps");
+                    for (idx = 0; idx < properties.length(); idx++) {
+                        if (
+                            properties.getJSONObject(idx).getString("name") == "level2" ||
+                            properties.getJSONObject(idx).getString("name") == "level3"
+                        ) {
+                            break;
+                        } else if (
+                            properties.getJSONObject(idx).isNull("inputValue") ||
+                            properties.getJSONObject(idx).getString("inputValue") == ""
+                        ) {
+                            continue;
+                        }
                     }
-                }
-
-                if (idx == properties.length()) {
-                    completeCnt++;
+                    if (idx == properties.length()) {
+                        completeCnt++;
+                    }
+                } else {
+                    JSONArray properties = jObj.getJSONArray("requiredProps");
+                    for (idx = 0; idx < properties.length(); idx++) {
+                        if (
+                            properties.getJSONObject(idx).isNull("inputValue") ||
+                            properties.getJSONObject(idx).getString("inputValue") == ""
+                        ) {
+                            break;
+                        }
+                    }
+                    if (idx == properties.length()) {
+                        completeCnt++;
+                    }
                 }
             }
 
