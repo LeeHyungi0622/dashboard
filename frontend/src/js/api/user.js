@@ -11,11 +11,15 @@ class userInfo {
   }
   sendLogOut() {
     return axios
-      .get(APIHandler.buildUrl(['logout']))
+      .get(`/logout`, {headers:{ Authorization: 'Bearer '+ get_cookie('chaut')  }})
       .then((response) => {
         return response;
       })
       .catch((error) => error);
+  }
+  get_cookie(name) {
+    var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return value? value[2] : null;
   }
 }
 

@@ -97,6 +97,8 @@ public class DataCoreRestSVC {
         }
         if (accessToken != null) {
             httpHeaders.setBearerAuth(accessToken);
+        } else {
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         }
         return new HttpEntity<>(body, httpHeaders);
     }

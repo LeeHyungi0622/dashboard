@@ -2,6 +2,7 @@ package io.dtonic.dhubingestmodule.security.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.dtonic.dhubingestmodule.common.component.Properties;
+import io.dtonic.dhubingestmodule.common.exception.DataCoreUIException;
 import io.dtonic.dhubingestmodule.common.service.DataCoreRestSVC;
 import io.dtonic.dhubingestmodule.security.vo.AccessTokenFormVO;
 import io.dtonic.dhubingestmodule.security.vo.RefreshTokenFormVO;
@@ -221,17 +222,16 @@ public class IngestManagerSVC {
     public void logout(HttpServletRequest request, HttpServletResponse response, Object object)
         throws IOException {
         Object principal = getPrincipal(request);
-
         if (principal != null) {
             UserVO user = new UserVO();
-
+            log.info("{}", principal.toString());
             user.setUserId(principal.toString());
             Map<String, String> headers = new HashMap<String, String>();
+            log.info("token:", request.getSession().getAttribute(AUTHTOKEN).toString());
             headers.put(
                 HttpHeaders.AUTHORIZATION,
                 "Bearer " + request.getSession().getAttribute(AUTHTOKEN)
             );
-
             // SSO Logout
             dataCoreRestSVC.post(
                 properties.getLogoutUri(),

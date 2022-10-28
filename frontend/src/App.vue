@@ -96,7 +96,7 @@ import TempPipelinePopup from "./components/popup/TempPipelinePopup.vue";
 import tempPipeline from "./json/tempPipeline.json";
 import Loading from "./components/loading/loadingBar.vue";
 import Footer from "./components/footer/footer.vue";
-
+import { APIHandler } from './js/api/api-handler.js';
 export default {
   components: {
     CustomNavigation,
@@ -116,6 +116,7 @@ export default {
     UserInfo.getUserInfo()
       .then((res) => {
         this.userInfo = res;
+        this.$store.state.userInfo = res;
       })
       .catch((err) => {
         console.log("Fail to Get User Info", err);
@@ -176,6 +177,11 @@ export default {
 
   },
   methods: {
+    set_cookie(name, value, unixTime) {
+    var date = new Date();
+    date.setTime(date.getTime() + unixTime);
+    document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';expires=' + date.toUTCString() + ';path=/';
+  },
     closeConfirmPopup: function (val) {
       if(val.url == "update"){
         if(val.body == 'RUN'){
@@ -251,16 +257,14 @@ export default {
       if (mode == "userInfo") {
         this.showUserAlertPopup();
       } else {
-        UserInfo.sendLogOut()
-        .then((res) => {
-          let isSuccess = res.status === 200 || 201 || 204;
-          if(isSuccess){
-            location.replace('/');
-          }
-      })
-      .catch((err) => {
-        console.log("Fail to logout", err);
-      });
+        this.$axios.get(APIHandler.buildUrl(['logout']))
+          .then(response => {
+            console.log(response);
+            const resultCode = response.status;
+            if (resultCode === 200 || 201 || 204) {
+              location.replace('/');
+            }
+          });
       }
     }
   }

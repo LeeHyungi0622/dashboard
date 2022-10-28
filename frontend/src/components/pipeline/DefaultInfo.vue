@@ -139,7 +139,7 @@ export default {
     nextRoute() {
       this.$store.state.overlay = true;
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
-      this.$store.state.registerPipeline.creator = localStorage.getItem("userId");
+      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
       pipelineRegisterService
         .craetePipelineDraft(this.$store.state.registerPipeline)
@@ -166,7 +166,7 @@ export default {
     saveDraft(){
       this.$store.state.overlay = true;
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
-      this.$store.state.registerPipeline.creator = localStorage.getItem("userId");
+      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
       this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
       pipelineRegisterService
         .craetePipelineDraft(this.$store.state.registerPipeline)
