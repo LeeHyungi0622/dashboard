@@ -148,7 +148,7 @@ export default {
   computed: {
     totalPage() {
       return Math.floor(
-        (this.filteritems.length + parseInt(this.perPage)) / this.perPage
+        (this.filteritems.length + parseInt(this.perPage) - 1) / this.perPage
       );
     },
 

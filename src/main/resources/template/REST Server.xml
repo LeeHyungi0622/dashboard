@@ -898,6 +898,12 @@
                                     <name>observedAt</name>
                                 </value>
                             </entry>
+                            <entry>
+                                <key>mime.type</key>
+                                <value>
+                                    <name>mime.type</name>
+                                </value>
+                            </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
                         <lossTolerant>false</lossTolerant>
@@ -921,6 +927,10 @@
                             <entry>
                                 <key>observedAt</key>
                                 <value>${now():format("yyyy-MM-dd'T'HH:mm:ssXXX", "GMT")}</value>
+                            </entry>
+                            <entry>
+                                <key>mime.type</key>
+                                <value>${Content-Type}</value>
                             </entry>
                         </properties>
                         <retryCount>10</retryCount>
