@@ -302,13 +302,11 @@ public class NiFiSwaggerSVC {
                         .setSchedulingPeriod(property.getInputValue());
                 }
             } else if (property.getName().equals("root_key")) {
-                if (property.getInputValue() != null) {
+                if (property.getInputValue().equals("origin")) {
+                    processorProperties.put(property.getName(), " ");
+                } else if (property.getInputValue() != null) {
                     String convertStr = property.getInputValue().replace("\"", "");
                     processorProperties.put(property.getName(), convertStr);
-                } else if (property.getInputValue().equals("origin")) {
-                    processorProperties.put(property.getName(), " ");
-                } else {
-                    processorProperties.put(property.getName(), " ");
                 }
             } else if (processorProperties.get(property.getName()) == null) {
                 processorProperties.put(property.getName(), property.getInputValue());
