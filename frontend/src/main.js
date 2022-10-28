@@ -6,7 +6,7 @@ import vuetify from "@/plugins/vuetify.js";
 import css from "@/assets/css/common.css";
 import { store } from "./vuex/store";
 
-const ws = new WebSocket("wss://3.39.117.159:8099/webpipeline");
+const ws = new WebSocket("wss://172.30.2.171:8099/webpipeline");
 
 // Axios.defaults.baseURL = "http://192.168.1.205:8099";
 // Axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
