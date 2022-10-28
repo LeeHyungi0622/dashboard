@@ -20,7 +20,7 @@
               <button style="padding: 0 0 0 12px" v-bind="attrs" v-on="on">
                 <div style="display: flex">
                   <img src="@/assets/img/user.svg" alt="user" />
-                  <div style="padding: 0 10px 0 10px">{{displayUser}}</div>
+                  <div style="padding: 0 10px 0 10px">{{ `${userInfo['name']}(${userInfo['userId']})` }} 님</div>
                   <img src="@/assets/img/drop-down.svg" alt="user" />
                 </div>
               </button>
@@ -110,10 +110,16 @@ export default {
   computed: {
     activationRoutePath() {
       return this.$route.path;
-    },
-    displayUser(){
-      return localStorage.getItem("userName") +"(" +localStorage.getItem("userId")+")님";
     }
+  },
+  mounted(){
+    UserInfo.getUserInfo()
+      .then((res) => {
+        this.userInfo = res;
+      })
+      .catch((err) => {
+        console.log("Fail to Get User Info", err);
+      });
   },
   data() {
     return {
@@ -154,6 +160,7 @@ export default {
         ["로그아웃", "logout"]
       ],
       overlay: false,
+      userInfo: {}
     };
   },
   created() {
@@ -166,16 +173,7 @@ export default {
     EventBus.$on("show-temp-pipeline-popup", (payload) => {
       this.showTempPipelinePopup(payload);
     });
-    UserInfo.getUserInfo()
-      .then((res) => {
-        localStorage.setItem("userName", res.name);
-        localStorage.setItem("userId", res.userId);
-        localStorage.setItem("userNicname", res.nickName);
-        localStorage.setItem("userPhone", res.phone);
-      })
-      .catch((err) => {
-        console.log("Fail to Get User Info", err);
-      });
+
   },
   methods: {
     closeConfirmPopup: function (val) {
@@ -227,11 +225,11 @@ export default {
       this.userAlertShowFlag = true;
       this.userAlertContent.title = "사용자 정보";
       this.userAlertContent.userContent.userId.key = "사용자 아이디";
-      this.userAlertContent.userContent.userId.value = localStorage.getItem("userId");
+      this.userAlertContent.userContent.userId.value = this.userInfo['userId'];
       this.userAlertContent.userContent.name.key = "사용자 이름";
-      this.userAlertContent.userContent.name.value = localStorage.getItem("userName");
+      this.userAlertContent.userContent.name.value = this.userInfo['name'];
       this.userAlertContent.userContent.phone.key = "사용자 연락처";
-      this.userAlertContent.userContent.phone.value = localStorage.getItem("userPhone");
+      this.userAlertContent.userContent.phone.value = this.userInfo['phone'];
     },
     closeAlertPopup: function () {
       this.alertShowFlag = false;
@@ -257,7 +255,6 @@ export default {
         .then((res) => {
           let isSuccess = res.status === 200 || 201 || 204;
           if(isSuccess){
-            localStorage.clear();
             location.replace('/');
           }
       })

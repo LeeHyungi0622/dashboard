@@ -13,7 +13,7 @@ class userInfo {
     return axios
       .get(APIHandler.buildUrl(['logout']))
       .then((response) => {
-        return response.data;
+        return response;
       })
       .catch((error) => error);
   }
