@@ -178,10 +178,10 @@ export default {
   },
   methods: {
     set_cookie(name, value, unixTime) {
-    var date = new Date();
-    date.setTime(date.getTime() + unixTime);
-    document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';expires=' + date.toUTCString() + ';path=/';
-  },
+      var date = new Date();
+      date.setTime(date.getTime() + unixTime);
+      document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';expires=' + date.toUTCString() + ';path=/';
+    },
     closeConfirmPopup: function (val) {
       if(val.url == "update"){
         if(val.body == 'RUN'){
@@ -260,8 +260,8 @@ export default {
         this.$axios.get(APIHandler.buildUrl(['logout']))
           .then(response => {
             console.log(response);
-            const resultCode = response.status;
-            if (resultCode === 200 || 201 || 204) {
+            const resultCode = response.status === 200 || 201 || 204;
+            if (resultCode) {
               location.replace('/');
             }
           });

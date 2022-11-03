@@ -82,7 +82,7 @@ public class NiFiClientEntity {
         if (tokenTime.compareTo(new Date(System.currentTimeMillis())) < 0) {
             log.info("NiFi Access Token is Expired");
             OAuth auth = (OAuth) nifiSwaggerApiClient.getAuthentication("auth");
-            accessToken =
+            this.accessToken =
                 nifiSwaggerAccessApi.createAccessToken(
                     properties.getNifiUser(),
                     properties.getNifiPassword()
