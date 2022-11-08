@@ -1,0 +1,17 @@
+[
+  {
+    "nifi_name": "Rest Server"
+  },
+  {
+    "nifi_name": "Rest API"
+  },
+  {
+    "nifi_name": "Database-Postgres"
+  },
+  {
+    "nifi_name": "Database-MySQL"
+  },
+  {
+    "nifi_name": "Database-MariaDB"
+  }
+]

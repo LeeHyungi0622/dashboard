@@ -1,0 +1,80 @@
+# see: https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/deploy-linux-vm?view=azure-devops&tabs=java
+variables:
+  isDevelop: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
+  deployDir: "/home/azure-deploy-agent/test"
+
+trigger:
+  - develop
+
+# build agent pool default가 dtonic꺼
+# see: https://dev.azure.com/dtonic/_settings/agentpools
+pool:
+  name: default
+
+stages: 
+- stage: AdvancedAnalysisService  
+  displayName: Build advanced ingestManager service
+  #variables:
+  #  BuildVersion: $[ stageDependencies.Versioning.setVersion.outputs['gitversionexecute.GitVersion.SemVer'] ]
+  #  ArtifactId: eiss-gov-associate
+  jobs:
+    - job: build
+      steps:
+      - task: Maven@3
+        inputs:
+          mavenPomFile: '$(Build.SourcesDirectory)/pom.xml' # Maven Pom.xml 경로
+          publishJUnitResults: false 
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+        displayName: 'IngestManager Packaging'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/target'
+          Contents: '**.jar'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/jars'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'ingestManager'
+          publishLocation: 'Container'
+
+- stage: TestbedRelease
+  #condition: and(succeeded(), eq(variables.isDevelop, true))
+  jobs:
+    - deployment: ncpEissTestDt
+      # 배포할 Envornment
+      environment:
+        name: "IngestManager-Testbed"
+        resourceType: VirtualMachine
+      variables:
+        baseFolder: /usr/local/lib/ingestManager
+        AdvancedAnalysisJarFile: $[ stageDependencies.AdvancedAnalysisService.build.outputs['buildResult.jarFileName'] ]
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: CmdLine@2
+                inputs:
+                  script: 'chmod 777 ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar'
+                  workingDirectory: '$(Agent.BuildDirectory)'
+              #- task: CopyFiles@2
+               # inputs:
+                #  SourceFolder: '$(Agent.BuildDirectory)/ingestManager/jars'
+                 # Contents: '**.jar'
+                  #TargetFolder: '$(Agent.BuildDirectory)/ingestManager/jars/docker'
+              #- task: CmdLine@2
+                #inputs:
+                  #script: 'cp ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /usr/local/lib/ingestManager/ingestManager'
+                  #workingDirectory: '$(Agent.BuildDirectory)'
+                  #test
+              - task: CmdLine@2
+                inputs:
+                  script: 'chmod 777 ./ingestManager/jars/start_ingestManager.sh'
+                  workingDirectory: '$(Agent.BuildDirectory)'
+              - task: CmdLine@2
+                inputs:
+                  script: 'sh ./ingestManager/jars/start_ingestManager.sh'
+                  workingDirectory: '$(Agent.BuildDirectory)'

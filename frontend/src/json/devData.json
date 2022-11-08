@@ -1,0 +1,147 @@
+{
+  "mode": {
+    "defaultInfo": "",
+    "collect": "",
+    "refine": "",
+    "convert": ""
+  },
+  "defaultInfo": [
+    { "name": "파이프라인 이름", "inputValue": "Parking Lot Adaptor" },
+    {
+      "name": "파이프라인 정의",
+      "inputValue": "산탄데르 주차장 센서 데이터용"
+    }
+  ],
+  "collect": {
+    "dataCollector": [
+      {
+        "name": "데이터 수집기",
+        "inputValue": {
+          "selectedValue": "",
+          "datas": ["HTTP Listener", "DataBase - Postgres"]
+        }
+      }
+    ],
+    "requiredSettinginputValue": [
+      {
+        "name": "Base Path",
+        "desc": "a",
+        "inputValue": "ContentListener"
+      },
+      {
+        "name": "Listerning Port",
+        "desc": "a",
+        "inputValue": "true"
+      },
+      {
+        "name": "Base Path",
+        "desc": "a",
+        "inputValue": ""
+      },
+      {
+        "name": "Authorized Subject DN Pattern",
+        "desc": "a",
+        "inputValue": ".*"
+      },
+      {
+        "name": "Max Uncomfirmed Profile Time",
+        "desc": "a",
+        "inputValue": "60 Secs"
+      },
+      {
+        "name": "Multipart Request Max Size",
+        "desc": "a",
+        "inputValue": "1 MB"
+      }
+    ],
+    "selectedSettinginputValue": [
+      {
+        "name": "Listening Port for Health Check Requests",
+        "desc": "a",
+        "inputValue": ""
+      },
+      {
+        "name": "Max Data to Receive Per Second",
+        "desc": "a",
+        "inputValue": ""
+      },
+      {
+        "name": "SSL Context Service",
+        "desc": "a",
+        "inputValue": ""
+      },
+      {
+        "name": "Autorized Issure DN Pattern",
+        "desc": "a",
+        "inputValue": ".*"
+      },
+      {
+        "name": "HTTP Headers to receive as Attributes (Regex)",
+        "desc": "a",
+        "inputValue": ""
+      }
+    ]
+  },
+  "refine": [
+    {
+      "name": "Base64 Decoder",
+      "inputValue": "On"
+    },
+    {
+      "name": "Root name",
+      "inputValue": " ParkingLot1 : Location "
+    }
+  ],
+  "convert": {
+    "content": [
+      {
+        "name": "DataSet",
+        "inputValue": "ParkingLot1 : Location"
+      }
+    ],
+    "convertHeaders": [
+      {
+        "text": "DataSet 속성 (속성 유형)",
+        "sortable": false,
+        "inputValue": "name"
+      },
+      { "text": "Raw Data 속성", "inputValue": "inputValue", "sortable": false }
+    ],
+    "convertData": [
+      {
+        "name": "location (GeoProperty)",
+        "inputValue": "Position, Site, Place"
+      },
+      {
+        "name": "ParkingAreaId (Property)"
+      },
+      {
+        "name": "ParkingLotId (Property)"
+      },
+      {
+        "name": "ParkingSensorId (Property)"
+      }
+    ],
+    "IdHeaders": [
+      {
+        "text": "Depth",
+        "sortable": false,
+        "inputValue": "name"
+      },
+      { "text": "ID name", "inputValue": "inputValue", "sortable": false }
+    ],
+    "IdData": [
+      {
+        "name": "Level 1",
+        "inputValue": "Location"
+      },
+      {
+        "name": "Level 2",
+        "inputValue": "coordinates"
+      },
+      {
+        "name": "Level 3"
+      }
+    ]
+  }
+}

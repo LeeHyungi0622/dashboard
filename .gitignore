@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+frontend/node/
+
+### logs ###
+logs/
+
+### front build ###
+src/main/resources/static/
