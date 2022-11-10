@@ -39,9 +39,10 @@
         </root>
     </springProfile>
     <springProfile name="dev">
-        <logger name="io.dtonic.dhubingestmodule" level="DEBUG" />
+        <logger name="io.dtonic.dhubingestmodule" level="INFO" />
         <root level="INFO">
             <appender-ref ref="ASYNC_FILE_APPENDER" />
+            <appender-ref ref="CONSOLE" />
         </root>
     </springProfile>
 </configuration>

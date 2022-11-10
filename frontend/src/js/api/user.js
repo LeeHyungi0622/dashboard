@@ -9,17 +9,17 @@ class userInfo {
       })
       .catch((error) => error);
   }
+  get_cookie(name) {
+    var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return value? value[2] : null;
+  }
   sendLogOut() {
     return axios
-      .get(`/logout`, {headers:{ Authorization: 'Bearer '+ get_cookie('chaut')  }})
+      .get(`/logout`, {headers:{ Authorization: 'Bearer '+ this.get_cookie('chaut')  }})
       .then((response) => {
         return response;
       })
       .catch((error) => error);
-  }
-  get_cookie(name) {
-    var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-    return value? value[2] : null;
   }
 }
 
