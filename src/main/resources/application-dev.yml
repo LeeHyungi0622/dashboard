@@ -11,7 +11,7 @@ spring:
     cache: false
 
   security:
-    enabled: false
+    enabled: true
 
   datasource:
     driverClassName: org.postgresql.Driver
@@ -51,8 +51,8 @@ datacore:
 
 cityhub:
   client:
-    clientId: U5p67XCeZxRdCZMc5Dv4
-    clientSecret: dNond2b5TC3afAXE0dGle6CPtybZuWsR
+    clientId: M0A5IDgkNecDjm994BNl
+    clientSecret: TyJ0RLZUHDhoVl7FNGJnkb8pLv2v1Ka7
     userAuthorizationUri: http://110.45.181.72:30000/oauth2.0/authorize
     accessTokenUri: http://110.45.181.72:30000/oauth2.0/token
     publicKeyUri: http://110.45.181.72:30000/security/publickey
