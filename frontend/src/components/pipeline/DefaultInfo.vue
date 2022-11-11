@@ -124,7 +124,7 @@ export default {
   methods: {
     checkSpaceInput(contents){
       for(let e of contents){
-        if(e.inputValue.includes(' ')){
+        if(e.inputValue == ' '){
           return false;
         }
         else return true;

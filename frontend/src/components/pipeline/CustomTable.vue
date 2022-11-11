@@ -53,9 +53,10 @@
                 {{ item }}
               </option>
             </select>
+            <input v-else-if="content.name == 'Password'"  type="password" id="password" v-model="content.inputValue"/>
             <input v-else type="text" v-model="content.inputValue" />
           </div>
-          <input v-else type="text" v-model="content.inputValue" />
+          <input v-else type="text" id="normal" v-model="content.inputValue" />
         </div>
         <!-- BASE64인데 수정 아닐시 -->
         <div class="disf" v-else-if="content.name == `isBase64`">
@@ -68,6 +69,7 @@
           {{ content.inputValue == "true" ? "On" : "Off" }}
         </div>
         <!-- 수정 아닐시 -->
+        <div style="padding-left: 20px" v-else-if="content.name == 'Password'">{{ showPasswordMasking(content.inputValue) }}</div>
         <div style="padding-left: 20px" v-else>{{ content.inputValue }}</div>
       </div>
     </div>
@@ -97,6 +99,7 @@ export default {
     return {
       flag : false,
       showDetail: "",
+      password: ""
     };
   },
   mounted(){
@@ -105,6 +108,9 @@ export default {
     showTooltip(val){
       this.showDetail = val;
       this.flag = true;
+    },
+    showPasswordMasking(password){
+      return '*'.repeat(password.length);
     }
   }
 };

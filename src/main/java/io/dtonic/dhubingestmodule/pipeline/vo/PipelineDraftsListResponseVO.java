@@ -10,7 +10,7 @@ public class PipelineDraftsListResponseVO {
     private Integer id;
     private String name;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSXXX")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss z")
     private Date modifiedAt;
 
     private Boolean isCollector;
