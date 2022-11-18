@@ -106,6 +106,14 @@ export default {
       this.selectedConverterValue = this.getPipeline.dataSet;
       this.convProps = this.convertDataSetProps(this.getPipeline.converter);
       this.convertId(this.getPipeline.converter);
+      //store에도 반영하는 로직 추가
+      this.convertToProps();
+      this.convertToId();
+      let convertNifi = []
+      convertNifi.push(this.rawDataSetProps);
+      convertNifi.push(this.rawIdNifi);
+      this.getPipeline.converter.nifiComponents = convertNifi;
+      this.$store.state.completedPipeline = this.getPipeline;
     }
     else{
       this.getPipeline = this.$store.state.registerPipeline;
@@ -308,7 +316,7 @@ export default {
               else{
                 inputValue = prop.inputValue;
               }
-            const convertProp = {name : name, detail:prop.detail ,inputValue: inputValue};
+            const convertProp = {name : name, detail:prop.detail , inputValue: inputValue};
             convertProps.push(convertProp);
           }
         }

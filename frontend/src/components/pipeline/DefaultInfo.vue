@@ -122,6 +122,14 @@ export default {
     };
   },
   methods: {
+    checkSpaceInput(contents){
+      for(let e of contents){
+        if(e.inputValue == ' '){
+          return false;
+        }
+        else return true;
+      }
+    },
     getInfo(){
       if(this.$store.state.tableShowMode == `UPDATE`){
         this.contents[0].inputValue = this.$store.state.completedPipeline.name;
@@ -138,25 +146,31 @@ export default {
     },
     nextRoute() {
       this.$store.state.overlay = true;
-      this.$store.state.registerPipeline.name = this.contents[0].inputValue;
-      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
-      this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
-      pipelineRegisterService
-        .craetePipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          if(res.status != 400){
-            this.$store.state.registerPipeline = res.data;
-            this.$store.state.showRegisterMode = 'collector';
-            this.$store.state.overlay = false;
-          }
-          else{
-            this.$store.state.overlay = false;
-            this.showInvaildPipelineName();
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      if(this.checkSpaceInput(this.contents)){
+        this.$store.state.registerPipeline.name = this.contents[0].inputValue;
+        this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+        this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
+        pipelineRegisterService
+          .craetePipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            if(res.status != 400){
+              this.$store.state.registerPipeline = res.data;
+              this.$store.state.showRegisterMode = 'collector';
+              this.$store.state.overlay = false;
+            }
+            else{
+              this.$store.state.overlay = false;
+              this.showInvaildPipelineName();
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+      else{
+        this.$store.state.overlay = false;
+        this.showInputErrorPipeline();
+      }
     },
     changeUpdateFlag(){
       this.$store.state.infoTableUpdateFlag = !this.$store.state.infoTableUpdateFlag;
@@ -164,6 +178,7 @@ export default {
       this.$store.state.completedPipeline.detail = this.contents[1].inputValue;
     },
     saveDraft(){
+      if(this.checkSpaceInput(this.contents)){
       this.$store.state.overlay = true;
       this.$store.state.registerPipeline.name = this.contents[0].inputValue;
       this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
@@ -178,6 +193,11 @@ export default {
         .catch((err) => {
           console.error(err);
         });
+      }
+      else{
+        this.$store.state.overlay = false;
+        this.showInputErrorPipeline();
+      }
     },
     showInvaildPipelineName(){
       let alertPayload = {
@@ -185,6 +205,16 @@ export default {
             text:
               " 임시저장 파이프라인 목록 중  " +
               "<br/>같은 이름의 파이프라인이 존재합니다.",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
+    },
+    showInputErrorPipeline(){
+      let alertPayload = {
+            title: "입력 값 오류",
+            text:
+              "입력 값에 공백만 설정된 값이 존재합니다." +
+              "<br/>공백 만으로 이름 또는 정의를 설정할 수 없습니다.",
             url: "not Vaild",
           };
           EventBus.$emit("show-alert-popup", alertPayload);

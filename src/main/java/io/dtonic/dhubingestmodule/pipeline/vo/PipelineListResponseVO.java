@@ -16,9 +16,9 @@ public class PipelineListResponseVO {
     private String dataSet;
     private String status;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSXXX")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss z")
     private Date createdAt;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSXXX")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss z")
     private Date modifiedAt;
 }
