@@ -1,6 +1,5 @@
 package io.dtonic.dhubingestmodule.controller.web;
 
-import io.dtonic.dhubingestmodule.aop.logging.LogAccessRest;
 import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
 import io.dtonic.dhubingestmodule.security.vo.UserVO;
 
