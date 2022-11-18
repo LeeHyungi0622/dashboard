@@ -96,7 +96,6 @@ import TempPipelinePopup from "./components/popup/TempPipelinePopup.vue";
 import tempPipeline from "./json/tempPipeline.json";
 import Loading from "./components/loading/loadingBar.vue";
 import Footer from "./components/footer/footer.vue";
-import { APIHandler } from './js/api/api-handler.js';
 export default {
   components: {
     CustomNavigation,
@@ -257,12 +256,13 @@ export default {
       if (mode == "userInfo") {
         this.showUserAlertPopup();
       } else {
-        this.$axios.get(APIHandler.buildUrl(['logout']))
+        UserInfo.sendLogOut()
           .then(response => {
             console.log(response);
             const resultCode = response.status === 200 || 201 || 204;
             if (resultCode) {
               location.replace('/');
+              location.reload(); 
             }
           });
       }

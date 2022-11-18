@@ -1,7 +1,9 @@
 package io.dtonic.dhubingestmodule.controller.web;
 
+import io.dtonic.dhubingestmodule.aop.logging.LogAccessRest;
 import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
 import io.dtonic.dhubingestmodule.security.vo.UserVO;
+
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 @Controller
 public class IngestManagerViewController implements ErrorController {
 
@@ -27,8 +28,51 @@ public class IngestManagerViewController implements ErrorController {
      * @return String html page name
      * @throws IOException Throw an exception when an IO error occurs.
      */
+    // @LogAccessRest
     @GetMapping({ "/", "/error" })
     public String redirectRoot(
+        HttpSession session,
+        HttpServletRequest request,
+        HttpServletResponse response
+    )
+        throws IOException {
+        return "index.html";
+    }
+    
+    // @LogAccessRest
+    @GetMapping("/list")
+    public String pipelineListView(
+        HttpSession session,
+        HttpServletRequest request,
+        HttpServletResponse response
+    )
+        throws IOException {
+        return "index.html";
+    }
+    // @LogAccessRest
+    @GetMapping("/pipelineRegister")
+    public String pipelineRegisterView(
+        HttpSession session,
+        HttpServletRequest request,
+        HttpServletResponse response
+    )
+        throws IOException {
+        return "index.html";
+    }
+    // @LogAccessRest
+    @GetMapping("/pipelineRegister/new")
+    public String pipelineNewRegisterView(
+        HttpSession session,
+        HttpServletRequest request,
+        HttpServletResponse response
+    )
+        throws IOException {
+        return "index.html";
+    }
+
+    // @LogAccessRest
+    @GetMapping("/pipelineUpdate")
+    public String pipelineUpdateByIdView(
         HttpSession session,
         HttpServletRequest request,
         HttpServletResponse response
@@ -60,6 +104,7 @@ public class IngestManagerViewController implements ErrorController {
      * @return User information
      * @throws Exception Throw an exception when an error occurs.
      */
+    // @LogAccessRest
     @GetMapping("/user")
     public ResponseEntity<UserVO> getUser(HttpServletRequest request, HttpServletResponse response)
         throws Exception {
