@@ -14,6 +14,12 @@ const routes = [
     redirect: "/list",
   },
   {
+    path: '*',
+    component: {
+      template: '<script>alert("잘못된 호출입니다.");</script>'
+    }
+  },
+  {
     path: "/list",
     name: "pipelineList",
     component: pipelineList,

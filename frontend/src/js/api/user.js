@@ -15,7 +15,8 @@ class userInfo {
   }
   sendLogOut() {
     return axios
-      .get(`/logout`, {headers:{ Authorization: 'Bearer '+ this.get_cookie('chaut')  }})
+      // .get(`/logout`, {headers:{ Authorization: 'Bearer '+ this.get_cookie('chaut')  }})
+      .get(`/logout`)
       .then((response) => {
         return response;
       })
