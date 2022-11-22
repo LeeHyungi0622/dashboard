@@ -1,5 +1,6 @@
 package io.dtonic.dhubingestmodule.pipeline.controller;
 
+import io.dtonic.dhubingestmodule.aop.logging.LogAccessRest;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListRetrieveVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
@@ -27,7 +28,8 @@ public class PipelineDraftController<T> {
 
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
-
+    
+    @LogAccessRest
     @GetMapping("/drafts/create") // 파이프라인 생성 첫 시작 API, (front에서 빈 Pipeline VO가 필요)
     public PipelineVO createPipelineDrafts(
         HttpServletRequest request,
@@ -44,6 +46,7 @@ public class PipelineDraftController<T> {
      * @param id retrieve Pipeline id
      * @return Pipeline object
      */
+    @LogAccessRest
     @GetMapping("/drafts/{id}") // 임시저장 상세 조회
     public ResponseEntity getPipelineDrafts(
         HttpServletRequest request,
@@ -54,6 +57,7 @@ public class PipelineDraftController<T> {
         return result;
     }
 
+    @LogAccessRest
     @GetMapping("/drafts/list") // 임시저장 목록 조회
     public ResponseEntity getPipelineDraftsList(
         HttpServletRequest request,
@@ -65,6 +69,7 @@ public class PipelineDraftController<T> {
     }
 
     // 파이프라인 생성 중 "다음" 누를시 사용되는 API , 해당 임시파이프라인 upsert처리
+    @LogAccessRest
     @PostMapping("/drafts")
     public ResponseEntity<PipelineVO> upsertPipelineDrafts(
         HttpServletRequest request,
@@ -96,6 +101,7 @@ public class PipelineDraftController<T> {
         return ResponseEntity.ok().body(pipelineVO);
     }
 
+    @LogAccessRest
     @Transactional
     @GetMapping("/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
     public ResponseEntity getPipelineDraftsProperties(
@@ -114,7 +120,8 @@ public class PipelineDraftController<T> {
         );
         return result;
     }
-
+    
+    @LogAccessRest
     @Transactional
     @DeleteMapping("/drafts/{id}") // 임시저장 삭제
     public ResponseEntity deletePipelineDrafts(
