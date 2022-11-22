@@ -7,6 +7,8 @@ import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.impl.DefaultJwtParser;
+
+import java.util.Calendar;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import lombok.Data;
@@ -79,9 +81,10 @@ public class NiFiClientEntity {
      */
     public void manageToken() {
         Date tokenTime = getExpiredTimeFromToken(this.accessToken);
-        log.debug("{}", tokenTime);
-        log.debug("{}", new Date(System.currentTimeMillis()));
-        if (tokenTime.compareTo(new Date(System.currentTimeMillis())) < 0) {
+        Calendar systemCal = Calendar.getInstance();
+        systemCal.setTime(new Date(System.currentTimeMillis()));
+        systemCal.add(Calendar.MINUTE, -10);
+        if (tokenTime.compareTo(systemCal.getTime()) < 0) {
             log.info("NiFi Access Token is Expired");
             OAuth auth = (OAuth) nifiSwaggerApiClient.getAuthentication("auth");
             this.accessToken =

@@ -89,7 +89,7 @@ public class PipelineSVC {
                     Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
                         pipeline.getProcessorGroupId()
                     );
-                    log.info("{}", nifiStatus);
+                    log.debug("{}", nifiStatus);
                     if (!ValidateUtil.isMapEmpty(nifiStatus)) {
                         String curStatus = pipelineVO.getStatus(); // 현재 DB status값
                         if (
@@ -108,7 +108,7 @@ public class PipelineSVC {
                                 nifiStatus.get(NifiStatusCode.NIFI_STATUS_STOPPED.getCode()) == 0 &&
                                 nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0
                             ) {
-                                log.info("{}", PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
+                                log.debug("{}", PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
                                 pipeline.setStatus(
                                     PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()
                                 );
