@@ -346,7 +346,6 @@ public class NiFiRestSVC {
             result.getBody(),
             ProcessGroupFlowEntity.class
         );
-        log.info("{}", resultEntity);
         return getNumberOfProcessorStatus(resultEntity);
     }
 

@@ -324,7 +324,6 @@ public class NiFiController {
                         for (PropertyVO prop : nifi.getRequiredProps()) {
                             if (prop.getDetail().equals("Date Format")) {
                                 prop.setName(a.getName());
-                                log.info("prop Data = {}", prop);
                                 prop.setInputValue(
                                     "${" +
                                     a.getName() +
@@ -367,7 +366,6 @@ public class NiFiController {
         if (NiFiComponents.size() < 1) {
             log.error("Empty NiFi Components In Request Pipeline");
         }
-        log.info("{}", NiFiComponents);
         for (NiFiComponentVO component : NiFiComponents) {
             if (
                 component.getType().equals("processor") || component.getType().equals("Processor")
