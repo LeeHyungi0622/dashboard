@@ -70,14 +70,6 @@ public class DataSourceConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.retrieve")
-    @Qualifier("retrieveDatasource")
-    public DataSource retrieveDatasource() {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        return dataSourceBuilder.build();
-    }
-
-    @Bean
     @Autowired
     public DataSourceTransactionManager dataSourceTransactionManager(
         @Qualifier("dataSource") DataSource datasource
@@ -86,6 +78,7 @@ public class DataSourceConfiguration {
     }
 
     @Bean
+    @Primary
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
@@ -111,17 +104,4 @@ public class DataSourceConfiguration {
         return new SqlSessionTemplate(sqlSessionFactory, ExecutorType.BATCH);
     }
 
-    @Bean
-    @Qualifier("retrieveSqlSession")
-    public SqlSessionTemplate secondarySqlSession(SqlSessionFactory sqlSessionFactory)
-        throws Exception {
-        // Using secondary datasource
-        if (DataCoreUiCode.UseYn.YES.toString().equals(secondaryDatasourceUseYn)) {
-            SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-            bean.setDataSource(retrieveDatasource());
-            return new SqlSessionTemplate(bean.getObject());
-        } else {
-            return new SqlSessionTemplate(sqlSessionFactory);
-        }
-    }
 }
