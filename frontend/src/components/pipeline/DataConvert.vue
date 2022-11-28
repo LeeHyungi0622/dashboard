@@ -353,7 +353,7 @@ export default {
       collectorService
           .getPipelineComplete({
             adaptorName: "converter",
-            pipelineid: this.getPipeline.id,
+            id: this.getPipeline.id,
             page: "converter",
             datasetid: val
           })

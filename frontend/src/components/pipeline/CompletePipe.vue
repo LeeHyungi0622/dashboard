@@ -35,9 +35,10 @@
 <script>
 import CustomTable from "./CustomTable.vue";
 import PipelineRegister from "../../js/api/pipelineRegister";
+import EventBus from "@/eventBus/EventBus.js";
 export default {
   components: {
-    CustomTable
+    CustomTable,
   },
   data: () => ({
     infoContents: [        
@@ -76,6 +77,16 @@ export default {
           inputValue: "",
         }
     ],
+    alertContent: {
+        title: "파이프라인 등록 완료",
+        text: "파이프라인 등록 완료되었습니다.",
+        url: "default"
+      },
+    alertErrorContent: {
+        title: "파이프라인 등록 실패",
+        text: "일시적인 오류로 파이프라인 등록에 실패하였습니다.",
+        url: "default"
+      },
   }),
   created() {
     this.getDraftPl();
@@ -105,15 +116,19 @@ export default {
       this.$store.state.showRegisterMode = 'convertor';
     },
     saveComplete(){
+      this.$store.state.overlay = true;
       PipelineRegister
         .postPipelineCompleted(this.$store.state.registerPipeline.id, this.$store.state.registerPipeline)
-        .catch((err) => {
-          console.error(err);
-        });
-        //TODO PopUP
-      this.$router.push({
-          name: "pipelineList"
-        });
+          .catch((err) => {
+            EventBus.$emit("show-alert-popup", this.alertErrorContent);
+            console.error(err);
+          });
+          this.$store.state.overlay = true;
+          
+          this.$router.push({
+            name: "pipelineList"
+          });
+          EventBus.$emit("show-alert-popup", this.alertContent);
     }
   },
 };
