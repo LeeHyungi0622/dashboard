@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "pipelines")
+// @RequestMapping(path = "pipelines")
 public class PipelineController<T> {
 
     @Autowired
@@ -41,7 +41,7 @@ public class PipelineController<T> {
     private PipelineDraftSVC pipelineDraftSVC;
 
     @LogAccessRest
-    @GetMapping("/completed") // PipeLine List 조회
+    @GetMapping("/pipelines/completed") // PipeLine List 조회
     public ResponseEntity<T> getPipelineList(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -60,7 +60,7 @@ public class PipelineController<T> {
      */
     @LogAccessRest
     @Transactional
-    @PostMapping("/completed/{id}") // PipeLine 생성시 "등록완료"
+    @PostMapping("/pipelines/completed/{id}") // PipeLine 생성시 "등록완료"
     public ResponseEntity createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -82,7 +82,7 @@ public class PipelineController<T> {
      * @return
      */
     @LogAccessRest
-    @PutMapping("/completed/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
+    @PutMapping("/pipelines/completed/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
     public ResponseEntity updatePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -110,7 +110,7 @@ public class PipelineController<T> {
      * @throws JsonMappingException
      */
     @LogAccessRest
-    @GetMapping("/completed/{id}") // PipeLine 상세 조회
+    @GetMapping("/pipelines/completed/{id}") // PipeLine 상세 조회
     public ResponseEntity<T> getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -120,7 +120,7 @@ public class PipelineController<T> {
         return pipelineSVC.getPipelineVOById(id);
     }
     @LogAccessRest
-    @GetMapping("/collectors") // 데이터수집기 리스트 리턴
+    @GetMapping("/pipelines/collectors") // 데이터수집기 리스트 리턴
     public List<String> getPipelinecollectors(
         HttpServletRequest request,
         HttpServletResponse response
@@ -128,7 +128,7 @@ public class PipelineController<T> {
         return pipelineDraftSVC.getDataCollector();
     }
     @LogAccessRest
-    @GetMapping("/completed/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
+    @GetMapping("/pipelines/completed/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
     public ResponseEntity<T> getPipelineProperties(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -150,7 +150,7 @@ public class PipelineController<T> {
      * @return
      */
     @LogAccessRest
-    @PutMapping("/run-status/{id}") // PipeLine status 업데이트
+    @PutMapping("/pipelines/run-status/{id}") // PipeLine status 업데이트
     public ResponseEntity UpdatePipelineStatus(
         HttpServletRequest request,
         HttpServletResponse response,

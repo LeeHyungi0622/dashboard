@@ -75,7 +75,10 @@ public class AccessLogAspect {
                     HttpServletRequest request = (HttpServletRequest) arg;
                     httpMethod = request.getMethod();
                     accessIp = getPublicIP(request);
-                    userId = request.getRemoteUser();
+                    userId =
+                    request.getRemoteUser() == null
+                      ? "Unknown"
+                      : request.getRemoteUser();
                 }
             }
             Object proceed = joinPoint.proceed();
@@ -90,7 +93,7 @@ public class AccessLogAspect {
                 loggingMapper.createloggingDetail(requestAt, responseAt, moduleName, path, accessIp, userId, httpStatus, body, httpMethod);
             }
             else{
-                loggingMapper.createloggingDetail(requestAt, responseAt, moduleName, path, accessIp, userId, "200","index.html", httpMethod);
+                loggingMapper.createloggingDetail(requestAt, responseAt, moduleName, path, accessIp, userId, "200",null, httpMethod);
             }
             return proceed; 
         }
@@ -103,7 +106,6 @@ public class AccessLogAspect {
 
     public String getPublicIP(HttpServletRequest req) throws Exception {
         String ip = req.getHeader("X_FORWARDED_FOR");
-        log.info("{}", ip);
         if (ip == null) {
           ip = req.getHeader("Proxy-Client-IP");
         }

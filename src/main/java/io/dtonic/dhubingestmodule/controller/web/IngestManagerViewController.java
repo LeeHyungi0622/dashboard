@@ -28,7 +28,7 @@ public class IngestManagerViewController implements ErrorController {
      * @return String html page name
      * @throws IOException Throw an exception when an IO error occurs.
      */
-    @LogAccessRest
+
     @GetMapping({ "/", "/error" })
     public String redirectRoot(
         HttpSession session,
@@ -86,7 +86,6 @@ public class IngestManagerViewController implements ErrorController {
      *
      * @throws IOException Throw an exception when an error occurs.
      */
-    @LogAccessRest
     @GetMapping("/accesstoken")
     public @ResponseBody void getAccessToken(
         HttpServletRequest request,

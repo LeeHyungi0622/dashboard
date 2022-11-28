@@ -23,14 +23,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "pipelines")
+// @RequestMapping(path = "pipelines")
 public class PipelineDraftController<T> {
 
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
     
     @LogAccessRest
-    @GetMapping("/drafts/create") // 파이프라인 생성 첫 시작 API, (front에서 빈 Pipeline VO가 필요)
+    @GetMapping("/pipelines/drafts/create") // 파이프라인 생성 첫 시작 API, (front에서 빈 Pipeline VO가 필요)
     public PipelineVO createPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response
@@ -47,7 +47,7 @@ public class PipelineDraftController<T> {
      * @return Pipeline object
      */
     @LogAccessRest
-    @GetMapping("/drafts/{id}") // 임시저장 상세 조회
+    @GetMapping("/pipelines/drafts/{id}") // 임시저장 상세 조회
     public ResponseEntity getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -58,7 +58,7 @@ public class PipelineDraftController<T> {
     }
 
     @LogAccessRest
-    @GetMapping("/drafts/list") // 임시저장 목록 조회
+    @GetMapping("/pipelines/drafts/list") // 임시저장 목록 조회
     public ResponseEntity getPipelineDraftsList(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -70,7 +70,7 @@ public class PipelineDraftController<T> {
 
     // 파이프라인 생성 중 "다음" 누를시 사용되는 API , 해당 임시파이프라인 upsert처리
     @LogAccessRest
-    @PostMapping("/drafts")
+    @PostMapping("/pipelines/drafts")
     public ResponseEntity<PipelineVO> upsertPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -103,7 +103,7 @@ public class PipelineDraftController<T> {
 
     @LogAccessRest
     @Transactional
-    @GetMapping("/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
+    @GetMapping("/pipelines/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
     public ResponseEntity getPipelineDraftsProperties(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -123,7 +123,7 @@ public class PipelineDraftController<T> {
     
     @LogAccessRest
     @Transactional
-    @DeleteMapping("/drafts/{id}") // 임시저장 삭제
+    @DeleteMapping("/pipelines/drafts/{id}") // 임시저장 삭제
     public ResponseEntity deletePipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,

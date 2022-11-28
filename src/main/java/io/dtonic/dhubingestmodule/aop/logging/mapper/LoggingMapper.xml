@@ -37,6 +37,14 @@
             WHERE 1=1 
                 AND uri = #{menu_uri} 
                 AND http_method = #{http_method} 
+                AND module_code =         (
+                    SELECT
+                        module_code
+                    FROM
+                        LOGGING.MODULE_CODE
+                    WHERE
+                        module_name = #{module_name}
+                    )
         ),
         #{access_ip},
         #{user_id},
