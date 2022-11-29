@@ -18,7 +18,13 @@ spring:
     jdbcUrl: jdbc:postgresql://localhost:5432/ingestmanager?currentSchema=ingest_manager
     username: postgres
     password: postgres
-
+    logging:
+      use.yn: Y
+      moduleName: ingest_manager
+      driverClassName: org.postgresql.Driver
+      jdbcUrl: jdbc:postgresql://localhost:5432/ingestmanager?currentSchema=logging
+      username: postgres
+      password: postgres
     retrieve:
       use.yn: N
       driverClassName: org.postgresql.Driver
@@ -31,6 +37,8 @@ server:
   servlet:
     context-path: /
     session.timeout: 60m
+  tomcat:
+    remote-ip-header: x-forwarded-for
 
 ## Logging
 logging.config: classpath:logback-spring.xml
@@ -51,8 +59,8 @@ datacore:
 
 cityhub:
   client:
-    clientId: M0A5IDgkNecDjm994BNl
-    clientSecret: TyJ0RLZUHDhoVl7FNGJnkb8pLv2v1Ka7
+    clientId: qti7lRjyOa44u4Vb6tIp
+    clientSecret: 8bhv1xIyH76NiDaXgU8agc31YTUd9g7g
     userAuthorizationUri: http://110.45.181.72:30000/oauth2.0/authorize
     accessTokenUri: http://110.45.181.72:30000/oauth2.0/token
     publicKeyUri: http://110.45.181.72:30000/security/publickey
@@ -61,7 +69,8 @@ cityhub:
     redirectUri: http://localhost:8099/accesstoken
   security:
     accessRole:
-      user: Dhub_Admin
+      user: Dhub_User
+    
   datacore:
     manager:
       url: http://110.45.181.71:8080
