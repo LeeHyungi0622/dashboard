@@ -598,6 +598,13 @@ select {
   width: 180px;
   height: 35px
 }
+.pipelineUpdateButton:disabled { 
+  background-color: #C9C9C9;
+  color: #ffffff;
+  font-weight: normal !important;
+  width: 180px;
+  height: 35px
+}
 .pipelineUpdateContentBox{
   width: 95%; 
   margin-top: 5%;
