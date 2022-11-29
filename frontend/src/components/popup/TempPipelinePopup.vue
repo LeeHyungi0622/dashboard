@@ -142,7 +142,7 @@ export default {
   computed: {
     totalPage() {
       return Math.floor(
-        (this.convVuetifyData.length + parseInt(this.perPage)) / this.perPage
+        (this.convVuetifyData.length + parseInt(this.perPage) - 1) / this.perPage
       );
     },
     convVuetifyData(){
