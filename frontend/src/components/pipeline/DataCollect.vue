@@ -187,9 +187,16 @@ export default {
       if(this.getPipeline.collector!= null){
         for(var nifi of this.getPipeline.collector.nifiComponents){
           if(nifi.requiredProps){
-            for(var prop of nifi.requiredProps){
+            for(let prop of nifi.requiredProps){
               if(prop.inputValue == null || prop.inputValue == "" || prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
                 return [false, prop, nifi.name];
+              }
+            }
+          }
+          if(nifi.optionalProps){
+            for(let prop of nifi.optionalProps){
+              if(prop.inputValue == ""){
+                prop.inputValue = null;
               }
             }
           }

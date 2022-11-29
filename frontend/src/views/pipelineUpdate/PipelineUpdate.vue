@@ -82,25 +82,41 @@ export default {
       });
     },
     updatePipeline(){
-      this.$store.state.overlay = true;
-      pipelineUpdateService
-      .updateConpletedPipeline(this.$store.state.completedPipeline.id,this.$store.state.completedPipeline)
-      .catch((err) => {
-        console.log("Update Pipeline에 실패했습니다.", err);
-      });
-      this.$store.state.overlay = false;
-      let alertPayload = {
-        title: "저장 완료",
-        text:
-        this.$store.state.completedPipeline.name +
-          " 파이프라인의 " +
-          "<br/>수정이 완료되었습니다.",
-        url: "completedUpdate",
-      };
-      this.$router.push({
-          name: "pipelineList",
+      if(this.$store.state.completedPipeline.status == "STOPPED"){
+        this.$store.state.overlay = true;
+        pipelineUpdateService
+        .updateConpletedPipeline(this.$store.state.completedPipeline.id,this.$store.state.completedPipeline)
+        .catch((err) => {
+          console.log("Update Pipeline에 실패했습니다.", err);
         });
-      EventBus.$emit("show-alert-popup", alertPayload);
+        this.$store.state.overlay = false;
+        let alertPayload = {
+          title: "저장 완료",
+          text:
+          this.$store.state.completedPipeline.name +
+            " 파이프라인의 " +
+            "<br/>수정이 완료되었습니다.",
+          url: "completedUpdate",
+        };
+        this.$router.push({
+            name: "pipelineList",
+          });
+        EventBus.$emit("show-alert-popup", alertPayload);
+      }
+      else{
+        let alertPayload = {
+          title: "수정 실패",
+          text:
+          this.$store.state.completedPipeline.name +
+            " 파이프라인의 상태가 " + this.$store.state.completedPipeline.status + "이므로" +
+            "<br/>정지 완료 후 수정이 가능합니다.",
+          url: "completedUpdate",
+        };
+        this.$router.push({
+            name: "pipelineList",
+          });
+        EventBus.$emit("show-alert-popup", alertPayload);
+      }
     },
   },
 };

@@ -54,6 +54,7 @@
       :items="convProps"
       class="pipelineUpdateConvertVFT"
       :hide-default-footer="true"
+      :items-per-page="convProps.length + 1"
       style="text-align: center"
       ><template v-slot:[`item.inputValue`]="{ item }">
         <input
@@ -72,6 +73,7 @@
       :items="convId"
       class="pipelineUpdateIdVFT"
       :hide-default-footer="true"
+      
       style="text-align: center"
     >
       <template v-slot:[`item.inputValue`]="{ item }">

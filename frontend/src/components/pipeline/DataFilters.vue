@@ -176,7 +176,8 @@ export default {
           title: "입력 값 오류",
           text:
             this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
-            "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오.",
+            "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오."+
+            "<br/>원본 데이터를 그대로 사용할 경우 [origin]을 입력해주십시오." ,
           url: "not Vaild",
         };
         this.$store.state.overlay = false;
