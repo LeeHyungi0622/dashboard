@@ -60,6 +60,7 @@
         <input
           v-if="$store.state.convertorTableUpdateFlag || $store.state.tableShowMode == 'REGISTER'"
           v-model="item.inputValue"
+          maxlength="300"
         />
         <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
       </template>
@@ -80,6 +81,7 @@
         <input
           v-if="$store.state.convertorTableUpdateFlag || $store.state.tableShowMode == 'REGISTER'"
           v-model="item.inputValue"
+          maxlength="300"
         />
         <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
       </template>

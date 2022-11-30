@@ -53,10 +53,10 @@
                 {{ item }}
               </option>
             </select>
-            <input v-else-if="content.name == 'Password'"  type="password" id="password" v-model="content.inputValue"/>
-            <input v-else type="text" v-model="content.inputValue" />
+            <input v-else-if="content.name == 'Password'"  type="password" id="password" v-model="content.inputValue" maxlength="300"/>
+            <input v-else type="text" v-model="content.inputValue" maxlength="300"/>
           </div>
-          <input v-else type="text" id="normal" v-model="content.inputValue" />
+          <input v-else type="text" id="normal" v-model="content.inputValue" maxlength="300"/>
         </div>
         <!-- BASE64인데 수정 아닐시 -->
         <div class="disf" v-else-if="content.name == `isBase64`">

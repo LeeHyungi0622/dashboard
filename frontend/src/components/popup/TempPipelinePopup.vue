@@ -13,14 +13,12 @@
           {{ contents.subTitle }}
         </v-card-title>
         <v-card-text
-          style="
-            height: auto;
+          style="height: auto;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
-          " 
+            text-align: center;" 
           class="fs14"
         >
           <div class="search" style="height: 30px">
@@ -33,9 +31,9 @@
                   {{ title }}
                 </option>
               </select>
-            <input type="text" class="mgL12" v-model="pipelineFilterInput"/>
+            <input type="text" class="mgL12" v-model="pipelineFilterInput" maxlength="300"/>
             <!-- <button class="mgL12" @click="actionFilter()">검색</button> -->
-            <select name="" id="" class="mgL12" v-model="perPage">
+            <select name="" id="" class="mgL12" v-model="perPage" @change="resetPage($event)">
               <option value="5">5개씩 표시</option>
               <option value="10">10개씩 표시</option>
             </select>
@@ -48,7 +46,7 @@
             class="pipelineTable mgT12"
             :search="searchValue"
             :hide-default-footer="true"
-            style="text-align: center; width: 100%"
+            style="text-align: center; width: 100% "
           >
             <template v-slot:[`item.readAction`]="{ item }">
               <button @click="goPipelineRegister(item)">이동</button>
@@ -66,7 +64,6 @@
               <img :src="imgSrc[getImg(item.isConverter)]" />
             </template>
           </v-data-table>
-          <div>
             <div class="paginationBox">
               <div class="firstPageBtnBox">
                 <button
@@ -78,7 +75,7 @@
               <v-pagination
                 v-model="currentPage"
                 :length="totalPage"
-                :total-visible="7"
+                :total-visible="100"
                 color="#2B4F8C"
               ></v-pagination>
               <div class="lastPageBtnBox">
@@ -89,7 +86,6 @@
                 ></button>
               </div>
             </div>
-          </div>
         </v-card-text>
 
         <v-card-actions style="display: flex; justify-content: center">
@@ -131,6 +127,7 @@ export default {
     },
   },
   created() {
+
     tempPipelineListService
       .getTempPipelineList()
       .then((res) => {
@@ -138,6 +135,9 @@ export default {
         this.vuetifyData = res;
       })
       .catch((error) => error);
+  },
+  mounted(){
+    this.currentPage = 1;
   },
   computed: {
     totalPage() {
@@ -198,6 +198,9 @@ export default {
     };
   },
   methods: {
+    resetPage(){
+      this.currentPage =1;
+    },
     getImg(value) {
       let imgSrc = "x";
       if (value) {
@@ -222,7 +225,8 @@ export default {
           " 파이프라인이 삭제됩니다." +
           "<br/> <br/> 계속 진행하시겠습니까?",
         url: "deleteTemp",
-        id: item.id
+        id: item.id,
+        name: item.name
       };
       EventBus.$emit("show-confirm-popup", alertPayload);
     },

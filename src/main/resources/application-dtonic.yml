@@ -39,6 +39,11 @@ server:
     session.timeout: 60m
   tomcat:
     remote-ip-header: x-forwarded-for
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.jks
+    key-store-type: JKS
+    key-store-password: u9989z
 
 ## Logging
 logging.config: classpath:logback-spring.xml
