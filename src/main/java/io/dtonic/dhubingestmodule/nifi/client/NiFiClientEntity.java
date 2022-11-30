@@ -95,7 +95,7 @@ public class NiFiClientEntity {
             auth.setAccessToken(accessToken);
             log.info("NiFi Access Token is Refreshed : AccessToken = {}", accessToken);
         } else {
-            log.info("NiFi Access Token is Allowed");
+            log.debug("NiFi Access Token is Allowed");
         }
     }
 }

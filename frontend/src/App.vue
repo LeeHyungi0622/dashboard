@@ -196,7 +196,6 @@ export default {
                   url: "completedUpdate",
                 };
               EventBus.$emit("show-alert-popup", alertPayload);
-              this.$router.go();
             }
 
           }).catch((error) => error)
@@ -212,7 +211,6 @@ export default {
                   url: "completedUpdate",
                 };
               EventBus.$emit("show-alert-popup", alertPayload);
-              this.$router.go();
             }
 
           }).catch((error) => error)
