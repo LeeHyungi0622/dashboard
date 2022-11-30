@@ -118,17 +118,20 @@ export default {
     saveComplete(){
       this.$store.state.overlay = true;
       PipelineRegister
-        .postPipelineCompleted(this.$store.state.registerPipeline.id, this.$store.state.registerPipeline)
-          .catch((err) => {
-            EventBus.$emit("show-alert-popup", this.alertErrorContent);
-            console.error(err);
-          });
+        .postPipelineCompleted(this.$store.state.registerPipeline.id, this.$store.state.registerPipeline).then(()=>{
           this.$store.state.overlay = true;
           
           this.$router.push({
             name: "pipelineList"
           });
           EventBus.$emit("show-alert-popup", this.alertContent);
+        }
+        )
+          .catch((err) => {
+            EventBus.$emit("show-alert-popup", this.alertErrorContent);
+            console.error(err);
+          });
+          
     }
   },
 };

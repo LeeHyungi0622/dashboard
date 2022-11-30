@@ -85,7 +85,8 @@
         </div>
         <div class="value">
           <div>
-            <input type="text" v-model="schedulingDetail" />
+            <input v-if="$store.state.collectorTableUpdateFlag" type="text" v-model="schedulingDetail" maxlength="300"/>
+            <div style="padding-left: 20px" v-else>{{ schedulingDetail }}</div>
           </div>
         </div>
       </div>
@@ -122,12 +123,12 @@ import CustomTable from "../../components/pipeline/CustomTable.vue";
 import collectorService from "../../js/api/collector";
 import EventBus from "@/eventBus/EventBus.js";
 import CronVaildator from 'cron-expression-validator';
-
 export default {
   components: {
     CustomTable,
   },
   created() {
+
     this.getCollector();
     if(this.$store.state.tableShowMode == `UPDATE`){
       this.getPipeline = this.$store.state.completedPipeline;
@@ -274,6 +275,7 @@ export default {
             this.$store.state.overlay = false;
           })
           .catch((err) => {
+            this.$store.state.overlay = false;
             console.error(err);
           });
     },
