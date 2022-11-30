@@ -256,10 +256,8 @@ export default {
     },
     getMessage() {
       this.$ws.onmessage = ({ data }) => {
-        console.log("this is data",data);
         this.$store.state.pipelineList = JSON.parse(data);
         this.filteritems = JSON.parse(data);
-        console.log("this is this.filteritems",this.filteritems);
       };
     },
     disconnect() {
