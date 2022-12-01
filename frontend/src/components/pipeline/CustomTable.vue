@@ -53,7 +53,7 @@
                 {{ item }}
               </option>
             </select>
-            <input v-else-if="content.name == 'Password'"  type="password" id="password" v-model="content.inputValue" maxlength="300"/>
+            <input v-else-if="content.name.toUpperCase().includes('PASSWORD')"  type="password" id="password" v-model="content.inputValue" maxlength="300"/>
             <input v-else type="text" v-model="content.inputValue" maxlength="300"/>
           </div>
           <input v-else type="text" id="normal" v-model="content.inputValue" maxlength="300"/>
@@ -69,7 +69,7 @@
           {{ content.inputValue == "true" ? "On" : "Off" }}
         </div>
         <!-- 수정 아닐시 -->
-        <div style="padding-left: 20px" v-else-if="content.name == 'Password'">{{ showPasswordMasking(content.inputValue) }}</div>
+        <div style="padding-left: 20px" v-else-if="content.name.toUpperCase().includes('PASSWORD')">{{ showPasswordMasking(content.inputValue) }}</div>
         <div style="padding-left: 20px" v-else>{{ content.inputValue }}</div>
       </div>
     </div>

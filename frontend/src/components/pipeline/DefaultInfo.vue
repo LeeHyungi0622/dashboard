@@ -255,30 +255,36 @@ export default {
     saveDraft(){
       this.$store.state.overlay = true;
       if(this.checkTmpPipelineName()){
-        if(this.checkSpaceInput(this.contents)){
-          if(this.checkLength()){
-            this.$store.state.registerPipeline.name = this.contents[0].inputValue;
-            this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
-            this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
-            pipelineRegisterService
-              .craetePipelineDraft(this.$store.state.registerPipeline)
-              .then((res) => {
-                this.$store.state.registerPipeline = res.data;
-                this.$store.state.overlay = false;
-                this.showDraftCompleted();
-              })
-              .catch((err) => {
-                console.error(err);
-              });
+        if(this.checkComPipelineName()){
+          if(this.checkSpaceInput(this.contents)){
+            if(this.checkLength()){
+              this.$store.state.registerPipeline.name = this.contents[0].inputValue;
+              this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+              this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
+              pipelineRegisterService
+                .craetePipelineDraft(this.$store.state.registerPipeline)
+                .then((res) => {
+                  this.$store.state.registerPipeline = res.data;
+                  this.$store.state.overlay = false;
+                  this.showDraftCompleted();
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+            }
+            else{
+              this.$store.state.overlay = false;
+              this.showInputLengthPipeline();
+            }
           }
           else{
             this.$store.state.overlay = false;
-            this.showInputLengthPipeline();
+            this.showInputErrorPipeline();
           }
         }
         else{
           this.$store.state.overlay = false;
-          this.showInputErrorPipeline();
+          this.showInvaildComPipelineName();
         }
       }
       else{
