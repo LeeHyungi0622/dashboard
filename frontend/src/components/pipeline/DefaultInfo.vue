@@ -39,7 +39,7 @@
 import CustomTable from "../../components/pipeline/CustomTable.vue";
 import pipelineRegisterService from "../../js/api/pipelineRegister";
 import tempPipelineListService from "../../js/api/tempPipelineList";
-
+import pipelineListService from "../../js/api/pipelineList";
 import EventBus from "@/eventBus/EventBus.js";
 export default {
   props: {
@@ -49,6 +49,15 @@ export default {
     CustomTable,
   },
   mounted() {
+    pipelineListService
+      .getPipelineList()
+      .then((res) => {
+        this.$store.state.pipelineList = res;
+        this.filteritems = res;
+      })
+      .catch((err) => {
+        console.log("PipelineList 조회에 실패하였습니다.", err);
+      });
     tempPipelineListService
       .getTempPipelineList()
       .then((res) => {

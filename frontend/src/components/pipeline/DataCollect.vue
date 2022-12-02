@@ -198,8 +198,11 @@ export default {
             for(let prop of nifi.optionalProps){
               if(prop.inputValue == ""){
                 prop.inputValue = null;
+              } else if(prop.inputValue != null &&prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+                return [false, prop, nifi.name];
               }
             }
+            return [true, null, null];
           }
         }
         return [true, null, null];
@@ -384,6 +387,7 @@ export default {
         });
     },
     saveDraft(){
+      if(this.isCompleted[0]){
       this.$store.state.overlay = true;
       this.$store.state.registerPipeline = this.getPipeline;
       collectorService
@@ -396,6 +400,18 @@ export default {
         .catch((err) => {
           console.error(err);
         });
+      } else{
+        let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 입력 값에 오류가 있습니다. " +
+            "<br/> 수집 설정 목록 중 " + this.isCompleted[2] + " 의" +
+            "<br/>" + this.isCompleted[1].name + " 항목을 확인해주세요.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+      }
     },
     showDraftCompleted(){
       let alertPayload = {

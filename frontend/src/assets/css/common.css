@@ -772,4 +772,10 @@ select {
   justify-content: center;
   border-left: 1px solid #DFDFDF;
 }
+.ofhover {
+  overflow: auto;
+}
 
+.ofhover::-webkit-scrollbar {
+  margin-bottom: 3%;
+}
