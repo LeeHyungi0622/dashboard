@@ -224,7 +224,7 @@ export default {
                   title: "삭제 완료",
                   text:
                     val.name + " 파이프라인의 삭제가 완료되었습니다.",
-                  url: "completedUpdate",
+                  url: "",
                 };
               EventBus.$emit("show-alert-popup", alertPayload);
               this.$router.go();
