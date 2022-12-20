@@ -294,6 +294,9 @@ public class NiFiController {
             } else if (a.getValueType().equals("BigDecimal")) {
                 e.put("value", "=toDouble");
                 ae.put(a.getName(), e);
+            } else if (a.getValueType().equals("String")) {
+                e.put("value", "=toString");
+                ae.put(a.getName(), e);
             }
         }
         en.put("*", ae);

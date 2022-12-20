@@ -257,7 +257,7 @@ export default {
     getMessage() {
       this.$ws.onmessage = ({ data }) => {
         this.$store.state.pipelineList = JSON.parse(data);
-        this.filteritems = JSON.parse(data);
+        // this.filteritems = JSON.parse(data);
       };
     },
     disconnect() {

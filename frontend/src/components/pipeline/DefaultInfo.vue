@@ -205,41 +205,47 @@ export default {
     nextRoute() {
       this.$store.state.overlay = true;
       if(this.checkTmpPipelineName()){
-        if(this.checkSpaceInput(this.contents)){
-          if(this.checkLength()){
-            this.$store.state.registerPipeline.name = this.contents[0].inputValue;
-            this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
-            this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
-            pipelineRegisterService
-              .craetePipelineDraft(this.$store.state.registerPipeline)
-              .then((res) => {
-                if(res.status != 400){
-                  this.$store.state.registerPipeline = res.data;
-                  this.$store.state.showRegisterMode = 'collector';
-                  this.$store.state.overlay = false;
-                }
-                else{
-                  this.$store.state.overlay = false;
-                  this.showInvaildPipelineName();
-                }
-              })
-              .catch((err) => {
-                console.error(err);
-              });
+        if(this.checkComPipelineName()){
+          if(this.checkSpaceInput(this.contents)){
+            if(this.checkLength()){
+              this.$store.state.registerPipeline.name = this.contents[0].inputValue;
+              this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+              this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
+              pipelineRegisterService
+                .craetePipelineDraft(this.$store.state.registerPipeline)
+                .then((res) => {
+                  if(res.status != 400){
+                    this.$store.state.registerPipeline = res.data;
+                    this.$store.state.showRegisterMode = 'collector';
+                    this.$store.state.overlay = false;
+                  }
+                  else{
+                    this.$store.state.overlay = false;
+                    this.showInvaildPipelineName();
+                  }
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+            }
+            else{
+              this.$store.state.overlay = false;
+              this.showInputLengthPipeline();
+            }
           }
           else{
             this.$store.state.overlay = false;
-            this.showInputLengthPipeline();
+            this.showInputErrorPipeline();
           }
-        }
+        }else{
+          this.$store.state.overlay = false;
+          this.showInvaildComPipelineName();
+        }}
         else{
           this.$store.state.overlay = false;
-          this.showInputErrorPipeline();
-        }
-      }else{
-        this.$store.state.overlay = false;
           this.showInvaildPipelineName();
-      }
+        }
+      
     },
     changeUpdateFlag(){
       if(this.checkComPipelineName()){

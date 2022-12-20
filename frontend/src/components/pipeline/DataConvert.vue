@@ -239,6 +239,17 @@ export default {
         if(isOkProps && isOkId) return [true, null];
       }
       return [false, null];
+    },
+    isTempVaild(){
+      if(this.convProps.length != 0 && this.convId.length != 0){
+        for(let prop of this.convProps){
+          if(prop.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,"level"];
+        }
+        for(let id of this.convId){
+          if(id.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,"level"];
+        }
+      }
+      return [true, null];
     }
   },
  
@@ -447,49 +458,73 @@ export default {
     },
     beforeRoute(){
       this.$store.state.overlay = true;
-      if(this.rawDataSetProps.requiredProps.length != 0){
-        this.convertToProps();
-        this.convertToId();
-        let convertNifi = []
-        convertNifi.push(this.rawDataSetProps);
-        convertNifi.push(this.rawIdNifi);
-        this.getPipeline.converter.nifiComponents = convertNifi;
+      if(this.isTempVaild[0]){
+        if(this.rawDataSetProps.requiredProps.length != 0){
+          this.convertToProps();
+          this.convertToId();
+          let convertNifi = []
+          convertNifi.push(this.rawDataSetProps);
+          convertNifi.push(this.rawIdNifi);
+          this.getPipeline.converter.nifiComponents = convertNifi;
+        }
+          this.$store.state.registerPipeId = this.generationKey.split(":")[1];
+        this.$store.state.registerPipeline = this.getPipeline;
+        collectorService
+          .postPipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.$store.state.showRegisterMode = 'filter';
+            this.$store.state.overlay = false;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        }      else{
+        let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
+            "<br/>공백을 확인해 주십시오.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
       }
-        this.$store.state.registerPipeId = this.generationKey.split(":")[1];
-      this.$store.state.registerPipeline = this.getPipeline;
-      collectorService
-        .postPipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          this.$store.state.registerPipeline = res;
-          this.$store.state.showRegisterMode = 'filter';
-          this.$store.state.overlay = false;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
     },
     saveDraft(){
       this.$store.state.overlay = true;
-      if(this.rawDataSetProps.requiredProps.length != 0){
-        this.convertToProps();
-        this.convertToId();
-        let convertNifi = []
-        convertNifi.push(this.rawIdNifi);
-        convertNifi.push(this.rawDataSetProps);
-        this.getPipeline.converter.nifiComponents = convertNifi;
+      if(this.isTempVaild[0]){
+        if(this.rawDataSetProps.requiredProps.length != 0){
+          this.convertToProps();
+          this.convertToId();
+          let convertNifi = []
+          convertNifi.push(this.rawIdNifi);
+          convertNifi.push(this.rawDataSetProps);
+          this.getPipeline.converter.nifiComponents = convertNifi;
+        }
+        this.$store.state.registerPipeId = this.generationKey;
+        this.$store.state.registerPipeline = this.getPipeline;
+        collectorService
+          .postPipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.$store.state.overlay = false;
+            this.showDraftCompleted();
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        }else{
+        let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
+            "<br/>공백을 확인해 주십시오.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
       }
-      this.$store.state.registerPipeId = this.generationKey;
-      this.$store.state.registerPipeline = this.getPipeline;
-      collectorService
-        .postPipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          this.$store.state.registerPipeline = res;
-          this.$store.state.overlay = false;
-          this.showDraftCompleted();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
     },
     showDraftCompleted(){
       let alertPayload = {
