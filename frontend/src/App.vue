@@ -114,8 +114,9 @@ export default {
   mounted(){
     UserInfo.getUserInfo()
       .then((res) => {
-        this.userInfo = res;
-        this.$store.state.userInfo = res;
+          this.userInfo = res;
+          this.$store.state.userInfo = res;
+
       })
       .catch((err) => {
         console.log("Fail to Get User Info", err);
@@ -178,17 +179,13 @@ export default {
 
   },
   methods: {
-    set_cookie(name, value, unixTime) {
-      var date = new Date();
-      date.setTime(date.getTime() + unixTime);
-      document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';expires=' + date.toUTCString() + ';path=/';
-    },
     closeConfirmPopup: function (val) {
       if(val.url == "update"){
         if(val.body == 'RUN'){
           PipelineList.putPipelineStatus(val.id, 'STOPPING').then((res) => {
             let isSuccess = res.status === 200 || 201 || 204;
             if(isSuccess){
+              this.confirmShowFlag = false;
               let alertPayload = {
                   title: "정지 완료",
                   text:
@@ -204,6 +201,7 @@ export default {
           PipelineList.putPipelineStatus(val.id, 'STARTING').then((res) => {
             let isSuccess = res.status === 200 || 201 || 204;
             if(isSuccess){
+              this.confirmShowFlag = false;
               let alertPayload = {
                   title: "실행 완료",
                   text:
@@ -220,23 +218,25 @@ export default {
         PipelineList.deletePipeline(val.id).then((res) => {
             let isSuccess = res.status === 200 || 201 || 204;
             if(isSuccess){
+              this.confirmShowFlag = false;
               let alertPayload = {
                   title: "삭제 완료",
                   text:
                     val.name + " 파이프라인의 삭제가 완료되었습니다.",
-                  url: "",
+                  url: "pipelineDel",
                 };
               EventBus.$emit("show-alert-popup", alertPayload);
-              this.$router.go();
+              
             }
 
-          }).catch((error) => error)
+          }).catch((error) => error);
         
       }
       else if(val.url == "deleteTemp"){
         PipelineList.deleteTempPipeline(val.id).then((res) => {
           let isSuccess = res.status === 200 || 201 || 204;
           if(isSuccess){
+            this.confirmShowFlag = false;
             PipelineList.getTempPipelineList()
             .then((res) => {
               this.$store.state.tempPipelineList = res;
@@ -285,6 +285,7 @@ export default {
       this.alertContent.text = payload.text;
       this.alertContent.url = payload.url;
       this.alertContent.name = payload.name;
+
     },
     closeTempPipelinePopup: function () {
       this.tempPipelineShowFlag = false;
@@ -299,7 +300,6 @@ export default {
       } else {
         UserInfo.sendLogOut()
           .then(response => {
-            console.log(response);
             const resultCode = response.status === 200 || 201 || 204;
             if (resultCode) {
               location.replace('/');

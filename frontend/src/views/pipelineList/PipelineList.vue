@@ -120,7 +120,6 @@ import tempPipeline from "../../json/tempPipeline.json";
 export default {
   mounted() {
     this.$store.state.overlay = true;
-    console.log(this.$ws);
     this.connect();
     pipelineListService
       .getPipelineList()
@@ -275,6 +274,9 @@ export default {
         this.searchValue = event.target.value;
       }
       else{
+        if(event.target.value == ""){
+          this.pipelineFilterInput = "";
+        }
         this.pipelineFilter = event.target.value;
       }
     },

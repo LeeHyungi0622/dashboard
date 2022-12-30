@@ -184,7 +184,10 @@ export default {
             continue;
           }
           else{
-            if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
+            if(prop.inputValue == null) {
+              return [false, prop];
+            }
+            else if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
               return [false, prop];
             }
             else{
@@ -211,6 +214,9 @@ export default {
         }
         for(let id of this.convId){
           if(id.inputValue){
+            if(id.inputValue == null) {
+              return [false, id];
+            }
             if(!id.inputValue.includes("\"") || id.inputValue.includes(" ") || id.inputValue.includes("\"\"")){
               return [false, id];
             }
@@ -243,9 +249,15 @@ export default {
     isTempVaild(){
       if(this.convProps.length != 0 && this.convId.length != 0){
         for(let prop of this.convProps){
+          if(prop.inputValue == null) {
+              return [false, prop];
+            }
           if(prop.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,"level"];
         }
         for(let id of this.convId){
+          if(id.name == "level1" && id.inputValue == null) {
+              return [false, id];
+            }
           if(id.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,"level"];
         }
       }
@@ -458,7 +470,7 @@ export default {
     },
     beforeRoute(){
       this.$store.state.overlay = true;
-      if(this.isTempVaild[0]){
+
         if(this.rawDataSetProps.requiredProps.length != 0){
           this.convertToProps();
           this.convertToId();
@@ -479,21 +491,11 @@ export default {
           .catch((err) => {
             console.error(err);
           });
-        }      else{
-        let alertPayload = {
-          title: "입력 값 오류",
-          text:
-            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
-            "<br/>공백을 확인해 주십시오.",
-          url: "not Vaild",
-        };
-        this.$store.state.overlay = false;
-        EventBus.$emit("show-alert-popup", alertPayload);
-      }
+        
     },
     saveDraft(){
       this.$store.state.overlay = true;
-      if(this.isTempVaild[0]){
+      if(this.isVaild[0]){
         if(this.rawDataSetProps.requiredProps.length != 0){
           this.convertToProps();
           this.convertToId();

@@ -78,6 +78,9 @@ export default {
                 if(prop.inputValue == 'origin') {
                   return [true, null];
                 }
+                if(prop.inputValue == null) {
+                  return [false, prop];
+                }
                 if(!prop.inputValue.includes("\"") || prop.inputValue.replace(/^\s+|\s+$/g, '')=="" || prop.inputValue.includes("\"\"")){
                   return [false, prop];
                 }

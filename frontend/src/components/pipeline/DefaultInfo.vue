@@ -155,14 +155,15 @@ export default {
       }
     },
     checkSpaceInput(contents){
-      for(let e of contents){
-        if(e.inputValue != ""){
-          if(e.inputValue.replace(/^\s+|\s+$/g, '')==""){
-            return false;
-          }
-        }
+      let all_blank_pattern = /[\s]/g;
+      let blank_pattern = /^\s+|\s+$/g;
+      if(all_blank_pattern.test(contents[0].inputValue) == true){
+        return [false, "title"];
       }
-      return true;
+      if(blank_pattern.test(contents[1].inputValue) == true){
+        return [false, "detail"];
+      }
+      return [true, null];
     },
     checkTmpPipelineName(){
       //현재 등록 중인 파이프라인과 이름이 동일할 경우 그냥 Pass
@@ -206,7 +207,7 @@ export default {
       this.$store.state.overlay = true;
       if(this.checkTmpPipelineName()){
         if(this.checkComPipelineName()){
-          if(this.checkSpaceInput(this.contents)){
+          if(this.checkSpaceInput(this.contents)[0]){
             if(this.checkLength()){
               this.$store.state.registerPipeline.name = this.contents[0].inputValue;
               this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
@@ -235,7 +236,7 @@ export default {
           }
           else{
             this.$store.state.overlay = false;
-            this.showInputErrorPipeline();
+            this.showInputErrorPipeline(this.checkSpaceInput(this.contents)[1]);
           }
         }else{
           this.$store.state.overlay = false;
@@ -249,7 +250,7 @@ export default {
     },
     changeUpdateFlag(){
       if(this.checkComPipelineName()){
-        if(this.checkSpaceInput(this.contents)){
+        if(this.checkSpaceInput(this.contents)[0]){
           if(this.checkLength()){
           this.$store.state.infoTableUpdateFlag = !this.$store.state.infoTableUpdateFlag;
           this.$store.state.completedPipeline.name = this.contents[0].inputValue;
@@ -260,7 +261,7 @@ export default {
           }
         }
         else{
-          this.showInputErrorPipeline();
+          this.showInputErrorPipeline(this.checkSpaceInput(this.contents)[1]);
         }
       }
       else{
@@ -271,7 +272,7 @@ export default {
       this.$store.state.overlay = true;
       if(this.checkTmpPipelineName()){
         if(this.checkComPipelineName()){
-          if(this.checkSpaceInput(this.contents)){
+          if(this.checkSpaceInput(this.contents)[0]){
             if(this.checkLength()){
               this.$store.state.registerPipeline.name = this.contents[0].inputValue;
               this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
@@ -294,7 +295,7 @@ export default {
           }
           else{
             this.$store.state.overlay = false;
-            this.showInputErrorPipeline();
+            this.showInputErrorPipeline(this.checkSpaceInput(this.contents)[1]);
           }
         }
         else{
@@ -327,15 +328,26 @@ export default {
           };
           EventBus.$emit("show-alert-popup", alertPayload);
     },
-    showInputErrorPipeline(){
-      let alertPayload = {
-            title: "입력 값 공백 오류",
+    showInputErrorPipeline(detail){
+      if(detail == "title"){
+        let alertPayload = {
+            title: "파이프라인 이름 입력 오류",
             text:
-              "입력 값의 앞/뒤에 공백 설정된 값이 존재합니다." +
-              "<br/> 또는 공백 만으로 이름 또는 정의를 설정할 수 없습니다.",
+              "파이프라인 이름에 공백 설정된 값이 존재합니다." +
+              "<br/> 파이프라인 이름은 공백을 포함하여 이름을 설정할 수 없습니다.",
             url: "not Vaild",
           };
           EventBus.$emit("show-alert-popup", alertPayload);
+      } else if(detail == "detail"){
+        let alertPayload = {
+            title: "파이프라인 상세 입력 값 공백 오류",
+            text:
+              "입력 값의 앞/뒤에 공백 설정된 값이 존재합니다." +
+              "<br/> 또는 공백 만으로 정의를 설정할 수 없습니다.",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
+      }
     },
     showInputLengthPipeline(){
       let alertPayload = {
