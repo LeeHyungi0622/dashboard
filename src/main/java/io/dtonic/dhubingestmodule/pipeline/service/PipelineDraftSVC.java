@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PipelineDraftSVC {
@@ -199,27 +201,23 @@ public class PipelineDraftSVC {
 
             JSONObject jObject = new JSONObject(flowJsonString);
             int nifiComponentLength = jObject.getJSONArray("nifiComponents").length();
-
             for (int i = 0; i < nifiComponentLength; i++) {
                 JSONObject jObj = new JSONObject(
                     jObject.getJSONArray("nifiComponents").get(i).toString()
-                );
-                if (jObj.getString("name") == "IDGenerater") {
+                    );
+                    
+                if (jObj.getString("name").equals("IDGenerater")) {
                     JSONArray properties = jObj.getJSONArray("requiredProps");
                     for (idx = 0; idx < properties.length(); idx++) {
                         if (
-                            properties.getJSONObject(idx).getString("name") == "level2" ||
-                            properties.getJSONObject(idx).getString("name") == "level3"
+                            properties.getJSONObject(idx).getString("name").equals("level1") &&
+                            (properties.getJSONObject(idx).isNull("inputValue") ||
+                            properties.getJSONObject(idx).getString("inputValue").equals(""))
                         ) {
                             break;
-                        } else if (
-                            properties.getJSONObject(idx).isNull("inputValue") ||
-                            properties.getJSONObject(idx).getString("inputValue") == ""
-                        ) {
-                            continue;
-                        }
+                        } 
                     }
-                    if (idx == properties.length()) {
+                    if (idx > 0) {
                         completeCnt++;
                     }
                 } else {
@@ -227,7 +225,7 @@ public class PipelineDraftSVC {
                     for (idx = 0; idx < properties.length(); idx++) {
                         if (
                             properties.getJSONObject(idx).isNull("inputValue") ||
-                            properties.getJSONObject(idx).getString("inputValue") == ""
+                            properties.getJSONObject(idx).getString("inputValue").equals("")
                         ) {
                             break;
                         }

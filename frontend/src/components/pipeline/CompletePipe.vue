@@ -36,6 +36,7 @@
 import CustomTable from "./CustomTable.vue";
 import PipelineRegister from "../../js/api/pipelineRegister";
 import EventBus from "@/eventBus/EventBus.js";
+import collectorService from "../../js/api/collector";
 export default {
   components: {
     CustomTable,
@@ -112,8 +113,18 @@ export default {
       );
     },
     beforeRoute(){
-      this.$store.state.tableShowMode = 'REGISTER';
-      this.$store.state.showRegisterMode = 'convertor';
+      this.$store.state.overlay = true;
+      collectorService
+          .postPipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.$store.state.tableShowMode = 'REGISTER';
+            this.$store.state.showRegisterMode = 'convertor';
+            this.$store.state.overlay = false;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
     },
     saveComplete(){
       this.$store.state.overlay = true;

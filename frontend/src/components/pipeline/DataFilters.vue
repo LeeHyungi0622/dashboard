@@ -189,7 +189,7 @@ export default {
     },
     beforeRoute(){
       this.$store.state.overlay = true;
-      if(this.isVaild[0]){
+ 
       this.$store.state.registerPipeline.filter = this.filterData;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
@@ -202,23 +202,11 @@ export default {
           this.$store.state.overlay = false;
           console.error(err);
         });
-      }else{
-        this.$store.state.overlay = false;
-        let alertPayload = {
-          title: "입력 값 오류",
-          text:
-            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
-            "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오."+
-            "<br/>원본 데이터를 그대로 사용할 경우 [origin]을 입력해주십시오." ,
-          url: "not Vaild",
-        };
-        this.$store.state.overlay = false;
-        EventBus.$emit("show-alert-popup", alertPayload);
-      }
+      
     },
     saveDraft(){
       this.$store.state.overlay = true;
-      if(this.isVaild[0]){
+
       this.$store.state.registerPipeline.filter = this.filterData;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
@@ -231,18 +219,7 @@ export default {
           this.$store.state.overlay = false;
           console.error(err);
         });
-      }else{
-        let alertPayload = {
-          title: "입력 값 오류",
-          text:
-            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
-            "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오."+
-            "<br/>원본 데이터를 그대로 사용할 경우 [origin]을 입력해주십시오." ,
-          url: "not Vaild",
-        };
-        this.$store.state.overlay = false;
-        EventBus.$emit("show-alert-popup", alertPayload);
-      }
+      
     },
     checkCompletedPage(){
       for(var nifi of this.filterData.nifiComponents){

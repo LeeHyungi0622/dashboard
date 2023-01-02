@@ -174,8 +174,20 @@ export default {
             if(nifi.requiredProps){
               for(var prop of nifi.requiredProps){
                 if(prop.name == "Scheduling"){                  
-                  prop.detail = this.schedulingMode;
                   prop.inputValue = this.schedulingDetail;
+                }
+              }
+            }
+          }
+      }
+    },
+    schedulingMode(){
+        if(this.getPipeline.collector!= null){
+          for(var nifi of this.getPipeline.collector.nifiComponents){
+            if(nifi.requiredProps){
+              for(var prop of nifi.requiredProps){
+                if(prop.name == "Scheduling"){                  
+                  prop.detail = this.schedulingMode;
                 }
               }
             }
@@ -211,9 +223,10 @@ export default {
       }
     },
     isSchedulingVaild(){
+      let timerReg = /^[0-9]+ sec$/g;
       if(this.selectedCollectValue !='REST Server'){
         if(this.schedulingMode == "TIMER_DRIVEN"){
-          return this.schedulingDetail.split("sec")[1] == "" ? true : false;
+          return timerReg.test(this.schedulingDetail);
         }
         else if(this.schedulingMode == "CRON_DRIVEN"){
           return CronVaildator.isValidCronExpression(this.schedulingDetail);
@@ -345,7 +358,7 @@ export default {
         if(this.isCompleted[0]){
           this.$store.state.registerPipeline= this.getPipeline;
           collectorService
-            .postPipelineDraft(this.$store.state.registerPipeline)
+            .postPipelineDraft(this.getPipeline)
             .then((res) => {
               this.$store.state.registerPipeline = res;
               this.$store.state.showRegisterMode = 'filter';
@@ -407,7 +420,6 @@ export default {
         });
     },
     saveDraft(){
-      if(this.isCompleted[0]){
       this.$store.state.overlay = true;
       this.$store.state.registerPipeline = this.getPipeline;
       collectorService
@@ -420,29 +432,7 @@ export default {
         .catch((err) => {
           console.error(err);
         });
-      }else if(this.isCompleted[1]=="collector not found"){
-          let alertPayload = {
-          title: "입력 값 오류",
-          text:
-            " 수집기 선택이 필요합니다. " +
-            "<br/> 수집기 목록 중 하나를 선택해주십시오.",
-          url: "not Vaild",
-        };
-        this.$store.state.overlay = false;
-        EventBus.$emit("show-alert-popup", alertPayload);
-        } 
-      else{
-        let alertPayload = {
-          title: "입력 값 오류",
-          text:
-            " 입력 값에 오류가 있습니다. " +
-            "<br/> 수집 설정 목록 중 " + this.isCompleted[2] + " 의" +
-            "<br/>" + this.isCompleted[1].name + " 항목을 확인해주세요.",
-          url: "not Vaild",
-        };
-        this.$store.state.overlay = false;
-        EventBus.$emit("show-alert-popup", alertPayload);
-      }
+      
     },
     showDraftCompleted(){
       let alertPayload = {

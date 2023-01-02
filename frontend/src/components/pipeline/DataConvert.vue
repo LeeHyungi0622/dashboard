@@ -244,7 +244,7 @@ export default {
         }
         if(isOkProps && isOkId) return [true, null];
       }
-      return [false, null];
+      return [false, "not found"];
     },
     isTempVaild(){
       if(this.convProps.length != 0 && this.convId.length != 0){
@@ -252,7 +252,7 @@ export default {
           if(prop.inputValue == null) {
               return [false, prop];
             }
-          if(prop.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,"level"];
+          if(prop.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,prop];
         }
         for(let id of this.convId){
           if(id.name == "level1" && id.inputValue == null) {
@@ -336,8 +336,10 @@ export default {
             if(prop.detail == "Date Format"){
               if(prop.inputValue == null || prop.inputValue == ""){
                 inputValue = "";
-              } else {
+              } else if(this.$store.state.tableShowMode == `UPDATE`){
                 inputValue = prop.inputValue.split("\"")[1];
+              } else{
+                inputValue = prop.inputValue;
               }
               }
               else{
@@ -457,20 +459,31 @@ export default {
           });
       }
       else{
-        let alertPayload = {
-          title: "입력 값 오류",
-          text:
-            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
-            "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오.",
-          url: "not Vaild",
-        };
-        this.$store.state.overlay = false;
-        EventBus.$emit("show-alert-popup", alertPayload);
+        if(this.isVaild[1] == "not found"){
+            let alertPayload = {
+            title: "입력 값 오류",
+            text:
+              " DataSet 선택이 필요합니다. " +
+              "<br/>DataSet 목록 중 하나를 선택해주십시오.",
+            url: "not Vaild",
+          };
+          this.$store.state.overlay = false;
+          EventBus.$emit("show-alert-popup", alertPayload);
+        } else{
+          let alertPayload = {
+            title: "입력 값 오류",
+            text:
+              this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
+              "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오.",
+            url: "not Vaild",
+          };
+          this.$store.state.overlay = false;
+          EventBus.$emit("show-alert-popup", alertPayload);
+        }
       }
     },
     beforeRoute(){
       this.$store.state.overlay = true;
-
         if(this.rawDataSetProps.requiredProps.length != 0){
           this.convertToProps();
           this.convertToId();
@@ -495,7 +508,7 @@ export default {
     },
     saveDraft(){
       this.$store.state.overlay = true;
-      if(this.isVaild[0]){
+
         if(this.rawDataSetProps.requiredProps.length != 0){
           this.convertToProps();
           this.convertToId();
@@ -516,17 +529,7 @@ export default {
           .catch((err) => {
             console.error(err);
           });
-        }else{
-        let alertPayload = {
-          title: "입력 값 오류",
-          text:
-            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
-            "<br/>공백을 확인해 주십시오.",
-          url: "not Vaild",
-        };
-        this.$store.state.overlay = false;
-        EventBus.$emit("show-alert-popup", alertPayload);
-      }
+        
     },
     showDraftCompleted(){
       let alertPayload = {

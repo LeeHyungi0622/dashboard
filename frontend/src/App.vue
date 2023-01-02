@@ -1,8 +1,7 @@
 <template>
   <v-app
     id="inspire"
-    style="font-family: 'Nanum Gothic', sans-serif !important"
-  >
+    style="font-family: 'Nanum Gothic', sans-serif !important"  >
     <v-system-bar
       app
       style=" 
@@ -75,6 +74,11 @@
       :contents="alertContent"
       @close-alert-popup="closeAlertPopup"
     ></alert-popup>
+    <alert-popup
+      v-if="delAlertShowFlag"
+      :contents="delAlertContent"
+      @close-alert-popup="closeDelAlertPopup"
+    ></alert-popup>
     <temp-pipeline-popup
       v-if="tempPipelineShowFlag"
       @close-temp-pipeline-popup="closeTempPipelinePopup"
@@ -112,15 +116,41 @@ export default {
     }
   },
   mounted(){
-    UserInfo.getUserInfo()
-      .then((res) => {
-          this.userInfo = res;
-          this.$store.state.userInfo = res;
+    // if(this.getCookie("chaut") === ""){
+    //   alert("로그인이 필요한 페이지 입니다.");
+    //   location.reload();
+    // }
+    // else{
+    //   UserInfo.getUserInfo()
+    //     .then((res) => {
+    //       let isSuccess = res.status === 200 || 201 || 204;
+    //       if(isSuccess){
+    //         this.userInfo = res;
+    //         this.$store.state.userInfo = res;
+    //       } 
+    //       else {
+    //         alert("사용자 정보를 불러오는데 실패했습니다.");
+    //       }  
+    //     })
+    //     .catch((err) => {
+    //       console.log("Fail to Get User Info", err);
+    //     });
+    // }
 
-      })
-      .catch((err) => {
-        console.log("Fail to Get User Info", err);
-      });
+      UserInfo.getUserInfo()
+        .then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            this.userInfo = res;
+            this.$store.state.userInfo = res;
+          } 
+          else {
+            alert("사용자 정보를 불러오는데 실패했습니다.");
+          }  
+        })
+        .catch((err) => {
+          console.log("Fail to Get User Info", err);
+        });
   },
   data() {
     return {
@@ -134,6 +164,12 @@ export default {
         name: "default"
       },
       alertContent: {
+        title: "default",
+        text: "default",
+        url: "default",
+        name: "default"
+      },
+      delAlertContent: {
         title: "default",
         text: "default",
         url: "default",
@@ -158,6 +194,7 @@ export default {
       confirmShowFlag: false,
       userAlertShowFlag: false,
       alertShowFlag: false,
+      delAlertShowFlag: false,
       menu: [
         ["사용자 정보", "userInfo"],
         ["로그아웃", "logout"]
@@ -176,9 +213,25 @@ export default {
     EventBus.$on("show-temp-pipeline-popup", (payload) => {
       this.showTempPipelinePopup(payload);
     });
+    EventBus.$on("show-del-pipeline-popup", (payload) => {
+      this.showDelAlertPopup(payload);
+    });
 
   },
   methods: {
+    getCookie(cName) {
+      cName = cName + '=';
+      let cookieData = document.cookie;
+      let start = cookieData.indexOf(cName);
+      let cValue = '';
+      if(start != -1){
+        start += cName.length;
+        let end = cookieData.indexOf(';', start);
+        if(end == -1)end = cookieData.length;
+        cValue = cookieData.substring(start, end);
+      }
+      return unescape(cValue);
+  },
     closeConfirmPopup: function (val) {
       if(val.url == "update"){
         if(val.body == 'RUN'){
@@ -225,7 +278,7 @@ export default {
                     val.name + " 파이프라인의 삭제가 완료되었습니다.",
                   url: "pipelineDel",
                 };
-              EventBus.$emit("show-alert-popup", alertPayload);
+              EventBus.$emit("show-del-pipeline-popup", alertPayload);
               
             }
 
@@ -285,7 +338,17 @@ export default {
       this.alertContent.text = payload.text;
       this.alertContent.url = payload.url;
       this.alertContent.name = payload.name;
-
+    },
+    closeDelAlertPopup: function () {
+      this.delAlertShowFlag = false;
+      location.reload();
+    },
+    showDelAlertPopup(payload) {
+      this.delAlertShowFlag = true;
+      this.delAlertContent.title = payload.title;
+      this.delAlertContent.text = payload.text;
+      this.delAlertContent.url = payload.url;
+      this.delAlertContent.name = payload.name;
     },
     closeTempPipelinePopup: function () {
       this.tempPipelineShowFlag = false;
@@ -307,7 +370,7 @@ export default {
             }
           });
       }
-    }
+    },
   }
 };
 </script>
