@@ -116,27 +116,11 @@ export default {
     }
   },
   mounted(){
-    // if(this.getCookie("chaut") === ""){
-    //   alert("로그인이 필요한 페이지 입니다.");
-    //   location.reload();
-    // }
-    // else{
-    //   UserInfo.getUserInfo()
-    //     .then((res) => {
-    //       let isSuccess = res.status === 200 || 201 || 204;
-    //       if(isSuccess){
-    //         this.userInfo = res;
-    //         this.$store.state.userInfo = res;
-    //       } 
-    //       else {
-    //         alert("사용자 정보를 불러오는데 실패했습니다.");
-    //       }  
-    //     })
-    //     .catch((err) => {
-    //       console.log("Fail to Get User Info", err);
-    //     });
-    // }
-
+    if(this.getCookie("chaut") === ""){
+      alert("로그인이 필요한 페이지 입니다.");
+      location.reload();
+    }
+    else{
       UserInfo.getUserInfo()
         .then((res) => {
           let isSuccess = res.status === 200 || 201 || 204;
@@ -151,6 +135,22 @@ export default {
         .catch((err) => {
           console.log("Fail to Get User Info", err);
         });
+    }
+
+      // UserInfo.getUserInfo()
+      //   .then((res) => {
+      //     let isSuccess = res.status === 200 || 201 || 204;
+      //     if(isSuccess){
+      //       this.userInfo = res;
+      //       this.$store.state.userInfo = res;
+      //     } 
+      //     else {
+      //       alert("사용자 정보를 불러오는데 실패했습니다.");
+      //     }  
+      //   })
+      //   .catch((err) => {
+      //     console.log("Fail to Get User Info", err);
+      //   });
   },
   data() {
     return {
