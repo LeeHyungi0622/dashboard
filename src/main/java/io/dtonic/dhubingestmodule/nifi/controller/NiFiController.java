@@ -199,13 +199,13 @@ public class NiFiController {
                             } else {
                                 id =
                                     id +
-                                    "${" +
+                                    ":${" +
                                     nifi
                                         .getRequiredProps()
                                         .get(i)
                                         .getInputValue()
                                         .replace("\"", "") +
-                                    "}\"";
+                                    "}";
                             }
                         }
                     }
