@@ -62,10 +62,14 @@
       modified_at = now()
     WHERE id = #{id}
   </update>
-  <delete id="deletePipeline" parameterType="Integer">
-    DELETE FROM pipeline
+  <update id="deletePipeline">
+    UPDATE 
+      pipeline
+    SET 
+      status = #{status}, 
+      modified_at = now()
     WHERE id = #{id}
-    </delete>
+  </update>
   <delete id="deletePipelineDrafts" parameterType="Integer">
       DELETE FROM temp_pipeline
       WHERE id = #{id}
@@ -76,34 +80,56 @@
     (SELECT * 
     FROM pipeline where id = #{id})
   </select>
-  <insert id="createPipeline">
-    INSERT INTO pipeline 
-    ( creator,
-      name,
-      detail, 
+  <insert id="createCommand" parameterType="io.dtonic.dhubingestmodule.pipeline.vo.CommandVO" useGeneratedKeys="true"  keyProperty="id" keyColumn="id">
+    INSERT INTO command_history 
+    ( id,
+      pipeline_id,
+      command,
       status, 
-      data_set,
-      data_model,
-      processor_group_id,
-      collector, 
-      filter, 
-      converter, 
-      created_at, 
-      modified_at)
+      user_id, 
+      started_at
+      )
     VALUES 
-    ( #{creator},
-      #{name},
-      #{detail},
-      #{status},
-      #{dataSet},
-      #{dataModel},
-      #{processGroupId},
-      #{collector},
-      #{filter},
-      #{converter},
-      now(),
+    ( nextval('command_history_id_seq'),
+      #{commandVO.pipelineId},
+      #{commandVO.command},
+      #{commandVO.status},
+      #{commandVO.userId},
       now())
-    </insert>
+  </insert>
+  <update id="updateCommand">
+    UPDATE 
+      command_history
+    SET 
+      status = #{status}, 
+      finished_at = now()
+    WHERE id = #{id}
+  </update>
+  <insert id="createTask" parameterType="io.dtonic.dhubingestmodule.pipeline.vo.TaskVO" useGeneratedKeys="true"  keyProperty="id" keyColumn="id">
+    INSERT INTO task_history 
+    ( id,
+      command_id,
+      task_name,
+      input_parameter, 
+      status, 
+      started_at
+      )
+    VALUES 
+    ( nextval('task_history_id_seq'),
+      #{taskVO.commandId},
+      #{taskVO.taskName},
+      #{taskVO.inputParameter},
+      #{taskVO.status},
+      now())
+  </insert>
+  <update id="updateTask">
+    UPDATE 
+      task_history
+    SET 
+      status = #{status}, 
+      finished_at = now()
+    WHERE id = #{id}
+  </update>
   <select id="getPipelineList" resultType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO">
     SELECT
        id,
@@ -114,7 +140,10 @@
        created_at as createdAt,
        modified_at as modifiedAt
       FROM pipeline
-      WHERE 1=1
+      WHERE 1=1 
+      and
+      status != 'DELETED' AND
+      status != 'DELETING' 
     ORDER BY id ASC
   </select>
   <select id="getDataCollector" resultType="io.dtonic.dhubingestmodule.pipeline.vo.DataCollectorVO">
@@ -149,5 +178,60 @@
       A.adaptor_name = #{adaptorName}
     ORDER BY A.id ASC
 
+  </select>
+  <insert id="createPipeline" parameterType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVOtoDB" useGeneratedKeys="true"  keyProperty="id" keyColumn="id">
+    INSERT INTO pipeline 
+    ( id,
+      name,
+      detail, 
+      status, 
+      data_set,
+      data_model,
+      collector, 
+      filter, 
+      converter, 
+      created_at, 
+      modified_at)
+    VALUES 
+    ( nextval('pipeline_id_seq'),
+      #{pipelineVOtoDB.name},
+      #{pipelineVOtoDB.detail},
+      #{pipelineVOtoDB.status},
+      #{pipelineVOtoDB.dataSet},
+      #{pipelineVOtoDB.dataModel},
+      #{pipelineVOtoDB.collector},
+      #{pipelineVOtoDB.filter},
+      #{pipelineVOtoDB.converter},
+      now(),
+      now())
+  </insert>
+  <update id="updatePipelineProcessgroupId">
+    UPDATE pipeline 
+    SET processor_group_id = #{processorGroupId}, modified_at = now() 
+    WHERE id = #{id}
+  </update>
+  <select id="getPipelineCmdHistory" parameterType="Integer">
+    SELECT
+      id,
+      pipeline_id, 
+      command, 
+      status, 
+      user_id, 
+      started_at, 
+      finished_at
+    FROM command_history
+    WHERE pipeline_id = #{pipelineId}
+  </select>
+  <select id="getPipelineTaskHistory" parameterType="Integer">
+    SELECT
+      id, 
+      command_id, 
+      task_name, 
+      input_parameter, 
+      status, 
+      started_at, 
+      finished_at
+    FROM task_history
+    WHERE command_id = #{commandId}
   </select>
 </mapper>

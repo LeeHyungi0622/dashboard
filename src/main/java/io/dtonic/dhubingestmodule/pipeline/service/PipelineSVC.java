@@ -1,10 +1,13 @@
 package io.dtonic.dhubingestmodule.pipeline.service;
 
 import io.dtonic.dhubingestmodule.common.code.AdaptorName;
+import io.dtonic.dhubingestmodule.common.code.CommandStatusCode;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
+import io.dtonic.dhubingestmodule.common.code.TaskStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
+import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.nifi.controller.NiFiController;
@@ -12,8 +15,12 @@ import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper;
+import io.dtonic.dhubingestmodule.pipeline.vo.CommandVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVOtoDB;
+import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
+
 import io.dtonic.dhubingestmodule.util.ValidateUtil;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +30,15 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@EnableScheduling
 public class PipelineSVC {
 
     @Autowired
@@ -45,39 +55,53 @@ public class PipelineSVC {
 
     @Transactional
     public ResponseEntity createPipeline(Integer id, PipelineVO pipelineVO) {
-        String processorGroupId = niFiController.createPipeline(pipelineVO);
+
+        CommandVO commandVO = new CommandVO();
+        commandVO.setCommand(CommandStatusCode.COMMAND_CREATE.getCode());
+        commandVO.setStatus(CommandStatusCode.COMMAND_STATUS_CREATING.getCode());
+        commandVO.setUserId(pipelineVO.getCreator());
+
+        PipelineVOtoDB pipelineVOtoDB = new PipelineVOtoDB();
+        Integer pipelineId = null;
+        
+        JSONObject jsonObject = new JSONObject(pipelineVO);
+        pipelineVOtoDB.setName(pipelineVO.getName());
+        pipelineVOtoDB.setDataModel(pipelineVO.getDataModel());
+        pipelineVOtoDB.setDataSet(pipelineVO.getDataSet());
+        pipelineVOtoDB.setDetail(pipelineVO.getDetail());
+        pipelineVOtoDB.setCreator(pipelineVO.getCreator());
+        pipelineVOtoDB.setStatus(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode());
+        pipelineVOtoDB.setProcessorGroupId(null);
+        pipelineVOtoDB.setCollector(jsonObject.getJSONObject(AdaptorName.ADAPTOR_NAME_COLLECTOR.getCode()).toString());
+        pipelineVOtoDB.setFilter(jsonObject.getJSONObject(AdaptorName.ADAPTOR_NAME_FILTER.getCode()).toString());
+        pipelineVOtoDB.setConverter(jsonObject.getJSONObject(AdaptorName.ADAPTOR_NAME_CONVERTER.getCode()).toString());
+
+        pipelineMapper.createPipeline(pipelineVOtoDB);
+
+        pipelineId = pipelineVOtoDB.getId();
+        commandVO.setPipelineId(pipelineId);
+
+        Integer commandId = createCommand(commandVO);
+        
+        String processorGroupId = niFiController.createPipeline(pipelineVO, commandId);
+        
         if (processorGroupId != null) {
-            JSONObject jsonObject = new JSONObject(pipelineVO);
-            int result = pipelineMapper.createPipeline(
-                jsonObject.getString("creator"),
-                jsonObject.getString("name"),
-                jsonObject.getString("detail"),
-                PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode(),
-                jsonObject.getString("dataSet"),
-                jsonObject.getString("dataModel"),
-                jsonObject.getJSONObject(AdaptorName.ADAPTOR_NAME_COLLECTOR.getCode()).toString(),
-                jsonObject.getJSONObject(AdaptorName.ADAPTOR_NAME_FILTER.getCode()).toString(),
-                jsonObject.getJSONObject(AdaptorName.ADAPTOR_NAME_CONVERTER.getCode()).toString(),
-                processorGroupId
-            );
-            if (result != 1) {
-                return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("It's not created Pipeline in DB");
-                // throw new BadRequestException(
-                //     DataCoreUiCode.ErrorCode.BAD_REQUEST,
-                //     "It's not created Pipeline in DB"
-                //);
-            }
             //임시 파이프라인 삭제
             pipelineDraftSVC.deletePipelineDrafts(id);
+
+            pipelineMapper.updatePipelineProcessgroupId(pipelineId, processorGroupId);
+
+            updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_SUCCEED.getCode());
+
             return ResponseEntity.ok().build();
         } else {
+            updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_FAILED.getCode());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nifi error");
         }
     }
 
     @Transactional
+    @Scheduled(fixedDelay = 3000, initialDelay = 3000)
     public ResponseEntity getPipelineList() {
         List<PipelineListResponseVO> pipelineListVOs = pipelineMapper.getPipelineList();
         pipelineListVOs
@@ -89,7 +113,7 @@ public class PipelineSVC {
                     Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
                         pipeline.getProcessorGroupId()
                     );
-                    log.info("{}", nifiStatus);
+                    //log.info("{}", nifiStatus);
                     if (!ValidateUtil.isMapEmpty(nifiStatus)) {
                         String curStatus = pipelineVO.getStatus(); // 현재 DB status값
                         if (
@@ -141,6 +165,11 @@ public class PipelineSVC {
         return ResponseEntity.ok().body(pipelineListVOs);
     }
 
+    public ResponseEntity getPipelineStatus_websocket(){
+        List<PipelineListResponseVO> pipelineListVOs = pipelineMapper.getPipelineList();
+        return ResponseEntity.ok().body(pipelineListVOs);
+    }
+
     public ResponseEntity getPipelineVOById(Integer id) {
         PipelineVO result = pipelineMapper.getPipeline(id);
         if (ValidateUtil.isEmptyData(result)) {
@@ -157,6 +186,7 @@ public class PipelineSVC {
     public ResponseEntity changePipelineStatus(Integer id, String status) {
         PipelineVO pipelineVO = (PipelineVO) getPipelineVOById(id).getBody();
         Boolean Nifiresult = false;
+        
         if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode())) {
             Nifiresult = niFiController.runPipeline(pipelineVO.getProcessorGroupId());
         } else if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())) {
@@ -167,6 +197,7 @@ public class PipelineSVC {
         if (Nifiresult) {
             int result = pipelineMapper.changePipelineStatus(id, status);
             if (result != 1) {
+                pipelineMapper.changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_FAILED.getCode());
                 return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Change Pipeline Status Error in DB");
@@ -174,30 +205,44 @@ public class PipelineSVC {
                 return ResponseEntity.ok().build();
             }
         } else {
+            pipelineMapper.changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_FAILED.getCode());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nifi error");
         }
     }
 
     @Transactional
-    public ResponseEntity deletePipeline(Integer id) {
+    public ResponseEntity deletePipeline(Integer id, String userId) {
         PipelineVO pipelineVO = (PipelineVO) getPipelineVOById(id).getBody();
-        if (niFiController.deletePipeline(pipelineVO.getProcessorGroupId())) {
-            int result = pipelineMapper.deletePipeline(id);
-            if (result != 1) {
-                return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("Delete Pipeline Error in DB");
-            } else {
-                return ResponseEntity.ok().build();
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nifi error");
-        }
+
+        CommandVO commandVO = new CommandVO();
+        commandVO.setPipelineId(id);
+        commandVO.setCommand(CommandStatusCode.COMMAND_DELETE.getCode());
+        commandVO.setStatus(CommandStatusCode.COMMAND_STATUS_DELETING.getCode());
+        commandVO.setUserId(userId);
+        Integer commandId = createCommand(commandVO);
+        
+        /* Delete Pipleine thread */
+        Runnable r = new MultiThread(pipelineVO, commandId);
+        Thread thread = new Thread(r);
+        thread.start();
+
+        return changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_DELETING.getCode());
     }
 
     @Transactional
-    public ResponseEntity updatePipeline(Integer id, PipelineVO pipelineVO) {
-        String processorGroupId = niFiController.updatePipeline(pipelineVO);
+    public ResponseEntity updatePipeline(Integer id, PipelineVO pipelineVO, String userId) {
+        
+        changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_UPDATING.getCode());
+
+        CommandVO commandVO = new CommandVO();
+        commandVO.setPipelineId(id);
+        commandVO.setCommand(CommandStatusCode.COMMAND_UPDATE.getCode());
+        commandVO.setStatus(CommandStatusCode.COMMAND_STATUS_UPDATING.getCode());
+        commandVO.setUserId(userId);
+        Integer commandId = createCommand(commandVO);
+
+        String processorGroupId = niFiController.updatePipeline(pipelineVO, commandId);
+        
         if (processorGroupId != null) {
             JSONObject jsonObject = new JSONObject(pipelineVO);
             int result = pipelineMapper.updatePipeline(
@@ -213,11 +258,17 @@ public class PipelineSVC {
             );
             log.debug("result : {}", result);
             if (result != 1) {
+                updateCommand(commandId, CommandStatusCode.COMMAND_STATUS_FAILED.getCode());
+                pipelineMapper.changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_FAILED.getCode());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Update Pipeline Error");
             } else {
+                updateCommand(commandId, CommandStatusCode.COMMAND_STATUS_SUCCEED.getCode());
+                pipelineMapper.changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode());
                 return ResponseEntity.ok().build();
             }
         } else {
+            updateCommand(commandId, CommandStatusCode.COMMAND_STATUS_FAILED.getCode());
+            pipelineMapper.changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_FAILED.getCode());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nifi error");
         }
     }
@@ -259,4 +310,34 @@ public class PipelineSVC {
     public Boolean isExists(Integer id) {
         return pipelineMapper.isExists(id);
     }
+
+    public Integer createCommand(CommandVO commandVO) {
+        try{
+            pipelineMapper.createCommand(commandVO);
+            return commandVO.getId();
+        }
+        catch(Exception e){
+            log.error("Create command error {}", e);
+            return -1;
+        }
+    }
+
+    public Boolean updateCommand(Integer id, String status) {
+        if(pipelineMapper.updateCommand(id, status) == 1){
+            return true;
+        }else{
+            log.error("Update Command error");
+            return false;
+        }
+    }
+
+    public ResponseEntity getPipelineCmdHistory(Integer pipelineId){
+        List <CommandVO> commandVOs = pipelineMapper.getPipelineCmdHistory(pipelineId) ;
+        return ResponseEntity.ok().body(commandVOs);
+    }
+    public ResponseEntity getPipelineTaskHistory(Integer commandId){
+        List <TaskVO> taskVOs = pipelineMapper.getPipelineTaskHistory(commandId) ;
+        return ResponseEntity.ok().body(taskVOs);
+    }
+
 }

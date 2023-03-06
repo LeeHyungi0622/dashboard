@@ -9,6 +9,9 @@ import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "pipelines")
+@Slf4j
 public class PipelineController<T> {
 
     @Autowired
@@ -38,6 +42,9 @@ public class PipelineController<T> {
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
 
+    @Autowired
+    private IngestManagerSVC ingestManagerSVC;
+    
     @GetMapping("/completed") // PipeLine List 조회
     public ResponseEntity<T> getPipelineList(
         HttpServletRequest request,
@@ -86,10 +93,13 @@ public class PipelineController<T> {
         @PathVariable Integer id
     ) {
         // validation check
+        ResponseEntity principal = ingestManagerSVC.getUserId(request);
+        String userId = principal.getBody().toString();
+
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist ");
         } else {
-            pipelineSVC.updatePipeline(id, pipelineVO);
+            pipelineSVC.updatePipeline(id, pipelineVO, userId);
             return ResponseEntity.ok().build();
         }
     }
@@ -153,12 +163,9 @@ public class PipelineController<T> {
         @RequestParam(value = "status") String status
     ) {
         // validation check
+        
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
-            // throw new BadRequestException(
-            //     DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
-            //     "Pipeline is not Exist"
-            // );
         } else {
             if (
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
@@ -169,10 +176,6 @@ public class PipelineController<T> {
                 pipelineSVC.changePipelineStatus(id, status);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status name is invalid");
-                // throw new BadRequestException(
-                //     DataCoreUiCode.ErrorCode.BAD_REQUEST,
-                //     "Status name is invalid"
-                // );
             }
 
             return ResponseEntity.ok().build();
@@ -197,13 +200,32 @@ public class PipelineController<T> {
     ) {
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
-            // throw new BadRequestException(
-            //     DataCoreUiCode.ErrorCode.NOT_EXIST_ID,
-            //     "Pipeline is not Exist"
-            // );
         }
         // delete pipeline
-        pipelineSVC.deletePipeline(id);
+        ResponseEntity principal = ingestManagerSVC.getUserId(request);
+        String userId = principal.getBody().toString();
+
+        pipelineSVC.deletePipeline(id, userId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/hist/cmd/{id}") 
+    public ResponseEntity<T> getPipelineCmdHistory(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestHeader(HttpHeaders.ACCEPT) String accept,
+        @PathVariable Integer pipelineId
+    ) {
+        return pipelineSVC.getPipelineCmdHistory(pipelineId);
+    }
+
+    @GetMapping("/hist/task/{id}") 
+    public ResponseEntity<T> getPipelineTaskHistory(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @RequestHeader(HttpHeaders.ACCEPT) String accept,
+        @PathVariable Integer commandId
+    ) {
+        return pipelineSVC.getPipelineTaskHistory(commandId);
     }
 }

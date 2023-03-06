@@ -3,14 +3,23 @@ package io.dtonic.dhubingestmodule.nifi.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.dtonic.dhubingestmodule.common.code.MonitoringCode;
+import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
+import io.dtonic.dhubingestmodule.common.code.TaskStatusCode;
 import io.dtonic.dhubingestmodule.common.service.DataCoreRestSVC;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClientEntity;
+import io.dtonic.dhubingestmodule.nifi.vo.DropRequestEntity;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
+import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper;
+import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +34,7 @@ import org.apache.nifi.web.api.entity.ActivateControllerServicesEntity;
 import org.apache.nifi.web.api.entity.ConnectionEntity;
 import org.apache.nifi.web.api.entity.ControllerServiceEntity;
 import org.apache.nifi.web.api.entity.ControllerServicesEntity;
+//import org.apache.nifi.web.api.entity.DropRequestEntity;
 import org.apache.nifi.web.api.entity.FlowEntity;
 import org.apache.nifi.web.api.entity.FunnelEntity;
 import org.apache.nifi.web.api.entity.InstantiateTemplateRequestEntity;
@@ -41,6 +51,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -66,6 +77,12 @@ public class NiFiRestSVC {
 
     @Autowired
     private ObjectMapper nifiObjectMapper;
+
+    @Autowired
+    private NiFiSwaggerSVC niFiSwaggerSVC;
+
+    @Autowired
+    private PipelineMapper pipelineMapper;
 
     /**
      * Create Dummy Template
@@ -346,7 +363,7 @@ public class NiFiRestSVC {
             result.getBody(),
             ProcessGroupFlowEntity.class
         );
-        log.info("{}", resultEntity);
+        //log.info("{}", resultEntity);
         return getNumberOfProcessorStatus(resultEntity);
     }
 
@@ -626,7 +643,7 @@ public class NiFiRestSVC {
      * @param processGroupId
      * @return success/fail boolean
      */
-    public boolean clearQueuesInProcessGroup(String processorGroupId) {
+    public ResponseEntity<String> clearQueuesInProcessGroup(String processorGroupId) {
         try {
             ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
             body.setState("ENABLED");
@@ -641,7 +658,7 @@ public class NiFiRestSVC {
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Content-Type", "application/json");
 
-            dataCoreRestSVC.post(
+            ResponseEntity<String> result = dataCoreRestSVC.post(
                 niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
                 paths,
                 headers,
@@ -654,7 +671,47 @@ public class NiFiRestSVC {
                 "Success Clear Queues in Process Group : Process Group ID = [{}]",
                 processorGroupId
             );
-            return true;
+            return result;
+        } catch (Exception e) {
+            log.error(
+                "Fail to Clear Queues in Process Group : Process Group ID = [{}]",
+                processorGroupId,
+                e
+            );
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    public boolean checkclearQueuesInProcessGroup(String processorGroupId, String requestId) {
+        try {
+            List<String> paths = new ArrayList<String>();
+            paths.add("process-groups");
+            paths.add(processorGroupId);
+            paths.add("empty-all-connections-requests");
+            paths.add(requestId);
+
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+
+            ResponseEntity<String> result = dataCoreRestSVC.get(
+                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+                paths,
+                headers,
+                null,
+                null,
+                niFiClientEntity.getAccessToken(),
+                String.class
+            );
+            log.info(
+                "Success Clear Queues in Process Group : Process Group ID = [{}]",
+                processorGroupId
+            );
+            
+            DropRequestEntity requestResult = nifiObjectMapper.readValue(result.getBody(), DropRequestEntity.class);
+        
+            return requestResult.getDropRequest().isFinished();
+        
         } catch (Exception e) {
             log.error(
                 "Fail to Clear Queues in Process Group : Process Group ID = [{}]",
@@ -822,6 +879,100 @@ public class NiFiRestSVC {
             );
         } catch (Exception e) {
             log.error("Fail to Create Connection From Funnel To Transmitter", e);
+        }
+    }
+    
+
+    public boolean monitoring(MonitoringCode action, String processGroupId) throws JsonMappingException, JsonProcessingException, InterruptedException{
+        for (int i =0 ; i < 3; i++){
+            switch(action){
+                case STOP_PIPELINE: {
+                    if(stopProcessorGroup(processGroupId)){
+                        boolean flag = false;
+                        while(!flag){
+                            Map<String, Integer> nifiStatus = getStatusProcessGroup(processGroupId);
+                            if(nifiStatus.get(NifiStatusCode.NIFI_STATUS_RUNNING.getCode()) == 0){
+                                flag = true;
+                            }
+                            ////wait(500);
+                        }
+                        return true;
+                    }
+                    break;
+                }
+                case CLEAR_QUEUE: {
+                    ResponseEntity<String> response = clearQueuesInProcessGroup(processGroupId);
+                    DropRequestEntity resultClearQueue = nifiObjectMapper.readValue(response.getBody(), DropRequestEntity.class);
+                    String requestId = resultClearQueue.getDropRequest().getId();
+                    if(requestId != null){
+                        while(!checkclearQueuesInProcessGroup(processGroupId , requestId)){
+                            //wait(500);
+                        }
+                        return true;
+                    }
+                    break;
+                }
+                case DISABLE_CONTROLLER: {
+                    boolean flag = true;
+                    if(disableControllers(processGroupId)){
+                        while(flag){
+                            flag = false;
+                            ControllerServicesEntity controllers = searchControllersInProcessorGroup(processGroupId);
+                            for (ControllerServiceEntity controller : controllers.getControllerServices()) {
+                                if (!controller.getStatus().getRunStatus().equals("DISABLED")){
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                            //wait(500);
+                        }
+                        return true;
+                    }
+                    break;
+                }
+                case DELETE_CONNECTION: {
+                    if(niFiSwaggerSVC.deleteConnectionToFunnel(processGroupId)){
+                        while(niFiSwaggerSVC.clearQueuesInConnectionToFunnel(processGroupId) != null){
+                            //wait(500);
+                        }
+                        return true;
+                    }
+                    break;
+                }
+                case DELETE_PIPELINE: {
+                    if(niFiSwaggerSVC.deleteProcessGroup(processGroupId)){
+                        while(stopProcessorGroup(processGroupId) != false){
+                            //wait(500);
+                        }
+                        return true;
+                    }
+                    break;
+                }
+                default: {
+                    log.error("Invalid Action to Delete Pipeline Process in NiFi : processGroupId = [{}]" + processGroupId);
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public Integer createTask(TaskVO taskVO) {
+        try{
+            pipelineMapper.createTask(taskVO);
+            return taskVO.getId();
+        }catch(Exception e){
+            log.error("create task error {}" , e);
+            return -1;
+        }
+    }
+
+    public Boolean updateTask(Integer id, String string) {
+        if(pipelineMapper.updateTask(id, TaskStatusCode.TASK_STATUS_FINISH.getCode()) == 1){
+            return true;
+        }else{
+            log.error("Update Task error");
+            return false;
         }
     }
 }
