@@ -3,6 +3,7 @@ package io.dtonic.dhubingestmodule.dataset.service;
 import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.common.service.DataCoreRestSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
+import io.dtonic.dhubingestmodule.dataset.vo.DataSetBaseInfoVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetForDataModelIDVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListBaseInfoVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListResponseVO;
@@ -73,17 +74,17 @@ public class DataSetSVC {
         DataModelVO dataModelVO = new DataModelVO();
 
         dataModelVO.setDatasetId(DataSetId);
-        ResponseEntity<DataSetForDataModelIDVO> response = dataCoreRestSVC.get(
+        ResponseEntity<DataSetBaseInfoVO> response = dataCoreRestSVC.get(
             datasetUrl,
             pathUri,
             header,
             null,
             null,
             null,
-            DataSetForDataModelIDVO.class
+            DataSetBaseInfoVO.class
         );
         if (response != null) dataModelVO.setId(
-            response.getBody().getDatasetBaseInfo().getDataModelId()
+            response.getBody().getDataModelId()
         );
         return dataModelVO;
     }
