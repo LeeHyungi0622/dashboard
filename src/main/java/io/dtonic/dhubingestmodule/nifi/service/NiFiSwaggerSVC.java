@@ -363,7 +363,7 @@ public class NiFiSwaggerSVC {
      * @param sourceProcessGroupId from process group id
      * @param destinationProcessGroupId to process group id
      */
-    public void createConnectionBetweenProcessGroup(
+    public Boolean createConnectionBetweenProcessGroup(
         String rootProcessGroupId,
         String sourceProcessGroupId,
         String destinationProcessGroupId
@@ -403,6 +403,7 @@ public class NiFiSwaggerSVC {
                 destinationProcessGroupId,
                 rootProcessGroupId
             );
+            return true;
         } catch (Exception e) {
             log.error(
                 "Fail to Create Connection From {} To {} in {}",
@@ -411,6 +412,7 @@ public class NiFiSwaggerSVC {
                 rootProcessGroupId,
                 e
             );
+            return false;
         }
     }
 
@@ -421,7 +423,7 @@ public class NiFiSwaggerSVC {
      * @param sourceProcessGroupId from process group id
      * @param destinationProcessGroupId to process group id
      */
-    public void createConnectionFromProcessGroupToOutput(
+    public Boolean createConnectionFromProcessGroupToOutput(
         String rootProcessGroupId,
         String sourceProcessGroupId,
         String destProcessGroupId
@@ -460,6 +462,7 @@ public class NiFiSwaggerSVC {
                 destProcessGroupId,
                 rootProcessGroupId
             );
+            return true;
         } catch (Exception e) {
             log.error(
                 "Fail to Create Connection From {} To {} in {}",
@@ -468,6 +471,7 @@ public class NiFiSwaggerSVC {
                 rootProcessGroupId,
                 e
             );
+            return false;
         }
     }
 
@@ -478,7 +482,7 @@ public class NiFiSwaggerSVC {
      * @param sourceProcessGroupId from process group id
      * @param destinationProcessGroupId to process group id
      */
-    public void createConnectionFromOutputToFunnel(
+    public Boolean createConnectionFromOutputToFunnel(
         String rootProcessGroupId,
         String sourceProcessGroupId,
         String destProcessGroupId
@@ -517,6 +521,7 @@ public class NiFiSwaggerSVC {
                 destProcessGroupId,
                 rootProcessGroupId
             );
+            return true;
         } catch (Exception e) {
             log.error(
                 "Fail to Create Connection From {} To {} in {}",
@@ -525,6 +530,7 @@ public class NiFiSwaggerSVC {
                 rootProcessGroupId,
                 e
             );
+            return false;
         }
     }
 

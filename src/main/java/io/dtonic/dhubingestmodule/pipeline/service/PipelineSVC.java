@@ -35,6 +35,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -157,7 +160,11 @@ public class PipelineSVC {
                                     PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()
                                 );
                             }
-                            changePipelineStatus(pipeline.getId(), pipeline.getStatus());
+                            try {
+                                changePipelineStatus(pipeline.getId(), pipeline.getStatus());
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -183,12 +190,16 @@ public class PipelineSVC {
     }
 
     @Transactional
-    public ResponseEntity changePipelineStatus(Integer id, String status) {
+    public ResponseEntity changePipelineStatus(Integer id, String status) throws JsonMappingException, JsonProcessingException {
         PipelineVO pipelineVO = (PipelineVO) getPipelineVOById(id).getBody();
         Boolean Nifiresult = false;
         
         if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode())) {
-            Nifiresult = niFiController.runPipeline(pipelineVO.getProcessorGroupId());
+            try {
+                Nifiresult = niFiController.runPipeline(pipelineVO.getProcessorGroupId());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         } else if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())) {
             Nifiresult = niFiController.stopPipeline(pipelineVO.getProcessorGroupId());
         } else {
@@ -211,8 +222,8 @@ public class PipelineSVC {
     }
 
     @Transactional
-    public ResponseEntity deletePipeline(Integer id, String userId) {
-        PipelineVO pipelineVO = (PipelineVO) getPipelineVOById(id).getBody();
+    public ResponseEntity deletePipeline(Integer id, String userId){
+        try{PipelineVO pipelineVO = (PipelineVO) getPipelineVOById(id).getBody();
 
         CommandVO commandVO = new CommandVO();
         commandVO.setPipelineId(id);
@@ -221,16 +232,20 @@ public class PipelineSVC {
         commandVO.setUserId(userId);
         Integer commandId = createCommand(commandVO);
         
-        /* Delete Pipleine thread */
+        /* Delete Pipleine using thread */
         Runnable r = new MultiThread(pipelineVO, commandId);
         Thread thread = new Thread(r);
         thread.start();
 
-        return changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_DELETING.getCode());
+        return changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_DELETING.getCode());}
+        catch(Exception e){
+            log.error(" Delete Pipeline error processGroup Id : {}", id, e);
+            return null;
+        }
     }
 
     @Transactional
-    public ResponseEntity updatePipeline(Integer id, PipelineVO pipelineVO, String userId) {
+    public ResponseEntity updatePipeline(Integer id, PipelineVO pipelineVO, String userId) throws JsonMappingException, JsonProcessingException {
         
         changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_UPDATING.getCode());
 

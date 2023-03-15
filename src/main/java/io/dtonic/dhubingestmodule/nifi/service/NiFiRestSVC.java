@@ -606,7 +606,7 @@ public class NiFiRestSVC {
      *
      * @param processGroupId
      */
-    public void enableControllers(String processorGroupId) {
+    public Boolean enableControllers(String processorGroupId) {
         try {
             ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
             body.setState("ENABLED");
@@ -632,8 +632,10 @@ public class NiFiRestSVC {
                 String.class
             );
             log.info("Success Enable Controllers in {}", processorGroupId);
+            return true;
         } catch (Exception e) {
             log.error("Can not Stop Processor Groups", e);
+            return false;
         }
     }
 
@@ -884,19 +886,23 @@ public class NiFiRestSVC {
     
 
     public boolean monitoring(MonitoringCode action, String processGroupId) throws JsonMappingException, JsonProcessingException, InterruptedException{
+        Integer cnt =0;
         for (int i =0 ; i < 3; i++){
+            long startTime = System.currentTimeMillis();
+            boolean result = false;
             switch(action){
                 case STOP_PIPELINE: {
                     if(stopProcessorGroup(processGroupId)){
-                        boolean flag = false;
-                        while(!flag){
+                        while(!result && (System.currentTimeMillis() - startTime < 10000) ){
                             Map<String, Integer> nifiStatus = getStatusProcessGroup(processGroupId);
+                            cnt += 1;
+                            log.info(" ### 1. delete API cnt : " + cnt);
                             if(nifiStatus.get(NifiStatusCode.NIFI_STATUS_RUNNING.getCode()) == 0){
-                                flag = true;
+                                result = true;
                             }
-                            ////wait(500);
+                            
                         }
-                        return true;
+                            return result;
                     }
                     break;
                 }
@@ -905,52 +911,61 @@ public class NiFiRestSVC {
                     DropRequestEntity resultClearQueue = nifiObjectMapper.readValue(response.getBody(), DropRequestEntity.class);
                     String requestId = resultClearQueue.getDropRequest().getId();
                     if(requestId != null){
-                        while(!checkclearQueuesInProcessGroup(processGroupId , requestId)){
-                            //wait(500);
+                        while(!result && (System.currentTimeMillis() - startTime < 10000)){
+                            result = checkclearQueuesInProcessGroup(processGroupId , requestId);
+                            cnt += 1;
+                            log.info(" ### 2. delete API cnt : " + cnt);
                         }
                         return true;
                     }
                     break;
                 }
                 case DISABLE_CONTROLLER: {
-                    boolean flag = true;
                     if(disableControllers(processGroupId)){
-                        while(flag){
-                            flag = false;
+                        while(!result && (System.currentTimeMillis() - startTime < 10000)){
                             ControllerServicesEntity controllers = searchControllersInProcessorGroup(processGroupId);
+                            cnt += 1;
+                            log.info(" ### 3. delete API cnt : " + cnt);
                             for (ControllerServiceEntity controller : controllers.getControllerServices()) {
-                                if (!controller.getStatus().getRunStatus().equals("DISABLED")){
-                                    flag = true;
+                                if (controller.getStatus().getRunStatus().equals("DISABLED")){
                                     break;
                                 }
                             }
-                            //wait(500);
+                            result = true;
                         }
-                        return true;
+                        return result;
                     }
                     break;
                 }
                 case DELETE_CONNECTION: {
                     if(niFiSwaggerSVC.deleteConnectionToFunnel(processGroupId)){
-                        while(niFiSwaggerSVC.clearQueuesInConnectionToFunnel(processGroupId) != null){
-                            //wait(500);
+                        while(!result && (System.currentTimeMillis() - startTime < 10000)){
+                            cnt += 1;
+                            log.info(" ### 4. delete API cnt : " + cnt);
+                            if(niFiSwaggerSVC.clearQueuesInConnectionToFunnel(processGroupId) == null){
+                                result = true;
+                            }
                         }
-                        return true;
+                        return result;
                     }
                     break;
                 }
                 case DELETE_PIPELINE: {
                     if(niFiSwaggerSVC.deleteProcessGroup(processGroupId)){
-                        while(stopProcessorGroup(processGroupId) != false){
-                            //wait(500);
+                        while(!result && (System.currentTimeMillis() - startTime < 10000)){
+                            cnt += 1;
+                            log.info(" ### 5. delete API cnt : " + cnt);
+                            if(stopProcessorGroup(processGroupId) == false){
+                                result = true;
+                            }
                         }
-                        return true;
+                        return result;
                     }
                     break;
                 }
                 default: {
                     log.error("Invalid Action to Delete Pipeline Process in NiFi : processGroupId = [{}]" + processGroupId);
-                    return false;
+                    return result;
                 }
             }
         }
@@ -967,8 +982,8 @@ public class NiFiRestSVC {
         }
     }
 
-    public Boolean updateTask(Integer id, String string) {
-        if(pipelineMapper.updateTask(id, TaskStatusCode.TASK_STATUS_FINISH.getCode()) == 1){
+    public Boolean updateTask(Integer id, String taskStatusCode) {
+        if(pipelineMapper.updateTask(id, taskStatusCode) == 1){
             return true;
         }else{
             log.error("Update Task error");
