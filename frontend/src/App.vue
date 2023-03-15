@@ -80,6 +80,15 @@
       @close-temp-pipeline-popup="closeTempPipelinePopup"
       :contents="tempPipelineContent"
     ></temp-pipeline-popup>
+    <TaskListPopup
+      v-if="tasklistShowFlag"
+      @close-task-list-popup="closeTaskListPopup"
+    ></TaskListPopup>
+    <FailedConfirmPopup
+      v-if="failedconfirmShowFlag"
+      :contents="confirmContent"
+      @close-failed-confirm-popup="closeFailedConfirmPopup"
+    ></FailedConfirmPopup>
     <Loading />
   </v-app>
 </template>
@@ -87,12 +96,14 @@
 <script>
 import CustomNavigation from "./components/nav/CustomNavigation.vue";
 import ConfirmPopup from "./components/popup/ConfirmPopup.vue";
+import FailedConfirmPopup from "./components/popup/FailedConfirmPopup.vue";
 import UserAlertPopup from "./components/popup/UserAlertPopup.vue";
 import AlertPopup from "./components/popup/AlertPopup.vue";
 import EventBus from "@/eventBus/EventBus.js";
 import UserInfo from "./js/api/user.js";
 import PipelineList from "./js/api/pipelineList.js";
 import TempPipelinePopup from "./components/popup/TempPipelinePopup.vue";
+import TaskListPopup from "./components/popup/TaskListPopup.vue";
 import tempPipeline from "./json/tempPipeline.json";
 import Loading from "./components/loading/loadingBar.vue";
 import Footer from "./components/footer/footer.vue";
@@ -102,10 +113,12 @@ export default {
     CustomNavigation,
     UserAlertPopup,
     ConfirmPopup,
+    FailedConfirmPopup,
     AlertPopup,
     TempPipelinePopup,
     Loading,
-    Footer
+    Footer,
+    TaskListPopup
   },
   computed: {
     activationRoutePath() {
@@ -124,6 +137,7 @@ export default {
   },
   data() {
     return {
+      tasklistShowFlag : false,
       confirmContent: {
         title: "default",
         text: "default",
@@ -156,6 +170,7 @@ export default {
       confirmShowFlag: false,
       userAlertShowFlag: false,
       alertShowFlag: false,
+      failedconfirmShowFlag: false,
       menu: [
         ["사용자 정보", "userInfo"],
         ["로그아웃", "logout"]
@@ -174,7 +189,12 @@ export default {
     EventBus.$on("show-temp-pipeline-popup", (payload) => {
       this.showTempPipelinePopup(payload);
     });
-
+    EventBus.$on("show-task-list-popup", () => {
+      this.showTaskListPopup();
+    });
+    EventBus.$on("show-failed-confirm-popup", (payload) => {
+      this.showFailedConfirmPopup(payload);
+    });
   },
   methods: {
     set_cookie(name, value, unixTime) {
@@ -253,6 +273,25 @@ export default {
       this.tempPipelineShowFlag = true;
       this.tempPipelineContent.data = payload.contents;
     },
+    closeTaskListPopup: function() {
+      this.tasklistShowFlag = false;
+    },
+    showTaskListPopup: function() {
+      this.tasklistShowFlag = true;
+    },
+    showFailedConfirmPopup: function(payload) {
+      this.failedconfirmShowFlag = true;
+      console.log(payload);
+      this.confirmContent.title = payload.title;
+      this.confirmContent.text = payload.text;
+      this.confirmContent.url = payload.url;
+      this.confirmContent.param = payload.param;
+      this.confirmContent.body = payload.body;
+      this.confirmContent.id = payload.id;
+    },
+    closeFailedConfirmPopup: function() {
+      this.failedconfirmShowFlag = false;
+    },
     menuAction(mode) {
       if (mode == "userInfo") {
         this.showUserAlertPopup();
@@ -271,4 +310,34 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+  /* expend table 아래 패딩 제거 */
+  .v-application--wrap {
+    min-height: 0vh !important;
+  }
+  /* pagination 1,2 ...page 크기 */
+  .v-pagination__item {
+    box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+    border-radius: 4px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    height: 32px !important;
+    width: 32px !important;
+    margin: 0.3rem 10px;
+}
+/* pagination 한칸 앞뒤 크기 */
+.v-pagination__navigation {
+    box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+    border-radius: 4px;
+    display: inline-
+    ;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    height: 32px !important;
+    width: 32px !important;
+    margin: 0.3rem 10px;
+}
+</style>

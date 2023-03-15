@@ -16,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
+import java.util.Map;
+import java.util.HashMap;
 
 @Slf4j
 @SpringBootTest
@@ -24,6 +27,9 @@ public class NiFiControllerTest {
 
     @Autowired
     private NiFiController niFiController;
+
+    @Autowired
+    private NiFiRestSVC niFiRestSVC;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -77,11 +83,14 @@ public class NiFiControllerTest {
 
     @Test
     public void stopPipelineTest() {
-        niFiController.stopPipeline("8905ea68-0183-1000-3cdf-24a2f1708575");
+        // niFiController.stopPipeline("8905ea68-0183-1000-3cdf-24a2f1708575");
     }
 
     @Test
-    public void runPipelineTest() {
-        niFiController.runPipeline("8c264f86-0183-1000-a82f-c30fe98ebf25");
+    public void runPipelineTest() throws JsonMappingException, JsonProcessingException {
+        Boolean result = niFiController.runPipeline("c3c991ac-0186-1000-c0e4-7c4ae6ce5e5d");
+        Map<String, Integer> nifiStatus = niFiRestSVC.getStatusProcessGroup("c3c991ac-0186-1000-c0e4-7c4ae6ce5e5d");
+        log.info("### : result : " + result);
+        log.info("### : nifiStatus : " + nifiStatus);
     }
 }

@@ -52,6 +52,7 @@
     <v-data-table
       :headers="convertHeaders"
       :items="convProps"
+      :items-per-page="100"
       class="pipelineUpdateConvertVFT"
       :hide-default-footer="true"
       style="text-align: center"

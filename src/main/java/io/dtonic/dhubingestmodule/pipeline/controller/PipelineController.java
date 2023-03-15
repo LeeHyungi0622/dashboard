@@ -2,13 +2,19 @@ package io.dtonic.dhubingestmodule.pipeline.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import io.dtonic.dhubingestmodule.common.code.CommandStatusCode;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
+import io.dtonic.dhubingestmodule.common.code.TaskStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
+import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
+import io.dtonic.dhubingestmodule.pipeline.vo.CommandVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
 import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,6 +51,9 @@ public class PipelineController<T> {
     @Autowired
     private IngestManagerSVC ingestManagerSVC;
     
+    @Autowired
+    private NiFiRestSVC niFiRestSVC;
+
     @GetMapping("/completed") // PipeLine List 조회
     public ResponseEntity<T> getPipelineList(
         HttpServletRequest request,
@@ -68,7 +77,7 @@ public class PipelineController<T> {
         HttpServletRequest request,
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @PathVariable Integer id, //삭제할 임시파이프라인 id
+        @PathVariable Integer id,
         @RequestBody PipelineVO pipelineVO
     ) {
         pipelineSVC.createPipeline(id, pipelineVO);
@@ -83,6 +92,8 @@ public class PipelineController<T> {
      * @param accept   request accept header
      * @param id       retrieve Pipeline id
      * @return
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
      */
 
     @PutMapping("/completed/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
@@ -91,7 +102,7 @@ public class PipelineController<T> {
         HttpServletResponse response,
         @RequestBody PipelineVO pipelineVO,
         @PathVariable Integer id
-    ) {
+    ) throws JsonMappingException, JsonProcessingException {
         // validation check
         ResponseEntity principal = ingestManagerSVC.getUserId(request);
         String userId = principal.getBody().toString();
@@ -153,6 +164,8 @@ public class PipelineController<T> {
      * @param accept   request accept header
      * @param id       retrieve Pipeline id
      * @return
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
      */
     @PutMapping("/run-status/{id}") // PipeLine status 업데이트
     public ResponseEntity UpdatePipelineStatus(
@@ -161,9 +174,27 @@ public class PipelineController<T> {
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id,
         @RequestParam(value = "status") String status
-    ) {
-        // validation check
+    ) throws JsonMappingException, JsonProcessingException {
+        ResponseEntity principal = ingestManagerSVC.getUserId(request);
+        String userId = principal.getBody().toString();
+        Integer commandId = null;
+        Integer taskId = null;
+        CommandVO commandVO = new CommandVO();
+        if(status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode())){
+            commandVO.setCommand(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
+            commandVO.setStatus(CommandStatusCode.COMMAND_STATUS_RUNNING.getCode());
+        }else if(status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())){
+            commandVO.setCommand(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode());
+            commandVO.setStatus(CommandStatusCode.COMMAND_STATUS_STOPPING.getCode());
+        }
+        commandVO.setUserId(userId);
+        commandVO.setPipelineId(id);
         
+        TaskVO taskVO = new TaskVO();
+        taskVO.setStatus(TaskStatusCode.TASK_STATUS_WORKING.getCode());
+        taskVO.setTaskName(TaskStatusCode.TASK_STATUS_WORKING.getCode());
+
+        // validation check
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
         } else {
@@ -173,11 +204,21 @@ public class PipelineController<T> {
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()) ||
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())
             ) {
-                pipelineSVC.changePipelineStatus(id, status);
-            } else {
+                commandId = pipelineSVC.createCommand(commandVO);
+                taskVO.setCommandId(commandId);
+                taskId = niFiRestSVC.createTask(taskVO);
+                ResponseEntity result = pipelineSVC.changePipelineStatus(id, status);
+                if (result.getStatusCode() == HttpStatus.valueOf(200)){
+                    niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
+                    pipelineSVC.updateCommand(commandId, CommandStatusCode.COMMAND_STATUS_SUCCEED.getCode());
+                }else{
+                    niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FAILED.getCode());
+                    pipelineSVC.updateCommand(commandId, CommandStatusCode.COMMAND_STATUS_FAILED.getCode());
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Run Failed ");
+                }
+            } else {   
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status name is invalid");
             }
-
             return ResponseEntity.ok().build();
         }
     }
@@ -190,6 +231,8 @@ public class PipelineController<T> {
      * @param accept   request accept header
      * @param id       retrieve Pipeline id
      * @return
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
      */
     @DeleteMapping("/completed/{id}") // PipeLine 삭제
     public ResponseEntity deletePipeline(
@@ -197,19 +240,24 @@ public class PipelineController<T> {
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
-    ) {
+    ) throws JsonMappingException, JsonProcessingException {
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
         }
         // delete pipeline
         ResponseEntity principal = ingestManagerSVC.getUserId(request);
-        String userId = principal.getBody().toString();
+        String userId = null;
+        try {
+            userId = principal.getBody().toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         pipelineSVC.deletePipeline(id, userId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/hist/cmd/{id}") 
+    @GetMapping("/hist/cmd/{pipelineId}") 
     public ResponseEntity<T> getPipelineCmdHistory(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -219,7 +267,7 @@ public class PipelineController<T> {
         return pipelineSVC.getPipelineCmdHistory(pipelineId);
     }
 
-    @GetMapping("/hist/task/{id}") 
+    @GetMapping("/hist/task/{commandId}") 
     public ResponseEntity<T> getPipelineTaskHistory(
         HttpServletRequest request,
         HttpServletResponse response,
