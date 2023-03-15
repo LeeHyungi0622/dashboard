@@ -1,10 +1,7 @@
 package io.dtonic.dhubingestmodule.common.thread;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import io.dtonic.dhubingestmodule.common.code.CommandStatusCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.nifi.controller.NiFiController;

@@ -180,21 +180,22 @@ public class PipelineController<T> {
         Integer commandId = null;
         Integer taskId = null;
         CommandVO commandVO = new CommandVO();
+        TaskVO taskVO = new TaskVO();
+
         if(status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode())){
             commandVO.setCommand(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
             commandVO.setStatus(CommandStatusCode.COMMAND_STATUS_RUNNING.getCode());
+            taskVO.setTaskName(TaskStatusCode.TASK_TASK_NAME_RUN.getCode());
         }else if(status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())){
             commandVO.setCommand(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode());
             commandVO.setStatus(CommandStatusCode.COMMAND_STATUS_STOPPING.getCode());
+            taskVO.setTaskName(TaskStatusCode.TASK_TASK_NAME_STOP.getCode());
         }
         commandVO.setUserId(userId);
         commandVO.setPipelineId(id);
-        
-        TaskVO taskVO = new TaskVO();
         taskVO.setStatus(TaskStatusCode.TASK_STATUS_WORKING.getCode());
-        taskVO.setTaskName(TaskStatusCode.TASK_STATUS_WORKING.getCode());
-
-        // validation check
+        
+        /* validation check */
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
         } else {

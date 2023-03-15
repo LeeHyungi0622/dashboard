@@ -3,7 +3,10 @@ package io.dtonic.dhubingestmodule.common.code;
 public enum TaskStatusCode {
     TASK_STATUS_WORKING("WORKING"),
     TASK_STATUS_FINISH("FINISH"),
-    TASK_STATUS_FAILED("FAILED");
+    TASK_STATUS_FAILED("FAILED"),
+
+    TASK_TASK_NAME_RUN("RUN"),
+    TASK_TASK_NAME_STOP("STOP");
   
     
     private String code;
