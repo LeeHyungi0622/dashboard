@@ -1,0 +1,12 @@
+FROM apache/nifi:1.16.3
+WORKDIR /opt/nifi/nifi-current
+# EXPOSE PORT 8443 for NiFi UI
+# EXPOSE PORT 20000-20099 for NiFi ListenHTTP
+EXPOSE 8443
+EXPOSE 8008
+EXPOSE 20000-20099
+# ADD JDBC driver to NiFi lib
+ADD ./jdbc/mysql.jar mysql.jar
+ADD ./jdbc/mariadb.jar mariadb.jar
+ADD ./jdbc/postgresql.jar postgresql.jar
+
