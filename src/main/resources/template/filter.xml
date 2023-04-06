@@ -2,7 +2,7 @@
 <template encoding-version="1.3">
     <description></description>
     <groupId>5fcf8aa8-0184-1000-0a2f-6fc83ac602b8</groupId>
-    <name>Filter List</name>
+    <name>filter</name>
     <snippet>
         <processGroups>
             <id>c5af1229-f006-3955-0000-000000000000</id>
@@ -387,7 +387,8 @@
                     <name>filter input</name>
                     <state>STOPPED</state>
                     <type>INPUT_PORT</type>
-                    <validationErrors>'Port 'filter input'' is invalid because Port has no incoming connections</validationErrors>
+                    <validationErrors>'Port 'filter input'' is invalid because Port has no incoming
+                        connections</validationErrors>
                 </inputPorts>
                 <labels>
                     <id>10e9ef8f-1012-3f70-0000-000000000000</id>
@@ -440,7 +441,8 @@
                     <name>filter output</name>
                     <state>STOPPED</state>
                     <type>OUTPUT_PORT</type>
-                    <validationErrors>'Port 'filter output'' is invalid because Port has no outgoing connections</validationErrors>
+                    <validationErrors>'Port 'filter output'' is invalid because Port has no outgoing
+                        connections</validationErrors>
                 </outputPorts>
                 <processors>
                     <id>04a45211-e577-37a5-0000-000000000000</id>

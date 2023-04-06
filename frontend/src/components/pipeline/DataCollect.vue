@@ -174,8 +174,20 @@ export default {
             if(nifi.requiredProps){
               for(var prop of nifi.requiredProps){
                 if(prop.name == "Scheduling"){                  
-                  prop.detail = this.schedulingMode;
                   prop.inputValue = this.schedulingDetail;
+                }
+              }
+            }
+          }
+      }
+    },
+    schedulingMode(){
+        if(this.getPipeline.collector!= null){
+          for(var nifi of this.getPipeline.collector.nifiComponents){
+            if(nifi.requiredProps){
+              for(var prop of nifi.requiredProps){
+                if(prop.name == "Scheduling"){                  
+                  prop.detail = this.schedulingMode;
                 }
               }
             }
@@ -186,7 +198,7 @@ export default {
   computed:{
     isCompleted(){
       if(this.getPipeline.collector!= null){
-        for(var nifi of this.getPipeline.collector.nifiComponents){
+        for(let nifi of this.getPipeline.collector.nifiComponents){
           if(nifi.requiredProps){
             for(let prop of nifi.requiredProps){
               if(prop.inputValue == null || prop.inputValue == "" || prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
@@ -198,6 +210,8 @@ export default {
             for(let prop of nifi.optionalProps){
               if(prop.inputValue == ""){
                 prop.inputValue = null;
+              } else if(prop.inputValue != null && prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+                return [false, prop, nifi.name];
               }
             }
           }
@@ -205,13 +219,14 @@ export default {
         return [true, null, null];
       }
       else{
-        return [false, "collecter not found", null];
+        return [false, "collector not found", null];
       }
     },
     isSchedulingVaild(){
+      let timerReg = /^[0-9]+ sec$/g;
       if(this.selectedCollectValue !='REST Server'){
         if(this.schedulingMode == "TIMER_DRIVEN"){
-          return this.schedulingDetail.includes("sec");
+          return timerReg.test(this.schedulingDetail);
         }
         else if(this.schedulingMode == "CRON_DRIVEN"){
           return CronVaildator.isValidCronExpression(this.schedulingDetail);
@@ -300,7 +315,18 @@ export default {
         if(this.isCompleted[0]){
           this.$store.state.collectorTableUpdateFlag = !this.$store.state.collectorTableUpdateFlag;
           this.$store.state.completedPipeline = this.getPipeline;
-        }else{
+        } else if(this.isCompleted[1]=="collector not found"){
+          let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 수집기 선택이 필요합니다. " +
+            "<br/> 수집기 목록 중 하나를 선택해주십시오.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+        }
+        else{
           let alertPayload = {
           title: "입력 값 오류",
           text:
@@ -332,7 +358,7 @@ export default {
         if(this.isCompleted[0]){
           this.$store.state.registerPipeline= this.getPipeline;
           collectorService
-            .postPipelineDraft(this.$store.state.registerPipeline)
+            .postPipelineDraft(this.getPipeline)
             .then((res) => {
               this.$store.state.registerPipeline = res;
               this.$store.state.showRegisterMode = 'filter';
@@ -341,6 +367,16 @@ export default {
             .catch((err) => {
               console.error(err);
             });
+        }else if(this.isCompleted[1]=="collector not found"){
+          let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 수집기 선택이 필요합니다. " +
+            "<br/> 수집기 목록 중 하나를 선택해주십시오.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
         }
         else{
           let alertPayload = {
@@ -396,6 +432,7 @@ export default {
         .catch((err) => {
           console.error(err);
         });
+      
     },
     showDraftCompleted(){
       let alertPayload = {

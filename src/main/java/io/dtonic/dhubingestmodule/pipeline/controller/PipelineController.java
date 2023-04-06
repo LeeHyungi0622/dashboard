@@ -195,7 +195,7 @@ public class PipelineController<T> {
      * @return
      */
     @LogAccessRest
-    @DeleteMapping("/completed/{id}") // PipeLine 삭제
+    @DeleteMapping("/pipelines/completed/{id}") // PipeLine 삭제
     public ResponseEntity deletePipeline(
         HttpServletRequest request,
         HttpServletResponse response,

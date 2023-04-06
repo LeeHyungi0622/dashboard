@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -79,6 +80,7 @@ public class NiFiClientEntity {
      *
      * @param access token
      */
+    @Scheduled(cron = "0 */5 * * * *")
     public void manageToken() {
         Date tokenTime = getExpiredTimeFromToken(this.accessToken);
         Calendar systemCal = Calendar.getInstance();

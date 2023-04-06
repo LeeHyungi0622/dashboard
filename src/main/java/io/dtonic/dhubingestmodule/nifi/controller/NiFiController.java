@@ -199,13 +199,13 @@ public class NiFiController {
                             } else {
                                 id =
                                     id +
-                                    "${" +
+                                    ":${" +
                                     nifi
                                         .getRequiredProps()
                                         .get(i)
                                         .getInputValue()
                                         .replace("\"", "") +
-                                    "}\"";
+                                    "}";
                             }
                         }
                     }
@@ -293,6 +293,9 @@ public class NiFiController {
                 ae.put(a.getName(), e);
             } else if (a.getValueType().equals("BigDecimal")) {
                 e.put("value", "=toDouble");
+                ae.put(a.getName(), e);
+            } else if (a.getValueType().equals("String")) {
+                e.put("value", "=toString");
                 ae.put(a.getName(), e);
             }
         }

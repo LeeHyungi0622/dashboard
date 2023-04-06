@@ -70,7 +70,7 @@
         </div>
         <!-- 수정 아닐시 -->
         <div style="padding-left: 20px" v-else-if="content.name.toUpperCase().includes('PASSWORD')">{{ showPasswordMasking(content.inputValue) }}</div>
-        <div style="padding-left: 20px" v-else>{{ content.inputValue }}</div>
+        <div class="ofhover" style="padding-left: 20px;" v-else>{{ content.inputValue }}</div>
       </div>
     </div>
     <v-snackbar v-model="flag" light>
@@ -110,7 +110,10 @@ export default {
       this.flag = true;
     },
     showPasswordMasking(password){
-      return '*'.repeat(password.length);
+      if(password != null){
+        return '*'.repeat(password.length);
+      }
+      else return '';
     }
   }
 };

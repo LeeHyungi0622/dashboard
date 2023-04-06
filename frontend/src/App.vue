@@ -1,8 +1,7 @@
 <template>
   <v-app
     id="inspire"
-    style="font-family: 'Nanum Gothic', sans-serif !important"
-  >
+    style="font-family: 'Nanum Gothic', sans-serif !important"  >
     <v-system-bar
       app
       style=" 
@@ -75,6 +74,11 @@
       :contents="alertContent"
       @close-alert-popup="closeAlertPopup"
     ></alert-popup>
+    <alert-popup
+      v-if="delAlertShowFlag"
+      :contents="delAlertContent"
+      @close-alert-popup="closeDelAlertPopup"
+    ></alert-popup>
     <temp-pipeline-popup
       v-if="tempPipelineShowFlag"
       @close-temp-pipeline-popup="closeTempPipelinePopup"
@@ -112,14 +116,41 @@ export default {
     }
   },
   mounted(){
-    UserInfo.getUserInfo()
-      .then((res) => {
-        this.userInfo = res;
-        this.$store.state.userInfo = res;
-      })
-      .catch((err) => {
-        console.log("Fail to Get User Info", err);
-      });
+    if(this.getCookie("chaut") === ""){
+      alert("로그인이 필요한 페이지 입니다.");
+      location.reload();
+    }
+    else{
+      UserInfo.getUserInfo()
+        .then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            this.userInfo = res;
+            this.$store.state.userInfo = res;
+          } 
+          else {
+            alert("사용자 정보를 불러오는데 실패했습니다.");
+          }  
+        })
+        .catch((err) => {
+          console.log("Fail to Get User Info", err);
+        });
+    }
+
+      // UserInfo.getUserInfo()
+      //   .then((res) => {
+      //     let isSuccess = res.status === 200 || 201 || 204;
+      //     if(isSuccess){
+      //       this.userInfo = res;
+      //       this.$store.state.userInfo = res;
+      //     } 
+      //     else {
+      //       alert("사용자 정보를 불러오는데 실패했습니다.");
+      //     }  
+      //   })
+      //   .catch((err) => {
+      //     console.log("Fail to Get User Info", err);
+      //   });
   },
   data() {
     return {
@@ -133,6 +164,12 @@ export default {
         name: "default"
       },
       alertContent: {
+        title: "default",
+        text: "default",
+        url: "default",
+        name: "default"
+      },
+      delAlertContent: {
         title: "default",
         text: "default",
         url: "default",
@@ -157,6 +194,7 @@ export default {
       confirmShowFlag: false,
       userAlertShowFlag: false,
       alertShowFlag: false,
+      delAlertShowFlag: false,
       menu: [
         ["사용자 정보", "userInfo"],
         ["로그아웃", "logout"]
@@ -175,20 +213,32 @@ export default {
     EventBus.$on("show-temp-pipeline-popup", (payload) => {
       this.showTempPipelinePopup(payload);
     });
+    EventBus.$on("show-del-pipeline-popup", (payload) => {
+      this.showDelAlertPopup(payload);
+    });
 
   },
   methods: {
-    set_cookie(name, value, unixTime) {
-      var date = new Date();
-      date.setTime(date.getTime() + unixTime);
-      document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';expires=' + date.toUTCString() + ';path=/';
-    },
+    getCookie(cName) {
+      cName = cName + '=';
+      let cookieData = document.cookie;
+      let start = cookieData.indexOf(cName);
+      let cValue = '';
+      if(start != -1){
+        start += cName.length;
+        let end = cookieData.indexOf(';', start);
+        if(end == -1)end = cookieData.length;
+        cValue = cookieData.substring(start, end);
+      }
+      return unescape(cValue);
+  },
     closeConfirmPopup: function (val) {
       if(val.url == "update"){
         if(val.body == 'RUN'){
           PipelineList.putPipelineStatus(val.id, 'STOPPING').then((res) => {
             let isSuccess = res.status === 200 || 201 || 204;
             if(isSuccess){
+              this.confirmShowFlag = false;
               let alertPayload = {
                   title: "정지 완료",
                   text:
@@ -204,6 +254,7 @@ export default {
           PipelineList.putPipelineStatus(val.id, 'STARTING').then((res) => {
             let isSuccess = res.status === 200 || 201 || 204;
             if(isSuccess){
+              this.confirmShowFlag = false;
               let alertPayload = {
                   title: "실행 완료",
                   text:
@@ -220,23 +271,25 @@ export default {
         PipelineList.deletePipeline(val.id).then((res) => {
             let isSuccess = res.status === 200 || 201 || 204;
             if(isSuccess){
+              this.confirmShowFlag = false;
               let alertPayload = {
                   title: "삭제 완료",
                   text:
                     val.name + " 파이프라인의 삭제가 완료되었습니다.",
-                  url: "completedUpdate",
+                  url: "pipelineDel",
                 };
-              EventBus.$emit("show-alert-popup", alertPayload);
-              this.$router.go();
+              EventBus.$emit("show-del-pipeline-popup", alertPayload);
+              
             }
 
-          }).catch((error) => error)
+          }).catch((error) => error);
         
       }
       else if(val.url == "deleteTemp"){
         PipelineList.deleteTempPipeline(val.id).then((res) => {
           let isSuccess = res.status === 200 || 201 || 204;
           if(isSuccess){
+            this.confirmShowFlag = false;
             PipelineList.getTempPipelineList()
             .then((res) => {
               this.$store.state.tempPipelineList = res;
@@ -286,6 +339,17 @@ export default {
       this.alertContent.url = payload.url;
       this.alertContent.name = payload.name;
     },
+    closeDelAlertPopup: function () {
+      this.delAlertShowFlag = false;
+      location.reload();
+    },
+    showDelAlertPopup(payload) {
+      this.delAlertShowFlag = true;
+      this.delAlertContent.title = payload.title;
+      this.delAlertContent.text = payload.text;
+      this.delAlertContent.url = payload.url;
+      this.delAlertContent.name = payload.name;
+    },
     closeTempPipelinePopup: function () {
       this.tempPipelineShowFlag = false;
     },
@@ -299,7 +363,6 @@ export default {
       } else {
         UserInfo.sendLogOut()
           .then(response => {
-            console.log(response);
             const resultCode = response.status === 200 || 201 || 204;
             if (resultCode) {
               location.replace('/');
@@ -307,7 +370,7 @@ export default {
             }
           });
       }
-    }
+    },
   }
 };
 </script>

@@ -26,9 +26,10 @@
                 {{ title }}
               </option>
             </select>
-            <input type="text" class="mgL12" v-model="pipelineFilterInput" maxlength="300"/>
+            <input v-if="pipelineFilter != 'all'" type="text" class="mgL12" v-model="pipelineFilterInput" maxlength="300"/>
+            <div v-else class="mgL12" maxlength="300"/>
             <button class="mgL12" @click="actionFilter()">검색</button>
-            <select name="" id="" class="mgL12" v-model="perPage">
+            <select name="" id="" class="mgL12" v-model="perPage" @change="resetPage($event)">
               <option value="10">10개씩 표시</option>
               <option value="20">20개씩 표시</option>
             </select>
@@ -120,7 +121,6 @@ import tempPipeline from "../../json/tempPipeline.json";
 export default {
   mounted() {
     this.$store.state.overlay = true;
-    console.log(this.$ws);
     this.connect();
     pipelineListService
       .getPipelineList()
@@ -135,6 +135,7 @@ export default {
     this.$store.state.registerPipeline = {};
     this.$store.state.completedPipeline = {};
     this.$store.state.overlay = false;
+    this.pipelineFilter="all";
   },
   watch:{
     filteritems(){
@@ -163,13 +164,16 @@ export default {
       total: 15,
       tempPipeline: tempPipeline,
       activationStatusList: [["전체",""], ["RUN","RUN"], ["STARTING","STARTING"], ["STOPPED","STOPPED"], ["STOPPING","STOPPING"]],
-      pipelineListFilterList: [["전체",""], ["파이프라인 이름","name"], ["적재Dataset","dataSet"]],
+      pipelineListFilterList: [["전체","all"], ["파이프라인 이름","name"], ["적재Dataset","dataSet"]],
       searchValue: null,
       pipelineListData: pipelineListData,
     };
   },
   methods: {
     // API 사용법
+    resetPage(){
+      this.currentPage = 1;
+    },
     getpipelineList() {
       pipelineListService.getPipelineList();
     },
@@ -257,7 +261,8 @@ export default {
     getMessage() {
       this.$ws.onmessage = ({ data }) => {
         this.$store.state.pipelineList = JSON.parse(data);
-        this.filteritems = JSON.parse(data);
+        // this.filteritems = JSON.parse(data);
+        this.actionFilter()
       };
     },
     disconnect() {
@@ -274,14 +279,16 @@ export default {
         this.searchValue = event.target.value;
       }
       else{
+        if(event.target.value == "all"){
+          this.pipelineFilterInput = "";
+        }
         this.pipelineFilter = event.target.value;
       }
     },
     actionFilter(){
       this.filteritems = this.$store.state.pipelineList;
-
       if(this.searchValue){
-        if(this.pipelineFilter){
+        if(this.pipelineFilter != "all"){
           this.filteritems = this.$store.state.pipelineList.filter((i) => {
           return (
             i[this.selectedFilter] === this.searchValue && i[this.pipelineFilter].includes(this.pipelineFilterInput) 
@@ -297,7 +304,7 @@ export default {
         }
       }
       else{
-        if(this.pipelineFilter){
+        if(this.pipelineFilter != "all"){
           this.filteritems = this.$store.state.pipelineList.filter((i) => {
           return (
             i[this.pipelineFilter].includes(this.pipelineFilterInput) 
