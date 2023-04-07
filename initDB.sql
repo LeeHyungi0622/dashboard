@@ -86,6 +86,19 @@ CREATE TABLE IF NOT EXISTS ingest_manager.temp_pipeline (
 
 -- Command Task Table 개발 23.03.16 -- 
 
+-- SEQUENCE: ingest_manager.command_history_id_seq
+
+-- DROP SEQUENCE IF EXISTS ingest_manager.command_history_id_seq;
+
+CREATE SEQUENCE IF NOT EXISTS ingest_manager.command_history_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE ingest_manager.command_history_id_seq
+    OWNER TO postgres;
 
 -- DROP TABLE IF EXISTS ingest_manager.command_history;
 CREATE TABLE IF NOT EXISTS ingest_manager.command_history
@@ -112,6 +125,20 @@ TABLESPACE pg_default;
 -- Index: fki_command_history_fkey
 
 -- DROP INDEX IF EXISTS ingest_manager.fki_command_history_fkey;
+
+-- SEQUENCE: ingest_manager.task_history_id_seq
+
+-- DROP SEQUENCE IF EXISTS ingest_manager.task_history_id_seq;
+
+CREATE SEQUENCE IF NOT EXISTS ingest_manager.task_history_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE ingest_manager.task_history_id_seq
+    OWNER TO postgres;
 
 CREATE INDEX IF NOT EXISTS fki_command_history_fkey
     ON ingest_manager.command_history USING btree
