@@ -71,7 +71,7 @@ public class PipelineController<T> {
      * @param id         to delete temporary Pipeline
      * @return
      */
-    @Transactional
+    
     @PostMapping("/completed/{id}") // PipeLine 생성시 "등록완료"
     public ResponseEntity createPipeline(
         HttpServletRequest request,
@@ -80,8 +80,14 @@ public class PipelineController<T> {
         @PathVariable Integer id,
         @RequestBody PipelineVO pipelineVO
     ) {
-        pipelineSVC.createPipeline(id, pipelineVO);
-        return ResponseEntity.ok().build();
+        try {
+            pipelineSVC.createPipeline(id, pipelineVO);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Create Pipeline error {}", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Create Pipeline failed");
+        } 
+        
     }
 
     /**
@@ -107,11 +113,11 @@ public class PipelineController<T> {
         ResponseEntity principal = ingestManagerSVC.getUserId(request);
         String userId = principal.getBody().toString();
 
-        if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist ");
-        } else {
+        if (Boolean.TRUE.equals(pipelineSVC.isExists(id))) {
             pipelineSVC.updatePipeline(id, pipelineVO, userId);
             return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist ");
         }
     }
 
@@ -174,7 +180,7 @@ public class PipelineController<T> {
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id,
         @RequestParam(value = "status") String status
-    ) throws JsonMappingException, JsonProcessingException {
+    ) {
         ResponseEntity principal = ingestManagerSVC.getUserId(request);
         String userId = principal.getBody().toString();
         Integer commandId = null;
@@ -196,9 +202,7 @@ public class PipelineController<T> {
         taskVO.setStatus(TaskStatusCode.TASK_STATUS_WORKING.getCode());
         
         /* validation check */
-        if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
-        } else {
+        if (Boolean.TRUE.equals(pipelineSVC.isExists(id))) {
             if (
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()) ||
                 status.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) ||
@@ -208,6 +212,7 @@ public class PipelineController<T> {
                 commandId = pipelineSVC.createCommand(commandVO);
                 taskVO.setCommandId(commandId);
                 taskId = niFiRestSVC.createTask(taskVO);
+                /* service 수행 */
                 ResponseEntity result = pipelineSVC.changePipelineStatus(id, status);
                 if (result.getStatusCode() == HttpStatus.valueOf(200)){
                     niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
@@ -221,6 +226,9 @@ public class PipelineController<T> {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status name is invalid");
             }
             return ResponseEntity.ok().build();
+            
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
         }
     }
 
@@ -241,7 +249,7 @@ public class PipelineController<T> {
         HttpServletResponse response,
         @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
-    ) throws JsonMappingException, JsonProcessingException {
+    )  {
         if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
         }

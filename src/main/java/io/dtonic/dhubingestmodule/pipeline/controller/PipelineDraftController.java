@@ -115,7 +115,7 @@ public class PipelineDraftController<T> {
         return result;
     }
 
-    @Transactional
+    
     @DeleteMapping("/drafts/{id}") // 임시저장 삭제
     public ResponseEntity deletePipelineDrafts(
         HttpServletRequest request,

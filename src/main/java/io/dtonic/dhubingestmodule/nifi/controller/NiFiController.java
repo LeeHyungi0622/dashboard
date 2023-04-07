@@ -8,6 +8,7 @@ import io.dtonic.dhubingestmodule.common.code.MonitoringCode;
 import io.dtonic.dhubingestmodule.common.code.TaskStatusCode;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode.ErrorCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
+import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.Attribute;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
@@ -20,6 +21,7 @@ import io.dtonic.dhubingestmodule.nifi.vo.ConverterVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
+import io.dtonic.dhubingestmodule.pipeline.vo.CommandVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
 import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
@@ -76,31 +78,24 @@ public class NiFiController {
     public String createPipeline(PipelineVO pipelineVO, Integer commandId) {
         TaskVO taskVO = new TaskVO();
         taskVO.setCommandId(commandId);
-        taskVO.setInputParameter(null);
         taskVO.setStatus(TaskStatusCode.TASK_STATUS_WORKING.getCode());
-
-        try {
-            /* Check Token Expired */
-            niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
-            
-            taskVO.setTaskName(MonitoringCode.CREATE_PROCESSGROUP.getCode());
-            Integer taskId = niFiRestSVC.createTask(taskVO);
-
+        
+        /* Check Token Expired */
+        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+        taskVO.setTaskName(MonitoringCode.CREATE_PROCESSGROUP.getCode());
+        Integer taskId = niFiRestSVC.createTask(taskVO);
+        try{
             /* Create Pipeline Processor Group */
             String processGroupId = niFiSwaggerSVC.createProcessGroup(
                 pipelineVO.getName(),
                 niFiApplicationRunner.getIngestProcessGroupId()
             );
             if(processGroupId != null){
-            niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
-            }else{
-                log.error("Fail to Create Processor Group  in NiFi : PipelineVO = {}", pipelineVO);
-                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FAILED.getCode());
-                return null;
+                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
             }
 
             /* Create Output Port */
-            taskVO.setTaskName(MonitoringCode.CREATE_OUTPUT_INPIPELINE.getCode());
+            taskVO.setTaskName(MonitoringCode.CREATE_OUTPUTPORT_PIPELINE.getCode());
             taskId = niFiRestSVC.createTask(taskVO);
 
             String outputId = niFiRestSVC.createOutputInPipeline(
@@ -109,28 +104,30 @@ public class NiFiController {
             );
             if(outputId != null){
                 niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
-            }else{
-                log.error("Fail to Create Output Port Pipeline in NiFi : PipelineVO = {}", pipelineVO);
-                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FAILED.getCode());
-                return null;
             }
-    
 
             /* Create Adatpors Collector */
-            taskVO.setTaskName(MonitoringCode.CREATE_ADAPTOR.getCode());
+            taskVO.setTaskName(MonitoringCode.CREATE_ADAPTOR_COLLECTOR.getCode());
             taskId = niFiRestSVC.createTask(taskVO);
             String collectorId = createAdaptor(pipelineVO.getCollector(), processGroupId);
+            if(collectorId != null){
+                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
+            }
+
             /* Create Adatpors Filter */
+            taskVO.setTaskName(MonitoringCode.CREATE_ADAPTOR_FILTER.getCode());
+            taskId = niFiRestSVC.createTask(taskVO);
             String filterId = createAdaptor(pipelineVO.getFilter(), processGroupId);
+            if(filterId != null){
+                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
+            }
             /* Create Adatpors Convertor */
+            taskVO.setTaskName(MonitoringCode.CREATE_ADAPTOR_CONVERTOR.getCode());
+            taskId = niFiRestSVC.createTask(taskVO);
             AdaptorVO formattedNiFiProps = convertPipelineVOToNiFiForm(pipelineVO);
             String convertorId = createAdaptor(formattedNiFiProps, processGroupId);
-            if(collectorId != null && filterId != null && formattedNiFiProps!= null){
+            if(formattedNiFiProps != null){
                 niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
-            }else{
-                log.error("Fail to Create Adatpors Pipeline in NiFi : PipelineVO = {}", pipelineVO);
-                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FAILED.getCode());
-                return null;
             }
 
             /* Create Connections Collector - Filter Connection */
@@ -159,11 +156,7 @@ public class NiFiController {
                 processGroupId,
                 niFiApplicationRunner.getIngestProcessGroupId()
             )){
-            niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());}
-            else{
-                log.error("Fail to Connections Pipeline in NiFi : PipelineVO = {}", pipelineVO);
-                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FAILED.getCode());
-                return null;
+                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
             }
 
             /* Enable all Controllers */
@@ -171,15 +164,13 @@ public class NiFiController {
             taskId = niFiRestSVC.createTask(taskVO);
             if(niFiRestSVC.enableControllers(processGroupId)){
                 niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
-            }else{
-                log.error("Fail to Enable all Controllers Pipeline in NiFi : PipelineVO = {}", pipelineVO);
-                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FAILED.getCode());
-                return null;
             }
+            /* success create Pipeline */
             log.info("Success Create Pipeline in NiFi : PipelineVO = {}", pipelineVO);
             return processGroupId;
-        } catch (Exception e) {
-            log.error("Fail to Create Pipeline in NiFi : PipelineVO = {}", pipelineVO, e);
+        } catch(Exception e){
+            log.error("Fail to " + taskVO.getTaskName() + " Pipeline in NiFi : PipelineVO = " + pipelineVO, e);
+            niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FAILED.getCode());
             return null;
         }
     }
@@ -417,19 +408,13 @@ public class NiFiController {
      * @return ProcessGroup ID created Adaptor
      * @throws JsonProcessingException
      */
-    private String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId){
-        try{
-            String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getName());
-            // Create Dummy Template
-            String adaptorId = niFiRestSVC.createDummyTemplate(rootProcessorGroupId, templateId);
-            // Update Adaptor
-            updateAdaptor(adaptorId, adaptorVO.getNifiComponents());
-            return adaptorId;
-        }
-        catch(Exception e){
-            log.error("create Adaptor error", e);
-            return null;
-        }
+    private String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) throws Exception{
+        String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getName());
+        // Create Dummy Template
+        String adaptorId = niFiRestSVC.createDummyTemplate(rootProcessorGroupId, templateId);
+        // Update Adaptor
+        updateAdaptor(adaptorId, adaptorVO.getNifiComponents());
+        return adaptorId;
     }
 
     private void updateAdaptor(String processorGroupId, List<NiFiComponentVO> NiFiComponents)
@@ -481,14 +466,14 @@ public class NiFiController {
             
             TaskVO taskVO = new TaskVO();
             taskVO.setCommandId(commandId);
-            taskVO.setInputParameter(null);
             taskVO.setStatus(TaskStatusCode.TASK_STATUS_WORKING.getCode());
 
             for (MonitoringCode action : actions){
 
-                taskVO.setTaskName(action.toString());
+                taskVO.setTaskName(action.getCode());
                 Integer taskId = niFiRestSVC.createTask(taskVO);
 
+                /* task 수행 */
                 if(niFiRestSVC.monitoring(action, processGroupId)){
                     niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
                 }else{
@@ -510,21 +495,19 @@ public class NiFiController {
             niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
             String processGroupId = createPipeline(pipelineVO, commandId);
             if(processGroupId != null){
-                if (deletePipeline(pipelineVO.getProcessorGroupId(), commandId)) {
-                    return processGroupId;
-                } else {
-                    log.error(
-                        "Fail to delete Pipeline in NiFi : processGroupId = [{}]",
-                        pipelineVO.getProcessorGroupId()
-                    );
-                    return null;
-                }
+                
+                /* Delete Pipleine using thread */
+                Runnable deletePipeline = new MultiThread(pipelineVO, commandId);
+                Thread thread = new Thread(deletePipeline);
+                thread.start();
+
+                return processGroupId;
             }else{
                 log.error(
                     "Fail to Create Pipeline in NiFi : processGroupId = [{}]",
                     pipelineVO.getProcessorGroupId()
                 );
-                    return null;
+                return null;
             }
         } catch (Exception e) {
             log.error("Fail to update Pipeline in NiFi : processGroupId = [{}]", pipelineVO, e);
@@ -543,15 +526,15 @@ public class NiFiController {
     public boolean runPipeline(String processorGroupId) throws JsonMappingException, JsonProcessingException {
         // Check Token Expired
         niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+
         if (niFiRestSVC.startProcessorGroup(processorGroupId)) {
-            
             Map<String, Integer> nifiStatus = niFiRestSVC.getStatusProcessGroup(processorGroupId);
             for(int i =0; i <3 ; i++){
                 if (nifiStatus.get(NifiStatusCode.NIFI_STATUS_STOPPED.getCode()) == 0 && nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0){
                     log.info("Success Run Pipeline : Processor Group ID = {}", processorGroupId);
                     return true;
                 }else{
-                    log.error("Nifi status exist Stopped Proccessor or Invalid Proccessor");
+                    log.error("Nifi status exist Run Proccessor or Invalid Proccessor " + i + " times");
                 }
             }
         } else {
@@ -579,6 +562,8 @@ public class NiFiController {
                 if (nifiStatus.get(NifiStatusCode.NIFI_STATUS_RUNNING.getCode()) == 0 && nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0){
                     log.info("Success Stop Pipeline : Processor Group ID = {}", processorGroupId);
                     return true;
+                }else{
+                    log.error("Nifi status exist Stopped Proccessor or Invalid Proccessor " + i + " times");
                 }
             }
         } else {

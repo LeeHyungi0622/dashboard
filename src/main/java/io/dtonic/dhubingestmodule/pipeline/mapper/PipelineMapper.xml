@@ -35,7 +35,6 @@
   <resultMap id="TaskVO" type="io.dtonic.dhubingestmodule.pipeline.vo.TaskVO">
     <result property="commandId" column="command_id" />
     <result property="taskName" column="task_name" />
-    <result property="inputParameter" column="input_parameter" />
     <result property="status" column="status" />
     <result property="startedAt" column="started_at" />
     <result property="finishedAt" column="finished_at" />
@@ -126,7 +125,6 @@
     ( id,
       command_id,
       task_name,
-      input_parameter, 
       status, 
       started_at
       )
@@ -134,7 +132,6 @@
     ( nextval('task_history_id_seq'),
       #{taskVO.commandId},
       #{taskVO.taskName},
-      #{taskVO.inputParameter},
       #{taskVO.status},
       now())
   </insert>
@@ -244,7 +241,6 @@
       id, 
       command_id, 
       task_name, 
-      input_parameter, 
       status, 
       started_at, 
       finished_at

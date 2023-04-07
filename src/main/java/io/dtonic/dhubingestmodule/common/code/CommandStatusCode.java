@@ -13,7 +13,7 @@ public enum CommandStatusCode {
     COMMAND_STATUS_SUCCEED("SUCCEED"),
     COMMAND_STATUS_FAILED("FAILED"),
     
-    /* 커맨드 */
+    /* 동작 이름 */
     COMMAND_CREATE("CREATE"),
     COMMAND_START("START"),
     COMMAND_DELETE("DELETE"),

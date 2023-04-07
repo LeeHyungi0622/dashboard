@@ -14,8 +14,6 @@ public class TaskVO {
 
     private String taskName;
 
-    private String inputParameter;
-
     private String status;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSXXX")

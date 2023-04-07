@@ -3,6 +3,8 @@ package io.dtonic.dhubingestmodule.nifi;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiSwaggerSVC;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
+@Slf4j
 public class NiFiApplicationRunner implements ApplicationRunner {
 
     @Autowired
@@ -28,7 +31,11 @@ public class NiFiApplicationRunner implements ApplicationRunner {
         ingestProcessGroupId = niFiSwaggerSVC.searchProcessGroupInProcessGroup("root");
         if (ingestProcessGroupId == null) {
             /* Create Ingest Manager Process Group */
-            ingestProcessGroupId = niFiSwaggerSVC.createProcessGroup("Ingest Manager", "root");
+            try {
+                ingestProcessGroupId = niFiSwaggerSVC.createProcessGroup("Ingest Manager", "root");
+            }catch (Exception e){
+                log.error("NifiapplicationRunner create ProcessGroup error", e);
+            }
         }
 
         String transmitterId = niFiSwaggerSVC.searchProcessorIdbyName(

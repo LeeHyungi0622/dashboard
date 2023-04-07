@@ -153,7 +153,7 @@ public class NiFiRestSVC {
      * @param pipelineName pipeline name
      * @return output ID
      */
-    public String createOutputInPipeline(String processGroupId, String pipelineName) {
+    public String createOutputInPipeline(String processGroupId, String pipelineName) throws Exception{
         PortEntity body = new PortEntity();
         PortDTO component = new PortDTO();
         component.setName(pipelineName + " output");
@@ -178,32 +178,28 @@ public class NiFiRestSVC {
         paths.add("process-groups");
         paths.add(processGroupId);
         paths.add("output-ports");
-        try {
-            ResponseEntity<String> result = dataCoreRestSVC.post(
-                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
-                paths,
-                headers,
-                body,
-                null,
-                niFiClientEntity.getAccessToken(),
-                String.class
-            );
+        
+        ResponseEntity<String> result = dataCoreRestSVC.post(
+            niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+            paths,
+            headers,
+            body,
+            null,
+            niFiClientEntity.getAccessToken(),
+            String.class
+        );
 
-            PortEntity resultPortEntity = nifiObjectMapper.readValue(
-                result.getBody(),
-                PortEntity.class
-            );
+        PortEntity resultPortEntity = nifiObjectMapper.readValue(
+            result.getBody(),
+            PortEntity.class
+        );
 
-            log.info(
-                "Create Output in Pipeline : output PortEntity = [{}]",
-                resultPortEntity.getId()
-            );
-            return resultPortEntity.getId();
-        } catch (Exception e) {
-            log.error("Fail to Create Output in Pipeline : Pipeline Name = [{}]", pipelineName);
-            e.printStackTrace();
-            return null;
-        }
+        log.info(
+            "Create Output in Pipeline : output PortEntity = [{}]",
+            resultPortEntity.getId()
+        );
+        return resultPortEntity.getId();
+        
     }
 
     public void updateControllersInAdaptor(String processorGroupId, NiFiComponentVO properies)
@@ -606,37 +602,32 @@ public class NiFiRestSVC {
      *
      * @param processGroupId
      */
-    public Boolean enableControllers(String processorGroupId) {
-        try {
-            ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
-            body.setState("ENABLED");
-            body.setId(processorGroupId);
-            body.setDisconnectedNodeAcknowledged(false);
+    public Boolean enableControllers(String processorGroupId) throws Exception{
+        ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
+        body.setState("ENABLED");
+        body.setId(processorGroupId);
+        body.setDisconnectedNodeAcknowledged(false);
 
-            List<String> paths = new ArrayList<String>();
-            paths.add("flow");
-            paths.add("process-groups");
-            paths.add(processorGroupId);
-            paths.add("controller-services");
+        List<String> paths = new ArrayList<String>();
+        paths.add("flow");
+        paths.add("process-groups");
+        paths.add(processorGroupId);
+        paths.add("controller-services");
 
-            Map<String, String> headers = new HashMap<String, String>();
-            headers.put("Content-Type", "application/json");
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json");
 
-            dataCoreRestSVC.put(
-                niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
-                paths,
-                headers,
-                body,
-                null,
-                niFiClientEntity.getAccessToken(),
-                String.class
-            );
-            log.info("Success Enable Controllers in {}", processorGroupId);
-            return true;
-        } catch (Exception e) {
-            log.error("Can not Stop Processor Groups", e);
-            return false;
-        }
+        dataCoreRestSVC.put(
+            niFiClientEntity.getProperties().getNifiUrl() + niFiClientEntity.getBASE_URL(),
+            paths,
+            headers,
+            body,
+            null,
+            niFiClientEntity.getAccessToken(),
+            String.class
+        );
+        log.info("Success Enable Controllers in {}", processorGroupId);
+        return true;
     }
 
     /**
@@ -886,7 +877,6 @@ public class NiFiRestSVC {
     
 
     public boolean monitoring(MonitoringCode action, String processGroupId) throws JsonMappingException, JsonProcessingException, InterruptedException{
-        Integer cnt =0;
         for (int i =0 ; i < 3; i++){
             long startTime = System.currentTimeMillis();
             boolean result = false;
@@ -895,8 +885,6 @@ public class NiFiRestSVC {
                     if(stopProcessorGroup(processGroupId)){
                         while(!result && (System.currentTimeMillis() - startTime < 10000) ){
                             Map<String, Integer> nifiStatus = getStatusProcessGroup(processGroupId);
-                            cnt += 1;
-                            log.info(" ### 1. delete API cnt : " + cnt);
                             if(nifiStatus.get(NifiStatusCode.NIFI_STATUS_RUNNING.getCode()) == 0){
                                 result = true;
                             }
@@ -913,8 +901,6 @@ public class NiFiRestSVC {
                     if(requestId != null){
                         while(!result && (System.currentTimeMillis() - startTime < 10000)){
                             result = checkclearQueuesInProcessGroup(processGroupId , requestId);
-                            cnt += 1;
-                            log.info(" ### 2. delete API cnt : " + cnt);
                         }
                         return true;
                     }
@@ -924,8 +910,6 @@ public class NiFiRestSVC {
                     if(disableControllers(processGroupId)){
                         while(!result && (System.currentTimeMillis() - startTime < 10000)){
                             ControllerServicesEntity controllers = searchControllersInProcessorGroup(processGroupId);
-                            cnt += 1;
-                            log.info(" ### 3. delete API cnt : " + cnt);
                             for (ControllerServiceEntity controller : controllers.getControllerServices()) {
                                 if (controller.getStatus().getRunStatus().equals("DISABLED")){
                                     break;
@@ -940,8 +924,6 @@ public class NiFiRestSVC {
                 case DELETE_CONNECTION: {
                     if(niFiSwaggerSVC.deleteConnectionToFunnel(processGroupId)){
                         while(!result && (System.currentTimeMillis() - startTime < 10000)){
-                            cnt += 1;
-                            log.info(" ### 4. delete API cnt : " + cnt);
                             if(niFiSwaggerSVC.clearQueuesInConnectionToFunnel(processGroupId) == null){
                                 result = true;
                             }
@@ -953,8 +935,6 @@ public class NiFiRestSVC {
                 case DELETE_PIPELINE: {
                     if(niFiSwaggerSVC.deleteProcessGroup(processGroupId)){
                         while(!result && (System.currentTimeMillis() - startTime < 10000)){
-                            cnt += 1;
-                            log.info(" ### 5. delete API cnt : " + cnt);
                             if(stopProcessorGroup(processGroupId) == false){
                                 result = true;
                             }
