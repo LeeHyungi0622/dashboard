@@ -26,9 +26,10 @@
                 {{ title }}
               </option>
             </select>
-            <input type="text" class="mgL12" v-model="pipelineFilterInput" />
+            <input v-if="pipelineFilter != 'all'" type="text" class="mgL12" v-model="pipelineFilterInput" maxlength="300"/>
+            <div v-else class="mgL12" maxlength="300"/>
             <button class="mgL12" @click="actionFilter()">검색</button>
-            <select name="" id="" class="mgL12" v-model="perPage">
+            <select name="" id="" class="mgL12" v-model="perPage" @change="resetPage($event)">
               <option value="10">10개씩 표시</option>
               <option value="20">20개씩 표시</option>
             </select>
@@ -199,7 +200,6 @@ import commandList from "../../json/command.json";
 export default {
   mounted() {
     this.$store.state.overlay = true;
-    console.log(this.$ws);
     this.connect();
     pipelineListService
       .getPipelineList()
@@ -214,6 +214,7 @@ export default {
     this.$store.state.registerPipeline = {};
     this.$store.state.completedPipeline = {};
     this.$store.state.overlay = false;
+    this.pipelineFilter="all";
   },
   watch:{
     filteritems(){
@@ -252,7 +253,7 @@ export default {
       total: 15,
       tempPipeline: tempPipeline,
       activationStatusList: [["전체",""], ["RUN","RUN"], ["STARTING","STARTING"], ["STOPPED","STOPPED"], ["STOPPING","STOPPING"]],
-      pipelineListFilterList: [["전체",""], ["파이프라인 이름","name"], ["적재Dataset","dataSet"]],
+      pipelineListFilterList: [["전체","all"], ["파이프라인 이름","name"], ["적재Dataset","dataSet"]],
       searchValue: null,
       pipelineListData: pipelineListData,
       history: [],
@@ -281,6 +282,9 @@ export default {
       
     },
     // API 사용법
+    resetPage(){
+      this.currentPage = 1;
+    },
     getpipelineList() {
       pipelineListService.getPipelineList();
     },
@@ -339,7 +343,7 @@ export default {
     },
     pipelineStatusAlertShows(name, status, id) {
       let alertPayload = {
-        title: "파이프라인 Status 수정",
+        title: "파이프라인 상태 수정",
         text:
           name +
           " 파이프라인의 상태가" +
@@ -349,7 +353,8 @@ export default {
           "<br/> <br/> 계속 진행하시겠습니까?",
         id: id,
         url: "update",
-        body: status
+        body: status,
+        name: name
       };
       EventBus.$emit("show-confirm-popup", alertPayload);
     },
@@ -363,7 +368,8 @@ export default {
           "잔여 Queue가 모두 삭제됩니다." +
           "<br/> <br/> 계속 진행하시겠습니까?",
         url: "deleteComplete",
-        id: item.id
+        id: item.id,
+        name: item.name
       };
       EventBus.$emit("show-confirm-popup", alertPayload);
       
@@ -391,10 +397,9 @@ export default {
     },
     getMessage() {
       this.$ws.onmessage = ({ data }) => {
-        console.log("this is data",data);
         this.$store.state.pipelineList = JSON.parse(data);
-        this.filteritems = JSON.parse(data);
-        console.log("this is this.filteritems",this.filteritems);
+        // this.filteritems = JSON.parse(data);
+        this.actionFilter()
       };
     },
     disconnect() {
@@ -411,14 +416,16 @@ export default {
         this.searchValue = event.target.value;
       }
       else{
+        if(event.target.value == "all"){
+          this.pipelineFilterInput = "";
+        }
         this.pipelineFilter = event.target.value;
       }
     },
     actionFilter(){
       this.filteritems = this.$store.state.pipelineList;
-
       if(this.searchValue){
-        if(this.pipelineFilter){
+        if(this.pipelineFilter != "all"){
           this.filteritems = this.$store.state.pipelineList.filter((i) => {
           return (
             i[this.selectedFilter] === this.searchValue && i[this.pipelineFilter].includes(this.pipelineFilterInput) 
@@ -434,7 +441,7 @@ export default {
         }
       }
       else{
-        if(this.pipelineFilter){
+        if(this.pipelineFilter != "all"){
           this.filteritems = this.$store.state.pipelineList.filter((i) => {
           return (
             i[this.pipelineFilter].includes(this.pipelineFilterInput) 

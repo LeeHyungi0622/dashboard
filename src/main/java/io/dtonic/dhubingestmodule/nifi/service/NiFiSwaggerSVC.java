@@ -328,7 +328,6 @@ public class NiFiSwaggerSVC {
         } else {
             for (ProcessorEntity processor : processors.getProcessors()) {
                 if (processor.getComponent().getName().equals(niFiComponentVO.getName())) {
-                    log.info("processor name : {}", processor.getComponent().getName());
                     if (niFiComponentVO.getRequiredProps().size() != 0) {
                         processor =
                             updateProcessorProperties(

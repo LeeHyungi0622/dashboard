@@ -5,7 +5,7 @@
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag"
-      :disabled="!isCompleted"
+      :disabled="!isCompleted[0]"
       >
         {{ $store.state.collectorTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
@@ -85,7 +85,8 @@
         </div>
         <div class="value">
           <div>
-            <input type="text" v-model="schedulingDetail" />
+            <input v-if="$store.state.collectorTableUpdateFlag" type="text" v-model="schedulingDetail" maxlength="300"/>
+            <div style="padding-left: 20px" v-else>{{ schedulingDetail }}</div>
           </div>
         </div>
       </div>
@@ -109,7 +110,7 @@
       <button
         class="pipelineButton mgL12"
         @click="nextRoute()"
-        :disabled="!isCompleted"
+        :disabled="!isCompleted[0]"
       >
         다음
       </button>
@@ -122,12 +123,12 @@ import CustomTable from "../../components/pipeline/CustomTable.vue";
 import collectorService from "../../js/api/collector";
 import EventBus from "@/eventBus/EventBus.js";
 import CronVaildator from 'cron-expression-validator';
-
 export default {
   components: {
     CustomTable,
   },
   created() {
+
     this.getCollector();
     if(this.$store.state.tableShowMode == `UPDATE`){
       this.getPipeline = this.$store.state.completedPipeline;
@@ -173,8 +174,20 @@ export default {
             if(nifi.requiredProps){
               for(var prop of nifi.requiredProps){
                 if(prop.name == "Scheduling"){                  
-                  prop.detail = this.schedulingMode;
                   prop.inputValue = this.schedulingDetail;
+                }
+              }
+            }
+          }
+      }
+    },
+    schedulingMode(){
+        if(this.getPipeline.collector!= null){
+          for(var nifi of this.getPipeline.collector.nifiComponents){
+            if(nifi.requiredProps){
+              for(var prop of nifi.requiredProps){
+                if(prop.name == "Scheduling"){                  
+                  prop.detail = this.schedulingMode;
                 }
               }
             }
@@ -185,25 +198,35 @@ export default {
   computed:{
     isCompleted(){
       if(this.getPipeline.collector!= null){
-        for(var nifi of this.getPipeline.collector.nifiComponents){
+        for(let nifi of this.getPipeline.collector.nifiComponents){
           if(nifi.requiredProps){
-            for(var prop of nifi.requiredProps){
-              if(prop.inputValue == null || prop.inputValue == ""){
-                return false;
+            for(let prop of nifi.requiredProps){
+              if(prop.inputValue == null || prop.inputValue == "" || prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+                return [false, prop, nifi.name];
+              }
+            }
+          }
+          if(nifi.optionalProps){
+            for(let prop of nifi.optionalProps){
+              if(prop.inputValue == ""){
+                prop.inputValue = null;
+              } else if(prop.inputValue != null && prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+                return [false, prop, nifi.name];
               }
             }
           }
         }
-        return true;
+        return [true, null, null];
       }
       else{
-        return false;
+        return [false, "collector not found", null];
       }
     },
     isSchedulingVaild(){
+      let timerReg = /^[0-9]+ sec$/g;
       if(this.selectedCollectValue !='REST Server'){
         if(this.schedulingMode == "TIMER_DRIVEN"){
-          return this.schedulingDetail.includes("sec");
+          return timerReg.test(this.schedulingDetail);
         }
         else if(this.schedulingMode == "CRON_DRIVEN"){
           return CronVaildator.isValidCronExpression(this.schedulingDetail);
@@ -267,6 +290,7 @@ export default {
             this.$store.state.overlay = false;
           })
           .catch((err) => {
+            this.$store.state.overlay = false;
             console.error(err);
           });
     },
@@ -287,23 +311,85 @@ export default {
           });
     },
     changeUpdateFlag(){
-      this.$store.state.collectorTableUpdateFlag = !this.$store.state.collectorTableUpdateFlag;
-      this.$store.state.completedPipeline = this.getPipeline;
-    },
+      if(this.isSchedulingVaild){
+        if(this.isCompleted[0]){
+          this.$store.state.collectorTableUpdateFlag = !this.$store.state.collectorTableUpdateFlag;
+          this.$store.state.completedPipeline = this.getPipeline;
+        } else if(this.isCompleted[1]=="collector not found"){
+          let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 수집기 선택이 필요합니다. " +
+            "<br/> 수집기 목록 중 하나를 선택해주십시오.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+        }
+        else{
+          let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 입력 값에 오류가 있습니다. " +
+            "<br/> 수집 설정 목록 중 " + this.isCompleted[2] + " 의" +
+            "<br/>" + this.isCompleted[1].name + " 항목을 확인해주세요.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+      }
+    }else {
+        let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 입력 값에 오류가 있습니다. " +
+            "<br/>수집 주기 설정 입력 값을 확인해 주십시오." +
+            "<br/>Timer Input Example : OOO sec" +
+            "<br/>CRON Input Example : * * * * * ? *",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+    }
+  },
     nextRoute(){
       this.$store.state.overlay = true;
       if(this.isSchedulingVaild){
-        this.$store.state.registerPipeline= this.getPipeline;
-        collectorService
-          .postPipelineDraft(this.$store.state.registerPipeline)
-          .then((res) => {
-            this.$store.state.registerPipeline = res;
-            this.$store.state.showRegisterMode = 'filter';
-            this.$store.state.overlay = false;
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        if(this.isCompleted[0]){
+          this.$store.state.registerPipeline= this.getPipeline;
+          collectorService
+            .postPipelineDraft(this.getPipeline)
+            .then((res) => {
+              this.$store.state.registerPipeline = res;
+              this.$store.state.showRegisterMode = 'filter';
+              this.$store.state.overlay = false;
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }else if(this.isCompleted[1]=="collector not found"){
+          let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 수집기 선택이 필요합니다. " +
+            "<br/> 수집기 목록 중 하나를 선택해주십시오.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+        }
+        else{
+          let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            " 입력 값에 오류가 있습니다. " +
+            "<br/> 수집 설정 목록 중 " + this.isCompleted[2] + " 의" +
+            "<br/>" + this.isCompleted[1].name + " 항목을 확인해주세요.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+        }
       }
       else {
         let alertPayload = {
@@ -346,6 +432,7 @@ export default {
         .catch((err) => {
           console.error(err);
         });
+      
     },
     showDraftCompleted(){
       let alertPayload = {

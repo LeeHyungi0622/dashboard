@@ -5,7 +5,7 @@
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag" 
-      :disabled="!isCompleted"
+      :disabled="!isCompleted[0]"
       >
         {{ $store.state.convertorTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
@@ -55,11 +55,13 @@
       :items-per-page="100"
       class="pipelineUpdateConvertVFT"
       :hide-default-footer="true"
+      :items-per-page="convProps.length + 1"
       style="text-align: center"
       ><template v-slot:[`item.inputValue`]="{ item }">
         <input
           v-if="$store.state.convertorTableUpdateFlag || $store.state.tableShowMode == 'REGISTER'"
           v-model="item.inputValue"
+          maxlength="300"
         />
         <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
       </template>
@@ -73,12 +75,14 @@
       :items="convId"
       class="pipelineUpdateIdVFT"
       :hide-default-footer="true"
+      
       style="text-align: center"
     >
       <template v-slot:[`item.inputValue`]="{ item }">
         <input
           v-if="$store.state.convertorTableUpdateFlag || $store.state.tableShowMode == 'REGISTER'"
           v-model="item.inputValue"
+          maxlength="300"
         />
         <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
       </template>
@@ -90,7 +94,7 @@
     >
       <button class="pipelineButton" @click="beforeRoute()" >이전</button>
       <button class="pipelineButton mgL12" @click="saveDraft()" >임시 저장</button>
-      <button class="pipelineButton mgL12" @click="nextRoute()" :disabled="!isCompleted">다음</button>
+      <button class="pipelineButton mgL12" @click="nextRoute()" :disabled="!isCompleted[0]">다음</button>
     </div>
   </div>
 </template>
@@ -107,6 +111,14 @@ export default {
       this.selectedConverterValue = this.getPipeline.dataSet;
       this.convProps = this.convertDataSetProps(this.getPipeline.converter);
       this.convertId(this.getPipeline.converter);
+      //store에도 반영하는 로직 추가
+      this.convertToProps();
+      this.convertToId();
+      let convertNifi = []
+      convertNifi.push(this.rawDataSetProps);
+      convertNifi.push(this.rawIdNifi);
+      this.getPipeline.converter.nifiComponents = convertNifi;
+      this.$store.state.completedPipeline = this.getPipeline;
     }
     else{
       this.getPipeline = this.$store.state.registerPipeline;
@@ -149,20 +161,20 @@ export default {
     isCompleted(){
       if(this.convProps.length != 0 && this.convId.length != 0){
         for(let prop of this.convProps){
-          if(prop.inputValue == null || prop.inputValue == ""){
-            return false;
+          if(prop.inputValue == null || prop.inputValue == ""|| prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+            return [false,"blank"];
           }
         }
         for(let prop of this.convId){
           if(prop.name == "level1"){
-            if(prop.inputValue == null || prop.inputValue == ""){
-              return false;
+            if(prop.inputValue == null || prop.inputValue == ""|| prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+              return  [false,"level"];
             }
           }
         }
-        return true;
+        return [true, null, null];
       }
-      return false;
+      return [false,"Not Found",null];
     },
     isVaild(){
       let isOkProps = false;
@@ -173,23 +185,26 @@ export default {
             continue;
           }
           else{
-            if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
-              return false;
+            if(prop.inputValue == null) {
+              return [false, prop];
+            }
+            else if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
+              return [false, prop];
             }
             else{
               if((prop.inputValue.split("\"").length - 1)%2 != 0){
-                return false;
+                return [false, prop];
               }
               else{
                 for(let e = 0; e < prop.inputValue.split("\"").length; e+=2){
                   if(e == 0 || e == prop.inputValue.split("\"").length-1){
                     if(prop.inputValue.split("\"")[e] != ""){
-                      return false;
+                      return [false, prop];
                     }
                   }
                   else{
                     if(prop.inputValue.split("\"")[e] != "."){
-                      return false;
+                      return [false, prop];
                     }
                   }
                 }
@@ -200,23 +215,26 @@ export default {
         }
         for(let id of this.convId){
           if(id.inputValue){
+            if(id.inputValue == null) {
+              return [false, id];
+            }
             if(!id.inputValue.includes("\"") || id.inputValue.includes(" ") || id.inputValue.includes("\"\"")){
-              return false;
+              return [false, id];
             }
             else{
               if((id.inputValue.split("\"").length - 1)%2 != 0){
-                return false;
+                return [false, id];
               }
               else{
                 for(let e = 0; e < id.inputValue.split("\"").length; e+=2){
                 if(e == 0 || e == id.inputValue.split("\"").length-1){
                   if(id.inputValue.split("\"")[e] != ""){
-                    return false;
+                    return [false, id];
                   }
                 }
                 else{
                   if(id.inputValue.split("\"")[e] != "."){
-                    return false;
+                    return [false, id];
                   }
                 }
               }
@@ -225,9 +243,26 @@ export default {
             }
           }
         }
-        if(isOkProps && isOkId) return true;
+        if(isOkProps && isOkId) return [true, null];
       }
-      return false;
+      return [false, "not found"];
+    },
+    isTempVaild(){
+      if(this.convProps.length != 0 && this.convId.length != 0){
+        for(let prop of this.convProps){
+          if(prop.inputValue == null) {
+              return [false, prop];
+            }
+          if(prop.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,prop];
+        }
+        for(let id of this.convId){
+          if(id.name == "level1" && id.inputValue == null) {
+              return [false, id];
+            }
+          if(id.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,"level"];
+        }
+      }
+      return [true, null];
     }
   },
  
@@ -302,14 +337,16 @@ export default {
             if(prop.detail == "Date Format"){
               if(prop.inputValue == null || prop.inputValue == ""){
                 inputValue = "";
-              } else {
+              } else if(this.$store.state.tableShowMode == `UPDATE`){
                 inputValue = prop.inputValue.split("\"")[1];
+              } else{
+                inputValue = prop.inputValue;
               }
               }
               else{
                 inputValue = prop.inputValue;
               }
-            const convertProp = {name : name, detail:prop.detail ,inputValue: inputValue};
+            const convertProp = {name : name, detail:prop.detail , inputValue: inputValue};
             convertProps.push(convertProp);
           }
         }
@@ -325,14 +362,26 @@ export default {
       }
     },
     changeUpdateFlag(){
-      this.$store.state.convertorTableUpdateFlag = !this.$store.state.convertorTableUpdateFlag;
-      this.convertToProps();
-      this.convertToId();
-      let convertNifi = []
-      convertNifi.push(this.rawDataSetProps);
-      convertNifi.push(this.rawIdNifi);
-      this.getPipeline.converter.nifiComponents = convertNifi;
-      this.$store.state.completedPipeline = this.getPipeline;
+      if(this.isVaild[0]){
+        this.$store.state.convertorTableUpdateFlag = !this.$store.state.convertorTableUpdateFlag;
+        this.convertToProps();
+        this.convertToId();
+        let convertNifi = []
+        convertNifi.push(this.rawDataSetProps);
+        convertNifi.push(this.rawIdNifi);
+        this.getPipeline.converter.nifiComponents = convertNifi;
+        this.$store.state.completedPipeline = this.getPipeline;
+      } else{
+        let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
+            "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오.",
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+      }
     },
     callConvertorProps(event){
       if(this.$store.state.tableShowMode == `UPDATE`){
@@ -346,7 +395,7 @@ export default {
       collectorService
           .getPipelineComplete({
             adaptorName: "converter",
-            pipelineid: this.getPipeline.id,
+            id: this.getPipeline.id,
             page: "converter",
             datasetid: val
           })
@@ -389,84 +438,99 @@ export default {
     },
     nextRoute(){
       this.$store.state.overlay = true;
-      if(this.isVaild){
-      this.convertToProps();
-      this.convertToId();
-      this.$store.state.registerPipeId = this.generationKey.split(" ")[3];
-      this.$store.state.convertDataSet = this.selectedConverterValue;
-      let convertNifi = []
-      convertNifi.push(this.rawDataSetProps);
-      convertNifi.push(this.rawIdNifi);
-      this.getPipeline.converter.nifiComponents = convertNifi;
-      this.$store.state.registerPipeline = this.getPipeline;
-      collectorService
-        .postPipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          this.$store.state.registerPipeline = res;
-          this.$store.state.showRegisterMode = 'complete';
-          this.$store.state.overlay = false;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      if(this.isVaild[0]){
+        this.convertToProps();
+        this.convertToId();
+        this.$store.state.registerPipeId = this.generationKey.split(" ")[3];
+        this.$store.state.convertDataSet = this.selectedConverterValue;
+        let convertNifi = []
+        convertNifi.push(this.rawDataSetProps);
+        convertNifi.push(this.rawIdNifi);
+        this.getPipeline.converter.nifiComponents = convertNifi;
+        this.$store.state.registerPipeline = this.getPipeline;
+        collectorService
+          .postPipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.$store.state.showRegisterMode = 'complete';
+            this.$store.state.overlay = false;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       }
       else{
-        let alertPayload = {
-          title: "입력 값 오류",
-          text:
-            " 입력 값에 오류가 있습니다. " +
-            "<br/>구분자 혹은 입력 값을 확인해 주십시오.",
-          url: "not Vaild",
-        };
-        this.$store.state.overlay = false;
-        EventBus.$emit("show-alert-popup", alertPayload);
+        if(this.isVaild[1] == "not found"){
+            let alertPayload = {
+            title: "입력 값 오류",
+            text:
+              " DataSet 선택이 필요합니다. " +
+              "<br/>DataSet 목록 중 하나를 선택해주십시오.",
+            url: "not Vaild",
+          };
+          this.$store.state.overlay = false;
+          EventBus.$emit("show-alert-popup", alertPayload);
+        } else{
+          let alertPayload = {
+            title: "입력 값 오류",
+            text:
+              this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
+              "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오.",
+            url: "not Vaild",
+          };
+          this.$store.state.overlay = false;
+          EventBus.$emit("show-alert-popup", alertPayload);
+        }
       }
     },
     beforeRoute(){
       this.$store.state.overlay = true;
-      if(this.rawDataSetProps.requiredProps.length != 0){
-        this.convertToProps();
-        this.convertToId();
-        let convertNifi = []
-        convertNifi.push(this.rawDataSetProps);
-        convertNifi.push(this.rawIdNifi);
-        this.getPipeline.converter.nifiComponents = convertNifi;
-      }
-        this.$store.state.registerPipeId = this.generationKey.split(":")[1];
-      this.$store.state.registerPipeline = this.getPipeline;
-      collectorService
-        .postPipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          this.$store.state.registerPipeline = res;
-          this.$store.state.showRegisterMode = 'filter';
-          this.$store.state.overlay = false;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+        if(this.rawDataSetProps.requiredProps.length != 0){
+          this.convertToProps();
+          this.convertToId();
+          let convertNifi = []
+          convertNifi.push(this.rawDataSetProps);
+          convertNifi.push(this.rawIdNifi);
+          this.getPipeline.converter.nifiComponents = convertNifi;
+        }
+          this.$store.state.registerPipeId = this.generationKey.split(":")[1];
+        this.$store.state.registerPipeline = this.getPipeline;
+        collectorService
+          .postPipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.$store.state.showRegisterMode = 'filter';
+            this.$store.state.overlay = false;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        
     },
     saveDraft(){
       this.$store.state.overlay = true;
-      if(this.rawDataSetProps.requiredProps.length != 0){
-        this.convertToProps();
-        this.convertToId();
-        let convertNifi = []
-        convertNifi.push(this.rawIdNifi);
-        convertNifi.push(this.rawDataSetProps);
-        this.getPipeline.converter.nifiComponents = convertNifi;
-      }
-      this.$store.state.registerPipeId = this.generationKey;
-      this.$store.state.registerPipeline = this.getPipeline;
-      collectorService
-        .postPipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          this.$store.state.registerPipeline = res;
-          this.$store.state.overlay = false;
-          this.showDraftCompleted();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+
+        if(this.rawDataSetProps.requiredProps.length != 0){
+          this.convertToProps();
+          this.convertToId();
+          let convertNifi = []
+          convertNifi.push(this.rawIdNifi);
+          convertNifi.push(this.rawDataSetProps);
+          this.getPipeline.converter.nifiComponents = convertNifi;
+        }
+        this.$store.state.registerPipeId = this.generationKey;
+        this.$store.state.registerPipeline = this.getPipeline;
+        collectorService
+          .postPipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.$store.state.overlay = false;
+            this.showDraftCompleted();
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        
     },
     showDraftCompleted(){
       let alertPayload = {

@@ -81,7 +81,7 @@ public class NiFiController {
         taskVO.setStatus(TaskStatusCode.TASK_STATUS_WORKING.getCode());
         
         /* Check Token Expired */
-        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+        niFiClientEntity.manageToken();
         taskVO.setTaskName(MonitoringCode.CREATE_PROCESSGROUP.getCode());
         Integer taskId = niFiRestSVC.createTask(taskVO);
         try{
@@ -257,13 +257,13 @@ public class NiFiController {
                             } else {
                                 id =
                                     id +
-                                    "${" +
+                                    ":${" +
                                     nifi
                                         .getRequiredProps()
                                         .get(i)
                                         .getInputValue()
                                         .replace("\"", "") +
-                                    "}\"";
+                                    "}";
                             }
                         }
                     }
@@ -352,6 +352,9 @@ public class NiFiController {
             } else if (a.getValueType().equals("BigDecimal")) {
                 e.put("value", "=toDouble");
                 ae.put(a.getName(), e);
+            } else if (a.getValueType().equals("String")) {
+                e.put("value", "=toString");
+                ae.put(a.getName(), e);
             }
         }
         en.put("*", ae);
@@ -382,7 +385,6 @@ public class NiFiController {
                         for (PropertyVO prop : nifi.getRequiredProps()) {
                             if (prop.getDetail().equals("Date Format")) {
                                 prop.setName(a.getName());
-                                log.info("prop Data = {}", prop);
                                 prop.setInputValue(
                                     "${" +
                                     a.getName() +
@@ -422,7 +424,6 @@ public class NiFiController {
         if (NiFiComponents.size() < 1) {
             log.error("Empty NiFi Components In Request Pipeline");
         }
-        log.info("{}", NiFiComponents);
         for (NiFiComponentVO component : NiFiComponents) {
             if (
                 component.getType().equals("processor") || component.getType().equals("Processor")
@@ -462,7 +463,7 @@ public class NiFiController {
         
         try {
             // Check Token Expired
-            niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+            niFiClientEntity.manageToken();
             
             TaskVO taskVO = new TaskVO();
             taskVO.setCommandId(commandId);
@@ -492,7 +493,7 @@ public class NiFiController {
 
     public String updatePipeline(PipelineVO pipelineVO, Integer commandId) {
         try {
-            niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+            niFiClientEntity.manageToken();
             String processGroupId = createPipeline(pipelineVO, commandId);
             if(processGroupId != null){
                 
@@ -525,8 +526,7 @@ public class NiFiController {
      */
     public boolean runPipeline(String processorGroupId) throws JsonMappingException, JsonProcessingException {
         // Check Token Expired
-        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
-
+        niFiClientEntity.manageToken();
         if (niFiRestSVC.startProcessorGroup(processorGroupId)) {
             Map<String, Integer> nifiStatus = niFiRestSVC.getStatusProcessGroup(processorGroupId);
             for(int i =0; i <3 ; i++){
@@ -554,7 +554,7 @@ public class NiFiController {
      */
     public boolean stopPipeline(String processorGroupId) throws JsonMappingException, JsonProcessingException {
         // Check Token Expired
-        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+        niFiClientEntity.manageToken();
 
         if (niFiRestSVC.stopProcessorGroup(processorGroupId)) {
             Map<String, Integer> nifiStatus = niFiRestSVC.getStatusProcessGroup(processorGroupId);
@@ -575,6 +575,7 @@ public class NiFiController {
 
     public Map<String, Integer> getPipelineStatus(String processorGroup) {
         try {
+            niFiClientEntity.manageToken();
             return niFiRestSVC.getStatusProcessGroup(processorGroup);
         } catch (Exception e) {
             log.error("Fail to Get Pipeline Status.", e);

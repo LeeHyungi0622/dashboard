@@ -5,7 +5,7 @@
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag"
-      :disabled="!isCompleted"
+      :disabled="!isCompleted[0]"
       >
         {{ $store.state.filterTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
@@ -29,7 +29,7 @@
       <button
         class="pipelineButton mgL12"
         @click="nextRoute()"
-        :disabled="!isCompleted"
+        :disabled="!isCompleted[0]"
       >
         다음
       </button>
@@ -59,15 +59,15 @@ export default {
         for(var nifi of this.filterData.nifiComponents){
           if(nifi.requiredProps){
             for(var prop of nifi.requiredProps){
-              if(prop.inputValue == null || prop.inputValue == ""){
-                return false;
+              if(prop.inputValue == null || prop.inputValue == ""|| prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+                return [false, prop, nifi.name];
               }
             }
           }
         }
-        return true;
+        return [true, null, null];
       }
-      return false;
+      return [false, "collecter not found", null];
     },
     isVaild(){
       if(this.filterData){
@@ -76,43 +76,60 @@ export default {
             for(let prop of nifi.requiredProps){
               if(prop.name == "root_key"){
                 if(prop.inputValue == 'origin') {
-                  return true;
+                  return [true, null];
                 }
-                if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
-                  return false;
+                if(prop.inputValue == null) {
+                  return [false, prop];
+                }
+                if(!prop.inputValue.includes("\"") || prop.inputValue.replace(/^\s+|\s+$/g, '')=="" || prop.inputValue.includes("\"\"")){
+                  return [false, prop];
                 }
                 else{
                   if((prop.inputValue.split("\"").length - 1)%2 != 0){
-                    return false;
+                    return [false, prop];
                   }
                   else{
                     for(let e = 0; e < prop.inputValue.split("\"").length; e++){
                       if(e == 0 || e == prop.inputValue.split("\"").length-1){
                         if(prop.inputValue.split("\"")[e] != ""){
-                          return false;
+                          return [false, prop];
                         }
                       }
                       else if(e % 2 == 0){
                         if(prop.inputValue.split("\"")[e] != "."){
-                          return false;
+                          return [false, prop];
                         }
                       }
                     }
                   }
-                  return true;
+                  return [true, null];
                 }
               }
             }
           }
         }
-        return false;
+        return [false,"filter not found", null];
       }
-      return false;
+      return [false,"filter not found", null];
     }
   },
   methods:{
     changeUpdateFlag(){
-      this.$store.state.filterTableUpdateFlag = !this.$store.state.filterTableUpdateFlag;
+      if(this.isVaild[0]){
+        this.$store.state.filterTableUpdateFlag = !this.$store.state.filterTableUpdateFlag;
+        }else{
+          let alertPayload = {
+          title: "입력 값 오류",
+          text:
+            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
+            "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오." +
+            "<br/>원본 데이터를 그대로 사용할 경우 [origin]을 입력해주십시오." ,
+          url: "not Vaild",
+        };
+        this.$store.state.overlay = false;
+        EventBus.$emit("show-alert-popup", alertPayload);
+      }
+
     },
     getFilter(){
       if (this.$store.state.tableShowMode == "REGISTER") {
@@ -142,7 +159,7 @@ export default {
     },
     nextRoute(){
       this.$store.state.overlay = true;
-      if(this.isVaild){
+      if(this.isVaild[0]){
         this.checkCompletedPage();
         
         this.$store.state.registerPipeline.filter = this.filterData;
@@ -161,8 +178,9 @@ export default {
         let alertPayload = {
           title: "입력 값 오류",
           text:
-            " 입력 값에 오류가 있습니다. " +
-            "<br/>구분자 혹은 입력 값을 확인해 주십시오.",
+            this.isVaild[1].name + " 입력 값에 오류가 있습니다. " +
+            "<br/>구분자(.[온점] 또는 \"[쌍따옴표]) 혹은 공백을 확인해 주십시오."+
+            "<br/>원본 데이터를 그대로 사용할 경우 [origin]을 입력해주십시오." ,
           url: "not Vaild",
         };
         this.$store.state.overlay = false;
@@ -171,6 +189,7 @@ export default {
     },
     beforeRoute(){
       this.$store.state.overlay = true;
+ 
       this.$store.state.registerPipeline.filter = this.filterData;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
@@ -180,11 +199,14 @@ export default {
           this.$store.state.overlay = false;
         })
         .catch((err) => {
+          this.$store.state.overlay = false;
           console.error(err);
         });
+      
     },
     saveDraft(){
       this.$store.state.overlay = true;
+
       this.$store.state.registerPipeline.filter = this.filterData;
       collectorService
         .postPipelineDraft(this.$store.state.registerPipeline)
@@ -194,8 +216,10 @@ export default {
           this.showDraftCompleted();
         })
         .catch((err) => {
+          this.$store.state.overlay = false;
           console.error(err);
         });
+      
     },
     checkCompletedPage(){
       for(var nifi of this.filterData.nifiComponents){

@@ -19,7 +19,13 @@ spring:
     jdbcUrl: jdbc:postgresql://110.45.181.70:5432/postgres?currentSchema=ingest_manager
     username: datacore
     password: datacore
-
+    logging:
+      use.yn: Y
+      moduleName: ingest_manager
+      driverClassName: org.postgresql.Driver
+      jdbcUrl: jdbc:postgresql://localhost:5432/ingestmanager?currentSchema=logging
+      username: postgres
+      password: postgres
     retrieve:
       use.yn: N
       driverClassName: org.postgresql.Driver
@@ -31,6 +37,13 @@ server:
   servlet:
     context-path: /
     session.timeout: 60m
+  tomcat:
+    remote-ip-header: x-forwarded-for
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.jks
+    key-store-type: JKS
+    key-store-password: u9989z
 
 ## Logging
 logging.config: classpath:logback-spring.xml
