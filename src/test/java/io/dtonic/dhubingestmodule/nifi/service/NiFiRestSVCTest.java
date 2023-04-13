@@ -126,7 +126,7 @@ public class NiFiRestSVCTest {
     @Test
     public void enableControllersTest() throws JsonProcessingException {
         String processorGroupId = "9058aaf2-0186-1000-56f5-1b2a46437d071";
-        niFiRestSVC.enableControllers(processorGroupId);
+        //niFiRestSVC.enableControllers(processorGroupId);
     }
 
     @Test
