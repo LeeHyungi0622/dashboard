@@ -1,8 +1,7 @@
 <template>
   <v-app
     id="inspire"
-    style="font-family: 'Nanum Gothic', sans-serif !important"
-  >
+    style="font-family: 'Nanum Gothic', sans-serif !important"  >
     <v-system-bar
       app
       style=" 
@@ -37,8 +36,8 @@
               <v-list-item-title
                 class="fs12"
                 style="color: #000000; padding-left: 12px"
-                v-text="title"
               >
+              {{ title }}
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -75,6 +74,11 @@
       :contents="alertContent"
       @close-alert-popup="closeAlertPopup"
     ></alert-popup>
+    <alert-popup
+      v-if="delAlertShowFlag"
+      :contents="delAlertContent"
+      @close-alert-popup="closeDelAlertPopup"
+    ></alert-popup>
     <temp-pipeline-popup
       v-if="tempPipelineShowFlag"
       @close-temp-pipeline-popup="closeTempPipelinePopup"
@@ -96,7 +100,6 @@ import TempPipelinePopup from "./components/popup/TempPipelinePopup.vue";
 import tempPipeline from "./json/tempPipeline.json";
 import Loading from "./components/loading/loadingBar.vue";
 import Footer from "./components/footer/footer.vue";
-import { APIHandler } from './js/api/api-handler.js';
 export default {
   components: {
     CustomNavigation,
@@ -113,14 +116,55 @@ export default {
     }
   },
   mounted(){
-    UserInfo.getUserInfo()
-      .then((res) => {
-        this.userInfo = res;
-        this.$store.state.userInfo = res;
-      })
-      .catch((err) => {
-        console.log("Fail to Get User Info", err);
-      });
+    UserInfo.getSecurityInfo()
+        .then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            if (res == "true"){
+              if(this.getCookie("chaut") === ""){
+      alert("로그인이 필요한 페이지 입니다.");
+      location.reload();
+    }
+    else{
+      UserInfo.getUserInfo()
+        .then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            this.userInfo = res;
+            this.$store.state.userInfo = res;
+          } 
+          else {
+            alert("사용자 정보를 불러오는데 실패했습니다.");
+          }  
+        })
+        .catch((err) => {
+          console.log("Fail to Get User Info", err);
+        });
+    }
+            } else {
+              UserInfo.getUserInfo()
+        .then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            this.userInfo = res;
+            this.$store.state.userInfo = res;
+          } 
+          else {
+            alert("사용자 정보를 불러오는데 실패했습니다.");
+          }  
+        })
+        .catch((err) => {
+          console.log("Fail to Get User Info", err);
+        });
+            }
+          } 
+          else {
+            alert("보안 정보를 불러오는데 실패했습니다.");
+          }  
+        })
+    
+
+      
   },
   data() {
     return {
@@ -130,12 +174,20 @@ export default {
         url: "default",
         param: "default",
         body: "default",
-        id: "default"
+        id: "default",
+        name: "default"
       },
       alertContent: {
         title: "default",
         text: "default",
-        url: "default"
+        url: "default",
+        name: "default"
+      },
+      delAlertContent: {
+        title: "default",
+        text: "default",
+        url: "default",
+        name: "default"
       },
       userAlertContent: {
         title: "default",
@@ -156,6 +208,7 @@ export default {
       confirmShowFlag: false,
       userAlertShowFlag: false,
       alertShowFlag: false,
+      delAlertShowFlag: false,
       menu: [
         ["사용자 정보", "userInfo"],
         ["로그아웃", "logout"]
@@ -174,31 +227,83 @@ export default {
     EventBus.$on("show-temp-pipeline-popup", (payload) => {
       this.showTempPipelinePopup(payload);
     });
+    EventBus.$on("show-del-pipeline-popup", (payload) => {
+      this.showDelAlertPopup(payload);
+    });
 
   },
   methods: {
-    set_cookie(name, value, unixTime) {
-      var date = new Date();
-      date.setTime(date.getTime() + unixTime);
-      document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';expires=' + date.toUTCString() + ';path=/';
-    },
+    getCookie(cName) {
+      cName = cName + '=';
+      let cookieData = document.cookie;
+      let start = cookieData.indexOf(cName);
+      let cValue = '';
+      if(start != -1){
+        start += cName.length;
+        let end = cookieData.indexOf(';', start);
+        if(end == -1)end = cookieData.length;
+        cValue = cookieData.substring(start, end);
+      }
+      return unescape(cValue);
+  },
     closeConfirmPopup: function (val) {
       if(val.url == "update"){
         if(val.body == 'RUN'){
-          PipelineList.putPipelineStatus(val.id, 'STOPPING')
+          PipelineList.putPipelineStatus(val.id, 'STOPPING').then((res) => {
+            let isSuccess = res.status === 200 || 201 || 204;
+            if(isSuccess){
+              this.confirmShowFlag = false;
+              let alertPayload = {
+                  title: "정지 완료",
+                  text:
+                    val.name + " 파이프라인의 정지가 완료되었습니다.",
+                  url: "completedUpdate",
+                };
+              EventBus.$emit("show-alert-popup", alertPayload);
+            }
+
+          }).catch((error) => error)
         }
         else{
-          PipelineList.putPipelineStatus(val.id, 'STARTING')
+          PipelineList.putPipelineStatus(val.id, 'STARTING').then((res) => {
+            let isSuccess = res.status === 200 || 201 || 204;
+            if(isSuccess){
+              this.confirmShowFlag = false;
+              let alertPayload = {
+                  title: "실행 완료",
+                  text:
+                    val.name + " 파이프라인의 실행이 완료되었습니다.",
+                  url: "completedUpdate",
+                };
+              EventBus.$emit("show-alert-popup", alertPayload);
+            }
+
+          }).catch((error) => error)
         }
       }
       else if(val.url == "deleteComplete"){
-        PipelineList.deletePipeline(val.id);
-        this.$router.go();
+        PipelineList.deletePipeline(val.id).then((res) => {
+            let isSuccess = res.status === 200 || 201 || 204;
+            if(isSuccess){
+              this.confirmShowFlag = false;
+              let alertPayload = {
+                  title: "삭제 완료",
+                  text:
+                    val.name + " 파이프라인의 삭제가 완료되었습니다.",
+                  url: "pipelineDel",
+                };
+              EventBus.$emit("show-del-pipeline-popup", alertPayload);
+              
+            }
+
+          }).catch((error) => error);
+        
       }
       else if(val.url == "deleteTemp"){
         PipelineList.deleteTempPipeline(val.id).then((res) => {
           let isSuccess = res.status === 200 || 201 || 204;
           if(isSuccess){
+            this.confirmShowFlag = false;
             PipelineList.getTempPipelineList()
             .then((res) => {
               this.$store.state.tempPipelineList = res;
@@ -223,6 +328,7 @@ export default {
       this.confirmContent.param = payload.param;
       this.confirmContent.body = payload.body;
       this.confirmContent.id = payload.id;
+      this.confirmContent.name = payload.name;
     },
     closeUserAlertPopup: function () {
       this.userAlertShowFlag = false;
@@ -245,6 +351,18 @@ export default {
       this.alertContent.title = payload.title;
       this.alertContent.text = payload.text;
       this.alertContent.url = payload.url;
+      this.alertContent.name = payload.name;
+    },
+    closeDelAlertPopup: function () {
+      this.delAlertShowFlag = false;
+      location.reload();
+    },
+    showDelAlertPopup(payload) {
+      this.delAlertShowFlag = true;
+      this.delAlertContent.title = payload.title;
+      this.delAlertContent.text = payload.text;
+      this.delAlertContent.url = payload.url;
+      this.delAlertContent.name = payload.name;
     },
     closeTempPipelinePopup: function () {
       this.tempPipelineShowFlag = false;
@@ -257,16 +375,16 @@ export default {
       if (mode == "userInfo") {
         this.showUserAlertPopup();
       } else {
-        this.$axios.get(APIHandler.buildUrl(['logout']))
+        UserInfo.sendLogOut()
           .then(response => {
-            console.log(response);
             const resultCode = response.status === 200 || 201 || 204;
             if (resultCode) {
               location.replace('/');
+              location.reload(); 
             }
           });
       }
-    }
+    },
   }
 };
 </script>

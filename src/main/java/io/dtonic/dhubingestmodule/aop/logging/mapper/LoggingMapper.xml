@@ -1,0 +1,57 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dtonic.dhubingestmodule.aop.logging.mapper.LoggingMapper">
+    <insert id="createloggingDetail" parameterType="String">
+        INSERT INTO 
+      logging.history_detail
+      (
+        request_at,
+        response_at,
+        created_at, 
+        module_code,
+        menu_code,
+        access_ip,
+        user_id,
+        http_status,
+        error_detail,
+        http_method,
+        uri
+        )
+      VALUES 
+      (
+        To_TIMESTAMP(#{request_at},'YYYY-MM-DD HH24:mi:ss.SSSSSX'),
+        To_TIMESTAMP(#{response_at},'YYYY-MM-DD HH24:mi:ss.SSSSSX'),
+        now(),
+        (
+        SELECT
+            module_code
+        FROM
+            logging.module_code
+        WHERE
+            module_name = #{module_name}
+        ), 
+        ( 
+            SELECT 
+                menu_code 
+            FROM 
+                logging.menu_detail 
+            WHERE 1=1 
+                AND uri = #{menu_uri} 
+                AND http_method = #{http_method} 
+                AND module_code =         (
+                    SELECT
+                        module_code
+                    FROM
+                        LOGGING.MODULE_CODE
+                    WHERE
+                        module_name = #{module_name}
+                    )
+        ),
+        #{access_ip},
+        #{user_id},
+        #{http_status},
+        #{error_detail, jdbcType=VARCHAR},
+        #{http_method},
+        #{menu_uri}
+    );
+    </insert>
+</mapper>

@@ -38,6 +38,8 @@
 <script>
 import CustomTable from "../../components/pipeline/CustomTable.vue";
 import pipelineRegisterService from "../../js/api/pipelineRegister";
+import tempPipelineListService from "../../js/api/tempPipelineList";
+import pipelineListService from "../../js/api/pipelineList";
 import EventBus from "@/eventBus/EventBus.js";
 export default {
   props: {
@@ -47,6 +49,21 @@ export default {
     CustomTable,
   },
   mounted() {
+    pipelineListService
+      .getPipelineList()
+      .then((res) => {
+        this.$store.state.pipelineList = res;
+        this.filteritems = res;
+      })
+      .catch((err) => {
+        console.log("PipelineList 조회에 실패하였습니다.", err);
+      });
+    tempPipelineListService
+      .getTempPipelineList()
+      .then((res) => {
+        this.$store.state.tempPipelineList = res;
+      })
+      .catch((error) => error);
     if (this.itemId) { // 임시저장 call
       if(this.itemId != "new"){
         pipelineRegisterService
@@ -122,6 +139,56 @@ export default {
     };
   },
   methods: {
+    checkLength(){
+      if(this.contents[0].inputValue.length > 0 && this.contents[0].inputValue.length <= 20){
+        if(this.contents[1].inputValue.length > 0){
+          if(this.contents[1].inputValue.length <= 40){
+            return true;
+          }
+          else return false;
+        }
+        else{
+          return true;
+        }
+      } else{
+        return false;
+      }
+    },
+    checkSpaceInput(contents){
+      let all_blank_pattern = /[\s]/g;
+      let blank_pattern = /^\s+|\s+$/g;
+      if(all_blank_pattern.test(contents[0].inputValue) == true){
+        return [false, "title"];
+      }
+      if(blank_pattern.test(contents[1].inputValue) == true){
+        return [false, "detail"];
+      }
+      return [true, null];
+    },
+    checkTmpPipelineName(){
+      //현재 등록 중인 파이프라인과 이름이 동일할 경우 그냥 Pass
+      if(this.$store.state.registerPipeline.name == this.contents[0].inputValue){
+        return true;
+      }
+      for(let tmpPl of this.$store.state.tempPipelineList){
+        if(this.contents[0].inputValue == tmpPl.name){
+          return false;
+        }
+      }
+      return true;
+    },
+    checkComPipelineName(){
+      //현재 등록 중인 파이프라인과 이름이 동일할 경우 그냥 Pass
+      if(this.$store.state.completedPipeline.name == this.contents[0].inputValue){
+        return true;
+      }
+      for(let comPl of this.$store.state.pipelineList){
+        if(this.contents[0].inputValue == comPl.name){
+          return false;
+        }
+      }
+      return true;
+    },
     getInfo(){
       if(this.$store.state.tableShowMode == `UPDATE`){
         this.contents[0].inputValue = this.$store.state.completedPipeline.name;
@@ -138,60 +205,163 @@ export default {
     },
     nextRoute() {
       this.$store.state.overlay = true;
-      this.$store.state.registerPipeline.name = this.contents[0].inputValue;
-      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
-      this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
-      pipelineRegisterService
-        .craetePipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          if(res.status != 400){
-            this.$store.state.registerPipeline = res.data;
-            this.$store.state.showRegisterMode = 'collector';
-            this.$store.state.overlay = false;
+      if(this.checkTmpPipelineName()){
+        if(this.checkComPipelineName()){
+          if(this.checkSpaceInput(this.contents)[0]){
+            if(this.checkLength()){
+              this.$store.state.registerPipeline.name = this.contents[0].inputValue;
+              this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+              this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
+              pipelineRegisterService
+                .craetePipelineDraft(this.$store.state.registerPipeline)
+                .then((res) => {
+                  if(res.status != 400){
+                    this.$store.state.registerPipeline = res.data;
+                    this.$store.state.showRegisterMode = 'collector';
+                    this.$store.state.overlay = false;
+                  }
+                  else{
+                    this.$store.state.overlay = false;
+                    this.showInvaildPipelineName();
+                  }
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+            }
+            else{
+              this.$store.state.overlay = false;
+              this.showInputLengthPipeline();
+            }
           }
           else{
             this.$store.state.overlay = false;
-            this.showInvaildPipelineName();
+            this.showInputErrorPipeline(this.checkSpaceInput(this.contents)[1]);
           }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+        }else{
+          this.$store.state.overlay = false;
+          this.showInvaildComPipelineName();
+        }}
+        else{
+          this.$store.state.overlay = false;
+          this.showInvaildPipelineName();
+        }
+      
     },
     changeUpdateFlag(){
-      this.$store.state.infoTableUpdateFlag = !this.$store.state.infoTableUpdateFlag;
-      this.$store.state.completedPipeline.name = this.contents[0].inputValue;
-      this.$store.state.completedPipeline.detail = this.contents[1].inputValue;
+      if(this.checkComPipelineName()){
+        if(this.checkSpaceInput(this.contents)[0]){
+          if(this.checkLength()){
+          this.$store.state.infoTableUpdateFlag = !this.$store.state.infoTableUpdateFlag;
+          this.$store.state.completedPipeline.name = this.contents[0].inputValue;
+          this.$store.state.completedPipeline.detail = this.contents[1].inputValue;
+          }
+          else{
+            this.showInputLengthPipeline();
+          }
+        }
+        else{
+          this.showInputErrorPipeline(this.checkSpaceInput(this.contents)[1]);
+        }
+      }
+      else{
+        this.showInvaildComPipelineName();
+      }
     },
     saveDraft(){
       this.$store.state.overlay = true;
-      this.$store.state.registerPipeline.name = this.contents[0].inputValue;
-      this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
-      this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
-      pipelineRegisterService
-        .craetePipelineDraft(this.$store.state.registerPipeline)
-        .then((res) => {
-          this.$store.state.registerPipeline = res.data;
+      if(this.checkTmpPipelineName()){
+        if(this.checkComPipelineName()){
+          if(this.checkSpaceInput(this.contents)[0]){
+            if(this.checkLength()){
+              this.$store.state.registerPipeline.name = this.contents[0].inputValue;
+              this.$store.state.registerPipeline.creator = this.$store.state.userInfo.userId;
+              this.$store.state.registerPipeline.detail = this.contents[1].inputValue;
+              pipelineRegisterService
+                .craetePipelineDraft(this.$store.state.registerPipeline)
+                .then((res) => {
+                  this.$store.state.registerPipeline = res.data;
+                  this.$store.state.overlay = false;
+                  this.showDraftCompleted();
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+            }
+            else{
+              this.$store.state.overlay = false;
+              this.showInputLengthPipeline();
+            }
+          }
+          else{
+            this.$store.state.overlay = false;
+            this.showInputErrorPipeline(this.checkSpaceInput(this.contents)[1]);
+          }
+        }
+        else{
           this.$store.state.overlay = false;
-          this.showDraftCompleted();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+          this.showInvaildComPipelineName();
+        }
+      }
+      else{
+        this.$store.state.overlay = false;
+          this.showInvaildPipelineName();
+      }
     },
     showInvaildPipelineName(){
       let alertPayload = {
-            title: "입력 값 오류",
+            title: "중복 값 오류",
             text:
-              " 임시저장 파이프라인 목록 중  " +
+              " 임시 저장 파이프라인 목록 중  " +
               "<br/>같은 이름의 파이프라인이 존재합니다.",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
+    },
+    showInvaildComPipelineName(){
+      let alertPayload = {
+            title: "중복 값 오류",
+            text:
+              " 등록 완료 파이프라인 목록 중  " +
+              "<br/>같은 이름의 파이프라인이 존재합니다.",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
+    },
+    showInputErrorPipeline(detail){
+      if(detail == "title"){
+        let alertPayload = {
+            title: "파이프라인 이름 입력 오류",
+            text:
+              "파이프라인 이름에 공백 설정된 값이 존재합니다." +
+              "<br/> 파이프라인 이름은 공백을 포함하여 이름을 설정할 수 없습니다.",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
+      } else if(detail == "detail"){
+        let alertPayload = {
+            title: "파이프라인 상세 입력 값 공백 오류",
+            text:
+              "입력 값의 앞/뒤에 공백 설정된 값이 존재합니다." +
+              "<br/> 또는 공백 만으로 정의를 설정할 수 없습니다.",
+            url: "not Vaild",
+          };
+          EventBus.$emit("show-alert-popup", alertPayload);
+      }
+    },
+    showInputLengthPipeline(){
+      let alertPayload = {
+            title: "입력 값 길이 오류",
+            text:
+              "파이프라인 이름은 최대 20자,"+
+              "<br/>파이프라인 정의는 최대 40자까지 등록 가능합니다.",
             url: "not Vaild",
           };
           EventBus.$emit("show-alert-popup", alertPayload);
     },
     showDraftCompleted(){
       let alertPayload = {
-            title: "임시저장",
+            title: "임시 저장",
             text:
               "임시저장 성공",
             url: "not Vaild",

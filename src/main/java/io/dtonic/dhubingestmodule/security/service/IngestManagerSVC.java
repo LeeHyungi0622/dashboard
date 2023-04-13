@@ -212,6 +212,16 @@ public class IngestManagerSVC {
     }
 
     /**
+     * Get security Enable Info
+     *
+     * @param jwtToken Json type token
+     * @return Public key
+     */
+    public ResponseEntity<Boolean> getSecurityInfo() {
+        return ResponseEntity.ok().body(properties.getSpringSecurityEnabled());
+    }
+
+    /**
      * For logout, logout is processed to the SSO server and the session and cookie
      * are cleared.
      *
@@ -224,10 +234,8 @@ public class IngestManagerSVC {
         Object principal = getPrincipal(request);
         if (principal != null) {
             UserVO user = new UserVO();
-            log.info("{}", principal.toString());
             user.setUserId(principal.toString());
             Map<String, String> headers = new HashMap<String, String>();
-            log.info("token:", request.getSession().getAttribute(AUTHTOKEN).toString());
             headers.put(
                 HttpHeaders.AUTHORIZATION,
                 "Bearer " + request.getSession().getAttribute(AUTHTOKEN)

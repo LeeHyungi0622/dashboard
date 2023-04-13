@@ -1,31 +1,49 @@
+application:
+  title: D.Hub-Ingest-Manager
+  version: 1.0.0
+
 spring:
   application:
-    name: dh-datacore-ui
+    name: dh-ingest-manager
 
   thymeleaf:
     prefix: classpath:/static/
     cache: false
 
   security:
-    enabled: true
+    enabled: false
 
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://110.45.181.70:5432/ingestmanager
-    username: datacore
-    password: datacore
-
+    jdbcUrl: jdbc:postgresql://localhost:5432/ingestmanager?currentSchema=ingest_manager
+    username: postgres
+    password: postgres
+    logging:
+      use.yn: N
+      moduleName: ingest_manager
+      driverClassName: org.postgresql.Driver
+      jdbcUrl: jdbc:postgresql://localhost:5432/ingestmanager?currentSchema=logging
+      username: postgres
+      password: postgres
     retrieve:
       use.yn: N
       driverClassName: org.postgresql.Driver
       url: jdbc:postgresql://10.12.0.11:5432/datacore
       username: keti_datacore
       password: keti123
+
 server:
   port: 8099
   servlet:
     context-path: /
     session.timeout: 60m
+  tomcat:
+    remote-ip-header: x-forwarded-for
+  ssl:
+    enabled: false
+    key-store: classpath:keystore.jks
+    key-store-type: JKS
+    key-store-password: u9989z
 
 ## Logging
 logging.config: classpath:logback-spring.xml
@@ -46,14 +64,23 @@ datacore:
 
 cityhub:
   client:
-    clientId: U5p67XCeZxRdCZMc5Dv4
-    clientSecret: dNond2b5TC3afAXE0dGle6CPtybZuWsR
+    clientId: qti7lRjyOa44u4Vb6tIp
+    clientSecret: 8bhv1xIyH76NiDaXgU8agc31YTUd9g7g
     userAuthorizationUri: http://110.45.181.72:30000/oauth2.0/authorize
     accessTokenUri: http://110.45.181.72:30000/oauth2.0/token
     publicKeyUri: http://110.45.181.72:30000/security/publickey
     logoutUri: http://110.45.181.72:30000/security/logout
     userInfoUri: http://110.45.181.72:30000/security/users
     redirectUri: http://localhost:8099/accesstoken
+  security:
+    accessRole:
+      user: Dhub_User
+    
+  datacore:
+    manager:
+      url: http://110.45.181.71:8080
+    ingestInterface:
+      url: http://110.45.181.71:8081
 
 http.pool:
   max.total: 200
@@ -62,3 +89,8 @@ http.pool:
   connection.request.timeout: 5000
   read.timeout: 10000
   validate.after.inactivity: 2000
+
+nifi:
+  url: https://localhost:8443
+  user: admin
+  password: ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB

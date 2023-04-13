@@ -63,7 +63,7 @@ public class NiFiController {
     public String createPipeline(PipelineVO pipelineVO) {
         try {
             // Check Token Expired
-            niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+            niFiClientEntity.manageToken();
             // Create Pipeline Processor Group
             String processGroupId = niFiSwaggerSVC.createProcessGroup(
                 pipelineVO.getName(),
@@ -199,13 +199,13 @@ public class NiFiController {
                             } else {
                                 id =
                                     id +
-                                    "${" +
+                                    ":${" +
                                     nifi
                                         .getRequiredProps()
                                         .get(i)
                                         .getInputValue()
                                         .replace("\"", "") +
-                                    "}\"";
+                                    "}";
                             }
                         }
                     }
@@ -294,6 +294,9 @@ public class NiFiController {
             } else if (a.getValueType().equals("BigDecimal")) {
                 e.put("value", "=toDouble");
                 ae.put(a.getName(), e);
+            } else if (a.getValueType().equals("String")) {
+                e.put("value", "=toString");
+                ae.put(a.getName(), e);
             }
         }
         en.put("*", ae);
@@ -324,7 +327,6 @@ public class NiFiController {
                         for (PropertyVO prop : nifi.getRequiredProps()) {
                             if (prop.getDetail().equals("Date Format")) {
                                 prop.setName(a.getName());
-                                log.info("prop Data = {}", prop);
                                 prop.setInputValue(
                                     "${" +
                                     a.getName() +
@@ -367,7 +369,6 @@ public class NiFiController {
         if (NiFiComponents.size() < 1) {
             log.error("Empty NiFi Components In Request Pipeline");
         }
-        log.info("{}", NiFiComponents);
         for (NiFiComponentVO component : NiFiComponents) {
             if (
                 component.getType().equals("processor") || component.getType().equals("Processor")
@@ -394,11 +395,11 @@ public class NiFiController {
     public boolean deletePipeline(String processGroupId) {
         try {
             // Check Token Expired
-            niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+            niFiClientEntity.manageToken();
 
             /* Clear Queues in Connections */
             niFiRestSVC.clearQueuesInProcessGroup(processGroupId);
-            /* Disable Controller */
+            /* Disable Controllers */
             niFiRestSVC.disableControllers(processGroupId);
             /* Stop Pipeline */
             stopPipeline(processGroupId);
@@ -417,7 +418,7 @@ public class NiFiController {
 
     public String updatePipeline(PipelineVO pipelineVO) {
         try {
-            niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+            niFiClientEntity.manageToken();
             String processGroupId = createPipeline(pipelineVO);
             if (deletePipeline(pipelineVO.getProcessorGroupId())) {
                 return processGroupId;
@@ -442,7 +443,7 @@ public class NiFiController {
      */
     public boolean runPipeline(String processorGroupId) {
         // Check Token Expired
-        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+        niFiClientEntity.manageToken();
         if (niFiRestSVC.startProcessorGroup(processorGroupId)) {
             log.info("Success Run Pipeline : Processor Group ID = {}", processorGroupId);
             return true;
@@ -460,7 +461,7 @@ public class NiFiController {
      */
     public boolean stopPipeline(String processorGroupId) {
         // Check Token Expired
-        niFiClientEntity.manageToken(niFiClientEntity.getAccessToken());
+        niFiClientEntity.manageToken();
 
         if (niFiRestSVC.stopProcessorGroup(processorGroupId)) {
             log.info("Success Stop Pipeline : Processor Group ID = {}", processorGroupId);
@@ -473,6 +474,7 @@ public class NiFiController {
 
     public Map<String, Integer> getPipelineStatus(String processorGroup) {
         try {
+            niFiClientEntity.manageToken();
             return niFiRestSVC.getStatusProcessGroup(processorGroup);
         } catch (Exception e) {
             log.error("Fail to Get Pipeline Status.", e);

@@ -89,7 +89,7 @@ public class PipelineSVC {
                     Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
                         pipeline.getProcessorGroupId()
                     );
-                    log.info("{}", nifiStatus);
+                    log.debug("{}", nifiStatus);
                     if (!ValidateUtil.isMapEmpty(nifiStatus)) {
                         String curStatus = pipelineVO.getStatus(); // 현재 DB status값
                         if (
@@ -108,7 +108,7 @@ public class PipelineSVC {
                                 nifiStatus.get(NifiStatusCode.NIFI_STATUS_STOPPED.getCode()) == 0 &&
                                 nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0
                             ) {
-                                log.info("{}", PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
+                                log.debug("{}", PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
                                 pipeline.setStatus(
                                     PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()
                                 );
@@ -243,6 +243,18 @@ public class PipelineSVC {
             dataModelVO = dataSetSVC.getDataModelProperties(dataModelVO.getId());
             NiFiComponentVO niFiComponentVO = new NiFiComponentVO();
             for (int i = 0; i < dataModelVO.getAttributes().size(); i++) {
+                if (Boolean.TRUE.equals(dataModelVO.getAttributes().get(i).getHasUnitCode())) {
+                    PropertyVO propertyVO = new PropertyVO();
+                    propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                    propertyVO.setDetail("unitCode");
+                    niFiComponentVO.getRequiredProps().add(propertyVO);
+                }
+                if (dataModelVO.getAttributes().get(i).getValueType().equals("Date")) {
+                    PropertyVO propertyVO = new PropertyVO();
+                    propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                    propertyVO.setDetail("Date Format");
+                    niFiComponentVO.getRequiredProps().add(propertyVO);
+                }
                 PropertyVO propertyVO = new PropertyVO();
                 propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
                 propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
@@ -252,6 +264,8 @@ public class PipelineSVC {
             }
             adaptorVO.getNifiComponents().add(niFiComponentVO);
             pipelineVO.setConverter(adaptorVO);
+        } else {
+            return ResponseEntity.status(org.apache.http.HttpStatus.SC_BAD_REQUEST).body("invalid Page name");
         }
         return ResponseEntity.ok().body(pipelineVO);
     }

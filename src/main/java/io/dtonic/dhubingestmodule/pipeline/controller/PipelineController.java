@@ -2,6 +2,8 @@ package io.dtonic.dhubingestmodule.pipeline.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import io.dtonic.dhubingestmodule.aop.logging.LogAccessRest;
 import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
@@ -29,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "pipelines")
+// @RequestMapping(path = "pipelines")
 public class PipelineController<T> {
 
     @Autowired
@@ -38,7 +40,8 @@ public class PipelineController<T> {
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
 
-    @GetMapping("/completed") // PipeLine List 조회
+    @LogAccessRest
+    @GetMapping("/pipelines/completed") // PipeLine List 조회
     public ResponseEntity<T> getPipelineList(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -55,8 +58,9 @@ public class PipelineController<T> {
      * @param id         to delete temporary Pipeline
      * @return
      */
+    @LogAccessRest
     @Transactional
-    @PostMapping("/completed/{id}") // PipeLine 생성시 "등록완료"
+    @PostMapping("/pipelines/completed/{id}") // PipeLine 생성시 "등록완료"
     public ResponseEntity createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -77,8 +81,8 @@ public class PipelineController<T> {
      * @param id       retrieve Pipeline id
      * @return
      */
-
-    @PutMapping("/completed/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
+    @LogAccessRest
+    @PutMapping("/pipelines/completed/{id}") // 등록된 PipeLine에 대한 "수정 완료" 확정
     public ResponseEntity updatePipeline(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -105,7 +109,8 @@ public class PipelineController<T> {
      * @throws JsonProcessingException
      * @throws JsonMappingException
      */
-    @GetMapping("/completed/{id}") // PipeLine 상세 조회
+    @LogAccessRest
+    @GetMapping("/pipelines/completed/{id}") // PipeLine 상세 조회
     public ResponseEntity<T> getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -114,16 +119,16 @@ public class PipelineController<T> {
     ) {
         return pipelineSVC.getPipelineVOById(id);
     }
-
-    @GetMapping("/collectors") // 데이터수집기 리스트 리턴
+    @LogAccessRest
+    @GetMapping("/pipelines/collectors") // 데이터수집기 리스트 리턴
     public List<String> getPipelinecollectors(
         HttpServletRequest request,
         HttpServletResponse response
     ) {
         return pipelineDraftSVC.getDataCollector();
     }
-
-    @GetMapping("/completed/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
+    @LogAccessRest
+    @GetMapping("/pipelines/completed/properties") // 파이프라인 수정시 Collector,filter, DataSet 선택시 호출
     public ResponseEntity<T> getPipelineProperties(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -144,7 +149,8 @@ public class PipelineController<T> {
      * @param id       retrieve Pipeline id
      * @return
      */
-    @PutMapping("/run-status/{id}") // PipeLine status 업데이트
+    @LogAccessRest
+    @PutMapping("/pipelines/run-status/{id}") // PipeLine status 업데이트
     public ResponseEntity UpdatePipelineStatus(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -188,7 +194,8 @@ public class PipelineController<T> {
      * @param id       retrieve Pipeline id
      * @return
      */
-    @DeleteMapping("/completed/{id}") // PipeLine 삭제
+    @LogAccessRest
+    @DeleteMapping("/pipelines/completed/{id}") // PipeLine 삭제
     public ResponseEntity deletePipeline(
         HttpServletRequest request,
         HttpServletResponse response,

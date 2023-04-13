@@ -35,9 +35,11 @@
 <script>
 import CustomTable from "./CustomTable.vue";
 import PipelineRegister from "../../js/api/pipelineRegister";
+import EventBus from "@/eventBus/EventBus.js";
+import collectorService from "../../js/api/collector";
 export default {
   components: {
-    CustomTable
+    CustomTable,
   },
   data: () => ({
     infoContents: [        
@@ -76,6 +78,16 @@ export default {
           inputValue: "",
         }
     ],
+    alertContent: {
+        title: "파이프라인 등록 완료",
+        text: "파이프라인 등록 완료되었습니다.",
+        url: "default"
+      },
+    alertErrorContent: {
+        title: "파이프라인 등록 실패",
+        text: "일시적인 오류로 파이프라인 등록에 실패하였습니다.",
+        url: "default"
+      },
   }),
   created() {
     this.getDraftPl();
@@ -101,19 +113,36 @@ export default {
       );
     },
     beforeRoute(){
-      this.$store.state.tableShowMode = 'REGISTER';
-      this.$store.state.showRegisterMode = 'convertor';
+      this.$store.state.overlay = true;
+      collectorService
+          .postPipelineDraft(this.$store.state.registerPipeline)
+          .then((res) => {
+            this.$store.state.registerPipeline = res;
+            this.$store.state.tableShowMode = 'REGISTER';
+            this.$store.state.showRegisterMode = 'convertor';
+            this.$store.state.overlay = false;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
     },
     saveComplete(){
+      this.$store.state.overlay = true;
       PipelineRegister
-        .postPipelineCompleted(this.$store.state.registerPipeline.id, this.$store.state.registerPipeline)
-        .catch((err) => {
-          console.error(err);
-        });
-        //TODO PopUP
-      this.$router.push({
-          name: "pipelineList"
-        });
+        .postPipelineCompleted(this.$store.state.registerPipeline.id, this.$store.state.registerPipeline).then(()=>{
+          this.$store.state.overlay = true;
+          
+          this.$router.push({
+            name: "pipelineList"
+          });
+          EventBus.$emit("show-alert-popup", this.alertContent);
+        }
+        )
+          .catch((err) => {
+            EventBus.$emit("show-alert-popup", this.alertErrorContent);
+            console.error(err);
+          });
+          
     }
   },
 };

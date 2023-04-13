@@ -227,6 +227,7 @@ select {
   padding: 2%;
   height: 100%;
   width: 80%;
+  cursor:pointer;
 }
 
 .activationFilter p {
@@ -249,12 +250,22 @@ select {
   border-radius: 0;
   border: 1px solid #DFDFDF;
 }
+.search div{
+  height: 100%;
+  width: 50%;
+  padding: 1%;
+  border-radius: 0;
+  border: 1px solid #DFDFDF;
+  background-color: #C9C9C9;
+}
 
 .search select {
   height: 100%;
   width: 8%;
   border-radius: 0;
   border: 1px solid #DFDFDF;
+  text-overflow: ellipsis;
+  cursor: pointer;
 }
 .searchfilterBox {
   width: 17%;
@@ -598,6 +609,13 @@ select {
   width: 180px;
   height: 35px
 }
+.pipelineUpdateButton:disabled { 
+  background-color: #C9C9C9;
+  color: #ffffff;
+  font-weight: normal !important;
+  width: 180px;
+  height: 35px
+}
 .pipelineUpdateContentBox{
   width: 95%; 
   margin-top: 5%;
@@ -765,4 +783,10 @@ select {
   justify-content: center;
   border-left: 1px solid #DFDFDF;
 }
+.ofhover {
+  overflow: auto;
+}
 
+.ofhover::-webkit-scrollbar {
+  margin-bottom: 3%;
+}

@@ -7,11 +7,14 @@ import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.impl.DefaultJwtParser;
+
+import java.util.Calendar;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -77,9 +80,13 @@ public class NiFiClientEntity {
      *
      * @param access token
      */
-    public void manageToken(String token) {
-        Date tokenTime = getExpiredTimeFromToken(token);
-        if (tokenTime.compareTo(new Date(System.currentTimeMillis())) < 0) {
+    @Scheduled(cron = "0 */5 * * * *")
+    public void manageToken() {
+        Date tokenTime = getExpiredTimeFromToken(this.accessToken);
+        Calendar systemCal = Calendar.getInstance();
+        systemCal.setTime(new Date(System.currentTimeMillis()));
+        systemCal.add(Calendar.HOUR, 2);
+        if (tokenTime.compareTo(systemCal.getTime()) < 0) {
             log.info("NiFi Access Token is Expired");
             OAuth auth = (OAuth) nifiSwaggerApiClient.getAuthentication("auth");
             this.accessToken =
@@ -90,7 +97,7 @@ public class NiFiClientEntity {
             auth.setAccessToken(accessToken);
             log.info("NiFi Access Token is Refreshed : AccessToken = {}", accessToken);
         } else {
-            log.info("NiFi Access Token is Allowed");
+            log.debug("NiFi Access Token is Allowed");
         }
     }
 }
