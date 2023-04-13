@@ -212,6 +212,16 @@ public class IngestManagerSVC {
     }
 
     /**
+     * Get security Enable Info
+     *
+     * @param jwtToken Json type token
+     * @return Public key
+     */
+    public ResponseEntity<Boolean> getSecurityInfo() {
+        return ResponseEntity.ok().body(properties.getSpringSecurityEnabled());
+    }
+
+    /**
      * For logout, logout is processed to the SSO server and the session and cookie
      * are cleared.
      *

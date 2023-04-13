@@ -98,6 +98,15 @@ public class IngestManagerViewController implements ErrorController {
         response.sendRedirect(contextPath + "/");
     }
 
+    @GetMapping("/security")
+    public ResponseEntity<Boolean> getSecurityInfo(
+        HttpServletRequest request,
+        HttpServletResponse response
+    )
+        throws Exception {
+        return ingestManagerSVC.getSecurityInfo();
+    }
+
     /**
      * Responds to user information when requesting user url.
      *
