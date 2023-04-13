@@ -40,7 +40,7 @@ server:
   tomcat:
     remote-ip-header: x-forwarded-for
   ssl:
-    enabled: true
+    enabled: false
     key-store: classpath:keystore.jks
     key-store-type: JKS
     key-store-password: u9989z

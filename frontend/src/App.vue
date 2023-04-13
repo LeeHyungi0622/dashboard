@@ -36,8 +36,8 @@
               <v-list-item-title
                 class="fs12"
                 style="color: #000000; padding-left: 12px"
-                v-text="title"
               >
+              {{ title }}
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -116,7 +116,12 @@ export default {
     }
   },
   mounted(){
-    if(this.getCookie("chaut") === ""){
+    UserInfo.getSecurityInfo()
+        .then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            if (res == "true"){
+              if(this.getCookie("chaut") === ""){
       alert("로그인이 필요한 페이지 입니다.");
       location.reload();
     }
@@ -136,21 +141,30 @@ export default {
           console.log("Fail to Get User Info", err);
         });
     }
+            } else {
+              UserInfo.getUserInfo()
+        .then((res) => {
+          let isSuccess = res.status === 200 || 201 || 204;
+          if(isSuccess){
+            this.userInfo = res;
+            this.$store.state.userInfo = res;
+          } 
+          else {
+            alert("사용자 정보를 불러오는데 실패했습니다.");
+          }  
+        })
+        .catch((err) => {
+          console.log("Fail to Get User Info", err);
+        });
+            }
+          } 
+          else {
+            alert("보안 정보를 불러오는데 실패했습니다.");
+          }  
+        })
+    
 
-      // UserInfo.getUserInfo()
-      //   .then((res) => {
-      //     let isSuccess = res.status === 200 || 201 || 204;
-      //     if(isSuccess){
-      //       this.userInfo = res;
-      //       this.$store.state.userInfo = res;
-      //     } 
-      //     else {
-      //       alert("사용자 정보를 불러오는데 실패했습니다.");
-      //     }  
-      //   })
-      //   .catch((err) => {
-      //     console.log("Fail to Get User Info", err);
-      //   });
+      
   },
   data() {
     return {
