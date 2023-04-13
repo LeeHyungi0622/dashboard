@@ -1,6 +1,5 @@
 package io.dtonic.dhubingestmodule.controller.web;
 
-import io.dtonic.dhubingestmodule.aop.logging.LogAccessRest;
 import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
 import io.dtonic.dhubingestmodule.security.vo.UserVO;
 
@@ -39,7 +38,6 @@ public class IngestManagerViewController implements ErrorController {
         return "index.html";
     }
     
-    @LogAccessRest
     @GetMapping("/list")
     public String pipelineListView(
         HttpSession session,
@@ -49,7 +47,6 @@ public class IngestManagerViewController implements ErrorController {
         throws IOException {
         return "index.html";
     }
-    @LogAccessRest
     @GetMapping("/pipelineRegister")
     public String pipelineRegisterView(
         HttpSession session,
@@ -59,7 +56,6 @@ public class IngestManagerViewController implements ErrorController {
         throws IOException {
         return "index.html";
     }
-    @LogAccessRest
     @GetMapping("/pipelineRegister/new")
     public String pipelineNewRegisterView(
         HttpSession session,
@@ -70,7 +66,6 @@ public class IngestManagerViewController implements ErrorController {
         return "index.html";
     }
 
-    @LogAccessRest
     @GetMapping("/pipelineUpdate")
     public String pipelineUpdateByIdView(
         HttpSession session,
@@ -113,7 +108,6 @@ public class IngestManagerViewController implements ErrorController {
      * @return User information
      * @throws Exception Throw an exception when an error occurs.
      */
-    @LogAccessRest
     @GetMapping("/user")
     public ResponseEntity<UserVO> getUser(HttpServletRequest request, HttpServletResponse response)
         throws Exception {
@@ -126,7 +120,6 @@ public class IngestManagerViewController implements ErrorController {
      * @return User ID
      * @throws Exception Throw an exception when an error occurs.
      */
-    @LogAccessRest
     @GetMapping("/userId")
     public ResponseEntity<String> getUserId(
         HttpServletRequest request,
@@ -142,7 +135,6 @@ public class IngestManagerViewController implements ErrorController {
      * @return Http status
      * @throws Exception Throw an exception when an IO error occurs.
      */
-    @LogAccessRest
     @GetMapping("/logout")
     public ResponseEntity<Object> logout(HttpServletRequest request, HttpServletResponse response)
         throws Exception {
