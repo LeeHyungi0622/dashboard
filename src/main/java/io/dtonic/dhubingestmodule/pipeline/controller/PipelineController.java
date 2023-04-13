@@ -274,7 +274,7 @@ public class PipelineController<T> {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/hist/cmd/{pipelineId}") 
+    @GetMapping("/pipelines/hist/cmd/{pipelineId}") 
     public ResponseEntity<T> getPipelineCmdHistory(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -284,7 +284,7 @@ public class PipelineController<T> {
         return pipelineSVC.getPipelineCmdHistory(pipelineId);
     }
 
-    @GetMapping("/hist/task/{commandId}") 
+    @GetMapping("/pipelines/hist/task/{commandId}") 
     public ResponseEntity<T> getPipelineTaskHistory(
         HttpServletRequest request,
         HttpServletResponse response,
