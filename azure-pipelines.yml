@@ -5,7 +5,6 @@ variables:
 
 trigger:
   - develop
-  - issue*
 
 # build agent pool default가 dtonic꺼
 # see: https://dev.azure.com/dtonic/_settings/agentpools
