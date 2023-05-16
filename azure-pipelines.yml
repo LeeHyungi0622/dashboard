@@ -47,7 +47,8 @@ stages:
     - deployment: ncpEissTestDt
       # 배포할 Envornment
       environment:
-        name: "IngestManager-Testbed"
+        #name: "IngestManager-Testbed"
+        name: "Develop_ENV_123server"
         resourceType: VirtualMachine
       variables:
         baseFolder: /usr/local/lib/ingestManager
