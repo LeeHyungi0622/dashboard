@@ -44,7 +44,7 @@ stages:
 - stage: TestbedRelease
   #condition: and(succeeded(), eq(variables.isDevelop, true))
   jobs:
-    - deployment: ncpEissTestDt
+    - deployment: IngestManager_Dev_123Server
       # 배포할 Envornment
       environment:
         #name: "IngestManager-Testbed"
