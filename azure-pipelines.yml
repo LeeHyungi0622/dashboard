@@ -47,7 +47,6 @@ stages:
     - deployment: IngestManager_Dev_123Server
       # 배포할 Envornment
       environment:
-        #name: "IngestManager-Testbed"
         name: "Develop_ENV_123server"
         resourceType: VirtualMachine
       variables:
@@ -59,7 +58,7 @@ stages:
             steps:
               - task: CmdLine@2
                 inputs:
-                  script: 'chmod 777 ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar'
+                  script: 'mv ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar ./ingestManager/jars/d-hub-ingest-module-0.0.2-SNAPSHOT.jar'
                   workingDirectory: '$(Agent.BuildDirectory)'
               ##- task: CopyFiles@2
                # inputs:
