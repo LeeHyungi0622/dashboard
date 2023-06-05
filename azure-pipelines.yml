@@ -5,8 +5,8 @@ variables:
   deployDir: "/home/azure-deploy-agent/test"
 
 trigger:
- # - develop
- # - release*
+  - develop
+  - release*
 # build agent pool default가 dtonic꺼
 # see: https://dev.azure.com/dtonic/_settings/agentpools
 pool:
@@ -85,11 +85,11 @@ stages:
                 inputs:
                   script: 'mv ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /jars/d-hub-ingest-module-$(Build.SourceBranchName).jar'
                   workingDirectory: '$(Agent.BuildDirectory)'
-              - task: CmdLine@2
-                inputs:
-                  script: 'chmod 771 ./ingestManager/deploy.sh'
-                  workingDirectory: '$(Agent.BuildDirectory)'
-              - task: CmdLine@2
-                inputs:
-                  script: 'sh ./ingestManager/deploy.sh'
-                  workingDirectory: '$(Agent.BuildDirectory)'           
+              #- task: CmdLine@2
+                #inputs:
+                  #script: 'chmod 771 ./ingestManager/deploy.sh'
+                  #workingDirectory: '$(Agent.BuildDirectory)'
+              #- task: CmdLine@2
+                #inputs:
+                  #script: 'sh ./ingestManager/deploy.sh'
+                  #workingDirectory: '$(Agent.BuildDirectory)'
