@@ -1,11 +1,12 @@
 # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/deploy-linux-vm?view=azure-devops&tabs=java
 variables:
-  isDevelop: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
+  isRelease: "$[startsWith(variables['Build.SourceBranch'], 'refs/heads/release')]"
+  isDevelop: "$[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]"
   deployDir: "/home/azure-deploy-agent/test"
 
 trigger:
-  - develop
-
+ # - develop
+ # - release*
 # build agent pool default가 dtonic꺼
 # see: https://dev.azure.com/dtonic/_settings/agentpools
 pool:
@@ -14,9 +15,6 @@ pool:
 stages: 
 - stage: AdvancedAnalysisService  
   displayName: Build advanced ingestManager service
-  #variables:
-  #  BuildVersion: $[ stageDependencies.Versioning.setVersion.outputs['gitversionexecute.GitVersion.SemVer'] ]
-  #  ArtifactId: eiss-gov-associate
   jobs:
     - job: build
       steps:
@@ -41,8 +39,8 @@ stages:
           ArtifactName: 'ingestManager'
           publishLocation: 'Container'
 
-- stage: TestbedRelease
-  #condition: and(succeeded(), eq(variables.isDevelop, true))
+- stage: DevelopbedRelease
+  condition: and(succeeded(), eq(variables.isDevelop, true))
   jobs:
     - deployment: IngestManager_Dev_123Server
       # 배포할 Envornment
@@ -60,11 +58,6 @@ stages:
                 inputs:
                   script: 'mv ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar'
                   workingDirectory: '$(Agent.BuildDirectory)'
-              ##- task: CopyFiles@2
-               # inputs:
-                #  SourceFolder: '$(Agent.BuildDirectory)/ingestManager/jars'
-                 # Contents: '**.jar'
-                  #TargetFolder: '$(Agent.BuildDirectory)/ingestManager/jars/docker'
               - task: CmdLine@2
                 inputs:
                   script: 'chmod 771 ./ingestManager/deploy.sh'
@@ -73,3 +66,30 @@ stages:
                 inputs:
                   script: 'sh ./ingestManager/deploy.sh'
                   workingDirectory: '$(Agent.BuildDirectory)'
+- stage: ReleasebedrRelease
+  condition: and(succeeded(), eq(variables.isRelease, true))
+  jobs:
+    - deployment: IngestManager_Dev_123Server
+      # 배포할 Envornment
+      environment:
+        name: "Develop_ENV_123server"
+        resourceType: VirtualMachine
+      variables:
+        baseFolder: /usr/local/lib/ingestManager
+        AdvancedAnalysisJarFile: $[ stageDependencies.AdvancedAnalysisService.build.outputs['buildResult.jarFileName'] ]
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: CmdLine@2
+                inputs:
+                  script: 'mv ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /jars/d-hub-ingest-module-$(Build.SourceBranchName).jar'
+                  workingDirectory: '$(Agent.BuildDirectory)'
+              - task: CmdLine@2
+                inputs:
+                  script: 'chmod 771 ./ingestManager/deploy.sh'
+                  workingDirectory: '$(Agent.BuildDirectory)'
+              - task: CmdLine@2
+                inputs:
+                  script: 'sh ./ingestManager/deploy.sh'
+                  workingDirectory: '$(Agent.BuildDirectory)'           
