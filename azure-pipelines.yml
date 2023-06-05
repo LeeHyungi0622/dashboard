@@ -60,11 +60,11 @@ stages:
                   workingDirectory: '$(Agent.BuildDirectory)'
               - task: CmdLine@2
                 inputs:
-                  script: 'chmod 771 ./ingestManager/deploy.sh'
+                  script: 'chmod 771 /azp/agent/deploy.sh'
                   workingDirectory: '$(Agent.BuildDirectory)'
               - task: CmdLine@2
                 inputs:
-                  script: 'sh ./ingestManager/deploy.sh'
+                  script: 'sh /azp/agent/deploy.sh'
                   workingDirectory: '$(Agent.BuildDirectory)'
 - stage: ReleasebedrRelease
   condition: and(succeeded(), eq(variables.isRelease, true))
@@ -72,7 +72,7 @@ stages:
     - deployment: IngestManager_Dev_123Server
       # 배포할 Envornment
       environment:
-        name: "Develop_ENV_123server"
+        name: "Release_ENV_122server_IngestManager"
         resourceType: VirtualMachine
       variables:
         baseFolder: /usr/local/lib/ingestManager
