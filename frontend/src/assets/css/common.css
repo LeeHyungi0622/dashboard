@@ -379,6 +379,16 @@ select {
   opacity: .6;
   pointer-events: none;
 }
+
+.redirectBtn button {
+  width: 5%;
+  height: 32px;
+  margin-bottom: 2%;
+  font-size: 16px;
+  background-color: #2B4F8C;
+  color: #ffffff;
+}
+
 /* footer */
 
 .footer {
