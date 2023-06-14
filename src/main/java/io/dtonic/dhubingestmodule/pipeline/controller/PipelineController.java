@@ -14,6 +14,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,9 @@ public class PipelineController<T> {
 
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
+
+    @Value("${nifi.url}")
+    private String NiFiURL;
 
     @GetMapping("/pipelines/completed") // PipeLine List 조회
     public ResponseEntity<T> getPipelineList(
@@ -203,5 +207,14 @@ public class PipelineController<T> {
         // delete pipeline
         pipelineSVC.deletePipeline(id);
         return ResponseEntity.ok().build();
+    }
+
+    
+    @GetMapping("/redirectNiFiUrl")
+    public String redirectNiFiUrl(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+
+                return NiFiURL;
+        
     }
 }

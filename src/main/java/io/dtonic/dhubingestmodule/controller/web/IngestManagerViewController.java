@@ -72,6 +72,16 @@ public class IngestManagerViewController implements ErrorController {
         HttpServletRequest request,
         HttpServletResponse response
     )
+            throws IOException {
+        return "index.html";
+    }
+    
+    @GetMapping("/redirectNiFi")
+    public String redirectNiFi(
+        HttpSession session,
+        HttpServletRequest request,
+        HttpServletResponse response
+    )
         throws IOException {
         return "index.html";
     }
