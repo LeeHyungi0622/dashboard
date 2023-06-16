@@ -46,7 +46,7 @@ stages:
   jobs:
     - deployment: IngestManager_Dev_123Server
       # 배포할 Envornment
-        environment:
+      environment:
         name: "Develop_ENV_123server"
         resourceType: VirtualMachine
       variables:
