@@ -1,20 +1,21 @@
 # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/deploy-linux-vm?view=azure-devops&tabs=java
 variables:
-  isRelease: "$[startsWith(variables['Build.SourceBranch'], 'refs/heads/release')]"
+  isRelease: "$[startsWith(variables['Build.SourceBranch'], 'refs/heads/release/1.0.0')]"
   isDevelop: "$[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]"
   deployDir: "/home/azure-deploy-agent/test"
 
 trigger:
   - develop
-  - release*
+  - release/1.0.0
 # build agent pool default가 dtonic꺼
 # see: https://dev.azure.com/dtonic/_settings/agentpools
 pool:
   name: default
-
+# develop branch build
 stages: 
-- stage: AdvancedAnalysisService  
-  displayName: Build advanced ingestManager service
+- stage: AdvancedDevelopIngestManagerService
+  condition: and(succeeded(), eq(variables.isDevelop, true))
+  displayName: Build advanced develop ingestManager service
   jobs:
     - job: build
       steps:
@@ -39,12 +40,13 @@ stages:
           ArtifactName: 'ingestManager'
           publishLocation: 'Container'
 
+# develop branch publish
 - stage: DevelopbedRelease
   condition: and(succeeded(), eq(variables.isDevelop, true))
   jobs:
     - deployment: IngestManager_Dev_123Server
       # 배포할 Envornment
-      environment:
+        environment:
         name: "Develop_ENV_123server"
         resourceType: VirtualMachine
       variables:
@@ -66,7 +68,9 @@ stages:
                 inputs:
                   script: 'sh /azp/agent/deploy.sh'
                   workingDirectory: '$(Agent.BuildDirectory)'
-- stage: ReleasebedrRelease
+
+# release branch publish
+- stage: ReleasebedRelease
   condition: and(succeeded(), eq(variables.isRelease, true))
   jobs:
     - deployment: IngestManager_Dev_123Server
@@ -83,13 +87,13 @@ stages:
             steps:
               - task: CmdLine@2
                 inputs:
-                  script: 'mv ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /jars/d-hub-ingest-module-$(Build.SourceBranchName).jar'
+                  script: 'mv ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar'
                   workingDirectory: '$(Agent.BuildDirectory)'
-              #- task: CmdLine@2
-                #inputs:
-                  #script: 'chmod 771 ./ingestManager/deploy.sh'
-                  #workingDirectory: '$(Agent.BuildDirectory)'
-              #- task: CmdLine@2
-                #inputs:
-                  #script: 'sh ./ingestManager/deploy.sh'
-                  #workingDirectory: '$(Agent.BuildDirectory)'
+              - task: CmdLine@2
+                inputs:
+                  script: 'chmod 771 ./ingestManager/deploy.sh'
+                  workingDirectory: '$(Agent.BuildDirectory)'
+              - task: CmdLine@2
+                inputs:
+                  script: 'sh ./ingestManager/deploy.sh'
+                  workingDirectory: '$(Agent.BuildDirectory)'
