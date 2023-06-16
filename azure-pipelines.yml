@@ -91,9 +91,9 @@ stages:
                   workingDirectory: '$(Agent.BuildDirectory)'
               - task: CmdLine@2
                 inputs:
-                  script: 'chmod 771 ./ingestManager/deploy.sh'
+                  script: 'chmod 771 /azp/agent/deploy.sh'
                   workingDirectory: '$(Agent.BuildDirectory)'
               - task: CmdLine@2
                 inputs:
-                  script: 'sh ./ingestManager/deploy.sh'
+                  script: 'sh /azp/agent/deploy.sh'
                   workingDirectory: '$(Agent.BuildDirectory)'
