@@ -25,7 +25,7 @@ public class NiFiApplicationRunner implements ApplicationRunner {
         /* Upload Templates */
         niFiRestSVC.uploadTemplate();
         /* Check Ingest Manager Process Group */
-        ingestProcessGroupId = niFiSwaggerSVC.searchProcessGroupInProcessGroup("root");
+        ingestProcessGroupId = niFiSwaggerSVC.searchProcessGroupInProcessGroup("root", "Ingest Manager");
         if (ingestProcessGroupId == null) {
             /* Create Ingest Manager Process Group */
             ingestProcessGroupId = niFiSwaggerSVC.createProcessGroup("Ingest Manager", "root");
