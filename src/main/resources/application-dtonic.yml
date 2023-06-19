@@ -43,7 +43,7 @@ server:
     enabled: true
     key-store: classpath:keystore.jks
     key-store-type: JKS
-    key-store-password: u9989z
+    key-store-password: srd5wjn9
 
 ## Logging
 logging.config: classpath:logback-spring.xml
