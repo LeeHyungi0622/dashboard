@@ -222,6 +222,22 @@ public class NiFiSwaggerSVC {
      * @param sourceProcessorGroupID pipeline processor group id
      * @return FunnelID
      */
+    public String searchProcessGroupInProcessGroup(String processGroupId, String findProcessGroupName) {
+        for (ProcessGroupEntity processGroup : niFiClient
+            .getProcessGroupsApiSwagger()
+            .getProcessGroups(processGroupId)
+            .getProcessGroups()) {
+            log.info(
+                "Search Process Group In Ingest Manager : processGroupId = [{}]",
+                processGroup.getId()
+            );
+            if (processGroup.getComponent().getName().equals(findProcessGroupName)) {
+                return processGroup.getId();
+            }
+        }
+        log.info("Empty process Group In Ingest Manager");
+        return null;
+    }
     public String searchProcessGroupInProcessGroup(String processGroupId) {
         for (ProcessGroupEntity processGroup : niFiClient
             .getProcessGroupsApiSwagger()
@@ -231,7 +247,8 @@ public class NiFiSwaggerSVC {
                 "Search Process Group In Ingest Manager : processGroupId = [{}]",
                 processGroup.getId()
             );
-            return processGroup.getId();
+
+            return processGroup.getComponent().getName();
         }
         log.info("Empty process Group In Ingest Manager");
         return null;

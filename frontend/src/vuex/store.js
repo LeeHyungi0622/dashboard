@@ -33,7 +33,8 @@ export const store = new Vuex.Store({
       filterRootKey: "",
       convertDataSet: "",
       registerPipeId: "",
-      overlay: false
+      overlay: false,
+      redirectNiFiURL: ""
     };
   },
   mutations: {

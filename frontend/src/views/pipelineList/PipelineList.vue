@@ -2,7 +2,8 @@
   <v-app>
     <div class="pipelineListBox">
       <div class="pipelineListTitle">
-        <p class="fsb16">파이프라인 목록</p>
+        <p class="fsb16 float-left">파이프라인 목록</p>
+        <div class="redirectBtn" @click="redirectNiFi()"><button class="float-right">NiFi</button></div>
         <div class="searchBox">
           <div class="activationFilter">
             <p>동작</p>
@@ -192,6 +193,7 @@
 
 import pipelineListService from "../../js/api/pipelineList";
 import historyListService from "../../js/api/history";
+import redirect from "../../js/api/redirect";
 import EventBus from "@/eventBus/EventBus.js";
 import pipelineListData from "../../json/pipelineList.json";
 import tempPipeline from "../../json/tempPipeline.json";
@@ -214,7 +216,14 @@ export default {
     this.$store.state.registerPipeline = {};
     this.$store.state.completedPipeline = {};
     this.$store.state.overlay = false;
-    this.pipelineFilter="all";
+    this.pipelineFilter = "all";
+
+    redirect.getNiFiURL().then((res) => {
+        this.$store.state.redirectNiFiURL = res;
+      })
+      .catch((err) => {
+        console.log("NiFi 주소를 받아오는데에 실패했습니다.", err);
+      });
   },
   watch:{
     filteritems(){
@@ -452,7 +461,10 @@ export default {
           this.filteritems = this.$store.state.pipelineList;
         }
       }
-    }
+    },
+    redirectNiFi() {
+      window.open(this.$store.state.redirectNiFiURL,"_blank","")
+    },
   },
 };
 </script>
