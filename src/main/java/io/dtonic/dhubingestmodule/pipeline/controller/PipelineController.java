@@ -72,7 +72,6 @@ public class PipelineController<T> {
      * @param id         to delete temporary Pipeline
      * @return
      */
-    @Transactional
     @PostMapping("/pipelines/completed/{id}") // PipeLine 생성시 "등록완료"
     public ResponseEntity createPipeline(
         HttpServletRequest request,

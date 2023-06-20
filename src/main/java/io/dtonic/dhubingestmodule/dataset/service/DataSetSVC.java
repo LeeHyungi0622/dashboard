@@ -74,17 +74,17 @@ public class DataSetSVC {
         DataModelVO dataModelVO = new DataModelVO();
 
         dataModelVO.setDatasetId(DataSetId);
-        ResponseEntity<DataSetBaseInfoVO> response = dataCoreRestSVC.get(
+        ResponseEntity<DataSetForDataModelIDVO> response = dataCoreRestSVC.get(
             datasetUrl,
             pathUri,
             header,
             null,
             null,
             null,
-            DataSetBaseInfoVO.class
+            DataSetForDataModelIDVO.class
         );
         if (response != null) dataModelVO.setId(
-            response.getBody().getDataModelId()
+            response.getBody().getDatasetBaseInfo().getDataModelId()
         );
         return dataModelVO;
     }

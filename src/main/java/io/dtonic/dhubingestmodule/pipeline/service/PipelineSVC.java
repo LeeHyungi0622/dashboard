@@ -56,7 +56,7 @@ public class PipelineSVC {
     @Autowired
     private NiFiController niFiController;
 
-    @Transactional
+    //@Transactional
     public ResponseEntity createPipeline(Integer id, PipelineVO pipelineVO) throws JsonMappingException, JsonProcessingException {
 
         CommandVO commandVO = new CommandVO();
