@@ -283,8 +283,10 @@ public class PipelineController<T> {
         @PathVariable Integer commandId
     ) {
         return pipelineSVC.getPipelineTaskHistory(commandId);
+    }
     
     @GetMapping("/redirectNiFiUrl")
+    public String redirectNiFiUrl(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
                 return NiFiURL;

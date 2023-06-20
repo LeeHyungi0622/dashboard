@@ -240,7 +240,7 @@ public class PipelineSVC {
         }
     }
 
-    @Transactional
+    //@Transactional
     public ResponseEntity updatePipeline(Integer id, PipelineVO pipelineVO, String userId) {
         
         changePipelineStatus(id, PipelineStatusCode.PIPELINE_STATUS_UPDATING.getCode());
