@@ -1,0 +1,15 @@
+{
+    "headers": [
+      { "text": "NO", "value": "id", "sortable": false },
+      { "text": "파이프라인 id", "value": "pipelineId", "sortable": false },
+      { "text": "동작 유형", "value": "command", "sortable": false },
+      { "text": "동작 상태","value": "status","sortable": false },
+      { "text": "수행자", "value": "userId", "sortable": false },
+      { "text": "동작 시작 시간", "value": "startedAt", "sortable": false },
+      { "text": "동작 종료 시간", "value": "finishedAt", "sortable": false },
+      { "text": "자세히", "value": "detail" }
+      
+    ]
+    
+  }
+  

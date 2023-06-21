@@ -36,14 +36,18 @@
             </select>
           </div>
         </div>
-
+        
         <v-data-table
           :headers="pipelineListData.headers"
           :items="filteritems"
+          :item-key="id"
           :items-per-page="parseInt(perPage)"
           :page="currentPage"
+          :expanded.sync="expanded"
           class="pipelineTable mgT12"
+          show-expand
           :hide-default-footer="true"
+          @item-expanded ="getcommandList"
           style="text-align: center"
         >
           <template v-slot:[`item.status`]="{ item }">
@@ -52,7 +56,19 @@
                 {{ item.status }}
               </div>
               <div class="acsBtnBox">
-                <button
+                <button v-if="item.status.toUpperCase() == 'FAILED'"
+                  @click="
+                    failedPipeline(
+                      item.name,
+                      item.status.toUpperCase(),
+                      item.id
+                    )
+                  "
+                  :disabled="item.status.toUpperCase().includes('ING')"
+                  >
+                  {{ showStatusBtn(item.status.toUpperCase()) }}
+                </button>
+                <button v-else
                   @click="
                     pipelineStatusAlertShows(
                       item.name,
@@ -65,11 +81,12 @@
                   {{ showStatusBtn(item.status.toUpperCase()) }}
                 </button>
               </div>
+
             </div>
           </template>
           <template v-slot:[`item.delete`]="{ item }">
             <button
-              v-if="item.status.toUpperCase() == 'STOPPED'"
+              v-if="item.status.toUpperCase() == 'STOPPED' ||  item.status.toUpperCase() == 'FAILED'"
               @click="deletePipeline(item)"
             >
               삭제
@@ -79,6 +96,64 @@
           <template v-slot:[`item.pipelineUpdate`]="{ item }">
             <button @click="goPipelineDetailEdit(item)">보기</button>
           </template>
+          
+
+          <!-- ## start dev DJ-->
+          <template v-slot:expanded-item="{ headers }">
+            <td :colspan="headers.length">
+            <template>
+              <v-app>
+                  <div class="pipelineListBox">
+                    <div class="pipelineListTitle">
+                      <p class="fsb16">Command History</p>
+                      
+                      <v-data-table
+                        height="100%"
+                        :headers="commandList.headers"
+                        :items="commandDataList"
+                        item-key="id"
+                        :items-per-page="parseInt(commandperPage)"
+                        :page="commandcurrentPage"
+                        :expanded.sync="expanded"
+                        class="pipelineTable mgT12"
+                        :hide-default-footer="true"
+                        style="text-align: center"
+                      >
+                        <template v-slot:[`item.detail`]="{ item }">
+                          <button @click="gettaskList(item.id)">
+                            자세히
+                          </button>
+                        </template>                        
+                      </v-data-table>
+                      <div class="paginationBox">
+                        <div class="firstPageBtnBox">
+                          <button
+                            class="v-pagination__navigation"
+                            @click="commandfirstPage"
+                            :disabled="commandcurrentPage == 1"
+                          ></button>
+                        </div>
+                        <v-pagination
+                          v-model="commandcurrentPage"
+                          :length="commandtotalPage"
+                          style="v-pagination__item"
+                          color="#2B4F8C"
+                        ></v-pagination>
+                        <div class="lastPageBtnBox">
+                          <button
+                            class="v-pagination__navigation"
+                            @click="commandlastPage"
+                            :disabled="commandcurrentPage == commandtotalPage"
+                          ></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </v-app>
+              </template>
+              </td>
+          </template>
+          <!-- ## end dev DJ-->
         </v-data-table>
         <div class="paginationBox">
           <div class="firstPageBtnBox">
@@ -115,11 +190,15 @@
   </v-app>
 </template>
 <script>
+
 import pipelineListService from "../../js/api/pipelineList";
+import historyListService from "../../js/api/history";
 import redirect from "../../js/api/redirect";
 import EventBus from "@/eventBus/EventBus.js";
 import pipelineListData from "../../json/pipelineList.json";
 import tempPipeline from "../../json/tempPipeline.json";
+import commandList from "../../json/command.json";
+
 export default {
   mounted() {
     this.$store.state.overlay = true;
@@ -161,24 +240,56 @@ export default {
         (this.filteritems.length + parseInt(this.perPage) - 1) / this.perPage
       );
     },
-
+    commandtotalPage() { 
+      return Math.floor(
+        (this.commandDataList.length + parseInt(this.commandperPage) - 1) / this.commandperPage
+      );
+    },
   },
   data() {
     return {
+      expanded: [],
       filteritems: [],
+      commandDataList: [],
+      taskDataList: [],
+      commandList: commandList,
       pipelineFilterInput: "",
       pipelineFilter: null,
       perPage: 10,
+      commandperPage: 5,
       currentPage: 1,
+      commandcurrentPage: 1,
       total: 15,
       tempPipeline: tempPipeline,
       activationStatusList: [["전체",""], ["RUN","RUN"], ["STARTING","STARTING"], ["STOPPED","STOPPED"], ["STOPPING","STOPPING"]],
       pipelineListFilterList: [["전체","all"], ["파이프라인 이름","name"], ["적재Dataset","dataSet"]],
       searchValue: null,
       pipelineListData: pipelineListData,
+      history: [],
+      item: [],
     };
   },
   methods: {
+    getcommandList({item}) {
+      historyListService
+      .getHistorytCmd(item.id)
+      .then((res) => {
+        this.$store.state.commandDataList = res;
+        this.commandDataList = this.$store.state.commandDataList;
+      })
+      .catch((err) => err);
+    },
+    gettaskList(item) {
+      historyListService
+      .getHistorytask(item)
+      .then((res) => {
+        this.$store.state.taskDataList = res;
+        EventBus.$emit("show-task-list-popup");
+      })
+      .catch((err) => err);
+
+      
+    },
     // API 사용법
     resetPage(){
       this.currentPage = 1;
@@ -199,6 +310,10 @@ export default {
       else if(status == 'STARTING'){
         return '실행 중';
       }
+      else if(status == 'FAILED'){
+        return '실패';
+      }
+      
       else {
         return '';
       }
@@ -209,11 +324,31 @@ export default {
     lastPage() {
       this.currentPage = this.totalPage;
     },
+    commandfirstPage() {
+      this.commandcurrentPage = 1;
+    },
+    commandlastPage() {
+      this.commandcurrentPage = this.commandtotalPage;
+    },    
     tempPipelineShows() {
       let alertPayload = {
         contents: this.tempPipeline,
       };
       EventBus.$emit("show-temp-pipeline-popup", alertPayload);
+    },
+    failedPipeline(name, status, id) {
+      let alertPayload = {
+        title: "파이프라인 Status 실패",
+        text:
+          name +
+          " 파이프라인이 동작 실패하였습니다." +
+          "<br/> <b> " +
+          "관리자에게 문의 바랍니다.",
+        id: id,
+        url: "update",
+        body: status
+      };
+      EventBus.$emit("show-failed-confirm-popup", alertPayload);
     },
     pipelineStatusAlertShows(name, status, id) {
       let alertPayload = {
@@ -331,3 +466,57 @@ export default {
   },
 };
 </script>
+
+
+<style scoped>
+.paginationBox > .firstPageBtnBox button:disabled {
+    width: 32px;
+    height: 32px;
+    margin-top: 9%;
+    /* background-image: url(/img/keyboard_double_arrow_left_24dp.221c9647.svg); */
+    /* background-image: url(../../img/keyboard_double_arrow_left_24dp.svg); */
+    background-position: center;
+    opacity: .6;
+    pointer-events: none;
+}
+
+.paginationBox > .lastPageBtnBox button:disabled {
+    width: 32px;
+    height: 32px;
+    margin-top: 9%;
+    /* background-image: url(/img/keyboard_double_arrow_right_24dp.e2b0d809.svg); */
+    /* background-image: url(../../img/keyboard_double_arrow_right_24dp.svg); */
+    background-position: center;
+    opacity: .6;
+    pointer-events: none;
+}
+.paginationBox > .firstPageBtnBox button {
+  width: 32px;
+  height: 32px;
+  margin-top: 9%;
+  background-color: #ffffff;
+  /* background-image: url(../../img/keyboard_double_arrow_left_24dp.svg); */
+  background-position: center;
+}
+.paginationBox > .lastPageBtnBox button{
+  width: 32px;
+  height: 32px;
+  margin-top: 9%;
+  background-color: #ffffff;
+  /* background-image: url(../../img/keyboard_double_arrow_right_24dp.svg); */
+  background-position: center; 
+}
+.v-pagination__item {
+    background: transparent;
+    border-radius: 4px;
+    font-size: 1rem;
+    height: 34px !important;
+    margin: 0.3rem;
+    min-width: 34px;
+    padding: 0 5px;
+    text-decoration: none;
+    transition: .3s cubic-bezier(0,0,.2,1);
+    width: auto !important;
+    box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+}
+</style>

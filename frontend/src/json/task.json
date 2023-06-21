@@ -1,0 +1,69 @@
+{
+    "headers": [
+      { "text": "NO", "value": "id", "sortable": false },
+      { "text": "동작 id", "value": "commandid", "sortable": false },
+      { "text": "작업이름", "value": "command", "sortable": false },
+      { "text": "파라미터", "value": "parameter", "sortable": false },
+      { "text": "동작 상태","value": "status","sortable": false},
+      { "text": "동작 시작 시간", "value": "startedAt", "sortable": false },
+      { "text": "동작 종료 시간", "value": "modifiedAt", "sortable": false }
+      
+    ],
+    "data": [
+      {
+        "id": 1,
+        "commandid": "11",
+        "command": "DELETE",
+        "parameter": "SUCCEED",
+        "status": "admin",
+        "startedAt": "2022-09-15 05:54:48.185Z",
+        "modifiedAt": "2022-09-26 02:48:00.850Z"
+      },
+      {
+        "id": 2,
+        "commandid": "12",
+        "command": "UPDATE",
+        "parameter": "SUCCEED",
+        "status": "admin",
+        "startedAt": "2022-09-15 05:54:48.185Z",
+        "modifiedAt": "2022-09-26 02:48:00.850Z"
+      },
+      {
+        "id": 3,
+        "commandid": "13",
+        "command": "DELETE",
+        "parameter": "SUCCEED",
+        "status": "admin",
+        "startedAt": "2022-09-15 05:54:48.185Z",
+        "modifiedAt": "2022-09-26 02:48:00.850Z"
+      },
+      {
+        "id": 4,
+        "commandid": "14",
+        "command": "RUN",
+        "parameter": "SUCCEED",
+        "status": "admin",
+        "startedAt": "2022-09-15 05:54:48.185Z",
+        "modifiedAt": "2022-09-26 02:48:00.850Z"
+      },
+      {
+        "id": 5,
+        "commandid": "15",
+        "command": "DELETE",
+        "parameter": "SUCCEED",
+        "status": "admin",
+        "startedAt": "2022-09-15 05:54:48.185Z",
+        "modifiedAt": "2022-09-26 02:48:00.850Z"
+      },
+      {
+        "id": 6,
+        "commandid": "16",
+        "command": "STOP",
+        "parameter": "FAILED",
+        "status": "admin",
+        "startedAt": "2022-09-15 05:54:48.185Z",
+        "modifiedAt": "2022-09-26 02:48:00.850Z"
+      }
+    ]
+  }
+  

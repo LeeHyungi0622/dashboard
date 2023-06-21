@@ -1,31 +1,24 @@
 {
   "headers": [
-    { "text": "NO", "value": "idx", "sortable": false },
+    { "text": "NO", "value": "id", "sortable": false },
     { "text": "파이프라인 이름", "value": "name", "sortable": false },
     { "text": "적재 DataSet", "value": "dataSet", "sortable": false },
-    {
-      "text": "파이프라인 동작 상태",
-      "value": "status",
-      "sortable": false
-    },
+    { "text": "파이프라인 동작 상태","value": "status","sortable": false},
     { "text": "등록 일시", "value": "createdAt", "sortable": false },
     { "text": "수정 일시", "value": "modifiedAt", "sortable": false },
     { "text": "삭제", "value": "delete", "sortable": false },
-    {
-      "text": "파이프라인 상세/수정",
-      "value": "pipelineUpdate",
-      "sortable": false
-    }
+    { "text": "파이프라인 상세/수정","value": "pipelineUpdate","sortable": false},
+    { "text": "동작이력", "value": "data-table-expand" }
+    
   ],
   "data": [
     {
       "id": 1,
       "name": "ABCD",
-      "dataSet": null,
+      "dataSet": "DATASET1",
       "status": "Run",
       "createdAt": "2022-09-15 05:54:48.185Z",
-      "modifiedAt": "2022-09-26 02:48:00.850Z",
-      "delete": "삭제"
+      "modifiedAt": "2022-09-26 02:48:00.850Z"
     },
     {
       "id": 2,
@@ -33,35 +26,39 @@
       "dataSet": "parkingSensor",
       "status": "Starting",
       "createdAt": "2022-09-16 00:58:01.144Z",
-      "modifiedAt": "2022-09-26 06:59:05.895Z",
-      "delete": "삭제"
+      "modifiedAt": "2022-09-26 06:59:05.895Z"
     },
     {
-      "id": 4,
+      "id": 3,
       "name": "TEST4",
       "dataSet": "DATASET4",
       "status": "Stopped",
       "createdAt": "2022-09-16 00:46:56.769Z",
-      "modifiedAt": "2022-09-16 00:46:56.769Z",
-      "delete": "삭제"
+      "modifiedAt": "2022-09-16 00:46:56.769Z"
     },
     {
-      "id": 5,
+      "id": 4,
       "name": "TEST5",
       "dataSet": "DATASET5",
       "status": "Run",
       "createdAt": "2022-09-16 00:56:54.314Z",
-      "modifiedAt": "2022-09-20 06:01:04.578Z",
-      "delete": "삭제"
+      "modifiedAt": "2022-09-20 06:01:04.578Z"
     },
     {
-      "id": 6,
+      "id": 5,
       "name": "TEST6",
       "dataSet": "DATASET6",
       "status": "Run",
       "createdAt": "2022-09-16 00:58:01.144Z",
-      "modifiedAt": "2022-09-22 01:23:03.028Z",
-      "delete": "삭제"
+      "modifiedAt": "2022-09-22 01:23:03.028Z"
+    },
+    {
+      "id": 6,
+      "name": "dongjin",
+      "dataSet": "data_set",
+      "status": "Starting",
+      "createdAt": "2022-09-16 00:58:01.144Z",
+      "modifiedAt": "2022-09-26 06:59:05.895Z"
     },
     {
       "id": 7,
@@ -69,8 +66,47 @@
       "dataSet": "data_set",
       "status": "Starting",
       "createdAt": "2022-09-16 00:58:01.144Z",
-      "modifiedAt": "2022-09-26 06:59:05.895Z",
-      "delete": "삭제"
+      "modifiedAt": "2022-09-26 06:59:05.895Z"
+    },
+    {
+      "id": 8,
+      "name": "dongjin",
+      "dataSet": "data_set",
+      "status": "Starting",
+      "createdAt": "2022-09-16 00:58:01.144Z",
+      "modifiedAt": "2022-09-26 06:59:05.895Z"
+    },
+    {
+      "id": 9,
+      "name": "dongjin",
+      "dataSet": "data_set",
+      "status": "Starting",
+      "createdAt": "2022-09-16 00:58:01.144Z",
+      "modifiedAt": "2022-09-26 06:59:05.895Z"
+    },
+    {
+      "id": 10,
+      "name": "dongjin",
+      "dataSet": "data_set",
+      "status": "Starting",
+      "createdAt": "2022-09-16 00:58:01.144Z",
+      "modifiedAt": "2022-09-26 06:59:05.895Z"
+    },
+    {
+      "id": 11,
+      "name": "dongjin",
+      "dataSet": "data_set",
+      "status": "Starting",
+      "createdAt": "2022-09-16 00:58:01.144Z",
+      "modifiedAt": "2022-09-26 06:59:05.895Z"
+    },
+    {
+      "id": 12,
+      "name": "dongjin",
+      "dataSet": "data_set",
+      "status": "Starting",
+      "createdAt": "2022-09-16 00:58:01.144Z",
+      "modifiedAt": "2022-09-26 06:59:05.895Z"
     }
   ]
 }

@@ -52,9 +52,9 @@
     <v-data-table
       :headers="convertHeaders"
       :items="convProps"
+      :items-per-page="convProps.length + 1"
       class="pipelineUpdateConvertVFT"
       :hide-default-footer="true"
-      :items-per-page="convProps.length + 1"
       style="text-align: center"
       ><template v-slot:[`item.inputValue`]="{ item }">
 
@@ -375,6 +375,8 @@ export default {
             } else if (prop.detail == "GeoProperty"){
               if(prop.inputValue == null || prop.inputValue == ""){
                 inputValue = "";
+              } else if(!prop.inputValue.includes("'")){
+                inputValue = prop.inputValue;
               } else {
                 for (let geo of prop.inputValue.split("'")[1].split(".")) {
                   if (!geo.includes("$")) {
