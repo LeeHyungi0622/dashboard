@@ -122,63 +122,6 @@
             { "text": "동작 종료 시간", "value": "finishedAt", "sortable": false }
             
             ],
-        taskdatas: [
-            {
-                "id": 1,
-                "commandId": "11",
-                "taskName": "DELETE",
-                "parameter": "",
-                "status": "SUCCEED",
-                "startedAt": "2022-09-15 05:54:48.185Z",
-                "finishedAt": "2022-09-26 02:48:00.850Z"
-            },
-            {
-                "id": 2,
-                "commandId": "12",
-                "taskName": "UPDATE",
-                "parameter": "",
-                "status": "SUCCEED",
-                "startedAt": "2022-09-15 05:54:48.185Z",
-                "finishedAt": "2022-09-26 02:48:00.850Z"
-            },
-            {
-                "id": 3,
-                "commandId": "13",
-                "taskName": "DELETE",
-                "parameter": "",
-                "status": "SUCCEED",
-                "startedAt": "2022-09-15 05:54:48.185Z",
-                "finishedAt": "2022-09-26 02:48:00.850Z"
-            },
-            {
-                "id": 4,
-                "commandId": "14",
-                "taskName": "RUN",
-                "parameter": "",
-                "status": "SUCCEED",
-                "startedAt": "2022-09-15 05:54:48.185Z",
-                "finishedAt": "2022-09-26 02:48:00.850Z"
-            },
-            {
-                "id": 5,
-                "commandId": "15",
-                "taskName": "DELETE",
-                "parameter": "",
-                "status": "SUCCEED",
-                "startedAt": "2022-09-15 05:54:48.185Z",
-                "finishedAt": "2022-09-26 02:48:00.850Z"
-            },
-            {
-                "id": 6,
-                "commandId": "16",
-                "taskName": "STOP",
-                "parameter": "",
-                "status": "FAILED",
-                "startedAt": "2022-09-15 05:54:48.185Z",
-                "finishedAt": "2022-09-26 02:48:00.850Z"
-            }
-            ],
-        // taskdatas: [],
         pipelineListFilterList: [["전체",""], ["Task Name","name"]],
         vuetifyData: [],
         searchValue: "",

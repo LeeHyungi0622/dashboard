@@ -383,8 +383,6 @@ export default {
       EventBus.$emit("show-confirm-popup", alertPayload);
       
     },
-    historyPipelinecmd(){   
-    },
     goPipelineDetailEdit(item) {
       this.$store.state.completedPlId = item.id;
       this.$router.push({
