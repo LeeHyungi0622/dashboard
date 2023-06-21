@@ -93,16 +93,14 @@
         type: Object,
         default: () => {
           return {
-            title: null,
             data: null,
-            filterList: null,
           };
         },
         required: true,
       },
     },
     mounted() {
-      this.taskdatas = this.$store.state.taskDataList;
+      this.taskdatas = this.contents.data;
     },
     computed: {
       tasktotalPage() {
@@ -134,6 +132,7 @@
           x: require("../../assets/img/x.svg"),
           check: require("../../assets/img/check.svg"),
         },
+        taskdatas: []
       };
     },
     methods: {
@@ -145,7 +144,6 @@
         return imgSrc;
       },
       close() {
-        console.log('close');
         this.$emit("close-task-list-popup");
       },
       taskfirstPage() {

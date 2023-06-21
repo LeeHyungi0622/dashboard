@@ -497,6 +497,12 @@ select {
   line-height: 40px;
   border: 1px solid #DFDFDF;
 }
+.pipelineUpdateConvertVFT .value {
+  width: 60%;
+  height: 45px;
+  line-height: 40px;
+  border: 1px solid #DFDFDF;
+}
 .customTable select {
   width: 70%;
   height: 35px;
@@ -506,6 +512,7 @@ select {
   margin-top: 3px;
   border: 1px solid #DFDFDF;
 }
+
 .customTable > .disf > .value div{
   width: 100%;
   padding-left: 20px;
@@ -543,6 +550,13 @@ select {
   width: 70%;
   padding-left: 10px;
   height: 70%;
+  margin :12px;
+  border: 1px solid #dfdfdf;
+}
+.pipelineUpdateConvertVFT select {
+  width: 70%;
+  height: 70%;
+  padding-left: 10px;
   margin :12px;
   border: 1px solid #dfdfdf;
 }

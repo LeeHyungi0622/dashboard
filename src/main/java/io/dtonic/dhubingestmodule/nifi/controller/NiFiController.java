@@ -5,9 +5,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.dtonic.dhubingestmodule.common.code.MonitoringCode;
+import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
 import io.dtonic.dhubingestmodule.common.code.TaskStatusCode;
-import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode.ErrorCode;
-import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.Attribute;
@@ -20,18 +19,15 @@ import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.ConverterVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
-import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
-import io.dtonic.dhubingestmodule.pipeline.vo.CommandVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
-import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -183,12 +179,14 @@ public class NiFiController {
             // Convert NGSI LD
             NiFiComponentVO ngsiLdNiFi = setAttribute(convertor.getConverter());
             NiFiComponentVO ngsiLdFormater = convertNgsiLdData(
+                convertor.getConverter(),
                 convertor.getDataModel(),
                 convertor.getDataSet(),
                 id
             );
             NiFiComponentVO dateFormater = convertDateType(
                 convertor.getConverter(),
+                convertor.getFilter(),
                 convertor.getDataModel()
             );
             NiFiComponentVO convertType = convertValueType(convertor.getDataModel());
@@ -203,7 +201,6 @@ public class NiFiController {
             }
             result.setNifiComponents(resNifi);
             result.setName(convertor.getConverter().getName());
-
             return result;
         }
         catch(Exception e){
@@ -220,12 +217,15 @@ public class NiFiController {
         for (NiFiComponentVO nifi : convertor.getNifiComponents()) {
             if (nifi.getName().equals("DataSetProps")) {
                 for (PropertyVO prop : nifi.getRequiredProps()) {
-                    if (prop.getDetail() != "Date Format" || prop.getDetail() != "unitCode") {
-                        PropertyVO newProp = new PropertyVO();
-                        newProp.setName(prop.getName());
-                        String convertInput = prop.getInputValue().replace("\"", "");
-                        newProp.setInputValue("$." + convertInput);
-                        dataSetProps.add(newProp);
+                    if (prop.getDetail().equals("Property") || prop.getDetail().equals("Relationship")) {
+                        if(!prop.getType().contains("Array")){
+                            PropertyVO newProp = new PropertyVO();
+                            newProp.setName(prop.getName());
+                            newProp.setDetail(prop.getDetail());
+                            String convertInput = prop.getInputValue().replace("\"", "");
+                            newProp.setInputValue("$." + convertInput);
+                            dataSetProps.add(newProp);
+                        }
                     }
                 }
             }
@@ -275,37 +275,50 @@ public class NiFiController {
         return null;
     }
 
-    private NiFiComponentVO convertNgsiLdData(String dataModelId, String dataSetId, String id)
+    private NiFiComponentVO convertNgsiLdData(AdaptorVO adaptorVO, String dataModelId, String dataSetId, String id)
         throws JsonProcessingException {
         NiFiComponentVO ngsiLdFormmater = new NiFiComponentVO();
         ngsiLdFormmater.setName("NGSI-LD Fommater");
         ngsiLdFormmater.setType("processor");
         DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(dataModelId);
-        log.info("Data Model get Properties : [{}]", dataModelInfo);
+        log.debug("Data Model get Properties : [{}]", dataModelInfo);
         ConverterVO converterVO = new ConverterVO();
         List<Object> entities = new ArrayList<>();
         converterVO.setDatasetId(dataModelInfo.getDatasetId());
         Map<String, Object> entity = new HashMap<>();
         entity.put("id", id);
-        entity.put("type", dataModelId);
+        entity.put("type", dataModelInfo.getType());
         entity.put("@context", dataModelInfo.getContext());
+        List<String> geoPropNameList = new ArrayList<>();
+        List<String> arrayPropNameList = new ArrayList<>();
         for (Attribute e : dataModelInfo.getAttributes()) {
             Map<String, Object> subAttribute = new HashMap<>();
             subAttribute.put("type", e.getAttributeType());
             if (e.getAttributeType().equals("Property")) {
                 subAttribute.put("value", "${" + e.getName() + "}");
+                if(e.getValueType().contains("Array")){
+                    arrayPropNameList.add(e.getName());
+                }
             } else if (e.getAttributeType().equals("Relationship")) {
                 subAttribute.put("object", "${" + e.getName() + "}");
             } else if (e.getAttributeType().equals("GeoProperty")) {
-                Map<String, String> geoProp = new HashMap<>();
-                geoProp.put("type", "Point");
-                geoProp.put("coordinates", "${" + e.getName() + "}");
+                Map<String, Object> geoProp = new HashMap<>();
+                for (NiFiComponentVO niFiComponentVO : adaptorVO.getNifiComponents()) {
+                    if (niFiComponentVO.getName().equals("DataSetProps")) {
+                        for (PropertyVO propertyVO : niFiComponentVO.getRequiredProps()) {
+                            if (propertyVO.getDetail().equals("GeoType")) {
+                                geoProp.put("type", propertyVO.getInputValue());
+                                geoProp.put("coordinates", "${" + e.getName() + "}");
+                                geoPropNameList.add(e.getName());
+                            }
+                        }
+                    }
+                }
                 subAttribute.put("value", geoProp);
             }
             if (e.getHasObservedAt()) {
                 subAttribute.put("observedAt", "${observedAt}");
             }
-            //TODO
             if (e.getHasUnitCode()) {
                 subAttribute.put("unitCode", "${observedAt}");
             }
@@ -315,7 +328,12 @@ public class NiFiController {
         converterVO.setEntities(entities);
         converterVO.setDatasetId(dataSetId);
         String convertData = objectMapper.writeValueAsString(converterVO);
-        log.info("Convert Data = {}", convertData);
+        for (String geoPropName : geoPropNameList) {
+            convertData = convertData.replace("\"coordinates\":\"${" + geoPropName + "}\"", "\"coordinates\":${" + geoPropName + "}");
+        }
+        for (String arrayPropName : arrayPropNameList) {
+            convertData = convertData.replace("\"value\":\"${" + arrayPropName + "}\"", "\"value\":${" + arrayPropName + "}");
+        }
         List<PropertyVO> props = new ArrayList<>();
         PropertyVO ngsiProp = new PropertyVO();
         ngsiProp.setName("Replacement Value");
@@ -334,7 +352,7 @@ public class NiFiController {
 
         List<Object> jolt = new ArrayList<>();
         Map<String, Object> val = new HashMap<>();
-        val.put("operation", "modify-overwrite-beta");
+        val.put("operation", "modify-default-beta");
         Map<String, Object> spec = new HashMap<>();
         Map<String, Object> en = new HashMap<>();
         Map<String, Object> ae = new HashMap<>();
@@ -364,44 +382,85 @@ public class NiFiController {
         List<PropertyVO> joltList = new ArrayList<>();
         PropertyVO prop = new PropertyVO();
         prop.setName("jolt-spec");
-        log.info("Convert Data = {}", objectMapper.writeValueAsString(jolt));
         prop.setInputValue(objectMapper.writeValueAsString(jolt));
         joltList.add(prop);
         convertValueTypeProc.setRequiredProps(joltList);
         return convertValueTypeProc;
     }
 
-    private NiFiComponentVO convertDateType(AdaptorVO convertor, String dataModelId)
+    private NiFiComponentVO convertDateType(AdaptorVO convertor,AdaptorVO filter, String dataModelId)
         throws JsonProcessingException {
         DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(dataModelId);
-        List<PropertyVO> DateList = new ArrayList<>();
+        List<PropertyVO> DataList = new ArrayList<>();
         NiFiComponentVO convertDateTypeProc = new NiFiComponentVO();
         convertDateTypeProc.setName("ConvertDateType");
         convertDateTypeProc.setType("Processor");
         for (Attribute a : dataModelInfo.getAttributes()) {
+            if (a.getValueType().equals("GeoJson")){
+                for (NiFiComponentVO nifi : convertor.getNifiComponents()) {
+                    if (nifi.getName().equals("DataSetProps")) {
+                        for (PropertyVO prop : nifi.getRequiredProps()) {
+                            if (prop.getDetail().equals("GeoProperty") && prop.getName().equals(a.getName())) {
+                                PropertyVO newProp = new PropertyVO();
+                                newProp.setName(a.getName());
+                                newProp.setInputValue(
+                                    "${" +
+                                    "raw_data" +
+                                    ":jsonPath(\'$." + "${root_key}."+ // TEST 필요
+                                    prop.getInputValue().replaceAll("\"", "") +
+                                    "\')}"
+                                );
+                                DataList.add(newProp);
+                            }
+                        }
+                    }
+                }
+            }
+            if (a.getValueType().contains("Array")){
+                for (NiFiComponentVO nifi : convertor.getNifiComponents()) {
+                    if (nifi.getName().equals("DataSetProps")) {
+                        for (PropertyVO prop : nifi.getRequiredProps()) {
+                            if (prop.getDetail().equals("Property") && prop.getName().equals(a.getName())) {
+                                PropertyVO newProp = new PropertyVO();
+                                newProp.setName(a.getName());
+                                newProp.setInputValue(
+                                    "${" +
+                                    "raw_data" +
+                                    ":jsonPath(\'$." + "${root_key}."+
+                                    prop.getInputValue().replaceAll("\"", "") +
+                                    "\')}"
+                                );
+                                DataList.add(newProp);
+                            }
+                        }
+                    }
+                }
+            }
             if (a.getValueType().equals("Date")) {
                 for (NiFiComponentVO nifi : convertor.getNifiComponents()) {
                     if (nifi.getName().equals("DataSetProps")) {
                         for (PropertyVO prop : nifi.getRequiredProps()) {
-                            if (prop.getDetail().equals("Date Format")) {
-                                prop.setName(a.getName());
-                                prop.setInputValue(
+                            if (prop.getDetail().equals("Date Format") && prop.getName().equals(a.getName())) {
+                                PropertyVO newProp = new PropertyVO();
+                                newProp.setName(a.getName());
+                                newProp.setInputValue(
                                     "${" +
                                     a.getName() +
                                     ":toDate(\"" +
                                     prop.getInputValue() +
                                     "\", \"GMT\"):format(\"yyyy-MM-dd'T'HH:mm:ssXXX\", \"GMT\")}"
                                 );
-                                DateList.add(prop);
+                                DataList.add(newProp);
                             }
+                            
                         }
-                        convertDateTypeProc.setRequiredProps(DateList);
-                        return convertDateTypeProc;
+                        
                     }
                 }
             }
         }
-        return null;
+        convertDateTypeProc.setRequiredProps(DataList);
+        return convertDateTypeProc;
     }
 
     /**

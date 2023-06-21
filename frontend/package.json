@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot --host=localhost",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --mode local",
     "build-dev": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "watch": "rm -rf ../src/main/resources/static/ && webpack --config webpack.config.js --profile --colors --display-error-details --display-cached -w"

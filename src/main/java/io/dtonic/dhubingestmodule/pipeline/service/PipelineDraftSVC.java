@@ -89,8 +89,23 @@ public class PipelineDraftSVC {
                     propertyVO.setDetail("Date Format");
                     niFiComponentVO.getRequiredProps().add(propertyVO);
                 }
+                if (dataModelVO.getAttributes().get(i).getValueType().equals("GeoJson")) {
+                    PropertyVO propertyVO = new PropertyVO();
+                    propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                    propertyVO.setDetail("GeoType");
+                    ArrayList<String> geoType = new ArrayList<String>();
+                    geoType.add("Point");
+                    geoType.add("LineString");
+                    geoType.add("Polygon");
+                    geoType.add("MultiPoint");
+                    geoType.add("MultiLineString");
+                    geoType.add("MultiPolygon");
+                    propertyVO.setDefaultValue(geoType);
+                    niFiComponentVO.getRequiredProps().add(propertyVO);
+                }
                 PropertyVO propertyVO = new PropertyVO();
                 propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                propertyVO.setType(dataModelVO.getAttributes().get(i).getValueType());
                 propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
                 niFiComponentVO.getRequiredProps().add(propertyVO);
                 niFiComponentVO.setName("DataSetProps");

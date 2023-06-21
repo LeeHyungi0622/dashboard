@@ -2,11 +2,8 @@ package io.dtonic.dhubingestmodule.pipeline.service;
 
 import io.dtonic.dhubingestmodule.common.code.AdaptorName;
 import io.dtonic.dhubingestmodule.common.code.CommandStatusCode;
-import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
-import io.dtonic.dhubingestmodule.common.code.TaskStatusCode;
-import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
@@ -22,6 +19,8 @@ import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVOtoDB;
 import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
 
 import io.dtonic.dhubingestmodule.util.ValidateUtil;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -317,8 +316,23 @@ public class PipelineSVC {
                     propertyVO.setDetail("Date Format");
                     niFiComponentVO.getRequiredProps().add(propertyVO);
                 }
+                if (dataModelVO.getAttributes().get(i).getValueType().equals("GeoJson")) {
+                    PropertyVO propertyVO = new PropertyVO();
+                    propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                    propertyVO.setDetail("GeoType");
+                    ArrayList<String> geoType = new ArrayList<String>();
+                    geoType.add("Point");
+                    geoType.add("LineString");
+                    geoType.add("Polygon");
+                    geoType.add("MultiPoint");
+                    geoType.add("MultiLineString");
+                    geoType.add("MultiPolygon");
+                    propertyVO.setDefaultValue(geoType);
+                    niFiComponentVO.getRequiredProps().add(propertyVO);
+                }
                 PropertyVO propertyVO = new PropertyVO();
                 propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                propertyVO.setType(dataModelVO.getAttributes().get(i).getValueType());
                 propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
                 niFiComponentVO.getRequiredProps().add(propertyVO);
                 niFiComponentVO.setName("DataSetProps");

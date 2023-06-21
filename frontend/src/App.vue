@@ -85,6 +85,7 @@
     ></temp-pipeline-popup>
     <TaskListPopup
       v-if="tasklistShowFlag"
+      :contents="taskAlertContent"
       @close-task-list-popup="closeTaskListPopup"
     ></TaskListPopup>
     <FailedConfirmPopup
@@ -202,6 +203,9 @@ export default {
         url: "default",
         name: "default"
       },
+      taskAlertContent:{
+        data: [],
+      },
       userAlertContent: {
         title: "default",
         userContent: {
@@ -241,8 +245,8 @@ export default {
     EventBus.$on("show-temp-pipeline-popup", (payload) => {
       this.showTempPipelinePopup(payload);
     });
-    EventBus.$on("show-task-list-popup", () => {
-      this.showTaskListPopup();
+    EventBus.$on("show-task-list-popup", (payload) => {
+      this.showTaskListPopup(payload);
     });
     EventBus.$on("show-failed-confirm-popup", (payload) => {
       this.showFailedConfirmPopup(payload);
@@ -394,12 +398,12 @@ export default {
     closeTaskListPopup: function() {
       this.tasklistShowFlag = false;
     },
-    showTaskListPopup: function() {
+    showTaskListPopup: function(payload) {
       this.tasklistShowFlag = true;
+      this.taskAlertContent.data = payload;
     },
     showFailedConfirmPopup: function(payload) {
       this.failedconfirmShowFlag = true;
-      console.log(payload);
       this.confirmContent.title = payload.title;
       this.confirmContent.text = payload.text;
       this.confirmContent.url = payload.url;
