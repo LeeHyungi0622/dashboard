@@ -6,13 +6,25 @@ import vuetify from "@/plugins/vuetify.js";
 import css from "@/assets/css/common.css";
 import { store } from "./vuex/store";
 
-let ws = null;
-if(self.location.protocol == "http:") ws = new WebSocket("ws://"+self.location.hostname+ ":" + self.location.port+"/webpipeline");
-else ws = new WebSocket("wss://"+self.location.hostname+ ":" + self.location.port+"/webpipeline");
+const NODE_ENV = process.env.NODE_ENV;
+let servicePort = "";
+let serviceProtocol = "";
 
-Axios.defaults.baseURL = self.location.protocol + "//"+self.location.hostname + ":" + self.location.port;
-// Axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-// Axios.defaults.httpsAgent
+if (NODE_ENV === "development") {
+  servicePort = "8099";
+  serviceProtocol = "https";
+} else {
+  servicePort = self.location.port;
+  serviceProtocol = self.location.protocol;
+}
+
+let ws = null;
+if(serviceProtocol == "http:") ws = new WebSocket("ws://"+self.location.hostname+ ":" + servicePort+"/webpipeline");
+else ws = new WebSocket("wss://"+self.location.hostname+ ":" + servicePort+"/webpipeline");
+
+Axios.defaults.baseURL = serviceProtocol + "://"+self.location.hostname + ":" + servicePort;
+
+
 Axios.defaults.headers.common['Authorization'] = 'testCode' // 수정예정
 Axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'
 Axios.defaults.headers.timeout = 60000
