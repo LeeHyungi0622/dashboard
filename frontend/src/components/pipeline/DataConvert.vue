@@ -57,12 +57,28 @@
       :items-per-page="convProps.length + 1"
       style="text-align: center"
       ><template v-slot:[`item.inputValue`]="{ item }">
-        <input
-          v-if="$store.state.convertorTableUpdateFlag || $store.state.tableShowMode == 'REGISTER'"
+
+          <select
+          style="padding: 0px 20px 0px 20px;"
+          v-if="($store.state.convertorTableUpdateFlag || $store.state.tableShowMode == 'REGISTER') && item.defaultValue.length > 1"
           v-model="item.inputValue"
-          maxlength="300"
-        />
-        <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
+        >
+          <option
+            v-for="(el, key) in item.defaultValue"
+            :key="key"
+            :value="el"
+          >
+            {{ el }}
+          </option>
+        </select>
+          <input
+            v-else-if="$store.state.convertorTableUpdateFlag || $store.state.tableShowMode == 'REGISTER'"
+            v-model="item.inputValue"
+            maxlength="300"
+          />
+
+          <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
+
       </template>
     </v-data-table>
 
@@ -83,7 +99,24 @@
           v-model="item.inputValue"
           maxlength="300"
         />
-        <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
+        <div v-else>
+          <select
+          class="disf"
+          style="padding: 0px 20px 0px 20px;"
+          v-if="item.defaultValue.length > 1"
+          v-model="item.inputValue"
+        >
+          <option
+            v-for="(el, key) in item.defaultValue"
+            :key="key"
+            :value="el"
+          >
+            {{ el }}
+          </option>
+        </select>
+          <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
+        </div>
+        
       </template>
     </v-data-table>
     <div
@@ -180,7 +213,7 @@ export default {
       let isOkId = false;
       if(this.convProps.length != 0 && this.convId.length != 0){
         for(let prop of this.convProps){
-          if(prop.detail == "Date Format" || prop.detail == "unitCode"){
+          if(prop.detail != "Property" || prop.detail == "GeoType"){
             continue;
           }
           else{
@@ -252,7 +285,7 @@ export default {
           if(prop.inputValue == null) {
               return [false, prop];
             }
-          if(prop.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,prop];
+          else if(prop.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,prop];
         }
         for(let id of this.convId){
           if(id.name == "level1" && id.inputValue == null) {
@@ -336,16 +369,25 @@ export default {
             if(prop.detail == "Date Format"){
               if(prop.inputValue == null || prop.inputValue == ""){
                 inputValue = "";
-              } else if(this.$store.state.tableShowMode == `UPDATE`){
-                inputValue = prop.inputValue.split("\"")[1];
               } else{
                 inputValue = prop.inputValue;
               }
+            } else if (prop.detail == "GeoProperty"){
+              if(prop.inputValue == null || prop.inputValue == ""){
+                inputValue = "";
+              } else {
+                for (let geo of prop.inputValue.split("'")[1].split(".")) {
+                  if (!geo.includes("$")) {
+                    inputValue = "\"" + geo + "\".";
+                  }
+                }
+                inputValue = inputValue.substring(0, inputValue.length - 1);
               }
-              else{
-                inputValue = prop.inputValue;
-              }
-            const convertProp = {name : name, detail:prop.detail , inputValue: inputValue};
+            }
+            else{
+              inputValue = prop.inputValue;
+            }
+            const convertProp = {name : name, detail:prop.detail , inputValue: inputValue, defaultValue: prop.defaultValue, type: prop.type};
             convertProps.push(convertProp);
           }
         }

@@ -15,6 +15,8 @@ import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import io.dtonic.dhubingestmodule.util.ValidateUtil;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -255,8 +257,23 @@ public class PipelineSVC {
                     propertyVO.setDetail("Date Format");
                     niFiComponentVO.getRequiredProps().add(propertyVO);
                 }
+                if (dataModelVO.getAttributes().get(i).getValueType().equals("GeoJson")) {
+                    PropertyVO propertyVO = new PropertyVO();
+                    propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                    propertyVO.setDetail("GeoType");
+                    ArrayList<String> geoType = new ArrayList<String>();
+                    geoType.add("Point");
+                    geoType.add("LineString");
+                    geoType.add("Polygon");
+                    geoType.add("MultiPoint");
+                    geoType.add("MultiLineString");
+                    geoType.add("MultiPolygon");
+                    propertyVO.setDefaultValue(geoType);
+                    niFiComponentVO.getRequiredProps().add(propertyVO);
+                }
                 PropertyVO propertyVO = new PropertyVO();
                 propertyVO.setName(dataModelVO.getAttributes().get(i).getName());
+                propertyVO.setType(dataModelVO.getAttributes().get(i).getValueType());
                 propertyVO.setDetail(dataModelVO.getAttributes().get(i).getAttributeType());
                 niFiComponentVO.getRequiredProps().add(propertyVO);
                 niFiComponentVO.setName("DataSetProps");
