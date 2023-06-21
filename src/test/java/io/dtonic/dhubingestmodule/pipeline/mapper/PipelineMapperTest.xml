@@ -1,0 +1,46 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapperTest">
+    <insert id="createCommandtest" parameterType="io.dtonic.dhubingestmodule.pipeline.vo.CommandVO" useGeneratedKeys="true"  keyProperty="id" keyColumn="id">
+      INSERT INTO command_history 
+      ( id,
+        pipeline_id,
+        command,
+        status, 
+        user_id, 
+        started_at
+        )
+      VALUES 
+      ( nextval('command_history_id_seq'),
+        #{commandVO.pipelineId},
+        #{commandVO.command},
+        #{commandVO.status},
+        #{commandVO.userId},
+        now())
+    </insert>
+    <insert id="createPipelinetest" parameterType="io.dtonic.dhubingestmodule.pipeline.vo.PipelineVOtoDB" useGeneratedKeys="true"  keyProperty="id" keyColumn="id">
+      INSERT INTO pipeline 
+      ( id,
+        name,
+        detail, 
+        status, 
+        data_set,
+        data_model,
+        collector, 
+        filter, 
+        converter, 
+        created_at, 
+        modified_at)
+      VALUES 
+      ( nextval('pipeline_id_seq'),
+        #{pipelineVO.name},
+        #{pipelineVO.detail},
+        #{pipelineVO.status},
+        #{pipelineVO.dataSet},
+        #{pipelineVO.dataModel},
+        #{pipelineVO.collector},
+        #{pipelineVO.filter},
+        #{pipelineVO.converter},
+        now(),
+        now())
+    </insert>
+</mapper>

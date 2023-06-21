@@ -6,6 +6,8 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
   state() {
     return {
+      commandList: [],
+      taskDataList: [],
       pipelineList: [],
       tempPipelineList: [],
       registerPipeline: {
