@@ -284,7 +284,7 @@ export default {
       .getHistorytask(item)
       .then((res) => {
         this.$store.state.taskDataList = res;
-        EventBus.$emit("show-task-list-popup");
+        EventBus.$emit("show-task-list-popup", res);
       })
       .catch((err) => err);
 
