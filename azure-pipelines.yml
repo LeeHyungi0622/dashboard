@@ -34,7 +34,6 @@ stages:
       - task: CopyFiles@2
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/docker'
-          Contents: '**.jar'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/pipeline'
       - task: PublishBuildArtifacts@1
         inputs:
