@@ -28,13 +28,14 @@ stages:
         displayName: 'IngestManager Packaging'
       - task: CopyFiles@2
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/target'
-          Contents: '**.jar'
+          SourceFolder: '$(Build.SourcesDirectory)/docker'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/pipeline'
       - task: CopyFiles@2
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/docker'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/pipeline'
+          SourceFolder: '$(Build.SourcesDirectory)/target'
+          Contents: '**.jar'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/pipeline/develop'
+      
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
