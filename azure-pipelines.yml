@@ -59,7 +59,7 @@ stages:
             steps:
               - task: CmdLine@2
                 inputs:
-                  script: 'mv ./ingestManager/pipeline /pipeline'
+                  script: 'cp ./ingestManager/pipeline /pipeline'
                   workingDirectory: '$(Agent.BuildDirectory)'
               - task: CmdLine@2
                 inputs:
