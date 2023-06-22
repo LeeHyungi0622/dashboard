@@ -30,7 +30,12 @@ stages:
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/target'
           Contents: '**.jar'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/jars'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/pipeline'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/docker'
+          Contents: '**.jar'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/pipeline'
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -55,7 +60,7 @@ stages:
             steps:
               - task: CmdLine@2
                 inputs:
-                  script: 'mv ./ingestManager/jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar /jars/d-hub-ingest-module-0.0.1-SNAPSHOT.jar'
+                  script: 'mv ./ingestManager/pipeline /pipeline'
                   workingDirectory: '$(Agent.BuildDirectory)'
               - task: CmdLine@2
                 inputs:
