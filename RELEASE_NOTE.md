@@ -17,6 +17,20 @@
 - 관련 설정 메뉴얼은 [GeoJson, Array Type Ingest Manual](/IngestManager/Manual/GeoJson,-Array-Type-Ingest-Manual) 참조
 
 *Contributer : Justin* 
+
+### [Feature] NiFi HTTP 지원
+- 기존 Ingest Manager에서 NiFi를 사용할 때, SSL이 적용된 HTTPS만을 지원하고 있었음.
+- NiFi의 SSL을 적용하지 않는 HTTP 통신을 지원할 수 있도록 추가 개발
+- Application.yml의 nifi.url의 String을 읽어 http protocal이면, 토큰 발급/검증/요청 로직을 거치지 않음.
+```
+nifi:
+    url: http://localhost:8008
+    user: (아무거나) -> http일 경우 사용하지 않음.
+    password: (아무거나) -> http일 경우 사용하지 않음.
+```
+
+*Contributer : Justin* 
+
 ### [Fix] Protocal 변경 시, UI URL 종속성 해결
 - 기존 Ingest Manager 설치 시, 백엔드의 SSL 설정 여부에 따라 Front UI의 URL을 수동으로 바꿔주고 다시 빌드 후 배포하는 비효율적인 배포 방법을 개선.
 - 백엔드의 Protocal을 자동으로 인식하여 Front URL을 설정할 수 있도록 종속성 추가
