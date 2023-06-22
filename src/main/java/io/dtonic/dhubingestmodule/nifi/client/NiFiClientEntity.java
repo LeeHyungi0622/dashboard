@@ -49,13 +49,17 @@ public class NiFiClientEntity {
         nifiSwaggerApiClient.setVerifyingSsl(false);
         nifiSwaggerAccessApi.setApiClient(nifiSwaggerApiClient);
         // token Setting
-        OAuth auth = (OAuth) nifiSwaggerApiClient.getAuthentication("auth");
-        accessToken =
-            nifiSwaggerAccessApi.createAccessToken(
-                properties.getNifiUser(),
-                properties.getNifiPassword()
-            );
-        auth.setAccessToken(accessToken);
+        if(properties.getNifiUrl().contains("https://")){
+            OAuth auth = (OAuth) nifiSwaggerApiClient.getAuthentication("auth");
+            accessToken =
+                nifiSwaggerAccessApi.createAccessToken(
+                    properties.getNifiUser(),
+                    properties.getNifiPassword()
+                );
+            auth.setAccessToken(accessToken);
+        } else {
+            accessToken = null;
+        }
     }
 
     /**
@@ -64,7 +68,7 @@ public class NiFiClientEntity {
      * @param access token
      * @return expired time
      */
-    public Date getExpiredTimeFromToken(String token) {
+    private Date getExpiredTimeFromToken(String token) {
         String[] splitToken = token.split("\\.");
         String unsignedToken = splitToken[0] + "." + splitToken[1] + ".";
 
@@ -82,22 +86,26 @@ public class NiFiClientEntity {
      */
     @Scheduled(cron = "0 */5 * * * *")
     public void manageToken() {
-        Date tokenTime = getExpiredTimeFromToken(this.accessToken);
-        Calendar systemCal = Calendar.getInstance();
-        systemCal.setTime(new Date(System.currentTimeMillis()));
-        systemCal.add(Calendar.HOUR, 2);
-        if (tokenTime.compareTo(systemCal.getTime()) < 0) {
-            log.info("NiFi Access Token is Expired");
-            OAuth auth = (OAuth) nifiSwaggerApiClient.getAuthentication("auth");
-            this.accessToken =
-                nifiSwaggerAccessApi.createAccessToken(
-                    properties.getNifiUser(),
-                    properties.getNifiPassword()
-                );
-            auth.setAccessToken(accessToken);
-            log.info("NiFi Access Token is Refreshed : AccessToken = {}", accessToken);
+        if (properties.getNifiUrl().contains("https://")) {
+            Date tokenTime = getExpiredTimeFromToken(this.accessToken);
+            Calendar systemCal = Calendar.getInstance();
+            systemCal.setTime(new Date(System.currentTimeMillis()));
+            systemCal.add(Calendar.HOUR, 2);
+            if (tokenTime.compareTo(systemCal.getTime()) < 0) {
+                log.info("NiFi Access Token is Expired");
+                OAuth auth = (OAuth) nifiSwaggerApiClient.getAuthentication("auth");
+                this.accessToken =
+                    nifiSwaggerAccessApi.createAccessToken(
+                        properties.getNifiUser(),
+                        properties.getNifiPassword()
+                    );
+                auth.setAccessToken(accessToken);
+                log.info("NiFi Access Token is Refreshed : AccessToken = {}", accessToken);
+            } else {
+                log.debug("NiFi Access Token is Allowed");
+            }
         } else {
-            log.debug("NiFi Access Token is Allowed");
+            this.accessToken = null;
         }
     }
 }
