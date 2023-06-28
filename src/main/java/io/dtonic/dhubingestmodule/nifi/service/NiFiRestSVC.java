@@ -92,7 +92,7 @@ public class NiFiRestSVC {
      * @param accessToken set up nifi access token
      * @return ProcessGroup ID created Adaptor
      */
-    public String createDummyTemplate(String rootProcessorGroupId, String templateId) {
+    public String createDummyTemplate(String templateName, String rootProcessorGroupId, String templateId) {
         try {
             List<String> paths = new ArrayList<String>();
             Map<String, String> headers = new HashMap<String, String>();
@@ -101,7 +101,10 @@ public class NiFiRestSVC {
             InstantiateTemplateRequestEntity body = new InstantiateTemplateRequestEntity();
             body.setTemplateId(templateId);
             body.setDisconnectedNodeAcknowledged(false);
-            body.setOriginX(0.0D);
+            if (templateName.equals("collector")) body.setOriginX(0.0D);
+            else if (templateName.equals("filter")) body.setOriginX(740.0D);
+            else if (templateName.equals("converter")) body.setOriginX(1480.0D);
+            else body.setOriginX(0.0D);
             body.setOriginY(0.0D);
             paths.add("process-groups");
             paths.add(rootProcessorGroupId);
@@ -160,8 +163,8 @@ public class NiFiRestSVC {
         component.setAllowRemoteAccess(false);
 
         PositionDTO position = new PositionDTO();
-        position.setX(0.0);
-        position.setY(0.0);
+        position.setX(2220.0);
+        position.setY(72.0);
         component.setPosition(position);
 
         RevisionDTO revision = new RevisionDTO();
