@@ -83,7 +83,88 @@ CREATE TABLE IF NOT EXISTS ingest_manager.temp_pipeline (
     modified_at timestamp WITH time zone,
     CONSTRAINT temp_pipeline_pkey PRIMARY KEY (id)
 );
+-- Command Task Table 개발 23.03.16 -- 
 
+-- SEQUENCE: ingest_manager.command_history_id_seq
+
+-- DROP SEQUENCE IF EXISTS ingest_manager.command_history_id_seq;
+
+CREATE SEQUENCE IF NOT EXISTS ingest_manager.command_history_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE ingest_manager.command_history_id_seq
+    OWNER TO postgres;
+
+-- DROP TABLE IF EXISTS ingest_manager.command_history;
+CREATE TABLE IF NOT EXISTS ingest_manager.command_history
+(
+    id integer NOT NULL DEFAULT nextval('ingest_manager.command_history_id_seq'::regclass),
+    pipeline_id integer NOT NULL,
+    command text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default",
+    user_id text COLLATE pg_catalog."default",
+    started_at timestamp with time zone NOT NULL,
+    finished_at timestamp with time zone,
+    CONSTRAINT command_history_pkey PRIMARY KEY (id),
+    CONSTRAINT command_history_fkey FOREIGN KEY (pipeline_id)
+        REFERENCES ingest_manager.pipeline (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+-- Index: fki_command_history_fkey
+
+-- DROP INDEX IF EXISTS ingest_manager.fki_command_history_fkey;
+
+-- SEQUENCE: ingest_manager.task_history_id_seq
+
+-- DROP SEQUENCE IF EXISTS ingest_manager.task_history_id_seq;
+
+CREATE SEQUENCE IF NOT EXISTS ingest_manager.task_history_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE ingest_manager.task_history_id_seq
+    OWNER TO postgres;
+
+CREATE INDEX IF NOT EXISTS fki_command_history_fkey
+    ON ingest_manager.command_history USING btree
+    (pipeline_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+
+-- Table: ingest_manager.task_history
+-- DROP TABLE IF EXISTS ingest_manager.task_history;
+CREATE TABLE IF NOT EXISTS ingest_manager.task_history
+(
+    id integer NOT NULL DEFAULT nextval('ingest_manager.task_history_id_seq'::regclass),
+    command_id integer NOT NULL,
+    task_name text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default",
+    started_at timestamp with time zone NOT NULL,
+    finished_at timestamp with time zone,
+    CONSTRAINT task_history_pkey PRIMARY KEY (id),
+    CONSTRAINT task_history_fkey FOREIGN KEY (command_id)
+        REFERENCES ingest_manager.command_history (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
 -- 220926 nifi_type 컬럼 제거
 -- REST Server colloector 구간
 INSERT INTO ingest_manager.adaptor (adaptor_type, adaptor_name, nifi_name, nifi_type) values ('collector', 'REST Server', 'REST Server', 'Processor');
