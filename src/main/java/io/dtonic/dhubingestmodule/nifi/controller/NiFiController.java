@@ -222,8 +222,17 @@ public class NiFiController {
                             PropertyVO newProp = new PropertyVO();
                             newProp.setName(prop.getName());
                             newProp.setDetail(prop.getDetail());
-                            String convertInput = prop.getInputValue().replace("\"", "");
-                            newProp.setInputValue("$." + convertInput);
+                            StringBuffer input = new StringBuffer();
+                            String removeString = prop.getInputValue().replaceAll("\"", "");
+                            for (String p : removeString.split("[.]")){
+                                if (p.contains(" ")){
+                                    input.append("['").append(p).append("']").append(".");
+                                } else {
+                                    input.append(p).append(".");
+                                }
+                            }
+                            input.deleteCharAt(input.length() - 1);
+                            newProp.setInputValue("$." + input.toString());
                             dataSetProps.add(newProp);
                         }
                     }
@@ -244,27 +253,16 @@ public class NiFiController {
                 } else {
                     for (int i = 0; i < nifi.getRequiredProps().size(); i++) {
                         if (nifi.getRequiredProps().get(i).getInputValue() != null) {
-                            if (i < nifi.getRequiredProps().size() - 1) {
-                                id =
-                                    id +
-                                    ":${" +
-                                    nifi
-                                        .getRequiredProps()
-                                        .get(i)
-                                        .getInputValue()
-                                        .replace("\"", "") +
-                                    "}";
-                            } else {
-                                id =
-                                    id +
-                                    ":${" +
-                                    nifi
-                                        .getRequiredProps()
-                                        .get(i)
-                                        .getInputValue()
-                                        .replace("\"", "") +
-                                    "}";
-                            }
+                            id =
+                                id +
+                                ":${" +
+                                nifi
+                                    .getRequiredProps()
+                                    .get(i)
+                                    .getInputValue()
+                                    .replace("\"", "") +
+                                "}";
+                            
                         }
                     }
                     log.info("Create ID Gen : [{}]", id);
@@ -402,12 +400,21 @@ public class NiFiController {
                         for (PropertyVO prop : nifi.getRequiredProps()) {
                             if (prop.getDetail().equals("GeoProperty") && prop.getName().equals(a.getName())) {
                                 PropertyVO newProp = new PropertyVO();
+                                StringBuffer input = new StringBuffer();
+                                for (String p : prop.getInputValue().replaceAll("\"", "").split("[.]")){
+                                    if (p.contains(" ")){
+                                        input.append("['").append(p).append("']").append(".");
+                                    } else {
+                                        input.append(p).append(".");
+                                    }
+                                }
+                                input.deleteCharAt(input.length() - 1);
                                 newProp.setName(a.getName());
                                 newProp.setInputValue(
                                     "${" +
                                     "raw_data" +
                                     ":jsonPath(\'$." + "${root_key}."+ // TEST 필요
-                                    prop.getInputValue().replaceAll("\"", "") +
+                                    input.toString() +
                                     "\')}"
                                 );
                                 DataList.add(newProp);
@@ -423,11 +430,20 @@ public class NiFiController {
                             if (prop.getDetail().equals("Property") && prop.getName().equals(a.getName())) {
                                 PropertyVO newProp = new PropertyVO();
                                 newProp.setName(a.getName());
+                                StringBuffer input = new StringBuffer();
+                                for (String p : prop.getInputValue().replaceAll("\"", "").split("[.]")){
+                                    if (p.contains(" ")){
+                                        input.append("['").append(p).append("']").append(".");
+                                    } else {
+                                        input.append(p).append(".");
+                                    }
+                                }
+                                input.deleteCharAt(input.length() - 1);
                                 newProp.setInputValue(
                                     "${" +
                                     "raw_data" +
                                     ":jsonPath(\'$." + "${root_key}."+
-                                    prop.getInputValue().replaceAll("\"", "") +
+                                    input.toString() +
                                     "\')}"
                                 );
                                 DataList.add(newProp);
@@ -472,7 +488,7 @@ public class NiFiController {
     private String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) throws Exception{
         String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getName());
         // Create Dummy Template
-        String adaptorId = niFiRestSVC.createDummyTemplate(rootProcessorGroupId, templateId);
+        String adaptorId = niFiRestSVC.createDummyTemplate(adaptorVO.getName(), rootProcessorGroupId, templateId);
         // Update Adaptor
         updateAdaptor(adaptorId, adaptorVO.getNifiComponents());
         return adaptorId;

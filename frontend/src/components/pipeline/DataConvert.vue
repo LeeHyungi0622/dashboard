@@ -220,7 +220,7 @@ export default {
             if(prop.inputValue == null) {
               return [false, prop];
             }
-            else if(!prop.inputValue.includes("\"") || prop.inputValue.includes(" ") || prop.inputValue.includes("\"\"")){
+            else if(!prop.inputValue.includes("\"") || prop.inputValue == " " || prop.inputValue.includes("\"\"")){
               return [false, prop];
             }
             else{
@@ -250,7 +250,7 @@ export default {
             if(id.inputValue == null) {
               return [false, id];
             }
-            if(!id.inputValue.includes("\"") || id.inputValue.includes(" ") || id.inputValue.includes("\"\"")){
+            if(!id.inputValue.includes("\"") || id.inputValue == " " || id.inputValue.includes("\"\"")){
               return [false, id];
             }
             else{

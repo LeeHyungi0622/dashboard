@@ -319,8 +319,17 @@ public class NiFiSwaggerSVC {
                 if (property.getInputValue().equals("origin")) {
                     processorProperties.put(property.getName(), " ");
                 } else if (property.getInputValue() != null) {
+                    StringBuffer input = new StringBuffer();
                     String convertStr = property.getInputValue().replace("\"", "");
-                    processorProperties.put(property.getName(), convertStr);
+                    for (String p : convertStr.split("[.]")){
+                        if (p.contains(" ")){
+                            input.append("['").append(p).append("']").append(".");
+                        } else {
+                            input.append(p).append(".");
+                        }
+                    }
+                    input.deleteCharAt(input.length() - 1);
+                    processorProperties.put(property.getName(), input.toString());
                 }
             } else if (processorProperties.get(property.getName()) == null) {
                 processorProperties.put(property.getName(), property.getInputValue());

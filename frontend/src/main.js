@@ -14,13 +14,19 @@ servicePort = self.location.port;
 serviceProtocol = self.location.protocol;
 if (NODE_ENV === "development") {
   servicePort = "8099";
-  serviceProtocol = "https";
+  serviceProtocol = "http://";
 } 
 let ws = null;
-if(serviceProtocol == "http:") ws = new WebSocket("ws://"+self.location.hostname+ ":" + servicePort+"/webpipeline");
-else ws = new WebSocket("wss://"+self.location.hostname+ ":" + servicePort+"/webpipeline");
+if(self.location.protocol.includes("https")) {
+  ws = new WebSocket("wss://"+self.location.hostname+ ":" + servicePort+"/webpipeline");
+  serviceProtocol = "https://";
+}
+else {
+  ws = new WebSocket("ws://"+self.location.hostname+ ":" + servicePort+"/webpipeline");
+  serviceProtocol = "http://";
+}
 
-Axios.defaults.baseURL = serviceProtocol + "//"+self.location.hostname + ":" + servicePort;
+Axios.defaults.baseURL = serviceProtocol + self.location.hostname + ":" + servicePort;
 
 
 Axios.defaults.headers.common['Authorization'] = 'testCode' // 수정예정
