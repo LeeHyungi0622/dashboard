@@ -1,4 +1,17 @@
-# Version 1.1
+# Version 1.1.1 - 2023. 06. 28
+### [Feature] 원천 데이터 변환 규칙, 데이터 정제 Root Key 공백 입력 지원
+- 기존 원천 데이터 변환 시 공백 입력을 지원하지 않아 공공데이터포털 등 타 API 서비스에서 key값에 공백이 포함되어 있는 경우 NiFi UI에 직접 접근하여 공백을 처리 할 수 있도록 수정했던 번거로움 개선
+- 공백이 포함된 경우 UI에 `"원천 데이터"."속성"` 으로 입력하면, NiFi에서는 `$.['원천 데이터'].속성` 으로 변경하여 처리하는 로직 개발
+
+ *Contributer : Justin* 
+### [Feature] 파이프라인 생성 시, NiFI UX 개선
+- 기존 UX는 Ingest Manager를 통해 생성한 파이프라인을 NiFi에서 확인할 경우 프로세서 그룹이 중첩되어 표시
+- UX를 개선하여 Collector - Filter - Convertor - output port 순으로 정렬 하여 생성.
+- 정렬 단위는 `PositionX - 740 * 정렬 순` 으로 설정
+
+*Contributer : Justin* 
+---
+# Version 1.1.0 - 2023. 06. 22
 ### [Feature] NiFi Redirect Button 추가
 - 설치된 Ingest Manager와 연동되어 있는 NiFi UI에 접근할 수 있는 기능 개발
 - 해당 버튼은 파이프라인 목록 우측 상단에 구현
