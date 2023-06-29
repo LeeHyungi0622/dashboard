@@ -225,7 +225,7 @@ public class NiFiController {
                             StringBuffer input = new StringBuffer();
                             String removeString = prop.getInputValue().replaceAll("\"", "");
                             for (String p : removeString.split("[.]")){
-                                if (p.contains(" ")){
+                                if (p.contains(" ") || p.contains("(")){
                                     input.append("['").append(p).append("']").append(".");
                                 } else {
                                     input.append(p).append(".");
@@ -402,7 +402,7 @@ public class NiFiController {
                                 PropertyVO newProp = new PropertyVO();
                                 StringBuffer input = new StringBuffer();
                                 for (String p : prop.getInputValue().replaceAll("\"", "").split("[.]")){
-                                    if (p.contains(" ")){
+                                    if (p.contains(" ") || p.contains("(")){
                                         input.append("['").append(p).append("']").append(".");
                                     } else {
                                         input.append(p).append(".");
@@ -432,7 +432,7 @@ public class NiFiController {
                                 newProp.setName(a.getName());
                                 StringBuffer input = new StringBuffer();
                                 for (String p : prop.getInputValue().replaceAll("\"", "").split("[.]")){
-                                    if (p.contains(" ")){
+                                    if (p.contains(" ") || p.contains("(")){
                                         input.append("['").append(p).append("']").append(".");
                                     } else {
                                         input.append(p).append(".");
