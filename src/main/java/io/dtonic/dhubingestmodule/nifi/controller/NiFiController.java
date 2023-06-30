@@ -288,15 +288,15 @@ public class NiFiController {
         entity.put("type", dataModelInfo.getType());
         entity.put("@context", dataModelInfo.getContext());
         List<String> geoPropNameList = new ArrayList<>();
-        List<String> arrayPropNameList = new ArrayList<>();
+        List<String> numberPropNameList = new ArrayList<>();
         for (Attribute e : dataModelInfo.getAttributes()) {
             Map<String, Object> subAttribute = new HashMap<>();
             subAttribute.put("type", e.getAttributeType());
             if (e.getAttributeType().equals("Property")) {
                 subAttribute.put("value", "${" + e.getName() + "}");
-                if(e.getValueType().contains("Array")){
-                    arrayPropNameList.add(e.getName());
-                }
+                if(!e.getValueType().equals("Date") && !e.getValueType().equals("String")){
+                    numberPropNameList.add(e.getName());
+                } 
             } else if (e.getAttributeType().equals("Relationship")) {
                 subAttribute.put("object", "${" + e.getName() + "}");
             } else if (e.getAttributeType().equals("GeoProperty")) {
@@ -329,8 +329,8 @@ public class NiFiController {
         for (String geoPropName : geoPropNameList) {
             convertData = convertData.replace("\"coordinates\":\"${" + geoPropName + "}\"", "\"coordinates\":${" + geoPropName + "}");
         }
-        for (String arrayPropName : arrayPropNameList) {
-            convertData = convertData.replace("\"value\":\"${" + arrayPropName + "}\"", "\"value\":${" + arrayPropName + "}");
+        for (String numPropName : numberPropNameList) {
+            convertData = convertData.replace("\"value\":\"${" + numPropName + "}\"", "\"value\":${" + numPropName + "}");
         }
         List<PropertyVO> props = new ArrayList<>();
         PropertyVO ngsiProp = new PropertyVO();
