@@ -104,59 +104,64 @@ public class PipelineSVC {
     @Scheduled(fixedDelay = 3000, initialDelay = 3000)
     public ResponseEntity getPipelineList() {
         List<PipelineListResponseVO> pipelineListVOs = pipelineMapper.getPipelineList();
-        pipelineListVOs
-            .parallelStream()
-            .forEach(
-                pipelineVO -> {
-                    PipelineVO pipeline = (PipelineVO) getPipelineVOById(pipelineVO.getId())
-                        .getBody();
-                    Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
-                        pipeline.getProcessorGroupId()
-                    );
-                    if (!ValidateUtil.isMapEmpty(nifiStatus)) {
-                        String curStatus = pipelineVO.getStatus(); // 현재 DB status값
-                        if ( //case: DB=Run, Nifi=stopped or invalid (error발생)
-                            curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) &&
-                            nifiStatus.get("Stopped") != 0 ||
-                            nifiStatus.get("Invaild") != 0
-                        ) {
-                            if ( //case: DB=Starting, Nifi=Running
-                                curStatus.equals(
-                                    PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()
-                                ) &&
-                                nifiStatus.get(NifiStatusCode.NIFI_STATUS_STOPPED.getCode()) == 0 &&
-                                nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0
-                            ) {
-                                log.debug("{}", PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
-                                pipeline.setStatus(
-                                    PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()
-                                );
-                            } else if ( //case: DB=Stopping, Nifi=Stopped
-                                curStatus.equals(
-                                    PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()
-                                ) &&
-                                nifiStatus.get(NifiStatusCode.NIFI_STATUS_RUNNING.getCode()) == 0 &&
-                                nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0
-                            ) {
-                                pipeline.setStatus(
-                                    PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()
-                                );
-                            } else if ( //case: DB=Run, Nifi=Running
-                                curStatus.equals(
-                                    PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()
-                                ) &&
+        if(pipelineListVOs.size() > 0){
+            pipelineListVOs
+                .parallelStream()
+                .forEach(
+                    pipelineVO -> {
+                        PipelineVO pipeline = (PipelineVO) getPipelineVOById(pipelineVO.getId())
+                            .getBody();
+                        Map<String, Integer> nifiStatus = niFiController.getPipelineStatus(
+                            pipeline.getProcessorGroupId()
+                        );
+                        if (!ValidateUtil.isMapEmpty(nifiStatus)) {
+                            String curStatus = pipelineVO.getStatus(); // 현재 DB status값
+                            if ( //case: DB=Run, Nifi=stopped or invalid (error발생)
+                                curStatus.equals(PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()) &&
                                 nifiStatus.get("Stopped") != 0 ||
                                 nifiStatus.get("Invaild") != 0
                             ) {
-                                pipeline.setStatus(
-                                    PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()
-                                );
+                                if ( //case: DB=Starting, Nifi=Running
+                                    curStatus.equals(
+                                        PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode()
+                                    ) &&
+                                    nifiStatus.get(NifiStatusCode.NIFI_STATUS_STOPPED.getCode()) == 0 &&
+                                    nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0
+                                ) {
+                                    log.debug("{}", PipelineStatusCode.PIPELINE_STATUS_RUN.getCode());
+                                    pipeline.setStatus(
+                                        PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()
+                                    );
+                                } else if ( //case: DB=Stopping, Nifi=Stopped
+                                    curStatus.equals(
+                                        PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode()
+                                    ) &&
+                                    nifiStatus.get(NifiStatusCode.NIFI_STATUS_RUNNING.getCode()) == 0 &&
+                                    nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0
+                                ) {
+                                    pipeline.setStatus(
+                                        PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()
+                                    );
+                                } else if ( //case: DB=Run, Nifi=Running
+                                    curStatus.equals(
+                                        PipelineStatusCode.PIPELINE_STATUS_RUN.getCode()
+                                    ) &&
+                                    nifiStatus.get("Stopped") != 0 ||
+                                    nifiStatus.get("Invaild") != 0
+                                ) {
+                                    pipeline.setStatus(
+                                        PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode()
+                                    );
+                                }
                             }
                         }
                     }
-                }
-            );
-        return ResponseEntity.ok().body(pipelineListVOs);
+                );
+                return ResponseEntity.ok().body(pipelineListVOs);
+        } else {
+            log.debug("Empty Pipeline", pipelineListVOs);
+            return null;
+        }
     }
 
     public ResponseEntity getPipelineStatus_websocket(){

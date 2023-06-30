@@ -247,10 +247,10 @@ public class NiFiSwaggerSVC {
                 "Search Process Group In Ingest Manager : processGroupId = [{}]",
                 processGroup.getId()
             );
-
+            if (processGroup.getComponent().getName().equals("Ingest Manager"))
             return processGroup.getComponent().getName();
         }
-        log.info("Empty process Group In Ingest Manager");
+        log.info("Not Exist Ingest Manager process Group In NiFi");
         return null;
     }
 
@@ -263,7 +263,7 @@ public class NiFiSwaggerSVC {
      */
     public String clearQueuesInConnectionToFunnel(String sourceProcessorGroupID) {
         ConnectionsEntity connections = searchConnectionsInProcessorGroup(
-            searchProcessGroupInProcessGroup("root")
+            searchProcessGroupInProcessGroup("root", "Ingest Manager")
         );
         if (connections.getConnections().size() == 0) {
             log.error("Empty Connection From Pipeline To Funnel In IngestManager");

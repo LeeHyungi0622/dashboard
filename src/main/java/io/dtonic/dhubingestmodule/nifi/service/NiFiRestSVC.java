@@ -910,14 +910,17 @@ public class NiFiRestSVC {
                 }
                 case DISABLE_CONTROLLER: {
                     if(disableControllers(processGroupId)){
-                        while(!result && (System.currentTimeMillis() - startTime < 10000)){
+                        List<Boolean> resList = new ArrayList<Boolean>();
+                        while(!result && (System.currentTimeMillis() - startTime < 500)){
                             ControllerServicesEntity controllers = searchControllersInProcessorGroup(processGroupId);
                             for (ControllerServiceEntity controller : controllers.getControllerServices()) {
                                 if (controller.getStatus().getRunStatus().equals("DISABLED")){
-                                    break;
+                                    resList.add(true);
                                 }
                             }
-                            result = true;
+                            if(resList.size() == controllers.getControllerServices().size()){
+                                result = true;
+                            }
                         }
                         return result;
                     }
