@@ -79,10 +79,10 @@ public class PipelineSVC {
         pipelineVOtoDB.setConverter(jsonObject.getJSONObject(AdaptorName.ADAPTOR_NAME_CONVERTER.getCode()).toString());
 
         pipelineMapper.createPipeline(pipelineVOtoDB);
-
+        
         pipelineId = pipelineVOtoDB.getId();
         commandVO.setPipelineId(pipelineId);
-
+    
         Integer commandId = createCommand(commandVO);
         
         String processorGroupId = niFiController.createPipeline(pipelineVO, commandId);
@@ -98,7 +98,7 @@ public class PipelineSVC {
             changePipelineStatus(pipelineId, PipelineStatusCode.PIPELINE_STATUS_FAILED.getCode());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nifi error");
         }
-    }
+    }   
 
     @Transactional
     @Scheduled(fixedDelay = 3000, initialDelay = 3000)

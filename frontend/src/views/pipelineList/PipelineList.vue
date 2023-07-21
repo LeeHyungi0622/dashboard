@@ -94,7 +94,7 @@
             <button v-else @click="deletePipeline(item)">중지 후 삭제</button>
           </template>
           <template v-slot:[`item.pipelineUpdate`]="{ item }">
-            <button @click="goPipelineDetailEdit(item)">보기</button>
+            <button @click="goPipelineDetailEdit(item)" :disabled="item.status.toUpperCase() == 'FAILED'">보기</button>
           </template>
           
 
@@ -338,11 +338,12 @@ export default {
     },
     failedPipeline(name, status, id) {
       let alertPayload = {
-        title: "파이프라인 Status 실패",
+        title: "파이프라인 동작 실패",
         text:
           name +
-          " 파이프라인이 동작 실패하였습니다." +
-          "<br/> <b> " +
+          " 파이프라인이 동작 실패하였습니다.<br/>" +
+          "삭제 후 재등록 이후에도 실패시,<br/>" +
+          "<b> " +
           "관리자에게 문의 바랍니다.",
         id: id,
         url: "update",

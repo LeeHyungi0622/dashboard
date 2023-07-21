@@ -293,12 +293,12 @@ public class NiFiController {
             Map<String, Object> subAttribute = new HashMap<>();
             subAttribute.put("type", e.getAttributeType());
             if (e.getAttributeType().equals("Property")) {
-                subAttribute.put("value", "${" + e.getName() + "}");
+                subAttribute.put("value", "${" + e.getName() + ":replaceEmpty('null')}");
                 if(!e.getValueType().equals("Date") && !e.getValueType().equals("String")){
-                    numberPropNameList.add(e.getName());
+                    numberPropNameList.add(e.getName()+":replaceEmpty('null')");
                 } 
             } else if (e.getAttributeType().equals("Relationship")) {
-                subAttribute.put("object", "${" + e.getName() + "}");
+                subAttribute.put("object", "${" + e.getName() + ":replaceEmpty('null')}");
             } else if (e.getAttributeType().equals("GeoProperty")) {
                 Map<String, Object> geoProp = new HashMap<>();
                 for (NiFiComponentVO niFiComponentVO : adaptorVO.getNifiComponents()) {
@@ -306,8 +306,8 @@ public class NiFiController {
                         for (PropertyVO propertyVO : niFiComponentVO.getRequiredProps()) {
                             if (propertyVO.getDetail().equals("GeoType")) {
                                 geoProp.put("type", propertyVO.getInputValue());
-                                geoProp.put("coordinates", "${" + e.getName() + "}");
-                                geoPropNameList.add(e.getName());
+                                geoProp.put("coordinates", "${" + e.getName() + ":replaceEmpty('null')}");
+                                geoPropNameList.add(e.getName()+":replaceEmpty('null')");
                             }
                         }
                     }

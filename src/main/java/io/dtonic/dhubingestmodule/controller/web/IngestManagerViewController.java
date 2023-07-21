@@ -38,15 +38,15 @@ public class IngestManagerViewController implements ErrorController {
         return "index.html";
     }
     
-    @GetMapping("/list")
-    public String pipelineListView(
-        HttpSession session,
-        HttpServletRequest request,
-        HttpServletResponse response
-    )
-        throws IOException {
-        return "index.html";
-    }
+    // @GetMapping("/list")
+    // public String pipelineListView(
+    //     HttpSession session,
+    //     HttpServletRequest request,
+    //     HttpServletResponse response
+    // )
+    //     throws IOException {
+    //     return "index.html";
+    // }
     @GetMapping("/pipelineRegister")
     public String pipelineRegisterView(
         HttpSession session,

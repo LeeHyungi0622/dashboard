@@ -6,6 +6,7 @@ import io.dtonic.dhubingestmodule.dataset.vo.DataSetResponseVO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,11 +25,11 @@ public class DataSetController {
      * @throws Exception retrieve error
      */
     @GetMapping(value = "/datasets/list")
-    public DataSetResponseVO getDatasets(HttpServletRequest request, HttpServletResponse response)
+    public ResponseEntity<DataSetResponseVO> getDatasets(HttpServletRequest request, HttpServletResponse response)
         throws Exception {
         DataSetResponseVO datasetList = datasetsvc.getDataSetList();
 
-        return datasetList;
+        return ResponseEntity.ok(datasetList);
     }
 
     /**
