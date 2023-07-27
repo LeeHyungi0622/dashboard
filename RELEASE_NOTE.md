@@ -1,4 +1,17 @@
-# Version 1.1.2 - 2023. 07. 21
+# Version 1.1.2 - 2023. 07. 27
+### [Fix] Root Key 에러 수정
+- 기존 root key가 없을 경우 NiFi에서는 Attribute에 ` `(빈칸)을 추가해서 처리했음.
+- 이에 따라 Array Type에 대해 지원하기 위해 raw data에서 root key 하위의 `[]`리스트 데이터를 가져오는 도중 root key가 빈칸이여서 에러 발생
+- root key가 빈칸일 경우, root key를 제외하는 로직 추가
+
+ *Contributer : Justin* 
+### [Refactor] NiFi Data Type Convert 로직 분리
+- 기존 NiFi에서 데이터 타입을 분리할 경우, 하나의 메서드에서 수행했으나, 코드 유지보수가 어렵다고 판단하여 `NiFiConvert` Class를 도입하여 코드 가독성 개선.
+- 또한 NiFi 내부 템플릿 중 `ConvertDateType` Processor내에서 `Date` 타입 뿐만이 아닌 여러 데이터 타입 (`GeoJson`, `Array` ... etc)에 대한 변경이 이루어져 추후 유지보수가 어렵다고 판단하여 `Convert*Type` 개별 Processor로 분리하여 유지보수에 용이하게 함.
+- 기존 `int, double, bool, array, geojson ..` Type을 Insert 할 때, 쌍따옴표 가 value에 붙어 있어 JoltTransformJSON Processor를 사용하였지만, 이제는 Map to Json이 아닌 String 조합으로 로직이 변경되었기 때문에 해당 프로세서는 사용하지 않음.
+- Refactoring은 Version 1.2.x에 Refactoring 완료 예정. 
+
+ *Contributer : Justin* 
 ### [Fix] 파이프라인 등록 에러 로직 변경
 - 기존 파이프라인 등록 에러 시, 보기버튼을 클릭하여 수정할 수 있었으나 파이프라인 등록 에러시 삭제 후 재등록으로 정책 설정.
 - 이에 따라 에러 시, 보기 버튼을 비활성화 하고, 실행 버튼 클릭 시 `삭제 후 재등록`메세지 출력
@@ -6,7 +19,8 @@
  *Contributer : Justin* 
 ### [Fix] 원천 데이터 Null 정상 변환
 - 기존 원천 데이터 변환 시 원천 데이터 Value가 Null일 경우, 해당 값이 'null' String도 없이 빈칸으로 입력되는 오류 존재
-- NiFi Expresion 중 `replaceEmpty()` 함수를 통해 `replaceEmpty('null')`로 'null'String이 입력되게 수정
+- 기존 Convertor 템플릿으로는 null에 대한 정상 데이터 반환이 어려워 Convertor 템플릿 변경
+- NGSI-LD String 조합시 `isEmpty()`와 `ifElse()` NiFi Expression을 통해 Attribute에 null 데이터가 들어가 Empty일 경우 NGSI-LD String 조합 시, 제외하는 로직 추가
 
  *Contributer : Justin* 
 

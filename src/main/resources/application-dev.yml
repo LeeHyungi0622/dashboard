@@ -1,6 +1,6 @@
 application:
   title: D.Hub-Ingest-Manager
-  version: 1.0.0
+  version: 1.1.2
 
 spring:
   application:
@@ -15,7 +15,7 @@ spring:
 
   datasource:
     driverClassName: org.postgresql.Driver
-    jdbcUrl: jdbc:postgresql://localhost:5432/ingestmanager?currentSchema=ingest_manager
+    jdbcUrl: jdbc:postgresql://localhost:5432/dhub?currentSchema=ingest_manager
     username: postgres
     password: postgres
     logging:
