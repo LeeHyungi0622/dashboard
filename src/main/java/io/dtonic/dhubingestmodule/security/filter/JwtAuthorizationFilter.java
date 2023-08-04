@@ -3,7 +3,8 @@ package io.dtonic.dhubingestmodule.security.filter;
 import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.security.exception.JwtAuthentioncationException;
 import io.dtonic.dhubingestmodule.security.exception.JwtAuthorizationException;
-import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
+import io.dtonic.dhubingestmodule.security.service.IngestManagerSecuritySVC;
+
 import java.io.IOException;
 import java.util.Collection;
 import javax.servlet.FilterChain;
@@ -35,7 +36,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private AuthenticationEntryPoint entryPoint;
 
-    private IngestManagerSVC ingestManagerSVC;
+    private IngestManagerSecuritySVC ingestManagerSVC;
 
     /**
      * Constructor of JwtAuthorizationFilter class
@@ -45,7 +46,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      */
     public JwtAuthorizationFilter(
         AuthenticationEntryPoint entryPoint,
-        IngestManagerSVC ingestManagerSVC,
+        IngestManagerSecuritySVC ingestManagerSVC,
         Properties properties
     ) {
         this.entryPoint = entryPoint;
