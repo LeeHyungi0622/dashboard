@@ -9,16 +9,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
+import io.swagger.client.model.ProcessorEntity;
+import io.swagger.client.model.ProcessorsEntity;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class NiFiAdaptorSVC {
     @Autowired
-    private NiFiSwaggerSVC niFiSwaggerSVC;
-
-    @Autowired
-    private NiFiRestSVC niFiRestSVC;
+    
     /**
      * @param adaptorVO
      * @param rootProcessorGroupId Parent Process ID
@@ -55,4 +54,43 @@ public class NiFiAdaptorSVC {
             }
         }
     }
+    
+    public void updateProcessorsInAdaptor(
+        String processorGroupId,
+        NiFiComponentVO niFiComponentVO
+    ) {
+        ProcessorsEntity processors = searchProcessorsInProcessGroup(processorGroupId);
+        if (processors.getProcessors().size() == 0) {
+            log.error(
+                "Empty Processor in Processor Group : Processor Group ID = {}",
+                processorGroupId
+            );
+        } else {
+            for (ProcessorEntity processor : processors.getProcessors()) {
+                if (processor.getComponent().getName().equals(niFiComponentVO.getName())) {
+                    if (niFiComponentVO.getRequiredProps().size() != 0) {
+                        processor =
+                            updateProcessorProperties(
+                                processor,
+                                niFiComponentVO.getRequiredProps()
+                            );
+                    } else {
+                        log.error("Empty Required Props Elements In {}", niFiComponentVO.getName());
+                    }
+                    if (niFiComponentVO.getOptionalProps().size() != 0) {
+                        processor =
+                            updateProcessorProperties(
+                                processor,
+                                niFiComponentVO.getOptionalProps()
+                            );
+                    }
+                    niFiClient
+                        .getProcessorsApiSwagger()
+                        .updateProcessor(processor.getId(), processor);
+                }
+            }
+        }
+    }
+
+
 }

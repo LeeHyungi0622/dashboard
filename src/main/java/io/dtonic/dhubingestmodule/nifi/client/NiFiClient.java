@@ -1,10 +1,12 @@
 package io.dtonic.dhubingestmodule.nifi.client;
 
-import com.github.hermannpencole.nifi.swagger.client.ConnectionsApi;
-import com.github.hermannpencole.nifi.swagger.client.FlowApi;
-import com.github.hermannpencole.nifi.swagger.client.FlowfileQueuesApi;
-import com.github.hermannpencole.nifi.swagger.client.ProcessGroupsApi;
-import com.github.hermannpencole.nifi.swagger.client.ProcessorsApi;
+import io.swagger.client.api.ConnectionsApi;
+import io.swagger.client.api.FlowApi;
+import io.swagger.client.api.FlowfileQueuesApi;
+import io.swagger.client.api.ProcessGroupsApi;
+import io.swagger.client.api.ProcessorsApi;
+import io.swagger.client.api.TemplatesApi;
+
 import javax.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +28,20 @@ public class NiFiClient {
     @Autowired
     private final NiFiClientEntity niFiClientEntity;
 
-    private FlowApi flowApiSwagger = new FlowApi();
-    private ProcessorsApi processorsApiSwagger = new ProcessorsApi();
-    private ProcessGroupsApi processGroupsApiSwagger = new ProcessGroupsApi();
-    private FlowfileQueuesApi flowfileQueuesApiSwagger = new FlowfileQueuesApi();
-    private ConnectionsApi connectionsApiSwagger = new ConnectionsApi();
+    private FlowApi flow = new FlowApi();
+    private ProcessorsApi processors = new ProcessorsApi();
+    private ProcessGroupsApi processGroups = new ProcessGroupsApi();
+    private FlowfileQueuesApi flowfileQueues = new FlowfileQueuesApi();
+    private ConnectionsApi connections = new ConnectionsApi();
+    private TemplatesApi templates = new TemplatesApi();
 
     @PostConstruct
     public void init() {
-        flowApiSwagger.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
-        processorsApiSwagger.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
-        processGroupsApiSwagger.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
-        flowfileQueuesApiSwagger.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
-        connectionsApiSwagger.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
+        flow.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
+        processors.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
+        processGroups.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
+        flowfileQueues.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
+        connections.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
+        templates.setApiClient(niFiClientEntity.getNifiSwaggerApiClient());
     }
 }

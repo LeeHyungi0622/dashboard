@@ -18,19 +18,7 @@ spring:
     jdbcUrl: jdbc:postgresql://localhost:5432/dhub?currentSchema=ingest_manager
     username: postgres
     password: postgres
-    logging:
-      use.yn: N
-      moduleName: ingest_manager
-      driverClassName: org.postgresql.Driver
-      jdbcUrl: jdbc:postgresql://localhost:5432/ingestmanager?currentSchema=logging
-      username: postgres
-      password: postgres
-    retrieve:
-      use.yn: N
-      driverClassName: org.postgresql.Driver
-      url: jdbc:postgresql://10.12.0.11:5432/datacore
-      username: keti_datacore
-      password: keti123
+
 
 server:
   port: 8099
@@ -94,3 +82,5 @@ nifi:
   url: http://localhost:8008
   user: admin
   password: ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
+  template:
+    init: false

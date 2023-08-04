@@ -18,7 +18,7 @@ import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
-public class NiFiConvertSVC {
+public class NiFiConvertPropsSVC {
     @Autowired
     ObjectMapper objectMapper;
 
@@ -223,17 +223,14 @@ public class NiFiConvertSVC {
         convertData.append("${init:unescapeJson()");
         convertData.append(":append(${generatedEntityId:append(','):unescapeJson()})");
         convertData.append(":append(${generatedType:append(','):unescapeJson()})");
-        convertData.append(":append(${contextString:append(','):unescapeJson()})");
+        convertData.append(":append(${contextString:unescapeJson()})");
         DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(pipeline.getDataModel());
         for (int idx = 0 ; idx < dataModelInfo.getAttributes().size(); idx ++){
             convertData.append(":append(${");
             convertData.append(dataModelInfo.getAttributes().get(idx).getName());
             convertData.append(":isEmpty():ifElse('',${");
             convertData.append(dataModelInfo.getAttributes().get(idx).getName()+"_string");
-            if (idx < dataModelInfo.getAttributes().size() - 1)
-                convertData.append(":append(',')})})");
-            else
-                convertData.append(":append('')})})");
+            convertData.append(":prepend(',')})})");
         }
         convertData.append(":append(${end})");
         convertData.append("}");
@@ -288,7 +285,7 @@ public class NiFiConvertSVC {
                 if(!e.getValueType().equals("Date") && !e.getValueType().equals("String")){
                     input.append("\"value\":${" + e.getName() + "}");
                 } else {
-                    input.append("\"value\":\"${" + e.getName() + "}\"");
+                    input.append("\"value\":\"${" + e.getName() + ":replace('\\\"','\\\\\\\"')}\"");
                 }
             } else if (e.getAttributeType().equals("Relationship")) {
                 input.append("\"object\":\"${" + e.getName() + "}\"");

@@ -14,7 +14,7 @@ import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.nifi.NiFiApplicationRunner;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClientEntity;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiAdaptorSVC;
-import io.dtonic.dhubingestmodule.nifi.service.NiFiConvertSVC;
+import io.dtonic.dhubingestmodule.nifi.service.NiFiConvertPropsSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiSwaggerSVC;
 import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
@@ -59,7 +59,7 @@ public class NiFiController {
     private NiFiAdaptorSVC niFiAdaptorSVC;
 
     @Autowired
-    private NiFiConvertSVC niFiConvertSVC;
+    private NiFiConvertPropsSVC niFiConvertSVC;
 
     @Autowired
     NiFiApplicationRunner niFiApplicationRunner;
@@ -83,9 +83,6 @@ public class NiFiController {
         TaskVO taskVO = new TaskVO();
         taskVO.setCommandId(commandId);
         taskVO.setStatus(TaskStatusCode.TASK_STATUS_WORKING.getCode());
-        
-        /* Check Token Expired */
-        niFiClientEntity.manageToken();
         taskVO.setTaskName(MonitoringCode.CREATE_PROCESSGROUP.getCode());
         Integer taskId = niFiRestSVC.createTask(taskVO);
         try{

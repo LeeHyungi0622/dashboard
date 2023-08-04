@@ -7,17 +7,16 @@ import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
+import io.dtonic.dhubingestmodule.history.vo.CommandVO;
+import io.dtonic.dhubingestmodule.history.vo.TaskVO;
 import io.dtonic.dhubingestmodule.nifi.controller.NiFiController;
 import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper;
-import io.dtonic.dhubingestmodule.pipeline.vo.CommandVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVOtoDB;
-import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
-
 import io.dtonic.dhubingestmodule.util.ValidateUtil;
 
 import java.util.ArrayList;
@@ -102,7 +101,7 @@ public class PipelineSVC {
 
     @Transactional
     @Scheduled(fixedDelay = 3000, initialDelay = 3000)
-    public ResponseEntity getPipelineList() {
+    public List<PipelineListResponseVO> getPipelineList() {
         List<PipelineListResponseVO> pipelineListVOs = pipelineMapper.getPipelineList();
         if(pipelineListVOs.size() > 0){
             pipelineListVOs
@@ -157,14 +156,14 @@ public class PipelineSVC {
                         }
                     }
                 );
-                return ResponseEntity.ok().body(pipelineListVOs);
+                return pipelineListVOs;
         } else {
             log.debug("Empty Pipeline", pipelineListVOs);
             return null;
         }
     }
 
-    public ResponseEntity getPipelineStatus_websocket(){
+    public ResponseEntity<List<PipelineListResponseVO>> getPipelineStatus_websocket(){
         List<PipelineListResponseVO> pipelineListVOs = pipelineMapper.getPipelineList();
         return ResponseEntity.ok().body(pipelineListVOs);
     }
@@ -288,7 +287,7 @@ public class PipelineSVC {
         }
     }
 
-    public ResponseEntity getPipelineProperties(
+    public PipelineVO getPipelineProperties(
         Integer pipelineid,
         String page,
         String adaptorName,
@@ -348,40 +347,12 @@ public class PipelineSVC {
         } else {
             return ResponseEntity.status(org.apache.http.HttpStatus.SC_BAD_REQUEST).body("invalid Page name");
         }
-        return ResponseEntity.ok().body(pipelineVO);
+        return pipelineVO;
     }
 
     public Boolean isExists(Integer id) {
         return pipelineMapper.isExists(id);
     }
 
-    public Integer createCommand(CommandVO commandVO) {
-        try{
-            pipelineMapper.createCommand(commandVO);
-            return commandVO.getId();
-        }
-        catch(Exception e){
-            log.error("Create command error {}", e);
-            return -1;
-        }
-    }
-
-    public Boolean updateCommand(Integer id, String status) {
-        if(pipelineMapper.updateCommand(id, status) == 1){
-            return true;
-        }else{
-            log.error("Update Command error");
-            return false;
-        }
-    }
-
-    public ResponseEntity getPipelineCmdHistory(Integer pipelineId){
-        List <CommandVO> commandVOs = pipelineMapper.getPipelineCmdHistory(pipelineId) ;
-        return ResponseEntity.ok().body(commandVOs);
-    }
-    public ResponseEntity getPipelineTaskHistory(Integer commandId){
-        List <TaskVO> taskVOs = pipelineMapper.getPipelineTaskHistory(commandId) ;
-        return ResponseEntity.ok().body(taskVOs);
-    }
 
 }

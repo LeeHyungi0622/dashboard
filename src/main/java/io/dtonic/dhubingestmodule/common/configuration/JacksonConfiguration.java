@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dtonic.dhubingestmodule.common.code.Constants;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.TimeZone;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,13 +14,8 @@ public class JacksonConfiguration {
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        // SimpleModule module = new SimpleModule();
-        // module.addDeserializer(Date.class, new MultiDateDeserializer());
-        // objectMapper.registerModule(module);
         objectMapper.setSerializationInclusion(Include.NON_NULL);
         objectMapper.setDateFormat(new SimpleDateFormat(Constants.POSTGRES_TIMESTAMP_FORMAT));
-        
-        // objectMapper.setTimeZone(TimeZone.getDefault());
         objectMapper.setTimeZone(Calendar.getInstance().getTimeZone());
         return objectMapper;
     }

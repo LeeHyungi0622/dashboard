@@ -4,18 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import io.dtonic.dhubingestmodule.common.code.CommandStatusCode;
-import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.code.TaskStatusCode;
-import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
+import io.dtonic.dhubingestmodule.history.vo.CommandVO;
+import io.dtonic.dhubingestmodule.history.vo.TaskVO;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
-import io.dtonic.dhubingestmodule.pipeline.vo.CommandVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
-import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
+import io.dtonic.dhubingestmodule.security.service.IngestManagerSecuritySVC;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -26,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,13 +31,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-public class PipelineController<T> {
+public class PipelineController {
 
     @Autowired
     private PipelineSVC pipelineSVC;
@@ -48,23 +44,15 @@ public class PipelineController<T> {
     @Autowired
     private PipelineDraftSVC pipelineDraftSVC;
 
-
     @Autowired
-    private IngestManagerSVC ingestManagerSVC;
-    
-    @Autowired
-    private NiFiRestSVC niFiRestSVC;
-
-    @Value("${nifi.url}")
-    private String NiFiURL;
+    private IngestManagerSecuritySVC ingestManagerSVC;
 
     @GetMapping("/pipelines/completed") // PipeLine List 조회
-    public ResponseEntity<T> getPipelineList(
+    public ResponseEntity<List<PipelineListResponseVO>> getPipelineList(
         HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestHeader(HttpHeaders.ACCEPT) String accept
+        HttpServletResponse response
     ) {
-        return pipelineSVC.getPipelineList();
+        return ResponseEntity.ok().body(pipelineSVC.getPipelineList());
     }
 
     /**
@@ -79,7 +67,6 @@ public class PipelineController<T> {
     public ResponseEntity createPipeline(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id,
         @RequestBody PipelineVO pipelineVO
     ) {
@@ -135,10 +122,9 @@ public class PipelineController<T> {
      * @throws JsonMappingException
      */
     @GetMapping("/pipelines/completed/{id}") // PipeLine 상세 조회
-    public ResponseEntity<T> getPipelineById(
+    public ResponseEntity getPipelineById(
         HttpServletRequest request,
         HttpServletResponse response,
-        @RequestHeader(HttpHeaders.ACCEPT) String accept,
         @PathVariable Integer id
     ) {
         return pipelineSVC.getPipelineVOById(id);
@@ -266,24 +252,6 @@ public class PipelineController<T> {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/pipelines/hist/cmd/{pipelineId}") 
-    public ResponseEntity<T> getPipelineCmdHistory(
-        HttpServletResponse response,
-        @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @PathVariable Integer pipelineId
-    ) {
-        return pipelineSVC.getPipelineCmdHistory(pipelineId);
-    }
-
-    @GetMapping("/pipelines/hist/task/{commandId}") 
-    public ResponseEntity<T> getPipelineTaskHistory(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestHeader(HttpHeaders.ACCEPT) String accept,
-        @PathVariable Integer commandId
-    ) {
-        return pipelineSVC.getPipelineTaskHistory(commandId);
-    }
     
     @GetMapping("/redirectNiFiUrl")
     public String redirectNiFiUrl(HttpServletRequest request, HttpServletResponse response)

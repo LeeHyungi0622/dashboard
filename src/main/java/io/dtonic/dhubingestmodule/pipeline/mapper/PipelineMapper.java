@@ -1,10 +1,8 @@
 package io.dtonic.dhubingestmodule.pipeline.mapper;
 
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.CommandVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVOtoDB;
 
 import java.util.List;
@@ -32,23 +30,6 @@ public interface PipelineMapper {
 
     Boolean isExists(@Param("id") Integer id);
 
-    void createCommand(
-        @Param("commandVO") CommandVO commandVO
-    );
-
-    int updateCommand(
-        @Param("id") Integer id,
-        @Param("status") String status
-    );
-
-    void createTask(
-        @Param("taskVO") TaskVO taskVO
-    );
-
-    int updateTask(
-        @Param("id") Integer id,
-        @Param("status") String status
-    );
 
     void createPipeline(
         @Param("pipelineVOtoDB") PipelineVOtoDB pipelineVOtoDB
@@ -71,10 +52,4 @@ public interface PipelineMapper {
         @Param("processorGroupId") String processorGroupId
     );
 
-    List<CommandVO> getPipelineCmdHistory(
-        @Param("pipelineId") Integer pipelineId
-    );
-    List<TaskVO> getPipelineTaskHistory(
-        @Param("commandId") Integer commandId
-    );
 }

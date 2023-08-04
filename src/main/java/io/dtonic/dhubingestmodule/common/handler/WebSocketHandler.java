@@ -40,7 +40,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Scheduled(fixedDelay = 3000, initialDelay = 3000)
     public void updatePipelineStatus() throws Exception {
-        ResponseEntity result = pipelineSVC.getPipelineStatus_websocket();
+        ResponseEntity<List<PipelineListResponseVO>> result = pipelineSVC.getPipelineStatus_websocket();
 
         CLIENTS
             .entrySet()

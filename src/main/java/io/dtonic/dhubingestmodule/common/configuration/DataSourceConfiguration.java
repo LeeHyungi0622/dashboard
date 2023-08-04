@@ -34,33 +34,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan(Constants.BASE_PACKAGE)
 public class DataSourceConfiguration {
 
-    // @Value("${datasource.driverClassName}")
-    // private String driverClassName;
-
-    // @Value("${datasource.url}")
-    // private String jdbcUrl;
-
-    // @Value("${datasource.username}")
-    // private String jdbcUserName;
-
-    // @Value("${datasource.password}")
-    // private String jdbcPassword;
-
-    @Value("${spring.datasource.retrieve.use.yn}")
-    private String secondaryDatasourceUseYn;
-
-    // @Value("${datasource.secondary.driverClassName}")
-    // private String secondaryDriverClassName;
-
-    // @Value("${datasource.secondary.url}")
-    // private String secondaryJdbcUrl;
-
-    // @Value("${datasource.secondary.username}")
-    // private String secondaryJdbcUserName;
-
-    // @Value("${datasource.secondary.password}")
-    // private String secondaryJdbcPassword;
-
     @Bean
     @Primary
     @ConfigurationProperties(prefix = "spring.datasource")
@@ -82,13 +55,6 @@ public class DataSourceConfiguration {
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        // bean.setMapperLocations(
-        // new PathMatchingResourcePatternResolver()
-        // .getResources("classpath:mapper/*Mapper.xml")
-        // );
-        // bean.setConfigLocation(
-        // new DefaultResourceLoader().getResource("classpath:mybatis.xml")
-        // );
         return bean.getObject();
     }
 
@@ -96,12 +62,6 @@ public class DataSourceConfiguration {
     @Primary
     public SqlSessionTemplate sqlSession(SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
-    }
-
-    @Bean
-    @Qualifier("batchSqlSession")
-    public SqlSessionTemplate batchSqlSession(SqlSessionFactory sqlSessionFactory) {
-        return new SqlSessionTemplate(sqlSessionFactory, ExecutorType.BATCH);
     }
 
 }
