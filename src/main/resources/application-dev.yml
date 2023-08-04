@@ -1,6 +1,6 @@
 application:
   title: D.Hub-Ingest-Manager
-  version: 1.1.2
+  version: 1.1.3
 
 spring:
   application:
@@ -78,9 +78,9 @@ cityhub:
     
   datacore:
     manager:
-      url: http://110.45.181.71:8080
+      url: http://110.45.181.72:8080
     ingestInterface:
-      url: http://110.45.181.71:8081
+      url: http://110.45.181.72:8081
 
 http.pool:
   max.total: 200
@@ -91,6 +91,6 @@ http.pool:
   validate.after.inactivity: 2000
 
 nifi:
-  url: https://localhost:8443
+  url: http://localhost:8008
   user: admin
   password: ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB

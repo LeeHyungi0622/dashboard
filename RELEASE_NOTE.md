@@ -1,3 +1,13 @@
+# Version 1.1.3 - 2023. 08. 04
+### [Fix, Perf] NiFi Disk 부하 관련 로직 수정
+- 특정 데이터 수집 시, NiFi에서 데이터 처리 도중 데이터 용량이 급증 (특히, Filter 구성 요소 중 SplitJson Processor에서 발생)하여 정상적인 동작을 하지 않음.
+- Ingest Manager에서 NiFi를 통해 데이터 전처리를 진행할 때, NiFi 데이터 단위인 Flowfile 내부의 Attribute에 원본데이터와 Root Key를 통해 정제된 데이터를 둘 다 저장하여 전처리를 진행하는 로직으로 구성되어 있음.
+- 이에 따라 원본 데이터 (API 호출 시, 가져오는 원본데이터)의 크기가 커질 수록 (이슈 리포트에 사용되었던 API 호출 시, 4MB정도의 원본 데이터 발생) NiFi의 데이터 부하가 심하게 걸리는 로직임을 확인
+- 또한, 특히 부하가 심하게 생겼던 SplitJson Processor를 거쳐 Flowfile이 나눠질 경우 나눠진 Flowfile 내의 Attribute의 속성 값은 원본 Flowfile 그대로 가져가는 특성 때문에 나눠진 하나의 Flowfile Size가 [원본데이터 + Root Key를 통해 정제된 데이터]로 구성되는 것을 확인
+- 이러한 부하를 해결하기 위해 기존 Attribute에 저장하고 있는 원본데이터(`root_key`)와 Root Key를 통해 정제된 데이터(`filtered_data`)를 초기화하는 프로세서를 Filter Adaptor에 추가로 구성하여 해당 이슈에 대해 해결하였고, Convertor 부분에 JsonPath를 이용하기 위해 `convert_data`라는 attribute를 추가하는 UpdataAttribute Processor를 추가 구성함.
+
+ *Contributer : Justin* 
+ ---
 # Version 1.1.2 - 2023. 07. 27
 ### [Fix] Root Key 에러 수정
 - 기존 root key가 없을 경우 NiFi에서는 Attribute에 ` `(빈칸)을 추가해서 처리했음.

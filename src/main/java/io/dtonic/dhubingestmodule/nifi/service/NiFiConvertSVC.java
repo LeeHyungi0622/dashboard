@@ -1,9 +1,7 @@
 package io.dtonic.dhubingestmodule.nifi.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -153,9 +151,9 @@ public class NiFiConvertSVC {
                                 }
                                 input.deleteCharAt(input.length() - 1);
                                 newProp.setInputValue(
-                                    "${raw_data:jsonPath(${root_key:equals(' '):ifElse('$." +
+                                    "${convert_data:jsonPath(${root_key:equals(' '):ifElse('$." +
                                     input.toString() +
-                                    "','${root_key}." +
+                                    "','$.${root_key}." +
                                     input.toString() +
                                     "')})}"
                                 );
@@ -195,11 +193,11 @@ public class NiFiConvertSVC {
                                 input.deleteCharAt(input.length() - 1);
                                 newProp.setName(a.getName());
                                 newProp.setInputValue(
-                                    "${" +
-                                    "raw_data" +
-                                    ":jsonPath(\'$." + "${root_key}."+ // TEST 필요
+                                    "${convert_data:jsonPath(${root_key:equals(' '):ifElse('$." +
                                     input.toString() +
-                                    "\')}"
+                                    "','$.${root_key}." +
+                                    input.toString() +
+                                    "')})}"
                                 );
                                 DataList.add(newProp);
                             }
