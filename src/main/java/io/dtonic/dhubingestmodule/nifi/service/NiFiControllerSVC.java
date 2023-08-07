@@ -15,7 +15,8 @@ import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.swagger.client.model.ActivateControllerServicesEntity;
 import io.swagger.client.model.ControllerServiceEntity;
 import io.swagger.client.model.ControllerServicesEntity;
-
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 public class NiFiControllerSVC {
     

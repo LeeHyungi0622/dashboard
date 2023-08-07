@@ -1,4 +1,4 @@
-package io.dtonic.dhubingestmodule.nifi.service;
+package io.dtonic.dhubingestmodule.adaptor.service;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
+import io.dtonic.dhubingestmodule.adaptor.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.swagger.client.model.ProcessorEntity;
 import io.swagger.client.model.ProcessorsEntity;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class NiFiAdaptorSVC {
+public class AdaptorSVC {
     @Autowired
     
     /**
