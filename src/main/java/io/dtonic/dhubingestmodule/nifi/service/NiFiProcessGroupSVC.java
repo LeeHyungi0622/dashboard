@@ -139,35 +139,45 @@ public class NiFiProcessGroupSVC {
      * @return FunnelID
      */
     public String searchProcessGroupInProcessGroup(String processGroupId, String findProcessGroupName) {
-        for (ProcessGroupEntity processGroup : niFiClient
-            .getProcessGroupsApiSwagger()
-            .getProcessGroups(processGroupId)
-            .getProcessGroups()) {
-            log.info(
-                "Search Process Group In Ingest Manager : processGroupId = [{}]",
-                processGroup.getId()
-            );
-            if (processGroup.getComponent().getName().equals(findProcessGroupName)) {
-                return processGroup.getId();
+        try {
+            for (ProcessGroupEntity processGroup : niFiClient
+                .getProcessGroups()
+                .getProcessGroups(processGroupId)
+                .getProcessGroups()) {
+                log.info(
+                    "Search Process Group In Ingest Manager : processGroupId = [{}]",
+                    processGroup.getId()
+                );
+                if (processGroup.getComponent().getName().equals(findProcessGroupName)) {
+                    return processGroup.getId();
+                }
             }
+            log.info("Empty process Group In Ingest Manager");
+            return null;
+            
+        } catch (Exception e) {
+            return null;
         }
-        log.info("Empty process Group In Ingest Manager");
-        return null;
     }
     public String searchProcessGroupInProcessGroup(String processGroupId) {
-        for (ProcessGroupEntity processGroup : niFiClient
-            .getProcessGroupsApiSwagger()
-            .getProcessGroups(processGroupId)
-            .getProcessGroups()) {
-            log.info(
-                "Search Process Group In Ingest Manager : processGroupId = [{}]",
-                processGroup.getId()
-            );
-            if (processGroup.getComponent().getName().equals("Ingest Manager"))
-            return processGroup.getComponent().getName();
+        try {
+            for (ProcessGroupEntity processGroup : niFiClient
+                .getProcessGroups()
+                .getProcessGroups(processGroupId)
+                .getProcessGroups()) {
+                log.info(
+                    "Search Process Group In Ingest Manager : processGroupId = [{}]",
+                    processGroup.getId()
+                );
+                if (processGroup.getComponent().getName().equals("Ingest Manager"))
+                return processGroup.getComponent().getName();
+            }
+            log.info("Not Exist Ingest Manager process Group In NiFi");
+            return null;
+            
+        } catch (Exception e) {
+            return null;
         }
-        log.info("Not Exist Ingest Manager process Group In NiFi");
-        return null;
     }
 
 

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClient;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
-import io.swagger.client.ApiException;
 import io.swagger.client.model.BundleDTO;
 import io.swagger.client.model.PositionDTO;
 import io.swagger.client.model.ProcessorConfigDTO;
@@ -258,10 +257,14 @@ public class NiFiProcessorSVC {
 
 
     public ProcessorsEntity searchProcessorsInProcessGroup(String processorGroupId) {
-        ProcessorsEntity result = niFiClient
-            .getProcessGroupsApiSwagger()
-            .getProcessors(processorGroupId, false);
-        return result;
+        try {
+            ProcessorsEntity result = niFiClient
+                .getProcessGroups()
+                .getProcessors(processorGroupId, false);
+            return result;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }

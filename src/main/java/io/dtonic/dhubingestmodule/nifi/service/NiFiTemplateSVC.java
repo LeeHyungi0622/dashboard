@@ -9,6 +9,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 import io.dtonic.dhubingestmodule.common.code.AdaptorName;
+import io.dtonic.dhubingestmodule.common.code.Constants;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClient;
 import io.swagger.client.model.FlowEntity;
 import io.swagger.client.model.InstantiateTemplateRequestEntity;
@@ -126,12 +127,14 @@ public class NiFiTemplateSVC {
             List<TemplateEntity> templateList = result.getTemplates();
             if (templateList.size() == 0) {
                 log.info("Empty Template List in NiFi");
-            }
-            for (TemplateEntity template : templateList) {
-                TemplateDTO templateinfo = template.getTemplate();
-                String installTemplateName = templateinfo.getName();
-                if (TempleteName.equals(installTemplateName)) {
-                    niFiClient.getTemplates().removeTemplate(templateinfo.getId(), null);
+            } else {
+                for (TemplateEntity template : templateList) {
+                    for (String uploadTemplateName : Constants.NIFI_TEMPLATE_NAMES) {
+                        if (template.getTemplate().getName().equals(uploadTemplateName)) {
+                            niFiClient.getTemplates().removeTemplate(template.getTemplate().getId(), null);
+                            log.info("Delete Template Name : [{}]", uploadTemplateName);
+                        }
+                    }
                 }
             }
         }  catch (Exception e) {

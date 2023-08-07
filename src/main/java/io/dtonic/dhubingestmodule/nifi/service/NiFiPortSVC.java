@@ -1,13 +1,16 @@
 package io.dtonic.dhubingestmodule.nifi.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.dtonic.dhubingestmodule.nifi.client.NiFiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.model.FunnelEntity;
 import io.swagger.client.model.InputPortsEntity;
 import io.swagger.client.model.OutputPortsEntity;
 import io.swagger.client.model.PortDTO;
 import io.swagger.client.model.PortEntity;
+import lombok.extern.slf4j.Slf4j;
 /**
  * Served Pipeline Service
  * @FileName NiFiPortSVC.java
@@ -17,9 +20,12 @@ import io.swagger.client.model.PortEntity;
  * @Date 2023. 08. 01.
  * @Author Justin
  */
+
+@Slf4j
 @Service
 public class NiFiPortSVC {
-    
+    @Autowired
+    NiFiClient niFiClient;
 
     /**
      * Search Output Port In Process Group.
@@ -30,7 +36,7 @@ public class NiFiPortSVC {
     public PortDTO searchOutputInProcessorGroup(String processGroupId) {
         try {
             OutputPortsEntity outputPorts = niFiClient
-                .getProcessGroupsApiSwagger()
+                .getProcessGroups()
                 .getOutputPorts(processGroupId);
             if (outputPorts.getOutputPorts().size() == 0) {
                 log.error(
@@ -71,7 +77,7 @@ public class NiFiPortSVC {
     public PortDTO searchInputInProcessorGroup(String processGroupId) {
         try {
             InputPortsEntity inputPorts = niFiClient
-                .getProcessGroupsApiSwagger()
+                .getProcessGroups()
                 .getInputPorts(processGroupId);
             if (inputPorts.getInputPorts().size() == 0) {
                 log.error(
@@ -111,14 +117,19 @@ public class NiFiPortSVC {
      * @return FunnelID
      */
     public FunnelEntity searchFunnelInProcessGroup(String processGroupId) {
-        for (FunnelEntity funnel : niFiClient
-            .getProcessGroupsApiSwagger()
-            .getFunnels(processGroupId)
-            .getFunnels()) {
-            log.info("Search Funnel In Ingest Manager : Funnel ID = [{}]", funnel.getId());
-            return funnel;
+        try {
+            
+            for (FunnelEntity funnel : niFiClient
+                .getProcessGroups()
+                .getFunnels(processGroupId)
+                .getFunnels()) {
+                log.info("Search Funnel In Ingest Manager : Funnel ID = [{}]", funnel.getId());
+                return funnel;
+            }
+            log.info("Empty Funnel In Ingest Manager");
+            return null;
+        } catch (Exception e) {
+            return null;
         }
-        log.info("Empty Funnel In Ingest Manager");
-        return null;
     }
 }
