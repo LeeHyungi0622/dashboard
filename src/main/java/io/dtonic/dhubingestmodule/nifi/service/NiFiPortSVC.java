@@ -3,7 +3,7 @@ package io.dtonic.dhubingestmodule.nifi.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.dtonic.dhubingestmodule.nifi.client.NiFiClient;
+import io.dtonic.dhubingestmodule.nifi.client.NiFiApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.model.FunnelEntity;
 import io.swagger.client.model.InputPortsEntity;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class NiFiPortSVC {
     @Autowired
-    NiFiClient niFiClient;
+    NiFiApiClient niFiClient;
 
     /**
      * Search Output Port In Process Group.

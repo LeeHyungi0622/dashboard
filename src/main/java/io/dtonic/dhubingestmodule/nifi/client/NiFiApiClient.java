@@ -1,6 +1,5 @@
 package io.dtonic.dhubingestmodule.nifi.client;
 
-
 import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
@@ -8,41 +7,55 @@ import io.jsonwebtoken.impl.DefaultJwtParser;
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.AccessApi;
+import io.swagger.client.api.ConnectionsApi;
+import io.swagger.client.api.ControllerServicesApi;
+import io.swagger.client.api.FlowApi;
+import io.swagger.client.api.FlowfileQueuesApi;
+import io.swagger.client.api.ProcessGroupsApi;
+import io.swagger.client.api.ProcessorsApi;
+import io.swagger.client.api.TemplatesApi;
 import io.swagger.client.auth.OAuth;
 
 import java.util.Calendar;
 import java.util.Date;
+
 import javax.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * NiFi Default Client and Token Set up
- * @FileName NiFiClientEntity.java
+ * NiFi Swegger Client Setup and Token Management
+ * @FileName NiFiApiClient.java
  * @Project D.hub Ingest Manager
  * @Brief
- * @Version 1.0
- * @Date 2022. 9. 27.
+ * @Version 1.2
+ * @Date 2023. 08. 08.
  * @Author Justin
  */
-@Slf4j
 @Data
+@Slf4j
 @Component
-public class NiFiClientEntity {
-
+public class NiFiApiClient {
+    
     @Autowired
     private Properties properties;
 
     private ApiClient nifiSwaggerApiClient = new ApiClient();
-
     private AccessApi nifiSwaggerAccessApi = new AccessApi();
-
     private final String BASE_URL = "/nifi-api";
-
     private String accessToken;
+
+    private FlowApi flow = new FlowApi();
+    private ProcessorsApi processors = new ProcessorsApi();
+    private ProcessGroupsApi processGroups = new ProcessGroupsApi();
+    private FlowfileQueuesApi flowfileQueues = new FlowfileQueuesApi();
+    private ConnectionsApi connections = new ConnectionsApi();
+    private TemplatesApi templates = new TemplatesApi();
+    private ControllerServicesApi controllerServices = new ControllerServicesApi();
 
     @PostConstruct
     public void init() {
@@ -69,8 +82,15 @@ public class NiFiClientEntity {
         } catch (Exception e){
             log.error("Fail to Connection NiFi, Check NiFi URL : {}", properties.getNifiUrl(), e);
         }
-
+        flow.setApiClient(nifiSwaggerApiClient);
+        processors.setApiClient(nifiSwaggerApiClient);
+        processGroups.setApiClient(nifiSwaggerApiClient);
+        flowfileQueues.setApiClient(nifiSwaggerApiClient);
+        connections.setApiClient(nifiSwaggerApiClient);
+        templates.setApiClient(nifiSwaggerApiClient);
+        controllerServices.setApiClient(nifiSwaggerApiClient);
     }
+
 
     /**
      * Get Expired Time in Token

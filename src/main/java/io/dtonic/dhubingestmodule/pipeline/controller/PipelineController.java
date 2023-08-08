@@ -8,7 +8,6 @@ import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.code.TaskStatusCode;
 import io.dtonic.dhubingestmodule.history.vo.CommandVO;
 import io.dtonic.dhubingestmodule.history.vo.TaskVO;
-import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineDraftSVC;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
@@ -118,8 +117,6 @@ public class PipelineController {
      * @param accept   request accept header
      * @param id       retrieve Pipeline id
      * @return Pipeline object
-     * @throws JsonProcessingException
-     * @throws JsonMappingException
      */
     @GetMapping("/pipelines/completed/{id}") // PipeLine 상세 조회
     public ResponseEntity getPipelineById(

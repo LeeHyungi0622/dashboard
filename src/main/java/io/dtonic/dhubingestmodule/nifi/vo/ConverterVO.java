@@ -1,7 +1,6 @@
 package io.dtonic.dhubingestmodule.nifi.vo;
 
 import java.util.List;
-import java.util.Map;
 import lombok.Data;
 
 @Data

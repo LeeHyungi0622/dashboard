@@ -1,3 +1,24 @@
+# Version 1.2.0 - 2023. 08. 16
+### [Refactor] 전반적인 코드 개선
+- 기존 `nifi` package 안의 기능 별로 분리되어 있지 않은 코드를 분리하여 repackaging
+- 이러한 이슈로 NiFi UI에 접속하여 템플릿 삭제 후 Ingest Manager를 재 구동하는 불편함 개선.
+
+ *Contributer : Justin* 
+
+### [Feature] NiFi Version 1.23.0 Migration
+- 기존 Ingest Manager에서 사용하고 있던 NiFi의 Version은 `1.16.3`에서 `1.23.0`으로 업데이트.
+- **Developer** NiFi Version Up migration Guide는 [링크]()참조.
+
+ *Contributer : Justin* 
+
+### [Feature] NiFi Template 업로드 로직 수정
+- 기존 NiFi Template Upload 시, 삭제 후 업로드 하는 로직이 적용이 되어 있지 않아 템플릿 변경 건에도 반영이 되지 않는 이슈 존재.
+- 이러한 이슈로 NiFi UI에 접속하여 템플릿 삭제 후 Ingest Manager를 재 구동하는 불편함 개선.
+
+ *Contributer : Justin* 
+
+ ---
+
 # Version 1.1.3 - 2023. 08. 04
 ### [Fix, Perf] NiFi Disk 부하 관련 로직 수정
 - 특정 데이터 수집 시, NiFi에서 데이터 처리 도중 데이터 용량이 급증 (특히, Filter 구성 요소 중 SplitJson Processor에서 발생)하여 정상적인 동작을 하지 않음.

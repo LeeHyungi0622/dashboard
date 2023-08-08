@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import io.dtonic.dhubingestmodule.nifi.client.NiFiClient;
+import io.dtonic.dhubingestmodule.nifi.client.NiFiApiClient;
 import io.swagger.client.model.ProcessGroupDTO;
 import io.swagger.client.model.ProcessGroupEntity;
 import io.swagger.client.model.ProcessGroupFlowEntity;
@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NiFiProcessGroupSVC {
 
     @Autowired
-    private NiFiClient niFiClient;
+    private NiFiApiClient niFiClient;
 
     /**
      * Create Pipeline Processor Group
@@ -159,26 +159,5 @@ public class NiFiProcessGroupSVC {
             return null;
         }
     }
-    public String searchProcessGroupInProcessGroup(String processGroupId) {
-        try {
-            for (ProcessGroupEntity processGroup : niFiClient
-                .getProcessGroups()
-                .getProcessGroups(processGroupId)
-                .getProcessGroups()) {
-                log.info(
-                    "Search Process Group In Ingest Manager : processGroupId = [{}]",
-                    processGroup.getId()
-                );
-                if (processGroup.getComponent().getName().equals("Ingest Manager"))
-                return processGroup.getComponent().getName();
-            }
-            log.info("Not Exist Ingest Manager process Group In NiFi");
-            return null;
-            
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
 
 }

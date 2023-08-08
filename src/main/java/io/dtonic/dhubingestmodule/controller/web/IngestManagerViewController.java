@@ -1,6 +1,6 @@
 package io.dtonic.dhubingestmodule.controller.web;
 
-import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
+import io.dtonic.dhubingestmodule.security.service.IngestManagerSecuritySVC;
 import io.dtonic.dhubingestmodule.security.vo.UserVO;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class IngestManagerViewController implements ErrorController {
 
     @Autowired
-    private IngestManagerSVC ingestManagerSVC;
+    private IngestManagerSecuritySVC ingestManagerSVC;
 
     /**
      * When the page is refreshed In spa development,

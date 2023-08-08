@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import io.dtonic.dhubingestmodule.common.code.AdaptorName;
 import io.dtonic.dhubingestmodule.common.code.Constants;
-import io.dtonic.dhubingestmodule.nifi.client.NiFiClient;
+import io.dtonic.dhubingestmodule.nifi.client.NiFiApiClient;
 import io.swagger.client.model.FlowEntity;
 import io.swagger.client.model.InstantiateTemplateRequestEntity;
 import io.swagger.client.model.ProcessGroupEntity;
@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NiFiTemplateSVC {
 
     @Autowired
-    private NiFiClient niFiClient;
+    private NiFiApiClient niFiClient;
 
     /**
      * Upload NiFi Templates to register collector/filter/converter
@@ -56,16 +56,19 @@ public class NiFiTemplateSVC {
      * @param templateId create template ID
      * @return ProcessGroup ID created Adaptor
      */
-    public String createDummyTemplate(AdaptorName templateName, String rootProcessorGroupId, String templateId) {
+    public String createDummyTemplate(AdaptorName templateName, String rootProcessorGroupId) {
         try {
+            String templateId = searchTemplatebyName(templateName.getCode());
             InstantiateTemplateRequestEntity body = new InstantiateTemplateRequestEntity();
             body.setTemplateId(templateId);
             body.setDisconnectedNodeAcknowledged(false);
+            /* Set Position of Adaptor */
             if (templateName.equals(AdaptorName.ADAPTOR_NAME_COLLECTOR)) body.setOriginX(0.0D);
             else if (templateName.equals(AdaptorName.ADAPTOR_NAME_FILTER)) body.setOriginX(740.0D);
             else if (templateName.equals(AdaptorName.ADAPTOR_NAME_CONVERTER)) body.setOriginX(1480.0D);
             else body.setOriginX(0.0D);
             body.setOriginY(0.0D);
+            /* Create Adaptor */
             FlowEntity resultFlowEntity = niFiClient.getProcessGroups().instantiateTemplate(templateId, body);
             List<ProcessGroupEntity> resultProcessGroup = resultFlowEntity
                 .getFlow()
@@ -98,7 +101,7 @@ public class NiFiTemplateSVC {
      * @param String TempleteName Search template name
      * @return String Template ID
      */
-    public String searchTemplatebyName(String TempleteName) {
+    private String searchTemplatebyName(String TempleteName) {
         try {
             TemplatesEntity result = niFiClient.getFlow().getTemplates();
             List<TemplateEntity> templateList = result.getTemplates();

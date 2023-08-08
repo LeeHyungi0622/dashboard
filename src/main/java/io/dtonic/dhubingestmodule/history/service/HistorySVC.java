@@ -14,12 +14,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import io.dtonic.dhubingestmodule.common.code.MonitoringCode;
 import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
 import io.dtonic.dhubingestmodule.history.mapper.HistoryMapper;
-import io.dtonic.dhubingestmodule.nifi.vo.DropRequestEntity;
-import io.dtonic.dhubingestmodule.pipeline.vo.CommandVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
+import io.dtonic.dhubingestmodule.history.vo.CommandVO;
+import io.dtonic.dhubingestmodule.history.vo.TaskVO;
 import io.swagger.client.model.ControllerServiceEntity;
 import io.swagger.client.model.ControllerServicesEntity;
-
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 public class HistorySVC {
     
@@ -111,7 +111,7 @@ public class HistorySVC {
             return taskVO.getId();
         }catch(Exception e){
             log.error("create task error {}" , e);
-            return -1;
+            return null;
         }
     }
 
@@ -132,7 +132,7 @@ public class HistorySVC {
         }
         catch(Exception e){
             log.error("Create command error {}", e);
-            return -1;
+            return null;
         }
     }
 

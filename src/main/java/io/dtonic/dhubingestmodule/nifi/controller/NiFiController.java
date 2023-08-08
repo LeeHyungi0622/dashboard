@@ -12,17 +12,12 @@ import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.Attribute;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.nifi.NiFiApplicationRunner;
-import io.dtonic.dhubingestmodule.nifi.client.NiFiClientEntity;
-import io.dtonic.dhubingestmodule.nifi.service.NiFiAdaptorSVC;
+import io.dtonic.dhubingestmodule.nifi.client.NiFiClientProperty;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiConvertPropsSVC;
-import io.dtonic.dhubingestmodule.nifi.service.NiFiRestSVC;
-import io.dtonic.dhubingestmodule.nifi.service.NiFiSwaggerSVC;
-import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.ConverterVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,22 +42,10 @@ import org.springframework.stereotype.Controller;
 public class NiFiController {
 
     @Autowired
-    private NiFiClientEntity niFiClientEntity;
-
-    @Autowired
-    private NiFiSwaggerSVC niFiSwaggerSVC;
-
-    @Autowired
-    private NiFiRestSVC niFiRestSVC;
-
-    @Autowired
-    private NiFiAdaptorSVC niFiAdaptorSVC;
+    private NiFiClientProperty niFiClientProperty;
 
     @Autowired
     private NiFiConvertPropsSVC niFiConvertSVC;
-
-    @Autowired
-    NiFiApplicationRunner niFiApplicationRunner;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -254,7 +237,7 @@ public class NiFiController {
                 if(niFiRestSVC.monitoring(action, processGroupId)){
                     niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
                 }else{
-                    log.error("Fail to" + action + "Pipeline in NiFi : processGroupId = [{}]", processGroupId);
+                    log.error("Fail to " + action + " Pipeline in NiFi : processGroupId = [{}]", processGroupId);
                     niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FAILED.getCode());
                     return false;
                 }

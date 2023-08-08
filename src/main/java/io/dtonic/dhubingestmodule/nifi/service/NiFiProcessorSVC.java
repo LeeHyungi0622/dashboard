@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.dtonic.dhubingestmodule.common.component.Properties;
-import io.dtonic.dhubingestmodule.nifi.client.NiFiClient;
+import io.dtonic.dhubingestmodule.nifi.client.NiFiApiClient;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.swagger.client.model.BundleDTO;
 import io.swagger.client.model.PositionDTO;
@@ -16,9 +16,9 @@ import io.swagger.client.model.ProcessorConfigDTO;
 import io.swagger.client.model.ProcessorDTO;
 import io.swagger.client.model.ProcessorEntity;
 import io.swagger.client.model.ProcessorRunStatusEntity;
+import io.swagger.client.model.ProcessorsEntity;
 import io.swagger.client.model.RevisionDTO;
 import io.swagger.client.model.ProcessorRunStatusEntity.StateEnum;
-import io.swagger.client.model.ProcessorsEntity;
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
@@ -28,7 +28,7 @@ public class NiFiProcessorSVC {
     private Properties properties;
 
     @Autowired
-    private NiFiClient niFiClient;
+    private NiFiApiClient niFiClient;
     
     /**
      * Create Transmitter in Ingest Manager.
@@ -117,11 +117,11 @@ public class NiFiProcessorSVC {
         try {
             ProcessorEntity transmitter = getProcessorEntity(transmitterId);
             /* Properties Update */
-            Map<String, String> properties = transmitter.getComponent().getConfig().getProperties();
-            properties.replace("HTTP Method", "POST");
-            properties.replace(
+            Map<String, String> nifiProperties = transmitter.getComponent().getConfig().getProperties();
+            nifiProperties.replace("HTTP Method", "POST");
+            nifiProperties.replace(
                 "Remote URL",
-                niFiClient.getNiFiClientEntity().getProperties().getDatacoreIngestUrl() +
+                properties.getDatacoreIngestUrl() +
                 "/entityOperations/upsert"
             );
 

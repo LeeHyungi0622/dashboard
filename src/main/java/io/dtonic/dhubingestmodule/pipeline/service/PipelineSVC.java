@@ -7,10 +7,10 @@ import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
 import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
+import io.dtonic.dhubingestmodule.history.aop.command.CommandHistory;
 import io.dtonic.dhubingestmodule.history.vo.CommandVO;
 import io.dtonic.dhubingestmodule.history.vo.TaskVO;
 import io.dtonic.dhubingestmodule.nifi.controller.NiFiController;
-import io.dtonic.dhubingestmodule.nifi.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.mapper.PipelineMapper;
@@ -54,7 +54,7 @@ public class PipelineSVC {
     @Autowired
     private NiFiController niFiController;
 
-    //@Transactional
+    @CommandHistory(command = CommandStatusCode.COMMAND_CREATE)
     public ResponseEntity createPipeline(Integer id, PipelineVO pipelineVO) throws JsonMappingException, JsonProcessingException {
 
         CommandVO commandVO = new CommandVO();

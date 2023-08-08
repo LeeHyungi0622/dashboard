@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.dtonic.dhubingestmodule.adaptor.vo.AdaptorVO;
+import io.dtonic.dhubingestmodule.nifi.service.NiFiTemplateSVC;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.swagger.client.model.ProcessorEntity;
 import io.swagger.client.model.ProcessorsEntity;
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class AdaptorSVC {
     @Autowired
-    
+    private NiFiTemplateSVC niFiTemplateSVC;
     /**
      * @param adaptorVO
      * @param rootProcessorGroupId Parent Process ID
@@ -25,9 +26,8 @@ public class AdaptorSVC {
      * @throws JsonProcessingException
      */
     public String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) throws Exception{
-        String templateId = niFiSwaggerSVC.searchTempletebyName(adaptorVO.getName());
         // Create Dummy Template
-        String adaptorId = niFiRestSVC.createDummyTemplate(adaptorVO.getName(), rootProcessorGroupId, templateId);
+        String adaptorId = niFiTemplateSVC.createDummyTemplate(adaptorVO.getName(), rootProcessorGroupId);
         // Update Adaptor
         updateAdaptor(adaptorId, adaptorVO.getNifiComponents());
         return adaptorId;
