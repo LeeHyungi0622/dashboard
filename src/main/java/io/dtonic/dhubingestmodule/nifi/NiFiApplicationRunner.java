@@ -7,16 +7,13 @@ import io.dtonic.dhubingestmodule.nifi.service.NiFiPortSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiProcessGroupSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiProcessorSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiTemplateSVC;
-import lombok.Data;
+import io.swagger.client.model.ProcessorRunStatusEntity.StateEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-
-import com.nimbusds.oauth2.sdk.id.State;
-
 @Slf4j
 @Component
 public class NiFiApplicationRunner implements ApplicationRunner {
@@ -47,8 +44,7 @@ public class NiFiApplicationRunner implements ApplicationRunner {
         try {
             initTemplate();
             initProcessGroup();
-
-
+            initTransmitter();
         } catch (Exception e) {
             log.error("Fail to Connect NiFi : {}",properties.getNifiUrl(), e);
         }
@@ -127,7 +123,7 @@ public class NiFiApplicationRunner implements ApplicationRunner {
             /* Start Transmitter */
             niFiProcessorSVC.updateStatusProcessor(transmitterId, StateEnum.RUNNING);
         } catch (Exception e) {
-            // TODO: handle exception
+            log.error("Fail to init Transmitter", e);
         }
     }
 }

@@ -250,11 +250,5 @@ public class PipelineController {
     }
 
     
-    @GetMapping("/redirectNiFiUrl")
-    public String redirectNiFiUrl(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
 
-                return NiFiURL;
-        
-    }
 }

@@ -1,8 +1,10 @@
 package io.dtonic.dhubingestmodule.common.thread;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import io.dtonic.dhubingestmodule.common.code.CommandStatusCode;
 import io.dtonic.dhubingestmodule.common.code.PipelineStatusCode;
+import io.dtonic.dhubingestmodule.history.service.HistorySVC;
 import io.dtonic.dhubingestmodule.nifi.controller.NiFiController;
 import io.dtonic.dhubingestmodule.pipeline.service.PipelineSVC;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
@@ -11,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ComponentScan(basePackages={"io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO"})
 public class MultiThread implements Runnable{
+
+    @Autowired
+    private HistorySVC historySVC;
         
     private PipelineVO pipelineVO;
     private Integer commandId;
@@ -29,7 +34,7 @@ public class MultiThread implements Runnable{
         PipelineSVC pipelineSVC = ApplicationContextProvider.getBean(PipelineSVC.class);
 
         if (niFiController.deletePipeline(pipelineVO.getProcessorGroupId(), commandId)) {
-            pipelineSVC.updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_SUCCEED.getCode());
+            historySVC.updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_SUCCEED.getCode());
             try {
                 pipelineSVC.changePipelineStatus(pipelineId, PipelineStatusCode.PIPELINE_STATUS_DELETED.getCode());
             } catch (Exception e) {
@@ -37,7 +42,7 @@ public class MultiThread implements Runnable{
             }
         } else {
             try {
-                pipelineSVC.updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_FAILED.getCode());
+                historySVC.updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_FAILED.getCode());
                 pipelineSVC.changePipelineStatus(pipelineId, PipelineStatusCode.PIPELINE_STATUS_FAILED.getCode());
             } catch (Exception e) {
                 e.printStackTrace();

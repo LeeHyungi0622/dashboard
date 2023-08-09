@@ -2,19 +2,20 @@ package io.dtonic.dhubingestmodule.nifi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.dtonic.dhubingestmodule.adaptor.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.common.code.MonitoringCode;
 import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
 import io.dtonic.dhubingestmodule.common.code.TaskStatusCode;
+import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.Attribute;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
+import io.dtonic.dhubingestmodule.history.vo.TaskVO;
 import io.dtonic.dhubingestmodule.nifi.NiFiApplicationRunner;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClientProperty;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiConvertPropsSVC;
-import io.dtonic.dhubingestmodule.nifi.vo.ConverterVO;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
@@ -23,10 +24,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * Served Pipeline Service
@@ -48,7 +54,7 @@ public class NiFiController {
     private NiFiConvertPropsSVC niFiConvertSVC;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private Properties properties;
 
     @Autowired
     DataSetSVC dataSetSVC;
@@ -334,5 +340,15 @@ public class NiFiController {
             log.error("Fail to Get Pipeline Status.", e);
             return null;
         }
+    }
+
+    /**
+     * NiFi Redirect URL Return
+     *
+     * @return nifi url String
+     */
+    @GetMapping("/redirectNiFiUrl")
+    public String redirectNiFiUrl(HttpServletRequest request, HttpServletResponse response) {
+        return properties.getNifiUrl();
     }
 }
