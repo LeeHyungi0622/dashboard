@@ -12,13 +12,19 @@ import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.Attribute;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
+import io.dtonic.dhubingestmodule.history.aop.task.TaskHistory;
 import io.dtonic.dhubingestmodule.history.vo.TaskVO;
 import io.dtonic.dhubingestmodule.nifi.NiFiApplicationRunner;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClientProperty;
+import io.dtonic.dhubingestmodule.nifi.service.NiFiConnectionSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiConvertPropsSVC;
+import io.dtonic.dhubingestmodule.nifi.service.NiFiProcessGroupSVC;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
+import io.swagger.client.model.ControllerServiceEntity;
+import io.swagger.client.model.ControllerServicesEntity;
+import io.swagger.client.model.DropRequestEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -46,12 +53,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Slf4j
 @Controller
 public class NiFiController {
+    @Autowired
+    private NiFiProcessGroupSVC niFiProcessGroupSVC;
 
     @Autowired
-    private NiFiClientProperty niFiClientProperty;
+    private NiFiConnectionSVC niFiConnectionSVC;
 
     @Autowired
     private NiFiConvertPropsSVC niFiConvertSVC;
+
+    @Autowired
+    private NiFiClientProperty niFiClientProperty;
 
     @Autowired
     private Properties properties;
@@ -59,42 +71,28 @@ public class NiFiController {
     @Autowired
     DataSetSVC dataSetSVC;
 
-    // @Autowired
-    // PipelineSVC pipelineSVC;
 
     /**
-     * Create Pipeline
+     * Create Pipeline In NiFi
      *
      * @param pipelineVO
      * @return templateID
      */
     public String createPipeline(PipelineVO pipelineVO, Integer commandId) {
-        TaskVO taskVO = new TaskVO();
-        taskVO.setCommandId(commandId);
-        taskVO.setStatus(TaskStatusCode.TASK_STATUS_WORKING.getCode());
-        taskVO.setTaskName(MonitoringCode.CREATE_PROCESSGROUP.getCode());
-        Integer taskId = niFiRestSVC.createTask(taskVO);
+
         try{
             /* Create Pipeline Processor Group */
-            String processGroupId = niFiSwaggerSVC.createProcessGroup(
+            String processGroupId = niFiProcessGroupSVC.createProcessGroup(
+                commandId,
                 pipelineVO.getName(),
-                niFiApplicationRunner.getIngestProcessGroupId()
-            );
-            if(processGroupId != null){
-                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
-            }
-
+                niFiClientProperty.getIngestProcessGroupId()
+            ).getId();
             /* Create Output Port */
-            taskVO.setTaskName(MonitoringCode.CREATE_OUTPUTPORT_PIPELINE.getCode());
-            taskId = niFiRestSVC.createTask(taskVO);
-
-            String outputId = niFiRestSVC.createOutputInPipeline(
+            String outputId = niFiConnectionSVC.createOutputInPipeline(
+                commandId,
                 processGroupId,
                 pipelineVO.getName()
             );
-            if(outputId != null){
-                niFiRestSVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FINISH.getCode());
-            }
 
             /* Create Adatpors Collector */
             taskVO.setTaskName(MonitoringCode.CREATE_ADAPTOR_COLLECTOR.getCode());
@@ -258,7 +256,7 @@ public class NiFiController {
 
     public String updatePipeline(PipelineVO pipelineVO, Integer commandId) {
         try {
-            niFiClientEntity.manageToken();
+            /* Create Pipeline */
             String processGroupId = createPipeline(pipelineVO, commandId);
             if(processGroupId != null){
                 
@@ -276,7 +274,7 @@ public class NiFiController {
                 return null;
             }
         } catch (Exception e) {
-            log.error("Fail to update Pipeline in NiFi : processGroupId = [{}]", pipelineVO, e);
+            log.error("Fail to Update Pipeline in NiFi : processGroupId = [{}]", pipelineVO, e);
             return null;
         }
     }
@@ -350,5 +348,84 @@ public class NiFiController {
     @GetMapping("/redirectNiFiUrl")
     public String redirectNiFiUrl(HttpServletRequest request, HttpServletResponse response) {
         return properties.getNifiUrl();
+    }
+    
+    public boolean monitoring(MonitoringCode action, String processGroupId) throws JsonMappingException, JsonProcessingException, InterruptedException{
+        for (int i =0 ; i < 3; i++){
+            long startTime = System.currentTimeMillis();
+            boolean result = false;
+            switch(action){
+                case STOP_PIPELINE: {
+                    if(stopProcessorGroup(processGroupId)){
+                        while(!result && (System.currentTimeMillis() - startTime < 10000) ){
+                            Map<String, Integer> nifiStatus = getStatusProcessGroup(processGroupId);
+                            if(nifiStatus.get(NifiStatusCode.NIFI_STATUS_RUNNING.getCode()) == 0){
+                                result = true;
+                            }
+                            
+                        }
+                            return result;
+                    }
+                    break;
+                }
+                case CLEAR_QUEUE: {
+                    ResponseEntity<String> response = clearQueuesInProcessGroup(processGroupId);
+                    DropRequestEntity resultClearQueue = nifiObjectMapper.readValue(response.getBody(), DropRequestEntity.class);
+                    String requestId = resultClearQueue.getDropRequest().getId();
+                    if(requestId != null){
+                        while(!result && (System.currentTimeMillis() - startTime < 10000)){
+                            result = checkclearQueuesInProcessGroup(processGroupId , requestId);
+                        }
+                        return true;
+                    }
+                    break;
+                }
+                case DISABLE_CONTROLLER: {
+                    if(disableControllers(processGroupId)){
+                        List<Boolean> resList = new ArrayList<Boolean>();
+                        while(!result && (System.currentTimeMillis() - startTime < 500)){
+                            ControllerServicesEntity controllers = searchControllersInProcessorGroup(processGroupId);
+                            for (ControllerServiceEntity controller : controllers.getControllerServices()) {
+                                if (controller.getStatus().getRunStatus().equals("DISABLED")){
+                                    resList.add(true);
+                                }
+                            }
+                            if(resList.size() == controllers.getControllerServices().size()){
+                                result = true;
+                            }
+                        }
+                        return result;
+                    }
+                    break;
+                }
+                case DELETE_CONNECTION: {
+                    if(niFiSwaggerSVC.deleteConnectionToFunnel(processGroupId)){
+                        while(!result && (System.currentTimeMillis() - startTime < 10000)){
+                            if(niFiSwaggerSVC.clearQueuesInConnectionToFunnel(processGroupId) == null){
+                                result = true;
+                            }
+                        }
+                        return result;
+                    }
+                    break;
+                }
+                case DELETE_PIPELINE: {
+                    if(niFiSwaggerSVC.deleteProcessGroup(processGroupId)){
+                        while(!result && (System.currentTimeMillis() - startTime < 10000)){
+                            if(stopProcessorGroup(processGroupId) == false){
+                                result = true;
+                            }
+                        }
+                        return result;
+                    }
+                    break;
+                }
+                default: {
+                    log.error("Invalid Action to Delete Pipeline Process in NiFi : processGroupId = [{}]" + processGroupId);
+                    return result;
+                }
+            }
+        }
+        return false;
     }
 }

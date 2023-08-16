@@ -3,6 +3,8 @@ package io.dtonic.dhubingestmodule.nifi.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.dtonic.dhubingestmodule.common.code.MonitoringCode;
+import io.dtonic.dhubingestmodule.history.aop.task.TaskHistory;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiApiClient;
 import io.swagger.client.model.ConnectableDTO;
 import io.swagger.client.model.ConnectionDTO;
@@ -165,39 +167,52 @@ public class NiFiConnectionSVC {
     }
     
     /**
-     * Create Output Port In Pipeline Process Group
-     *
-     * @param processGroupId pipeline processor group id
-     * @param pipelineName pipeline name
-     * @return output ID
+     * [Retrieve Pipeline Detail by id]
+     * if pipeline is not exist, return 400
+     * else return pipeline detail
+     * @param commandId this param is using in aop task history
+     * @param processGroupId this param is root process group id
+     * @param pipelineName this param is using output port name
+     * @return output port id
+     * 
+     * @since 2023. 8. 16
+     * @version 1.2.0
+     * @auther Justin
      */
-    public String createOutputInPipeline(String processGroupId, String pipelineName) throws Exception{
-        PortEntity body = new PortEntity();
-        PortDTO component = new PortDTO();
-        component.setName(pipelineName + " output");
-        component.setAllowRemoteAccess(false);
+    @TaskHistory(taskName = MonitoringCode.CREATE_OUTPUTPORT_PIPELINE)
+    public String createOutputInPipeline(Integer commandId, String processGroupId, String pipelineName){
+        try {
+            PortEntity body = new PortEntity();
+            PortDTO component = new PortDTO();
+            component.setName(pipelineName + " output");
+            component.setAllowRemoteAccess(false);
 
-        PositionDTO position = new PositionDTO();
-        position.setX(2220.0);
-        position.setY(72.0);
-        component.setPosition(position);
+            PositionDTO position = new PositionDTO();
+            position.setX(2220.0);
+            position.setY(72.0);
+            component.setPosition(position);
 
-        RevisionDTO revision = new RevisionDTO();
-        revision.setVersion(0L);
+            RevisionDTO revision = new RevisionDTO();
+            revision.setVersion(0L);
 
-        body.setRevision(revision);
-        body.setComponent(component);
+            body.setRevision(revision);
+            body.setComponent(component);
 
-        PortEntity resultPortEntity = niFiClient.getProcessGroups().createOutputPort(processGroupId, body);
+            PortEntity resultPortEntity = niFiClient.getProcessGroups().createOutputPort(processGroupId, body);
 
-        log.info(
-            "Create Output in Pipeline : output PortEntity = [{}]",
-            resultPortEntity.getId()
-        );
-        return resultPortEntity.getId();
+            log.info(
+                "Create Output in in Process Group : [{}] : output PortEntity = [{}]", processGroupId,
+                resultPortEntity.getId()
+            );
+            return resultPortEntity.getId();
+        } catch (Exception e) {
+            log.error("Fail to Create Output in Process Group : [{}]", processGroupId, e);
+            return null;
+        }
+        
         
     }
-/**
+    /**
      * Create Connection From Output To Funnel
      *
      * @param rootProcessGroupId pipeline process group id

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,7 +44,7 @@ public class PipelineDraftController<T> {
      * @return Pipeline object
      */
     @GetMapping("/pipelines/drafts/{id}") // 임시저장 상세 조회
-    public ResponseEntity getPipelineDrafts(
+    public ResponseEntity<T> getPipelineDrafts(
         HttpServletRequest request,
         HttpServletResponse response,
         @PathVariable Integer id

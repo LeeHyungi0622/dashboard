@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.dtonic.dhubingestmodule.adaptor.vo.AdaptorVO;
+import io.dtonic.dhubingestmodule.common.code.AdaptorName;
+import io.dtonic.dhubingestmodule.nifi.service.NiFiProcessorSVC;
 import io.dtonic.dhubingestmodule.nifi.service.NiFiTemplateSVC;
 import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.swagger.client.model.ProcessorEntity;
@@ -19,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 public class AdaptorSVC {
     @Autowired
     private NiFiTemplateSVC niFiTemplateSVC;
+
+    @Autowired
+    private NiFiProcessorSVC niFiProcessorSVC;
     /**
      * @param adaptorVO
      * @param rootProcessorGroupId Parent Process ID
@@ -27,7 +32,7 @@ public class AdaptorSVC {
      */
     public String createAdaptor(AdaptorVO adaptorVO, String rootProcessorGroupId) throws Exception{
         // Create Dummy Template
-        String adaptorId = niFiTemplateSVC.createDummyTemplate(adaptorVO.getName(), rootProcessorGroupId);
+        String adaptorId = niFiTemplateSVC.createDummyTemplate(AdaptorName.parseCode(adaptorVO.getName()), rootProcessorGroupId);
         // Update Adaptor
         updateAdaptor(adaptorId, adaptorVO.getNifiComponents());
         return adaptorId;
@@ -43,7 +48,7 @@ public class AdaptorSVC {
                 component.getType().equals("processor") || component.getType().equals("Processor")
             ) {
                 // Update Processors Properties in Adaptor Processor Group
-                niFiSwaggerSVC.updateProcessorsInAdaptor(processorGroupId, component);
+                updateProcessorsInAdaptor(processorGroupId, component);
             } else if (
                 component.getType().equals("controller") || component.getType().equals("Controller")
             ) {
@@ -59,7 +64,7 @@ public class AdaptorSVC {
         String processorGroupId,
         NiFiComponentVO niFiComponentVO
     ) {
-        ProcessorsEntity processors = searchProcessorsInProcessGroup(processorGroupId);
+        ProcessorsEntity processors = niFiProcessorSVC.searchProcessorsInProcessGroup(processorGroupId);
         if (processors.getProcessors().size() == 0) {
             log.error(
                 "Empty Processor in Processor Group : Processor Group ID = {}",
@@ -70,7 +75,7 @@ public class AdaptorSVC {
                 if (processor.getComponent().getName().equals(niFiComponentVO.getName())) {
                     if (niFiComponentVO.getRequiredProps().size() != 0) {
                         processor =
-                            updateProcessorProperties(
+                            niFiProcessorSVC.updateProcessorProperties(
                                 processor,
                                 niFiComponentVO.getRequiredProps()
                             );
@@ -79,7 +84,7 @@ public class AdaptorSVC {
                     }
                     if (niFiComponentVO.getOptionalProps().size() != 0) {
                         processor =
-                            updateProcessorProperties(
+                            niFiProcessorSVC.updateProcessorProperties(
                                 processor,
                                 niFiComponentVO.getOptionalProps()
                             );

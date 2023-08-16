@@ -6,7 +6,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import io.dtonic.dhubingestmodule.common.code.MonitoringCode;
+import io.dtonic.dhubingestmodule.history.aop.task.TaskHistory;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiApiClient;
 import io.swagger.client.model.ProcessGroupDTO;
 import io.swagger.client.model.ProcessGroupEntity;
@@ -30,7 +31,8 @@ public class NiFiProcessGroupSVC {
      * @param rootProcessGroupId root
      * @return ProcessGroupEntity
      */
-    public ProcessGroupEntity createProcessGroup(String processGroupName, String rootProcessGroupId) throws Exception {
+    @TaskHistory(taskName = MonitoringCode.CREATE_PROCESSGROUP)
+    public ProcessGroupEntity createProcessGroup(Integer commandId, String processGroupName, String rootProcessGroupId) throws Exception {
         try {
             ProcessGroupEntity body = new ProcessGroupEntity();
             ProcessGroupDTO processGroupSetting = new ProcessGroupDTO();

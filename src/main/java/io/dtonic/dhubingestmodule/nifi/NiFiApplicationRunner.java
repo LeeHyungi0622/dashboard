@@ -71,7 +71,7 @@ public class NiFiApplicationRunner implements ApplicationRunner {
             if (ingestProcessGroupId == null) {
                 try {
                     /* Create Ingest Manager Process Group */
-                    ingestProcessGroupId = niFiProcessGroupSVC.createProcessGroup("Ingest Manager", "root").getId();
+                    ingestProcessGroupId = niFiProcessGroupSVC.createProcessGroup(null, "Ingest Manager", "root").getId();
                 } catch (Exception e){
                     log.error("Fail to Create Process Group : [Ingest Manager] error");
                 }

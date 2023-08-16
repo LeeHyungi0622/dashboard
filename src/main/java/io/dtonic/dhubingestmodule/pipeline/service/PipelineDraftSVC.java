@@ -1,5 +1,6 @@
 package io.dtonic.dhubingestmodule.pipeline.service;
 
+import io.dtonic.dhubingestmodule.adaptor.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.common.code.AdaptorName;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
@@ -168,20 +169,22 @@ public class PipelineDraftSVC {
         adaptorVO.setName(adaptorName);
         return adaptorVO;
     }
-
+    /**
+     * [Delete Temperal Pipeline by id]
+     * @param id temperalPipeline id
+     * @return Boolean
+     * 
+     * @since 2023. 8. 16
+     * @version 1.2.0
+     * @auther Justin
+     */
     @Transactional
-    public ResponseEntity deletePipelineDrafts(Integer id) {
+    public Boolean deletePipelineDrafts(Integer id) {
         int result = pipelineDraftMapper.deletePipelineDrafts(id);
         if (result != 1) {
-            return ResponseEntity
-                .status(HttpStatus.SC_BAD_REQUEST)
-                .body("Not Exist to Delete Pipeline ID");
-            // throw new BadRequestException(
-            //     DataCoreUiCode.ErrorCode.BAD_REQUEST,
-            //     "Not Exist to Delete Pipeline ID"
-            // );
+            return false;
         }
-        return ResponseEntity.ok().build();
+        return true;
     }
 
     @Transactional

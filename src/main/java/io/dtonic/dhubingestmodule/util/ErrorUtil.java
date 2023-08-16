@@ -5,8 +5,6 @@ import io.dtonic.dhubingestmodule.common.code.DataCoreUiCode;
 import io.dtonic.dhubingestmodule.common.code.ResponseCode;
 import io.dtonic.dhubingestmodule.common.exception.BadRequestException;
 import io.dtonic.dhubingestmodule.common.exception.ErrorPayload;
-import org.apache.commons.lang3.StringUtils;
-// import org.codehaus.jettison.json.JSONException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -23,33 +21,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
  */
 public class ErrorUtil {
 
-    /**
-     * Returns the DB Column name and type of Attribute.
-     * ex) NAME::text
-     *
-     * @param reqAttrName
-     * @return
-     */
-    public static String getColumnNameWithType(String reqAttrName) {
-        String reqRootAttrName = "";
-        String reqChildAttributeName = "";
-        String columnName;
-        if (reqAttrName.contains("[")) {
-            reqRootAttrName = reqAttrName.split("\\[")[0];
-            reqChildAttributeName = StringUtils.substringBetween(reqAttrName, "[", "]");
-
-            columnName = reqRootAttrName + "_" + reqChildAttributeName;
-        } else {
-            reqRootAttrName = reqAttrName;
-
-            columnName = reqRootAttrName;
-        }
-
-        columnName = columnName.replace(".", "_");
-
-        return columnName;
-    }
-
+   
     /**
      * Change Exception to ErrorPayload
      * @param e
