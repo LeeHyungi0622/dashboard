@@ -1,17 +1,22 @@
 @charset "utf-8";
 @import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
 
-/* .no-touch { 
-  overflow: hidden;
-} */
-html {width: 100%; height: 100%;}
+:root {
+  --primary-color: #2b4f8c;
+  --light-gray-200: #f8f8f8;
+  --light-gray-300: #dfdfdf;
+  --white: #ffffff;
+}
+
+html {
+  @apply w-full h-full;
+}
 body {font-family: 'Nanum Gothic', sans-serif !important; margin: 0px; padding: 0px; width: 100%; height: 100%; position: relative; font-size: 12px;}
 .v-application {
   font-family: 'Nanum Gothic', sans-serif !important;
 }
 * {
-    margin: 0;
-    padding: 0;
+  @apply m-0 p-0;
 }
 
 *:focus {
@@ -26,59 +31,35 @@ select {
 
 .appTitle {
   padding: 1% 0 0  3%;
-  color : #2b4f8c
-}
-
-.appSystemBar {
-  height: 7%;
-  background-color: #ffff;
-  border-bottom: 1px solid #2b4f8c;
+  color : var(--primary-color);
 }
 
 .userBox {
-  display: flex;
+  @apply flex;
 }
 .userBox .v-list-item__title{
-  color: black
+  @apply text-black;
 }
 
 .activationStatusBox {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  text-align: center;
+  @apply w-full h-full flex text-center;
 }
 
 .acsTextBox {
-  width: 50%;
-  height: 100%;
-  padding-right: 16px;
-  border-right: 1px solid #dfdfdf;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  @apply w-1/2 h-full pr-4 border-r border-solid border-gray-300 flex justify-center items-center text-center;
 }
 
 .acsBtnBox {
-  width: 50%; 
-  height: 100%; 
-  padding-left: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  @apply w-1/2 h-full pl-4 flex justify-center items-center text-center;
 }
 
 .pipelineListBox{
   width: 95%; 
-  display: flex;
-  flex-direction: column;
+  @apply flex flex-col;
 }
 /* Table */
 .pipelineListTitle{
-  width: 100%;
-  margin: 3%;
+  @apply w-full ml-9 mt-10;
 }
 .pipelineTable >.v-data-table__wrapper  .text-start {
   text-align: center !important;
@@ -90,22 +71,22 @@ select {
 
 .pipelineTable >.v-data-table__wrapper th {
   color:black;
-  background-color: #f8f8f8;
+  background-color: var(--light-gray-200);
   border-radius: 0;
 }
 
 .pipelineTable >.v-data-table__wrapper td {
   display: table-cell;
   vertical-align: inherit;
-  border-top: 1px solid#DFDFDF;
-  border-right: 1px solid#DFDFDF;
-  border-bottom: 1px solid #DFDFDF;
+  border-top: 1px solid var(--light-gray-300);
+  border-right: 1px solid var(--light-gray-300);
+  border-bottom: 1px solid var(--light-gray-300);
   font-size: 12px !important;
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(1),
 .pipelineTable >.v-data-table__wrapper td:nth-of-type(1) {
   width: 5%;
-  border-left: 1px solid #DFDFDF;
+  border-left: 1px solid var(--light-gray-300);
   padding: 0 0px;
 }
 .pipelineTable >.v-data-table__wrapper th:nth-of-type(2),
@@ -139,14 +120,14 @@ select {
 
 
 .pipelineTable >.v-data-table__wrapper button {
-  background-color: #2B4F8C;
-  color: #ffffff;
+  background-color: var(--primary-color);
+  color: var(--white);
   width: 100%;
   height: 60%;
 }
 .pipelineTable >.v-data-table__wrapper button:disabled {
   background-color: #C9C9C9;
-  color: #ffffff;
+  color: var(--white);
   width: 100%;
   height: 60%;
 }
@@ -167,7 +148,7 @@ select {
 }
 
 .activationFilter select {
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
   border-radius: none;
   padding: 2%;
   height: 100%;
@@ -193,14 +174,14 @@ select {
   width: 50%;
   padding: 1%;
   border-radius: 0;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
 }
 .search div{
   height: 100%;
   width: 50%;
   padding: 1%;
   border-radius: 0;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
   background-color: #C9C9C9;
 }
 
@@ -208,7 +189,7 @@ select {
   height: 100%;
   width: 8%;
   border-radius: 0;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
   text-overflow: ellipsis;
   cursor: pointer;
 }
@@ -219,8 +200,8 @@ select {
   height: 100%;
   width: 7%;
   border: none;
-  background-color: #2B4F8C;
-  color: #ffffff;
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
 
@@ -247,12 +228,12 @@ select {
   width: 13%;
   padding: 0.5% 0 0.5% 0;
   border: none;
-  background-color: #2B4F8C;
-  color: #ffffff;
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 .pipelineButton:disabled{
   background-color: #C9C9C9;
-  color: #ffffff;
+  color: var(--white);
   width: 13%;
   padding: 0.5% 0 0.5% 0;
   border: none;
@@ -330,16 +311,16 @@ select {
   height: 32px;
   margin-bottom: 2%;
   font-size: 16px;
-  background-color: #2B4F8C;
-  color: #ffffff;
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
 /* footer */
 
 .footer {
   width: 100%;
-  background-color: #ffffff;
-  border-top: 1px solid #2B4F8C;
+  background-color: var(--white);
+  border-top: 1px solid var(--primary-color);
 }
 
 .footer p{
@@ -350,7 +331,7 @@ select {
 .v-card__actions button{
   color: white;
   width: 50%;
-  background-color: #2b4f8c;
+  background-color: var(--primary-color);
   padding: 2% 0 2% 0;
 }
 
@@ -368,7 +349,7 @@ select {
 }
 
 .v-list-item:hover {
-  background-color: #ffffff;
+  background-color: var(--white);
   border-radius:  50px 0 0 50px;
 }
 
@@ -381,12 +362,12 @@ select {
 }
 
 .activationNav {
-  background-color: #ffffff;
+  background-color: var(--white);
   border-radius:  50px 0 0 50px;
 }
 
 .activationNavBoxBtn {
-  background-color: #2b4f8c;
+  background-color: var(--primary-color);
   border-radius:  50px 0 0 50px;
 }
 
@@ -396,17 +377,17 @@ select {
 
 /* pipelineUpdate */
 .pipelineUpdateSubTitle{
-  color: #2b4f8c;
+  color: var(--primary-color);
   margin-top: 20px;
 }
 .pipelineUpdateMainTitle{
-  color: #2b4f8c;
+  color: var(--primary-color);
 }
 
 /* customTable */
 .customTableBox {
-  border: 1px solid #DFDFDF;
-  border-top: 2px solid #2b4f8c; 
+  border: 1px solid var(--light-gray-300);
+  border-top: 2px solid var(--primary-color); 
   margin-top: 1%; 
   width: 100%;
   height: 45px;
@@ -414,7 +395,7 @@ select {
   line-height: 40px;
 }
 .customTableMainArea {
-  border-top: 2px solid #2b4f8c;
+  border-top: 2px solid var(--primary-color);
   margin-top: 1%; 
   width: 100%;
 }
@@ -430,7 +411,7 @@ select {
   line-height: 40px;
   padding-left: 20px;
   background-color: #FBFBFB;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
   justify-content :space-between
 }
 
@@ -439,13 +420,13 @@ select {
   width: 60%;
   height: 45px;
   line-height: 40px;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
 }
 .pipelineUpdateConvertVFT .value {
   width: 60%;
   height: 45px;
   line-height: 40px;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
 }
 .customTable select {
   width: 70%;
@@ -454,7 +435,7 @@ select {
   padding-left: 15px;
   margin-left :12px;
   margin-top: 3px;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
 }
 
 .customTable > .flex > .value div{
@@ -467,16 +448,16 @@ select {
   padding-left: 15px;
   margin-left :12px;
   margin-top: 5px;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
 }
 .customTable  > .value input[type=radio] {
   width: 70%;
   padding-left: 20px;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
   width:15px;
   height: 40px;
   margin-top: 0 !important;
-  accent-color: #2b4f8c;
+  accent-color: var(--primary-color);
 }
 
 .pipelineUpdateConvertVFT {
@@ -495,32 +476,32 @@ select {
   padding-left: 10px;
   height: 70%;
   margin :12px;
-  border: 1px solid #dfdfdf;
+  border: 1px solid var(--light-gray-300);
 }
 .pipelineUpdateConvertVFT select {
   width: 70%;
   height: 70%;
   padding-left: 10px;
   margin :12px;
-  border: 1px solid #dfdfdf;
+  border: 1px solid var(--light-gray-300);
 }
 .pipelineUpdateConvertVFT th{
-  border-top: 2px solid #2b4f8c;
+  border-top: 2px solid var(--primary-color);
   background-color: #FBFBFB !important;
 }
 .pipelineUpdateConvertVFT >.v-data-table__wrapper th:nth-of-type(1),
 .pipelineUpdateConvertVFT >.v-data-table__wrapper td:nth-of-type(1) {
   width: 40%;
-  border-left: 1px solid #DFDFDF;
-  border-right: 1px solid #DFDFDF;
-  border-bottom: 1px solid #DFDFDF;
+  border-left: 1px solid var(--light-gray-300);
+  border-right: 1px solid var(--light-gray-300);
+  border-bottom: 1px solid var(--light-gray-300);
   background-color: #FBFBFB;
 }
 .pipelineUpdateConvertVFT >.v-data-table__wrapper th:nth-of-type(2),
 .pipelineUpdateConvertVFT >.v-data-table__wrapper td:nth-of-type(2) {
   width: 60%;
-  border-right: 1px solid #DFDFDF;
-  border-bottom: 1px solid #DFDFDF;
+  border-right: 1px solid var(--light-gray-300);
+  border-bottom: 1px solid var(--light-gray-300);
   text-align: left !important;
 }
 
@@ -547,32 +528,32 @@ select {
   height: 70%;
   padding-left: 10px;
   margin :12px;
-  border: 1px solid #dfdfdf;
+  border: 1px solid var(--light-gray-300);
 }
 .pipelineUpdateIdVFT th{
-  border-top: 2px solid #2b4f8c;
+  border-top: 2px solid var(--primary-color);
   background-color: #FBFBFB;
 }
 .pipelineUpdateIdVFT >.v-data-table__wrapper th:nth-of-type(1),
 .pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(1) {
   width: 40%;
-  border-left: 1px solid #DFDFDF;
-  border-right: 1px solid #DFDFDF;
-  border-bottom: 1px solid #DFDFDF;
+  border-left: 1px solid var(--light-gray-300);
+  border-right: 1px solid var(--light-gray-300);
+  border-bottom: 1px solid var(--light-gray-300);
   background-color: #FBFBFB;
 }
 .pipelineUpdateIdVFT >.v-data-table__wrapper th:nth-of-type(2),
 .pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(2) {
   width: 60%;
-  border-right: 1px solid #DFDFDF;
-  border-bottom: 1px solid #DFDFDF;
+  border-right: 1px solid var(--light-gray-300);
+  border-bottom: 1px solid var(--light-gray-300);
   text-align: left !important;
 }
 .pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(2) {
   background-color: white;
 }
 .pipelineUpdateButton { 
-  background-color: #2B4F8C;
+  background-color: var(--primary-color);
   color: white;
   font-weight: normal !important;
   width: 180px;
@@ -580,7 +561,7 @@ select {
 }
 .pipelineUpdateButton:disabled { 
   background-color: #C9C9C9;
-  color: #ffffff;
+  color: var(--white);
   font-weight: normal !important;
   width: 180px;
   height: 35px
@@ -602,7 +583,7 @@ select {
 }
 .pipelineCreateNavBox .navBoxBtn {
   background-color: white;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -613,7 +594,7 @@ select {
 }
 .pipelineCreateNavBox .lastbtn {
   background-color: white;
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -624,8 +605,8 @@ select {
 }
 
 .pipelineCreateNavBox .activationBtn {
-  background-color: #2B4F8C;
-  border: 1px solid #DFDFDF;
+  background-color: var(--primary-color);
+  border: 1px solid var(--light-gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -636,8 +617,8 @@ select {
 }
 
 .pipelineCreateNavBox .activeLastbtn {
-  background-color: #2B4F8C;
-  border: 1px solid #DFDFDF;
+  background-color: var(--primary-color);
+  border: 1px solid var(--light-gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -647,8 +628,8 @@ select {
   position: relative;
 }
 .pipelineCreateNavBox .activeNavBoxBtn {
-  background-color: #2B4F8C;
-  border: 1px solid #DFDFDF;
+  background-color: var(--primary-color);
+  border: 1px solid var(--light-gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -661,14 +642,14 @@ select {
   content: "";
   right: -15px;
   border-top: 7px solid transparent; 
-  border-left: 17px solid #2B4F8C;
+  border-left: 17px solid var(--primary-color);
   border-right: 0px solid transparent; 
   border-bottom: 7px solid transparent;
   z-index: 2;
   position: absolute;
 }
 .numberBox{
-  border: 1px solid #DFDFDF;
+  border: 1px solid var(--light-gray-300);
   background-color: rgba( 145, 145, 145, 0.2);
   display: flex;
   align-items: center;
@@ -694,7 +675,7 @@ select {
 .pipelineCreateNavBox .navBoxBtn:after {
   right: -17px;
   border-top: 7px solid transparent; 
-  border-left: 15px solid #dfdfdf; 
+  border-left: 15px solid var(--light-gray-300); 
   border-right: 0px solid transparent; 
   border-bottom: 7px solid transparent; 
   z-index: 1;
@@ -724,14 +705,14 @@ select {
 }
 .userAlertTextBox .first {
   display: flex;
-  border-top: 2px solid #2B4F8C;
+  border-top: 2px solid var(--primary-color);
   width: 500px; 
   height: 40px;
   align-items: center;
 }
 .userAlertTextBox .normal {
   display: flex; 
-  border-top: 1px solid #DFDFDF;
+  border-top: 1px solid var(--light-gray-300);
   width: 500px;
   height: 40px; 
   align-items: center;
@@ -750,7 +731,7 @@ select {
   display:flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px solid #DFDFDF;
+  border-left: 1px solid var(--light-gray-300);
 }
 .ofhover {
   overflow: auto;
