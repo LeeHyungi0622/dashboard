@@ -1,7 +1,7 @@
 <template>
   <div class="pipelineUpdateContentBox">
     <div style="justify-content: space-between; display: flex">
-      <div class="pipelineUpdateSubTitle fsb16">데이터 정제</div>
+      <div class="pipelineUpdateSubTitle text-base font-bold">데이터 정제</div>
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag"
@@ -10,24 +10,24 @@
         {{ $store.state.filterTableUpdateFlag ? "수정완료" : "수정" }}
       </button>
     </div>
-    <div class="pipelineUpdateSubTitle fsb14">Base64 Decoder</div>
+    <div class="pipelineUpdateSubTitle text-sm font-bold">Base64 Decoder</div>
     <div v-for="(item, key) in filterData.nifiComponents" :key="key">
       <custom-table v-if="item.name == 'Base64Decoder'" :contents="item.requiredProps" :table-update-flag="$store.state.filterTableUpdateFlag"/>
     </div>
-    <div class="pipelineUpdateSubTitle fsb14">Root Key Finder</div>
+    <div class="pipelineUpdateSubTitle text-sm font-bold">Root Key Finder</div>
     <div v-for="(item, key) in filterData.nifiComponents" :key="key">
       <custom-table v-if="item.name == 'RootKeyFinder'" :contents="item.requiredProps" :table-update-flag="$store.state.filterTableUpdateFlag"/>
     </div>
     
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
-      class="mgT12"
+      class="mt-3"
       style="display: flex; justify-content: right"
     >
     <button class="pipelineButton" @click="beforeRoute()" >이전</button>
-    <button class="pipelineButton mgL12" @click="saveDraft()" >임시 저장</button>
+    <button class="pipelineButton ml-3" @click="saveDraft()" >임시 저장</button>
       <button
-        class="pipelineButton mgL12"
+        class="pipelineButton ml-3"
         @click="nextRoute()"
         :disabled="!isCompleted[0]"
       >

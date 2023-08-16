@@ -24,62 +24,6 @@ select {
   padding-left: 7px;
 }
 
-
-.fsb16 { 
-  font-size: 16px !important;
-  font-weight: bold !important;
-}
-
-.fs16 { 
-  font-size: 16px !important;
-}
-
-.fs14 {
-  font-size: 14px !important;
-}
-
-.fsb14 {
-  font-size: 14px !important;
-  font-weight: bold !important;
-}
-.fsb12 {
-  font-size: 12px !important;
-  font-weight: bold !important;
-}
-.fs12 {
-  font-size: 12px !important;
-}
-
-.mgL12 {
-  margin-left: 12px;
-}
-.mgR12 {
-  margin-left: 12px;
-}
-
-.mgL16 {
-  margin-left: 16px;
-}
-
-.mgL20 {
-  margin-left: 20px;
-}
-
-.mgT12 {
-  margin-top: 12px;
-}
-
-.mgT16 {
-  margin-top: 16px;
-}
-
-.mgT20 {
-  margin-top: 20px;
-}
-.disf {
-  display: flex;
-}
-
 .appTitle {
   padding: 1% 0 0  3%;
   color : #2b4f8c
@@ -513,7 +457,7 @@ select {
   border: 1px solid #DFDFDF;
 }
 
-.customTable > .disf > .value div{
+.customTable > .flex > .value div{
   width: 100%;
   padding-left: 20px;
 }

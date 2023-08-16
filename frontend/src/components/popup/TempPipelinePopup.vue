@@ -2,12 +2,12 @@
   <div class="text-center">
     <v-dialog v-model="dialog" persistent width="1400">
       <v-card>
-        <v-card-title class="lighten-2 fsb14" style="color: #2b4f8c">
+        <v-card-title class="lighten-2 text-sm font-bold" style="color: #2b4f8c">
           {{ contents.title }}
         </v-card-title>
 
         <v-card-title
-          class="lighten-2 fsb12 mgL12"
+          class="lighten-2 text-xs font-bold ml-3"
           style="float: left:  !important;"
         >
           {{ contents.subTitle }}
@@ -19,7 +19,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;" 
-          class="fs14"
+          class="text-sm"
         >
           <div class="search" style="height: 30px">
             <select style="width: 10%" @change="settingFilter('pipelineFilter', $event)">
@@ -31,9 +31,9 @@
                   {{ title }}
                 </option>
               </select>
-            <input type="text" class="mgL12" v-model="pipelineFilterInput" maxlength="300"/>
-            <!-- <button class="mgL12" @click="actionFilter()">검색</button> -->
-            <select name="" id="" class="mgL12" v-model="perPage" @change="resetPage($event)">
+            <input type="text" class="ml-3" v-model="pipelineFilterInput" maxlength="300"/>
+            <!-- <button class="ml-3" @click="actionFilter()">검색</button> -->
+            <select name="" id="" class="ml-3" v-model="perPage" @change="resetPage($event)">
               <option value="5">5개씩 표시</option>
               <option value="10">10개씩 표시</option>
             </select>
@@ -43,7 +43,7 @@
             :items="convVuetifyData"
             :items-per-page="parseInt(perPage)"
             :page="currentPage"
-            class="pipelineTable mgT12"
+            class="pipelineTable mt-3"
             :search="searchValue"
             :hide-default-footer="true"
             style="text-align: center; width: 100% "
@@ -91,14 +91,14 @@
         <v-card-actions style="display: flex; justify-content: center">
           <button
             style="width: 15%; padding: 3px"
-            class="fs12"
+            class="text-xs"
             @click="goPipelineRegister(`default`)"
           >
             파이프라인 새로 만들기
           </button>
           <button
             style="width: 15%; padding: 3px"
-            class="mgL12 fs12"
+            class="ml-3 text-xs"
             @click="close"
           >
             닫기

@@ -3,7 +3,7 @@
     <v-list-group :value="true" no-action sub-group>
       <template v-slot:activator>
         <v-list-item-content>
-          <v-list-item-title class="pipelineManagement fs12"
+          <v-list-item-title class="pipelineManagement text-xs"
             >데이터 파이프라인 관리</v-list-item-title
           >
         </v-list-item-content>
@@ -19,7 +19,7 @@
       >
         <v-list-item-title
           style="color: white"
-          class="fsb12"
+          class="text-xs font-bold"
           v-text="title"
         ></v-list-item-title>
       </v-list-item>

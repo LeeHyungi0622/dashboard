@@ -2,7 +2,7 @@
   <div class="text-center">
     <v-dialog v-model="dialog" persistent width="550">
       <v-card>
-        <v-card-title class="lighten-2 fsb14" style="color: #2b4f8c">
+        <v-card-title class="lighten-2 text-sm font-bold" style="color: #2b4f8c">
           {{ contents.title }}
         </v-card-title>
 
@@ -13,8 +13,8 @@
               :key="key"
               :class="key == 'id' ? 'first' : 'normal'"
             >
-              <div class="key fsb12">{{ item.key }}</div>
-              <div class="value fs12">
+              <div class="key text-xs font-bold">{{ item.key }}</div>
+              <div class="value text-xs">
                 {{ item.value }}
               </div>
             </div>
@@ -22,7 +22,7 @@
         </v-card-text>
 
         <v-card-actions style="justify-content: right">
-          <button class="fs14" @click="close">확인</button>
+          <button class="text-sm" @click="close">확인</button>
         </v-card-actions>
       </v-card>
     </v-dialog>

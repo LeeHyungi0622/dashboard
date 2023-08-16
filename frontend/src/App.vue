@@ -9,7 +9,7 @@
         border-bottom: 1px solid #2b4f8c;
       "
     >
-      <p class="appTitle fs16">Ingest Manager</p>
+      <p class="appTitle text-base text-blue-400">Ingest Manager</p>
       <v-spacer></v-spacer>
       <div class="text-center">
         <v-menu offset-y>
@@ -33,7 +33,7 @@
             >
               <img src="@/assets/img/user.svg" alt="user" />
               <v-list-item-title
-                class="fs12"
+                class="text-xs"
                 style="color: #000000; padding-left: 12px"
               >
               {{ title }}

@@ -1,7 +1,7 @@
 <template>
   <div class="pipelineUpdateContentBox">
-    <div style="justify-content: space-between; display: flex" class="fsb14">
-      <div class="fsb16" style="color: #2b4f8c">데이터 파이프라인 기본정보</div>
+    <div style="justify-content: space-between; display: flex" class="text-sm font-bold">
+      <div class="text-base font-bold" style="color: #2b4f8c">데이터 파이프라인 기본정보</div>
       <button
         v-if="$store.state.tableShowMode == `UPDATE`"
         class="pipelineUpdateButton"
@@ -14,18 +14,18 @@
     <custom-table :contents="contents" :table-update-flag="$store.state.infoTableUpdateFlag"/>
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
-      class="mgT12"
+      class="mt-3"
       style="display: flex; justify-content: right"
     >
       <button 
-        class="pipelineButton mgL12" 
+        class="pipelineButton ml-3" 
         @click="saveDraft()" 
         :disabled="!this.contents[0].inputValue"
       >
         임시 저장
       </button>
       <button
-        class="pipelineButton mgL12"
+        class="pipelineButton ml-3"
         @click="nextRoute()"
         :disabled="!this.contents[0].inputValue || !this.contents[1].inputValue"
       >

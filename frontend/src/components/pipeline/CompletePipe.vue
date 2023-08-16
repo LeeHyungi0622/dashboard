@@ -1,29 +1,29 @@
 <template>
   <div class="pipelineUpdateContentBox">
-    <div style="justify-content: space-between; display: flex" class="fsb14">
-      <div class="fsb16" style="color: #2b4f8c">데이터 파이프라인 요약</div>
+    <div style="justify-content: space-between; display: flex" class="text-sm font-bold">
+      <div class="text-base font-bold" style="color: #2b4f8c">데이터 파이프라인 요약</div>
     </div>
-    <div class="pipelineUpdateSubTitle fsb14">데이터 파이프라인 기본 정보
+    <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 파이프라인 기본 정보
     </div>
     
     <custom-table :contents="infoContents"/>
 
-    <div class="pipelineUpdateSubTitle fsb14">데이터 수집 정보
+    <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 수집 정보
     </div>
     <custom-table :contents="collectorContents" />
-    <div class="pipelineUpdateSubTitle fsb14">데이터 정제 정보
+    <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 정제 정보
     </div>
     <custom-table :contents="filterContents" />
-    <div class="pipelineUpdateSubTitle fsb14">데이터 변환 정보
+    <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 변환 정보
     </div>
     <custom-table :contents="converterContents" />
     <div
-      class="mgT12"
+      class="mt-3"
       style="display: flex; justify-content: right"
     >
-      <button class="pipelineButton mgL12" @click="beforeRoute()">이전</button>
+      <button class="pipelineButton ml-3" @click="beforeRoute()">이전</button>
       <button
-        class="pipelineButton mgL12"
+        class="pipelineButton ml-3"
         @click="saveComplete()"
       >
         등록완료

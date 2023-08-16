@@ -2,7 +2,7 @@
   <div class="text-center">
     <v-dialog v-model="dialog" persistent width="500">
       <v-card>
-        <v-card-title class="lighten-2 fsb14" style="color: #2b4f8c">
+        <v-card-title class="lighten-2 text-sm font-bold" style="color: #2b4f8c">
           {{ contents.title }}
         </v-card-title>
 
@@ -14,14 +14,14 @@
             align-items: center;
             text-align: center;
           " 
-          class="fs14"
+          class="text-sm"
         >
           <div v-html="contents.text"></div>
         </v-card-text>
 
         <v-card-actions>
-          <button class="fs14" @click="closeConfirm">예</button>
-          <button class="mgL12 fs14" @click="closeCancel">아니요</button>
+          <button class="text-sm" @click="closeConfirm">예</button>
+          <button class="ml-3 text-sm" @click="closeCancel">아니요</button>
         </v-card-actions>
       </v-card>
     </v-dialog>

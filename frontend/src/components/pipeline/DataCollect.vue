@@ -1,7 +1,7 @@
 <template>
   <div class="pipelineUpdateContentBox">
     <div style="justify-content: space-between; display: flex">
-      <div class="pipelineUpdateMainTitle fsb16">데이터 수집</div>
+      <div class="pipelineUpdateMainTitle text-base font-bold">데이터 수집</div>
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag"
@@ -12,7 +12,7 @@
     </div>
     <div class="customTableMainArea">
       <div class="customTable">
-        <div class="header fsb12">
+        <div class="header text-xs font-bold">
           <p>데이터 수집기</p>
         </div>
         <div class="value">
@@ -38,7 +38,7 @@
 
     <div class="customTableMainArea">
       <div class="customTable">
-        <div class="header fsb12">
+        <div class="header text-xs font-bold">
           <p>수집 설정 목록</p>
         </div>
         <div class="value">
@@ -60,10 +60,10 @@
         </div>
       </div>
     </div>
-    <div class="pipelineUpdateMainTitle fsb16" style="padding: 20px 20px 0px 0px" v-if="selectedCollectValue !='REST Server'">수집 주기 설정</div>
+    <div class="pipelineUpdateMainTitle text-base font-bold" style="padding: 20px 20px 0px 0px" v-if="selectedCollectValue !='REST Server'">수집 주기 설정</div>
     <div class="customTableMainArea" v-if="selectedCollectValue !='REST Server'">
       <div class="customTable">
-        <div class="header fsb12">
+        <div class="header text-xs font-bold">
           <p>모드 선택</p>
         </div>
         <div class="value">
@@ -80,7 +80,7 @@
         </div>
       </div>
       <div class="customTable"  v-if="schedulingMode">
-        <div class="header fsb12">
+        <div class="header text-xs font-bold">
           <p>상세 설정</p>
         </div>
         <div class="value">
@@ -91,24 +91,24 @@
         </div>
       </div>
     </div>
-    <div class="pipelineUpdateSubTitle fsb14">필수 설정 값</div>
+    <div class="pipelineUpdateSubTitle text-sm font-bold">필수 설정 값</div>
     <custom-table 
     :contents="selectedSettingValue.requiredProps" 
     :table-update-flag="$store.state.collectorTableUpdateFlag"/>
     
-    <div class="pipelineUpdateSubTitle fsb14">선택 설정 값</div>
+    <div class="pipelineUpdateSubTitle text-sm font-bold">선택 설정 값</div>
     <custom-table 
     :contents="selectedSettingValue.optionalProps" 
     :table-update-flag="$store.state.collectorTableUpdateFlag"/>
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
-      class="mgT12"
+      class="mt-3"
       style="display: flex; justify-content: right"
     >
       <button class="pipelineButton" @click="beforeRoute()">이전</button>
-      <button class="pipelineButton mgL12"  @click="saveDraft()">임시 저장</button>
+      <button class="pipelineButton ml-3"  @click="saveDraft()">임시 저장</button>
       <button
-        class="pipelineButton mgL12"
+        class="pipelineButton ml-3"
         @click="nextRoute()"
         :disabled="!isCompleted[0]"
       >

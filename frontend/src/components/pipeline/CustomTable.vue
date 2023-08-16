@@ -1,13 +1,13 @@
 <template>
   <div class="customTableMainArea">
     <div class="customTable" v-for="(content, key) in contents" :key="key">
-      <div class="header fsb12" v-if="content.name == 'isBase64'">
+      <div class="header text-xs font-bold" v-if="content.name == 'isBase64'">
         <p> Base64Decoder 설정 </p>
       </div>
-      <div class="header fsb12" v-else-if="content.name == 'root_key'">
+      <div class="header text-xs font-bold" v-else-if="content.name == 'root_key'">
         <p> Root Key 설정 </p>
       </div>
-      <div class="header fsb12" v-else-if="content.name != 'Scheduling'">
+      <div class="header text-xs font-bold" v-else-if="content.name != 'Scheduling'">
         <p v-if="content.name">{{ content.name }}</p>
         <button v-if="content.detail" @click="showTooltip(content.detail)">
           <img style="padding: 15px" src="../../assets/img/Help.svg" />
@@ -17,21 +17,21 @@
       <div class="value" v-if="content.name != 'Scheduling'">
         <!-- BASE64 DECODER -->
         <div
-          class="disf"
+          class="flex"
           v-if="
           content.name == `isBase64` &&
             (tableUpdateFlag || $store.state.tableShowMode == `REGISTER`)
           "
         >
           <input
-            class="mgL12"
+            class="ml-3"
             type="radio"
             v-model="content.inputValue"
             value="true"
           />On
           <input
             type="radio"
-            class="mgL12"
+            class="ml-3"
             v-model="content.inputValue"
             value="false"
           />Off
@@ -40,7 +40,7 @@
         <div v-else-if="tableUpdateFlag || $store.state.tableShowMode == `REGISTER`">
           <div v-if="Array.isArray(content.defaultValue)">
             <select
-              class="disf"
+              class="flex"
               style="padding: 0px 20px 0px 20px;"
               v-if="content.defaultValue.length > 1"
               v-model="content.inputValue"
@@ -59,9 +59,9 @@
           <input v-else type="text" id="normal" v-model="content.inputValue" maxlength="300"/>
         </div>
         <!-- BASE64인데 수정 아닐시 -->
-        <div class="disf" v-else-if="content.name == `isBase64`">
+        <div class="flex" v-else-if="content.name == `isBase64`">
           <input
-            class="mgL12"
+            class="ml-3"
             type="radio"
             v-model="content.inputValue"
             :value="content.inputValue"

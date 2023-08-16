@@ -2,7 +2,7 @@
   <v-app>
     <div class="pipelineListBox">
       <div class="pipelineListTitle">
-        <p class="fsb16 float-left">파이프라인 목록</p>
+        <p class="text-base font-bold float-left">파이프라인 목록</p>
         <div class="redirectBtn" @click="redirectNiFi()"><button class="float-right">NiFi</button></div>
         <div class="searchBox">
           <div class="activationFilter">
@@ -27,10 +27,10 @@
                 {{ title }}
               </option>
             </select>
-            <input v-if="pipelineFilter != 'all'" type="text" class="mgL12" v-model="pipelineFilterInput" maxlength="300"/>
-            <div v-else class="mgL12" maxlength="300"/>
-            <button class="mgL12" @click="actionFilter()">검색</button>
-            <select name="" id="" class="mgL12" v-model="perPage" @change="resetPage($event)">
+            <input v-if="pipelineFilter != 'all'" type="text" class="ml-3" v-model="pipelineFilterInput" maxlength="300"/>
+            <div v-else class="ml-3" maxlength="300"/>
+            <button class="ml-3" @click="actionFilter()">검색</button>
+            <select name="" id="" class="ml-3" v-model="perPage" @change="resetPage($event)">
               <option value="10">10개씩 표시</option>
               <option value="20">20개씩 표시</option>
             </select>
@@ -44,7 +44,7 @@
           :items-per-page="parseInt(perPage)"
           :page="currentPage"
           :expanded.sync="expanded"
-          class="pipelineTable mgT12"
+          class="pipelineTable mt-3"
           show-expand
           :hide-default-footer="true"
           @item-expanded ="getcommandList"
@@ -105,7 +105,7 @@
               <v-app>
                   <div class="pipelineListBox">
                     <div class="pipelineListTitle">
-                      <p class="fsb16">Command History</p>
+                      <p class="text-base font-bold">Command History</p>
                       
                       <v-data-table
                         height="100%"
@@ -115,7 +115,7 @@
                         :items-per-page="parseInt(commandperPage)"
                         :page="commandcurrentPage"
                         :expanded.sync="expanded"
-                        class="pipelineTable mgT12"
+                        class="pipelineTable mt-3"
                         :hide-default-footer="true"
                         style="text-align: center"
                       >
@@ -177,11 +177,11 @@
           </div>
         </div>
 
-        <div class="pipelineBtnBox mgT12">
+        <div class="pipelineBtnBox mt-3">
           <button class="pipelineButton" @click="tempPipelineShows">
             임시저장 파이프라인
           </button>
-          <button class="pipelineButton mgL12" @click="goPipelineRegister">
+          <button class="pipelineButton ml-3" @click="goPipelineRegister">
             파이프라인 등록
           </button>
         </div>

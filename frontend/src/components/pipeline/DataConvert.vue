@@ -1,7 +1,7 @@
 <template>
   <div class="pipelineUpdateContentBox">
     <div style="justify-content: space-between; display: flex">
-      <div class="pipelineUpdateMainTitle fsb16">데이터 변환</div>
+      <div class="pipelineUpdateMainTitle text-base font-bold">데이터 변환</div>
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag" 
@@ -12,7 +12,7 @@
     </div>
     <div class="customTableMainArea" v-if="$store.state.tableShowMode != `UPDATE`">
       <div class="customTable">
-        <div class="header fsb12">
+        <div class="header text-xs font-bold">
           <p>Root Key</p>
         </div>
         <div class="value ">
@@ -22,10 +22,10 @@
         </div>
       </div>
     </div>
-    <div class="pipelineUpdateSubTitle fsb14">원천 데이터 변환 규칙 설정</div>
+    <div class="pipelineUpdateSubTitle text-sm font-bold">원천 데이터 변환 규칙 설정</div>
     <div class="customTableMainArea">
       <div class="customTable">
-        <div class="header fsb12">
+        <div class="header text-xs font-bold">
           <p>dataSet</p>
         </div>
         <div class="value">
@@ -82,8 +82,8 @@
       </template>
     </v-data-table>
 
-    <div class="pipelineUpdateSubTitle fsb14">ID 생성 규칙 설정</div>
-    <div class="customTableBox fsb12">{{ generationKey }}</div>
+    <div class="pipelineUpdateSubTitle text-sm font-bold">ID 생성 규칙 설정</div>
+    <div class="customTableBox text-xs font-bold">{{ generationKey }}</div>
 
     <v-data-table
       :headers="IdHeaders"
@@ -101,7 +101,7 @@
         />
         <div v-else>
           <select
-          class="disf"
+          class="flex"
           style="padding: 0px 20px 0px 20px;"
           v-if="item.defaultValue.length > 1"
           v-model="item.inputValue"
@@ -121,12 +121,12 @@
     </v-data-table>
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
-      class="mgT12"
+      class="mt-3"
       style="display: flex; justify-content: right"
     >
       <button class="pipelineButton" @click="beforeRoute()" >이전</button>
-      <button class="pipelineButton mgL12" @click="saveDraft()" >임시 저장</button>
-      <button class="pipelineButton mgL12" @click="nextRoute()" :disabled="!isCompleted[0]">다음</button>
+      <button class="pipelineButton ml-3" @click="saveDraft()" >임시 저장</button>
+      <button class="pipelineButton ml-3" @click="nextRoute()" :disabled="!isCompleted[0]">다음</button>
     </div>
   </div>
 </template>
