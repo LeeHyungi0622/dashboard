@@ -40,8 +40,7 @@
         <div v-else-if="tableUpdateFlag || $store.state.tableShowMode == `REGISTER`">
           <div v-if="Array.isArray(content.defaultValue)">
             <select
-              class="flex"
-              style="padding: 0px 20px 0px 20px;"
+              class="flex px-5"
               v-if="content.defaultValue.length > 1"
               v-model="content.inputValue"
             >

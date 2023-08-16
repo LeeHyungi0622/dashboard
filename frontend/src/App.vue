@@ -7,7 +7,7 @@
       app
       style="height: 7%; background-color: white; border-bottom: 1px solid #2b4f8c;"
     >
-      <p class="appTitle text-base text-red-400">Ingest Manager</p>
+      <p class="appTitle text-base text-green-400">Ingest Manager</p>
       <v-spacer></v-spacer>
       <div class="text-center">
         <v-menu offset-y>

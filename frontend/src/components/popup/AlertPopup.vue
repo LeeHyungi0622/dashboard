@@ -7,19 +7,12 @@
         </v-card-title>
 
         <v-card-text
-          style="
-            height: 180px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-          "
-          class="text-sm"
+          class="text-sm h-44 flex justify-center items-center text-center"
         >
           <div v-html="contents.text"></div>
         </v-card-text>
 
-        <v-card-actions style="justify-content: center">
+        <v-card-actions class="justify-center">
           <button class="text-sm" @click="close">확인</button>
         </v-card-actions>
       </v-card>

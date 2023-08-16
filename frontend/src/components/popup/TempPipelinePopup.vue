@@ -7,21 +7,14 @@
         </v-card-title>
 
         <v-card-title
-          class="lighten-2 text-xs font-bold ml-3"
-          style="float: left:  !important;"
+          class="lighten-2 text-xs font-bold ml-3 float-left"
         >
           {{ contents.subTitle }}
         </v-card-title>
         <v-card-text
-          style="height: auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;" 
-          class="text-sm"
+          class="text-sm h-auto flex flex-col justify-center items-center text-center"
         >
-          <div class="search" style="height: 30px">
+          <div class="search h-7">
             <select style="width: 10%" @change="settingFilter('pipelineFilter', $event)">
                 <option
                   v-for="([title, val], index) in pipelineListFilterList"
@@ -43,10 +36,9 @@
             :items="convVuetifyData"
             :items-per-page="parseInt(perPage)"
             :page="currentPage"
-            class="pipelineTable mt-3"
+            class="pipelineTable mt-3 w-full text-center"
             :search="searchValue"
             :hide-default-footer="true"
-            style="text-align: center; width: 100% "
           >
             <template v-slot:[`item.readAction`]="{ item }">
               <button @click="goPipelineRegister(item)">이동</button>
@@ -88,17 +80,15 @@
             </div>
         </v-card-text>
 
-        <v-card-actions style="display: flex; justify-content: center">
+        <v-card-actions class="flex justify-center">
           <button
-            style="width: 15%; padding: 3px"
-            class="text-xs"
+            class="text-xs w-1/6 p-1"
             @click="goPipelineRegister(`default`)"
           >
             파이프라인 새로 만들기
           </button>
           <button
-            style="width: 15%; padding: 3px"
-            class="ml-3 text-xs"
+            class="ml-3 text-xs w-1/6 p-1"
             @click="close"
           >
             닫기

@@ -21,7 +21,7 @@
           </div>
         </v-card-text>
 
-        <v-card-actions style="justify-content: right">
+        <v-card-actions class="justify-end">
           <button class="text-sm" @click="close">확인</button>
         </v-card-actions>
       </v-card>

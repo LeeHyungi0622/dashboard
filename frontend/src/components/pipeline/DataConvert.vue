@@ -98,8 +98,7 @@
         />
         <div v-else>
           <select
-          class="flex"
-          style="padding: 0px 20px 0px 20px;"
+          class="flex px-5"
           v-if="item.defaultValue.length > 1"
           v-model="item.inputValue"
         >

@@ -44,11 +44,10 @@
           :items-per-page="parseInt(perPage)"
           :page="currentPage"
           :expanded.sync="expanded"
-          class="pipelineTable mt-3"
+          class="pipelineTable mt-3 text-center"
           show-expand
           :hide-default-footer="true"
           @item-expanded ="getcommandList"
-          style="text-align: center"
         >
           <template v-slot:[`item.status`]="{ item }">
             <div class="activationStatusBox">
@@ -115,9 +114,8 @@
                         :items-per-page="parseInt(commandperPage)"
                         :page="commandcurrentPage"
                         :expanded.sync="expanded"
-                        class="pipelineTable mt-3"
+                        class="pipelineTable mt-3 text-center"
                         :hide-default-footer="true"
-                        style="text-align: center"
                       >
                         <template v-slot:[`item.detail`]="{ item }">
                           <button @click="gettaskList(item.id)">
@@ -136,7 +134,7 @@
                         <v-pagination
                           v-model="commandcurrentPage"
                           :length="commandtotalPage"
-                          style="v-pagination__item"
+                          class="v-pagination__item"
                           color="#2B4F8C"
                         ></v-pagination>
                         <div class="lastPageBtnBox">

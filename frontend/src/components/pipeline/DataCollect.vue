@@ -44,7 +44,7 @@
         <div class="value">
           <div v-if="getPipeline.collector !== null">
             <select
-              style="padding: 0px 20px 0px 20px"
+              class="px-5"
               v-model="selectedSettingValue"
               :disabled="!$store.state.collectorTableUpdateFlag"
             >

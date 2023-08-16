@@ -14,8 +14,7 @@
     <custom-table :contents="contents" :table-update-flag="$store.state.infoTableUpdateFlag"/>
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
-      class="mt-3"
-      style="display: flex; justify-content: right"
+      class="mt-3 flex justify-end"
     >
       <button 
         class="pipelineButton ml-3" 
