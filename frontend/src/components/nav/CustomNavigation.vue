@@ -18,8 +18,7 @@
         :disabled="path == activationRoutePath"
       >
         <v-list-item-title
-          style="color: white"
-          class="text-xs font-bold"
+          class="text-xs font-bold text-white"
           v-text="title"
         ></v-list-item-title>
       </v-list-item>

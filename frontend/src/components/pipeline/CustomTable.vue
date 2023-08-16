@@ -10,7 +10,7 @@
       <div class="header text-xs font-bold" v-else-if="content.name != 'Scheduling'">
         <p v-if="content.name">{{ content.name }}</p>
         <button v-if="content.detail" @click="showTooltip(content.detail)">
-          <img style="padding: 15px" src="../../assets/img/Help.svg" />
+          <img class="p-4" src="../../assets/img/Help.svg" />
         </button>
       </div>
       
@@ -69,8 +69,8 @@
           {{ content.inputValue == "true" ? "On" : "Off" }}
         </div>
         <!-- 수정 아닐시 -->
-        <div style="padding-left: 20px" v-else-if="content.name.toUpperCase().includes('PASSWORD')">{{ showPasswordMasking(content.inputValue) }}</div>
-        <div class="ofhover" style="padding-left: 20px;" v-else>{{ content.inputValue }}</div>
+        <div class="pl-5" v-else-if="content.name.toUpperCase().includes('PASSWORD')">{{ showPasswordMasking(content.inputValue) }}</div>
+        <div class="ofhover pl-5" v-else>{{ content.inputValue }}</div>
       </div>
     </div>
     <v-snackbar v-model="flag" light>

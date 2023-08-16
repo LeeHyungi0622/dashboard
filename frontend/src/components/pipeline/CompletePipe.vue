@@ -1,6 +1,6 @@
 <template>
   <div class="pipelineUpdateContentBox">
-    <div style="justify-content: space-between; display: flex" class="text-sm font-bold">
+    <div class="text-sm font-bold flex justify-between">
       <div class="text-base font-bold" style="color: #2b4f8c">데이터 파이프라인 요약</div>
     </div>
     <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 파이프라인 기본 정보
@@ -18,8 +18,7 @@
     </div>
     <custom-table :contents="converterContents" />
     <div
-      class="mt-3"
-      style="display: flex; justify-content: right"
+      class="mt-3 flex justify-end"
     >
       <button class="pipelineButton ml-3" @click="beforeRoute()">이전</button>
       <button

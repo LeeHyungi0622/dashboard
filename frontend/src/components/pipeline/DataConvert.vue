@@ -1,6 +1,6 @@
 <template>
   <div class="pipelineUpdateContentBox">
-    <div style="justify-content: space-between; display: flex">
+    <div class="flex justify-between">
       <div class="pipelineUpdateMainTitle text-base font-bold">데이터 변환</div>
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
@@ -16,7 +16,7 @@
           <p>Root Key</p>
         </div>
         <div class="value ">
-          <div style="padding: 0px 20px 0px 20px">
+          <div class="px-5">
             {{ $store.state.filterRootKey }}
           </div>
         </div>
@@ -31,7 +31,7 @@
         <div class="value">
           <div>
             <select
-              style="padding: 0px 20px 0px 20px"
+              class="px-5"
               v-model="selectedConverterValue"
               @change="callConvertorProps($event)"
               :disabled="!$store.state.convertorTableUpdateFlag"
@@ -53,13 +53,12 @@
       :headers="convertHeaders"
       :items="convProps"
       :items-per-page="convProps.length + 1"
-      class="pipelineUpdateConvertVFT"
+      class="pipelineUpdateConvertVFT text-center"
       :hide-default-footer="true"
-      style="text-align: center"
       ><template v-slot:[`item.inputValue`]="{ item }">
 
           <select
-          style="padding: 0px 20px 0px 20px;"
+          class="px-5"
           v-if="($store.state.convertorTableUpdateFlag || $store.state.tableShowMode == 'REGISTER') && item.defaultValue.length > 1"
           v-model="item.inputValue"
         >
@@ -77,7 +76,7 @@
             maxlength="300"
           />
 
-          <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
+          <div class="pl-3" v-else>{{ item.inputValue }}</div>
 
       </template>
     </v-data-table>
@@ -88,10 +87,8 @@
     <v-data-table
       :headers="IdHeaders"
       :items="convId"
-      class="pipelineUpdateIdVFT"
+      class="pipelineUpdateIdVFT text-center"
       :hide-default-footer="true"
-      
-      style="text-align: center"
     >
       <template v-slot:[`item.inputValue`]="{ item }">
         <input
@@ -114,15 +111,14 @@
             {{ el }}
           </option>
         </select>
-          <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
+          <div class="pl-3" v-else>{{ item.inputValue }}</div>
         </div>
         
       </template>
     </v-data-table>
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
-      class="mt-3"
-      style="display: flex; justify-content: right"
+      class="mt-3 flex justify-end"
     >
       <button class="pipelineButton" @click="beforeRoute()" >이전</button>
       <button class="pipelineButton ml-3" @click="saveDraft()" >임시 저장</button>

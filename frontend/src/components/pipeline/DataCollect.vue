@@ -1,6 +1,6 @@
 <template>
   <div class="pipelineUpdateContentBox">
-    <div style="justify-content: space-between; display: flex">
+    <div class="flex justify-between">
       <div class="pipelineUpdateMainTitle text-base font-bold">데이터 수집</div>
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
@@ -18,7 +18,7 @@
         <div class="value">
           <div>
             <select
-              style="padding: 0px 20px 0px 20px"
+              class="px-5"
               v-model="selectedCollectValue"
               @change="callCollectorProps($event)"
               :disabled="!$store.state.collectorTableUpdateFlag"
@@ -69,7 +69,7 @@
         <div class="value">
           <div>
             <select
-              style="padding: 0px 20px 0px 20px"
+              class="px-5"
               v-model="schedulingMode"
               :disabled="!$store.state.collectorTableUpdateFlag"
             >
@@ -86,7 +86,7 @@
         <div class="value">
           <div>
             <input v-if="$store.state.collectorTableUpdateFlag" type="text" v-model="schedulingDetail" maxlength="300"/>
-            <div style="padding-left: 20px" v-else>{{ schedulingDetail }}</div>
+            <div class="pl-5" v-else>{{ schedulingDetail }}</div>
           </div>
         </div>
       </div>
@@ -102,8 +102,7 @@
     :table-update-flag="$store.state.collectorTableUpdateFlag"/>
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
-      class="mt-3"
-      style="display: flex; justify-content: right"
+      class="mt-3 flex justify-end"
     >
       <button class="pipelineButton" @click="beforeRoute()">이전</button>
       <button class="pipelineButton ml-3"  @click="saveDraft()">임시 저장</button>
