@@ -4,7 +4,6 @@
 :root {
   --primary-color: #2b4f8c;
   --gray-300: #dfdfdf;
-  --gray-400: var(--gray-400);
   --white: #ffffff;
 }
 
@@ -69,13 +68,11 @@ select {
       background-color: rgba( 220 , 233, 255, 0.2) !important;
     }
     & th {
-      color:black;
-      @apply rounded-none bg-gray-100;
+      @apply rounded-none bg-gray-100 text-black;
     }
     & td {
       vertical-align: inherit;
-      @apply border border-solid border-gray-200 table-cell;
-      font-size: 12px !important;
+      @apply border border-solid border-gray-200 table-cell text-xs;
     }
     & th:nth-of-type(1), td:nth-of-type(1) {
       width: 5%;
@@ -98,32 +95,22 @@ select {
     }
     & button {
       background-color: var(--primary-color);
-      color: var(--white); 
-      width: 100%;
-      height: 60%;
+      @apply text-white w-full h-3/5;
       &:disabled {
-        background-color: var(--gray-400);
-        color: var(--white);
-        width: 100%;
-        height: 60%;
+        @apply text-white w-full h-3/5 bg-gray-300;
       }
     }
   }
 }
 
 .searchBox {
-  display: flex;
-  margin-top: 2%;
-  width: 100%;
-  height: 30px;
-  align-items: center;
+  @apply flex items-center w-full h-8;
 }
 
 .activationFilter {
   @apply flex h-full w-1/4 items-center;
   & p {
-    width: 20%;
-    margin: 0;
+    @apply m-0 w-10;
   }
   & select {
     @apply h-full w-4/5 cursor-pointer px-2 rounded-none border border-solid border-gray-200;
@@ -136,8 +123,7 @@ select {
     @apply h-full w-1/2 px-2 rounded-none border border-solid border-gray-200; 
   }
   & div {
-    @apply h-full w-1/2 rounded-none border border-solid p-3 border-gray-200;
-    background-color: var(--gray-400);
+    @apply h-full w-1/2 rounded-none border border-solid p-3 border-gray-200 bg-gray-300;
   }
   & select {
     @apply h-full w-1/12 rounded-none overflow-ellipsis cursor-pointer border border-solid border-gray-200;
@@ -149,27 +135,12 @@ select {
   }
 }
 
-.searchfilterBox {
-  width: 17%;
-}
-
-.contentsTitle {
-  margin: 2% 0% 0% 3%;
-}
-
 .contentsBox {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  overflow: scroll;
+  @apply flex flex-col w-full h-full overflow-scroll;
 }
 
 .pipelineBtnBox {
-  display: flex; 
-  justify-content: flex-end; 
-  width: 100%;
-  height: auto;
+  @apply flex justify-end w-full h-auto;
 }
 
 .pipelineButton {
@@ -178,21 +149,16 @@ select {
   border: none;
   background-color: var(--primary-color);
   color: var(--white);
+  &:disabled {
+    @apply bg-gray-300 border-none w-1/6;
+    color: var(--white);
+    padding: 0.5% 0 0.5% 0;
+  }
 }
-.pipelineButton:disabled{
-  background-color: var(--gray-400);
-  color: var(--white);
-  width: 13%;
-  padding: 0.5% 0 0.5% 0;
-  border: none;
-}
-
 
 /* pagination */
 .paginationBox {
-  display: flex; 
-  width: 100%; 
-  justify-content: center;
+  @apply flex w-full justify-center;
 }
 
 .firstPageBtnBox { 
@@ -334,13 +300,8 @@ select {
 
 /* customTable */
 .customTableBox {
-  border: 1px solid var(--gray-300);
+  @apply border border-solid border-gray-200 w-full h-11 mt-3 pl-5 leading-10;
   border-top: 2px solid var(--primary-color); 
-  margin-top: 1%; 
-  width: 100%;
-  height: 45px;
-  padding-left: 20px;
-  line-height: 40px;
 }
 .customTableMainArea {
   border-top: 2px solid var(--primary-color);
@@ -506,7 +467,7 @@ select {
   height: 35px
 }
 .pipelineUpdateButton:disabled { 
-  background-color: var(--gray-400);
+  @apply bg-gray-300;
   color: var(--white);
   font-weight: normal !important;
   width: 180px;
