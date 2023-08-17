@@ -126,7 +126,7 @@ select {
     @apply h-full w-1/2 rounded-none border border-solid p-3 border-gray-200 bg-gray-300;
   }
   & select {
-    @apply h-full w-1/12 rounded-none overflow-ellipsis cursor-pointer border border-solid border-gray-200;
+    @apply h-full rounded-none overflow-ellipsis cursor-pointer border border-solid border-gray-200 px-2;
   }
   & button {
     @apply h-full w-1/12 border-none;
@@ -144,7 +144,7 @@ select {
 }
 
 .pipelineButton {
-  @apply w-44 px-6 py-2 text-white border-none;
+  @apply w-44 py-2 text-white border-none;
   background-color: var(--primary-color);
   &:disabled {
     @apply bg-gray-300 border-none w-1/6 text-white px-6 py-2;
@@ -157,8 +157,7 @@ select {
 }
 
 .firstPageBtnBox { 
-  width: 52px; 
-  height: 39.19px; 
+  @apply w-14 h-10;
   transform: translateX(10px);
 }
 
