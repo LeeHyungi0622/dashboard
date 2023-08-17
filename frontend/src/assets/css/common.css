@@ -3,8 +3,8 @@
 
 :root {
   --primary-color: #2b4f8c;
-  --light-gray-200: #f8f8f8;
-  --light-gray-300: #dfdfdf;
+  --gray-300: #dfdfdf;
+  --gray-400: var(--gray-400);
   --white: #ffffff;
 }
 
@@ -20,25 +20,24 @@ body {font-family: 'Nanum Gothic', sans-serif !important; margin: 0px; padding: 
 }
 
 *:focus {
-  outline: none;
+  @apply outline-none;
 }
 
 select {
   background-image: url("../img/drop-down.svg");
   background-position: 95%;
-  padding-left: 7px;
 }
 
 .appTitle {
-  padding: 1% 0 0  3%;
   color : var(--primary-color);
+  @apply pl-12;
 }
 
 .userBox {
   @apply flex;
-}
-.userBox .v-list-item__title{
-  @apply text-black;
+  & .v-list-item__title {
+    @apply text-black;
+  }
 }
 
 .activationStatusBox {
@@ -54,82 +53,62 @@ select {
 }
 
 .pipelineListBox{
-  width: 95%; 
-  @apply flex flex-col;
+  @apply flex flex-col w-full pr-16;
 }
 /* Table */
 .pipelineListTitle{
   @apply w-full ml-9 mt-10;
 }
-.pipelineTable >.v-data-table__wrapper  .text-start {
-  text-align: center !important;
-}
 
-.pipelineTable >.v-data-table__wrapper tr:hover{
-  background-color: rgba( 220 , 233, 255, 0.2) !important;
-}
-
-.pipelineTable >.v-data-table__wrapper th {
-  color:black;
-  background-color: var(--light-gray-200);
-  border-radius: 0;
-}
-
-.pipelineTable >.v-data-table__wrapper td {
-  display: table-cell;
-  vertical-align: inherit;
-  border-top: 1px solid var(--light-gray-300);
-  border-right: 1px solid var(--light-gray-300);
-  border-bottom: 1px solid var(--light-gray-300);
-  font-size: 12px !important;
-}
-.pipelineTable >.v-data-table__wrapper th:nth-of-type(1),
-.pipelineTable >.v-data-table__wrapper td:nth-of-type(1) {
-  width: 5%;
-  border-left: 1px solid var(--light-gray-300);
-  padding: 0 0px;
-}
-.pipelineTable >.v-data-table__wrapper th:nth-of-type(2),
-.pipelineTable >.v-data-table__wrapper td:nth-of-type(2) {
-  width: 13%;
-}
-.pipelineTable >.v-data-table__wrapper th:nth-of-type(3),
-.pipelineTable >.v-data-table__wrapper td:nth-of-type(3) {
-  width: 13%;
-}
-.pipelineTable >.v-data-table__wrapper th:nth-of-type(4),
-.pipelineTable >.v-data-table__wrapper td:nth-of-type(4) {
-  width: 18%;
-}
-.pipelineTable >.v-data-table__wrapper th:nth-of-type(5),
-.pipelineTable >.v-data-table__wrapper td:nth-of-type(5) {
-  width: 14%;
-}
-.pipelineTable >.v-data-table__wrapper th:nth-of-type(6),
-.pipelineTable >.v-data-table__wrapper td:nth-of-type(6) {
-  width: 14%;
-}
-.pipelineTable >.v-data-table__wrapper th:nth-of-type(7),
-.pipelineTable >.v-data-table__wrapper td:nth-of-type(7) {
-  width: 11%;
-}
-.pipelineTable >.v-data-table__wrapper th:nth-of-type(8),
-.pipelineTable >.v-data-table__wrapper td:nth-of-type(8) {
-  width: 12%;
-}
-
-
-.pipelineTable >.v-data-table__wrapper button {
-  background-color: var(--primary-color);
-  color: var(--white);
-  width: 100%;
-  height: 60%;
-}
-.pipelineTable >.v-data-table__wrapper button:disabled {
-  background-color: #C9C9C9;
-  color: var(--white);
-  width: 100%;
-  height: 60%;
+.pipelineTable {
+  & .v-data-table__wrapper {
+    & .text-start {
+      text-align: center !important;
+    }
+    & tr:hover {
+      background-color: rgba( 220 , 233, 255, 0.2) !important;
+    }
+    & th {
+      color:black;
+      @apply rounded-none bg-gray-100;
+    }
+    & td {
+      vertical-align: inherit;
+      @apply border border-solid border-gray-200 table-cell;
+      font-size: 12px !important;
+    }
+    & th:nth-of-type(1), td:nth-of-type(1) {
+      width: 5%;
+      @apply border-l border-solid border-gray-200 p-0;
+    }
+    & th:nth-of-type(2), td:nth-of-type(2), th:nth-of-type(3), td:nth-of-type(3) {
+      width: 13%;
+    }
+    & th:nth-of-type(4), td:nth-of-type(4) {
+      width: 18%;
+    }
+    & th:nth-of-type(5), td:nth-of-type(5), th:nth-of-type(6), td:nth-of-type(6) {
+      width: 14%;
+    }
+    & th:nth-of-type(7), td:nth-of-type(7) {
+      width: 11%;
+    }
+    & th:nth-of-type(8), td:nth-of-type(8) {
+      width: 12%;
+    }
+    & button {
+      background-color: var(--primary-color);
+      color: var(--white); 
+      width: 100%;
+      height: 60%;
+      &:disabled {
+        background-color: var(--gray-400);
+        color: var(--white);
+        width: 100%;
+        height: 60%;
+      }
+    }
+  }
 }
 
 .searchBox {
@@ -141,69 +120,38 @@ select {
 }
 
 .activationFilter {
-  display: flex;
-  height: 100%;
-  width: 20%;
-  align-items: center;
-}
-
-.activationFilter select {
-  border: 1px solid var(--light-gray-300);
-  border-radius: none;
-  padding: 2%;
-  height: 100%;
-  width: 80%;
-  cursor:pointer;
-}
-
-.activationFilter p {
-  width: 20%;
-  margin: 0;
+  @apply flex h-full w-1/4 items-center;
+  & p {
+    width: 20%;
+    margin: 0;
+  }
+  & select {
+    @apply h-full w-4/5 cursor-pointer px-2 rounded-none border border-solid border-gray-200;
+  }
 }
 
 .search {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  float: right;
-  align-items: center;
-  justify-content: flex-end;
-}
-.search input{
-  height: 100%;
-  width: 50%;
-  padding: 1%;
-  border-radius: 0;
-  border: 1px solid var(--light-gray-300);
-}
-.search div{
-  height: 100%;
-  width: 50%;
-  padding: 1%;
-  border-radius: 0;
-  border: 1px solid var(--light-gray-300);
-  background-color: #C9C9C9;
+  @apply flex w-full h-full float-right items-center justify-end;
+  & input {
+    @apply h-full w-1/2 px-2 rounded-none border border-solid border-gray-200; 
+  }
+  & div {
+    @apply h-full w-1/2 rounded-none border border-solid p-3 border-gray-200;
+    background-color: var(--gray-400);
+  }
+  & select {
+    @apply h-full w-1/12 rounded-none overflow-ellipsis cursor-pointer border border-solid border-gray-200;
+  }
+  & button {
+    @apply h-full w-1/12 border-none;
+    background-color: var(--primary-color);
+    color: var(--white);
+  }
 }
 
-.search select {
-  height: 100%;
-  width: 8%;
-  border-radius: 0;
-  border: 1px solid var(--light-gray-300);
-  text-overflow: ellipsis;
-  cursor: pointer;
-}
 .searchfilterBox {
   width: 17%;
 }
-.search button { 
-  height: 100%;
-  width: 7%;
-  border: none;
-  background-color: var(--primary-color);
-  color: var(--white);
-}
-
 
 .contentsTitle {
   margin: 2% 0% 0% 3%;
@@ -232,7 +180,7 @@ select {
   color: var(--white);
 }
 .pipelineButton:disabled{
-  background-color: #C9C9C9;
+  background-color: var(--gray-400);
   color: var(--white);
   width: 13%;
   padding: 0.5% 0 0.5% 0;
@@ -386,7 +334,7 @@ select {
 
 /* customTable */
 .customTableBox {
-  border: 1px solid var(--light-gray-300);
+  border: 1px solid var(--gray-300);
   border-top: 2px solid var(--primary-color); 
   margin-top: 1%; 
   width: 100%;
@@ -411,8 +359,8 @@ select {
   line-height: 40px;
   padding-left: 20px;
   background-color: #FBFBFB;
-  border: 1px solid var(--light-gray-300);
-  justify-content :space-between
+  justify-content :space-between;
+  @apply border border-solid border-gray-200;
 }
 
 
@@ -420,13 +368,13 @@ select {
   width: 60%;
   height: 45px;
   line-height: 40px;
-  border: 1px solid var(--light-gray-300);
+  border: 1px solid var(--gray-300);
 }
 .pipelineUpdateConvertVFT .value {
   width: 60%;
   height: 45px;
   line-height: 40px;
-  border: 1px solid var(--light-gray-300);
+  @apply border border-solid border-gray-200;
 }
 .customTable select {
   width: 70%;
@@ -435,7 +383,7 @@ select {
   padding-left: 15px;
   margin-left :12px;
   margin-top: 3px;
-  border: 1px solid var(--light-gray-300);
+  @apply border border-solid border-gray-200;
 }
 
 .customTable > .flex > .value div{
@@ -448,12 +396,12 @@ select {
   padding-left: 15px;
   margin-left :12px;
   margin-top: 5px;
-  border: 1px solid var(--light-gray-300);
+  @apply border border-solid border-gray-200;
 }
 .customTable  > .value input[type=radio] {
   width: 70%;
   padding-left: 20px;
-  border: 1px solid var(--light-gray-300);
+  @apply border border-solid border-gray-200;
   width:15px;
   height: 40px;
   margin-top: 0 !important;
@@ -476,14 +424,14 @@ select {
   padding-left: 10px;
   height: 70%;
   margin :12px;
-  border: 1px solid var(--light-gray-300);
+  @apply border border-solid border-gray-200;
 }
 .pipelineUpdateConvertVFT select {
   width: 70%;
   height: 70%;
   padding-left: 10px;
   margin :12px;
-  border: 1px solid var(--light-gray-300);
+  @apply border border-solid border-gray-200;
 }
 .pipelineUpdateConvertVFT th{
   border-top: 2px solid var(--primary-color);
@@ -492,16 +440,14 @@ select {
 .pipelineUpdateConvertVFT >.v-data-table__wrapper th:nth-of-type(1),
 .pipelineUpdateConvertVFT >.v-data-table__wrapper td:nth-of-type(1) {
   width: 40%;
-  border-left: 1px solid var(--light-gray-300);
-  border-right: 1px solid var(--light-gray-300);
-  border-bottom: 1px solid var(--light-gray-300);
+  @apply border-l border-r border-b border-solid border-gray-200;
   background-color: #FBFBFB;
 }
 .pipelineUpdateConvertVFT >.v-data-table__wrapper th:nth-of-type(2),
 .pipelineUpdateConvertVFT >.v-data-table__wrapper td:nth-of-type(2) {
   width: 60%;
-  border-right: 1px solid var(--light-gray-300);
-  border-bottom: 1px solid var(--light-gray-300);
+  border-right: 1px solid var(--gray-300);
+  border-bottom: 1px solid var(--gray-300);
   text-align: left !important;
 }
 
@@ -528,7 +474,7 @@ select {
   height: 70%;
   padding-left: 10px;
   margin :12px;
-  border: 1px solid var(--light-gray-300);
+  border: 1px solid var(--gray-300);
 }
 .pipelineUpdateIdVFT th{
   border-top: 2px solid var(--primary-color);
@@ -537,16 +483,16 @@ select {
 .pipelineUpdateIdVFT >.v-data-table__wrapper th:nth-of-type(1),
 .pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(1) {
   width: 40%;
-  border-left: 1px solid var(--light-gray-300);
-  border-right: 1px solid var(--light-gray-300);
-  border-bottom: 1px solid var(--light-gray-300);
+  border-left: 1px solid var(--gray-300);
+  border-right: 1px solid var(--gray-300);
+  border-bottom: 1px solid var(--gray-300);
   background-color: #FBFBFB;
 }
 .pipelineUpdateIdVFT >.v-data-table__wrapper th:nth-of-type(2),
 .pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(2) {
   width: 60%;
-  border-right: 1px solid var(--light-gray-300);
-  border-bottom: 1px solid var(--light-gray-300);
+  border-right: 1px solid var(--gray-300);
+  border-bottom: 1px solid var(--gray-300);
   text-align: left !important;
 }
 .pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(2) {
@@ -560,7 +506,7 @@ select {
   height: 35px
 }
 .pipelineUpdateButton:disabled { 
-  background-color: #C9C9C9;
+  background-color: var(--gray-400);
   color: var(--white);
   font-weight: normal !important;
   width: 180px;
@@ -583,7 +529,7 @@ select {
 }
 .pipelineCreateNavBox .navBoxBtn {
   background-color: white;
-  border: 1px solid var(--light-gray-300);
+  border: 1px solid var(--gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -594,7 +540,7 @@ select {
 }
 .pipelineCreateNavBox .lastbtn {
   background-color: white;
-  border: 1px solid var(--light-gray-300);
+  border: 1px solid var(--gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -606,7 +552,7 @@ select {
 
 .pipelineCreateNavBox .activationBtn {
   background-color: var(--primary-color);
-  border: 1px solid var(--light-gray-300);
+  border: 1px solid var(--gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -618,7 +564,7 @@ select {
 
 .pipelineCreateNavBox .activeLastbtn {
   background-color: var(--primary-color);
-  border: 1px solid var(--light-gray-300);
+  border: 1px solid var(--gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -629,7 +575,7 @@ select {
 }
 .pipelineCreateNavBox .activeNavBoxBtn {
   background-color: var(--primary-color);
-  border: 1px solid var(--light-gray-300);
+  border: 1px solid var(--gray-300);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -649,7 +595,7 @@ select {
   position: absolute;
 }
 .numberBox{
-  border: 1px solid var(--light-gray-300);
+  border: 1px solid var(--gray-300);
   background-color: rgba( 145, 145, 145, 0.2);
   display: flex;
   align-items: center;
@@ -675,7 +621,7 @@ select {
 .pipelineCreateNavBox .navBoxBtn:after {
   right: -17px;
   border-top: 7px solid transparent; 
-  border-left: 15px solid var(--light-gray-300); 
+  border-left: 15px solid var(--gray-300); 
   border-right: 0px solid transparent; 
   border-bottom: 7px solid transparent; 
   z-index: 1;
@@ -712,7 +658,7 @@ select {
 }
 .userAlertTextBox .normal {
   display: flex; 
-  border-top: 1px solid var(--light-gray-300);
+  border-top: 1px solid var(--gray-300);
   width: 500px;
   height: 40px; 
   align-items: center;
@@ -731,7 +677,7 @@ select {
   display:flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px solid var(--light-gray-300);
+  border-left: 1px solid var(--gray-300);
 }
 .ofhover {
   overflow: auto;
