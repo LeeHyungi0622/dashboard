@@ -82,13 +82,13 @@
 
         <v-card-actions class="flex justify-center">
           <button
-            class="text-xs w-1/6 p-1"
+            class="text-xs py-3"
             @click="goPipelineRegister(`default`)"
           >
             파이프라인 새로 만들기
           </button>
           <button
-            class="ml-3 text-xs w-1/6 p-1"
+            class="ml-3 text-xs w-1/6 py-3"
             @click="close"
           >
             닫기

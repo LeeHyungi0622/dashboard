@@ -144,15 +144,10 @@ select {
 }
 
 .pipelineButton {
-  width: 13%;
-  padding: 0.5% 0 0.5% 0;
-  border: none;
+  @apply w-44 px-6 py-2 text-white border-none;
   background-color: var(--primary-color);
-  color: var(--white);
   &:disabled {
-    @apply bg-gray-300 border-none w-1/6;
-    color: var(--white);
-    padding: 0.5% 0 0.5% 0;
+    @apply bg-gray-300 border-none w-1/6 text-white px-6 py-2;
   }
 }
 
