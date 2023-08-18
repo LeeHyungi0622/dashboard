@@ -129,9 +129,8 @@ select {
     @apply h-full rounded-none overflow-ellipsis cursor-pointer border border-solid border-gray-200 px-2;
   }
   & button {
-    @apply h-full w-1/12 border-none;
+    @apply h-full w-1/12 border-none text-white;
     background-color: var(--primary-color);
-    color: var(--white);
   }
 }
 
@@ -159,81 +158,39 @@ select {
 .firstPageBtnBox { 
   @apply w-14 h-10;
   transform: translateX(10px);
-}
-
-.firstPageBtnBox button {
-  width: 32px;
-  height: 32px;
-  margin-top: 9%;
-  background-image: url("../img/keyboard_double_arrow_left_24dp.svg");
-  background-position: center;
-}
-
-
-.firstPageBtnBox button:disabled { 
-  width: 32px;
-  height: 32px;
-  margin-top: 9%;
-  background-image: url("../img/keyboard_double_arrow_left_24dp.svg");
-  background-position: center;
-  opacity: .6;
-  pointer-events: none;
+  & button {
+    @apply w-8 h-8 bg-center;
+    background-image: url("../img/keyboard_double_arrow_left_24dp.svg");
+    &:disabled {
+      @apply bg-center pointer-events-none opacity-60;
+      background-image: url("../img/keyboard_double_arrow_left_24dp.svg");
+    }
+  }
 }
 
 .lastPageBtnBox {
-  width: 52px; 
-  height: 39.19px; 
+  @apply w-10 h-10 ml-2;
   transform: translateX(-10px);
-}
-
-.lastPageBtnBox button{
-  width: 32px;
-  height: 32px;
-  margin-top: 9%;
-  background-image: url("../img/keyboard_double_arrow_right_24dp.svg");
-  background-position: center; 
-}
-
-.lastPageBtnBox button:disabled {
-  width: 32px;
-  height: 32px;
-  margin-top: 9%;
-  background-image: url("../img/keyboard_double_arrow_right_24dp.svg");
-  background-position: center; 
-  opacity: .6;
-  pointer-events: none;
+  & button {
+    @apply w-8 h-8 bg-center;
+    background-image: url("../img/keyboard_double_arrow_right_24dp.svg");
+  }
+  &:disabled {
+    @apply w-8 h-8 bg-center opacity-60 pointer-events-none;
+    background-image: url("../img/keyboard_double_arrow_right_24dp.svg");
+  }
 }
 
 .lastPageBtn:disabled { 
-  width: 32px;
-  height: 32px;
-  margin-top: 9%;
+  @apply w-8 h-8 bg-center opacity-60 pointer-events-none; 
   background-image: url("../img/keyboard_double_arrow_right_24dp.svg");
-  background-position: center; 
-  opacity: .6;
-  pointer-events: none;
 }
 
 .redirectBtn button {
-  width: 5%;
-  height: 32px;
-  margin-bottom: 2%;
-  font-size: 16px;
+  @apply w-20 h-8 mb-5 text-base text-white;
   background-color: var(--primary-color);
-  color: var(--white);
 }
 
-/* footer */
-
-.footer {
-  width: 100%;
-  background-color: var(--white);
-  border-top: 1px solid var(--primary-color);
-}
-
-.footer p{
-  padding: 3px;
-}
 
 /* vuetify */
 .v-card__actions button{
@@ -244,44 +201,44 @@ select {
 }
 
 .pipelineManagement{
-  color: white;
+  @apply text-white;
 }
 
 .v-list-group__header {
   padding: 0px !important;
-  margin-left: 16px;
+  @apply ml-4;
 }
+
 .v-list-group__items > .v-list-item {
   padding: 0px 0px 0px 32px!important;
-  margin-left: 52px;
+  @apply ml-14;
 }
 
 .v-list-item:hover {
-  background-color: var(--white);
+  @apply bg-white ;
   border-radius:  50px 0 0 50px;
-}
-
-.v-list-item:hover > .v-list-item__title{
-  color:black !important;
-}
-
-.v-list-item:hover > .v-list-item__content > .v-list-item__title {
-  color:black !important;
+  & .v-list-item__title {
+    color:black !important;
+  }
+  & .v-list-item__content > .v-list-item__title {
+    color:black !important;
+  }
 }
 
 .activationNav {
   background-color: var(--white);
   border-radius:  50px 0 0 50px;
+  & .v-list-item__title{
+    color: black !important;
+  }
 }
+
 
 .activationNavBoxBtn {
   background-color: var(--primary-color);
   border-radius:  50px 0 0 50px;
 }
 
-.activationNav .v-list-item__title{
-  color: black !important;
-}
 
 /* pipelineUpdate */
 .pipelineUpdateSubTitle{
