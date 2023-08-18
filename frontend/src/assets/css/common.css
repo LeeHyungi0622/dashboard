@@ -352,172 +352,92 @@ select {
 
 .pipelineUpdateBtnBox {
   width: 95%;
-  display: flex; 
-  justify-content: flex-end;
+  @apply flex justify-end;
 }
 
-
-
-
 .pipelineCreateNavBox {
-  display: flex; 
-  width: 100%; 
+  @apply flex w-full justify-center;
   height: 10%;
-  justify-content: center;
   & .navBoxBtn {
-    background-color: white;
-    border: 1px solid var(--gray-300);
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    color: black;
-    width:13%;
-    height: 50px;
-    position: relative;
+    @apply bg-white border border-solid border-gray-200 flex justify-center items-center text-black w-1/6 h-12 relative;
   }
   & .lastbtn {
-    background-color: white;
-    border: 1px solid var(--gray-300);
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    color: black;
-    width:13%;
-    height: 50px;
-    position: relative;
+    @apply bg-white border border-solid border-gray-200 flex justify-center items-center text-black w-1/6 h-12 relative;
   }
   & .activationBtn {
+    @apply border border-solid border-gray-200 flex justify-center items-center text-white w-1/6 h-12 relative;
     background-color: var(--primary-color);
-    border: 1px solid var(--gray-300);
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    color: white;
-    width:13%;
-    height: 50px;
-    position: relative;
   }
   & .activeLastbtn {
+    @apply flex justify-center items-center border border-solid border-gray-200 text-white w-1/6 h-12 relative;
     background-color: var(--primary-color);
-    border: 1px solid var(--gray-300);
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    color: white;
-    width:13%;
-    height: 50px;
-    position: relative;
   }
   & .activeNavBoxBtn {
+    @apply flex justify-center items-center border border-solid border-gray-200 text-white w-1/6 h-12 relative;
     background-color: var(--primary-color);
-    border: 1px solid var(--gray-300);
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    color: white;
-    width:13%;
-    height: 50px;
-    position: relative;
   }
-  & .activationBtn::before {
-    content: "";
-    right: -15px;
-    border-top: 7px solid transparent; 
-    border-left: 17px solid var(--primary-color);
-    border-right: 0px solid transparent; 
-    border-bottom: 7px solid transparent;
-    z-index: 2;
-    position: absolute;
-  }
-  & .activationBtn >  .numberBox{
-    background-color: rgba( 255, 255, 255 ,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 100px;
-    color: white;
-    width:25px;
-    height:25px;
-    margin-right: 10px;
+  & .activationBtn {
+    &::before {
+      @apply absolute -right-4;
+      content: "";
+      border-top: 7px solid transparent; 
+      border-left: 17px solid var(--primary-color);
+      border-right: 0px solid transparent; 
+      border-bottom: 7px solid transparent;
+      z-index: 2;
+    }
+    & .numberBox {
+      @apply flex justify-center items-center rounded-full text-white w-6 h-6 mr-3;
+      background-color: rgba( 255, 255, 255 ,0.2);
+    }
   }
   & .navBoxBtn:after {
-    right: -17px;
+    @apply absolute -right-4;
+    content:""; 
     border-top: 7px solid transparent; 
     border-left: 15px solid var(--gray-300); 
     border-right: 0px solid transparent; 
     border-bottom: 7px solid transparent; 
     z-index: 1;
-    content:""; 
-    position:absolute;
   }
   & .navBoxBtn:before {
+    @apply absolute -right-4;
     content: "";
-    right: -15px;
     border-top: 7px solid transparent; 
     border-left: 17px solid white; 
     border-right: 0px solid transparent; 
     border-bottom: 7px solid transparent;
     z-index: 2;
-    position: absolute;
   }
 }
 
 .numberBox{
-  border: 1px solid var(--gray-300);
+  @apply flex justify-center items-center border border-solid border-gray-200 rounded-bl-full text-black w-6 h-6 mr-3;
   background-color: rgba( 145, 145, 145, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100px;
-  color: black;
-  width:25px;
-  height:25px;
-  margin-right: 10px;
 }
 
 .userAlertTextBox {
-  height: 180px;
+  @apply flex justify-center items-center text-center p-0 mt-0 mx-6 mb-5 h-44;
   width:500px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 0px !important;
-  margin: 0 24px 20px;
   & .first {
-    display: flex;
-    border-top: 2px solid var(--primary-color);
+    @apply flex items-center h-10 border-t-2 border-solid;
     width: 500px; 
-    height: 40px;
-    align-items: center;
+    border-color: var(--primary-color);
   }
   & .normal {
-    display: flex; 
-    border-top: 1px solid var(--gray-300);
+    @apply flex items-center border-t border-solid border-gray-200 h-10;
     width: 500px;
-    height: 40px; 
-    align-items: center;
   }
   & .key {
-    width: 40%;
-    height: 100%;
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #FBFBFB;
+    @apply w-5/12 h-full flex justify-center items-center bg-gray-50;
   }
   & .value {
-    width: 60%; 
-    height: 100%;
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px solid var(--gray-300);
+    @apply w-7/12 h-full flex justify-center items-center border-l border-solid border-gray-200;
   }
 }
 
 .ofhover {
-  overflow: auto;
+  @apply overflow-auto;
 }
 
 .ofhover::-webkit-scrollbar {
