@@ -391,7 +391,7 @@ select {
       z-index: 2;
     }
     & .numberBox {
-      @apply flex justify-center items-center rounded-full text-white w-6 h-6 mr-3;
+      @apply flex justify-center items-center text-white w-6 h-6 mr-3 rounded-full;
       background-color: rgba( 255, 255, 255 ,0.2);
     }
   }
@@ -416,7 +416,7 @@ select {
 }
 
 .numberBox{
-  @apply flex justify-center items-center border border-solid border-gray-200 rounded-bl-full text-black w-6 h-6 mr-3;
+  @apply flex justify-center items-center border border-solid border-gray-200 rounded-full text-black w-6 h-6 mr-3;
   background-color: rgba( 145, 145, 145, 0.2);
 }
 
