@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 95%">
+  <div class="w-full pl-9 pr-9 mt-10">
     <div class="pipelineCreateNavBox mt-5">
       <button :class="$store.state.showRegisterMode == 'info'? 'activationBtn':'navBoxBtn'" 
       disabled>
@@ -28,8 +28,8 @@
       </button>
     </div>
 
-    <div style="margin: 3%">
-      <div class="pipelineBtnBox mt-3">
+    <div>
+      <div class="pipelineBtnBox mt-10">
         <button class="pipelineButton" @click="tempPipelineShows">
           임시저장 파이프라인 목록
         </button>
