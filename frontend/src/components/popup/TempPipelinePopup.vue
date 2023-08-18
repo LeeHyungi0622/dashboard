@@ -26,7 +26,7 @@
               </select>
             <input type="text" class="ml-3" v-model="pipelineFilterInput" maxlength="300"/>
             <!-- <button class="ml-3" @click="actionFilter()">검색</button> -->
-            <select name="" id="" class="ml-3" v-model="perPage" @change="resetPage($event)">
+            <select class="ml-3" v-model="perPage" @change="resetPage($event)">
               <option value="5">5개씩 표시</option>
               <option value="10">10개씩 표시</option>
             </select>
