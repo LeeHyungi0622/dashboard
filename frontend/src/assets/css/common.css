@@ -193,20 +193,13 @@ select {
 
 
 /* vuetify */
-.v-card__actions button{
-  color: white;
-  width: 50%;
+.v-card__actions button {
+  @apply text-white w-6/12 ;
   background-color: var(--primary-color);
-  padding: 2% 0 2% 0;
 }
 
 .pipelineManagement{
   @apply text-white;
-}
-
-.v-list-group__header {
-  padding: 0px !important;
-  @apply ml-4;
 }
 
 .v-list-group__items > .v-list-item {
