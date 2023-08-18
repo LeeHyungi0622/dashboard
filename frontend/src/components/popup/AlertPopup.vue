@@ -2,7 +2,7 @@
   <div class="text-center">
     <v-dialog v-model="dialog" persistent width="500">
       <v-card>
-        <v-card-title class="lighten-2 text-sm font-bold" style="color: #2b4f8c">
+        <v-card-title class="lighten-2 text-sm font-bold primary-color">
           {{ contents.title }}
         </v-card-title>
 

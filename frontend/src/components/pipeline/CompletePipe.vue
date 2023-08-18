@@ -1,7 +1,7 @@
 <template>
   <div class="pipelineUpdateContentBox">
     <div class="text-sm font-bold flex justify-between">
-      <div class="text-base font-bold" style="color: #2b4f8c">데이터 파이프라인 요약</div>
+      <div class="text-base font-bold primary-color">데이터 파이프라인 요약</div>
     </div>
     <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 파이프라인 기본 정보
     </div>
@@ -40,54 +40,56 @@ export default {
   components: {
     CustomTable,
   },
-  data: () => ({
-    infoContents: [        
-      {
-          name: "파이프라인 이름",
-          inputValue: "",
-        },
+  data() {
+    return {
+      infoContents: [        
         {
-          name: "파이프라인 정의",
+            name: "파이프라인 이름",
+            inputValue: "",
+          },
+          {
+            name: "파이프라인 정의",
+            inputValue: "",
+          }
+      ],
+      collectorContents: [
+        {
+          name: "데이터 수집",
           inputValue: "",
         }
       ],
-    collectorContents: [
-      {
-        name: "데이터 수집",
-        inputValue: "",
+      filterContents: [
+        {
+            name: "Base64 Decoder",
+            inputValue: "",
+          },
+          {
+            name: "Message Root",
+            inputValue: "",
+          }
+      ],
+      converterContents: [
+        {
+            name: "DataSet",
+            inputValue: "",
+          },
+          {
+            name: "생성된 ID Key",
+            inputValue: "",
+          }
+      ],
+      alertContent: {
+          title: "파이프라인 등록 완료",
+          text: "파이프라인 등록 완료되었습니다.",
+          url: "default"
+      },
+      alertErrorContent: {
+          title: "파이프라인 등록 실패",
+          text: "일시적인 오류로 파이프라인 등록에 실패하였습니다.",
+          url: "default"
       }
-    ],
-    filterContents: [
-      {
-          name: "Base64 Decoder",
-          inputValue: "",
-        },
-        {
-          name: "Message Root",
-          inputValue: "",
-        }
-    ],
-    converterContents: [
-      {
-          name: "DataSet",
-          inputValue: "",
-        },
-        {
-          name: "생성된 ID Key",
-          inputValue: "",
-        }
-    ],
-    alertContent: {
-        title: "파이프라인 등록 완료",
-        text: "파이프라인 등록 완료되었습니다.",
-        url: "default"
-      },
-    alertErrorContent: {
-        title: "파이프라인 등록 실패",
-        text: "일시적인 오류로 파이프라인 등록에 실패하였습니다.",
-        url: "default"
-      },
-  }),
+    }
+  },
   created() {
     this.getDraftPl();
     this.$store.state.tableShowMode = 'UPDATE';

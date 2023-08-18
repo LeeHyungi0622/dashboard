@@ -1,7 +1,7 @@
 <template>
   <div class="pipelineUpdateContentBox">
     <div class="text-sm font-bold flex justify-between">
-      <div class="text-base font-bold" style="color: #2b4f8c">데이터 파이프라인 기본정보</div>
+      <div class="text-base font-bold primary-color">데이터 파이프라인 기본정보</div>
       <button
         v-if="$store.state.tableShowMode == `UPDATE`"
         class="pipelineUpdateButton"

@@ -30,12 +30,14 @@ export default {
   props: {
     activationRoutePath: String,
   },
-  data: () => ({
-    admins: [
-      ["파이프라인 목록", "/list"],
-      ["파이프라인 등록", "/pipelineRegister"],
-    ],
-  }),
+  data() {
+    return {
+      admins: [
+        ["파이프라인 목록", "/list"],
+        ["파이프라인 등록", "/pipelineRegister"],
+      ]
+    }
+  },
   methods: {
     moveRoute(path) {
 

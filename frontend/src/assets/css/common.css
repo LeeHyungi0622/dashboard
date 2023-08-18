@@ -22,6 +22,10 @@ body {font-family: 'Nanum Gothic', sans-serif !important; margin: 0px; padding: 
   @apply outline-none;
 }
 
+.primary-color {
+  color: var(--primary-color);
+}
+
 select {
   background-image: url("../img/drop-down.svg");
   background-position: 95%;
