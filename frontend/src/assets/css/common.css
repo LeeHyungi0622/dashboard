@@ -297,40 +297,28 @@ select {
   }
   & .v-data-table__wrapper {
     & th:nth-of-type(1), td:nth-of-type(1) {
-      width: 40%;
-      @apply border-l border-r border-b border-solid border-gray-200 bg-gray-50;
+      @apply border-l border-r border-b border-solid border-gray-200 bg-gray-50 w-5/12;
     }
     & th:nth-of-type(2), td:nth-of-type(2) {
-      width: 60%;
-      border-right: 1px solid var(--gray-300);
-      border-bottom: 1px solid var(--gray-300);
-      text-align: left !important;
+      @apply w-7/12 border-r border-b border-solid border-gray-200 text-left;
     }
     & td:nth-of-type(2) {
-      background-color: white;
+      @apply bg-white;
     }
   }
 }
 
 
 .pipelineUpdateIdVFT {
-  margin-top: 20px;
-  text-align: center !important;
-  font-size: 12px !important;
+  @apply mt-5 text-center text-xs;
   & th.text-start{
-    text-align: center !important;
+    @apply text-center;
   }
   & td.text-start {
-    text-align: center !important;
-    padding: 0 !important;
-    font-size: 12px !important;
+    @apply text-center p-0 text-xs;
   }
   & input {
-    width: 70%;
-    height: 70%;
-    padding-left: 10px;
-    margin :12px;
-    border: 1px solid var(--gray-300);
+    @apply w-8/12 h-4/6 pl-3 m-3 border border-solid border-gray-200;
   }
   & th{
     @apply bg-gray-50 border-t-2 border-solid;
@@ -338,37 +326,22 @@ select {
   }
   & .v-data-table__wrapper {
     & th:nth-of-type(1), td:nth-of-type(1) {
-      width: 40%;
-      border-left: 1px solid var(--gray-300);
-      border-right: 1px solid var(--gray-300);
-      border-bottom: 1px solid var(--gray-300);
-      background-color: #FBFBFB;
+      @apply border-l border-r border-b border-solid border-gray-200 w-5/12 bg-gray-50;
     }
     & th:nth-of-type(2), td:nth-of-type(2) {
-      width: 60%;
-      border-right: 1px solid var(--gray-300);
-      border-bottom: 1px solid var(--gray-300);
-      text-align: left !important;
+      @apply w-7/12 border-r border-b border-solid border-gray-200 text-left;
     }
     & td:nth-of-type(2) {
-      background-color: white;
+      @apply bg-white;
     }
   }
 }
 
-
 .pipelineUpdateButton { 
   background-color: var(--primary-color);
-  color: white;
-  font-weight: normal !important;
-  width: 180px;
-  height: 35px;
+  @apply text-white font-normal w-44 h-9;
   &:disabled {
-    @apply bg-gray-300;
-    color: var(--white);
-    font-weight: normal !important;
-    width: 180px;
-    height: 35px;
+    @apply bg-gray-300 text-white font-normal w-44 h-9;
   }
 }
 
