@@ -215,35 +215,32 @@ select {
 }
 
 .v-list-item:hover {
-  @apply bg-white ;
-  border-radius:  50px 0 0 50px;
+  @apply bg-white rounded-tl-3xl rounded-bl-3xl;
   & .v-list-item__title {
-    color:black !important;
+    @apply text-black;
   }
   & .v-list-item__content > .v-list-item__title {
-    color:black !important;
+    @apply text-black;
   }
 }
 
 .activationNav {
-  background-color: var(--white);
-  border-radius:  50px 0 0 50px;
+  @apply bg-white rounded-tl-3xl rounded-bl-3xl;
   & .v-list-item__title{
-    color: black !important;
+    @apply text-black;
   }
 }
 
-
 .activationNavBoxBtn {
   background-color: var(--primary-color);
-  border-radius:  50px 0 0 50px;
+  @apply rounded-tl-3xl rounded-bl-3xl;
 }
 
 
 /* pipelineUpdate */
 .pipelineUpdateSubTitle{
+  @apply mt-5;
   color: var(--primary-color);
-  margin-top: 20px;
 }
 .pipelineUpdateMainTitle{
   color: var(--primary-color);
@@ -251,261 +248,292 @@ select {
 
 /* customTable */
 .customTableBox {
-  @apply border border-solid border-gray-200 w-full h-11 mt-3 pl-5 leading-10;
-  border-top: 2px solid var(--primary-color); 
+  @apply border border-solid border-gray-200 w-full h-11 mt-3 pl-5 leading-10 border-t-2 border-solid;
+  border-color: var(--primary-color);
 }
+
 .customTableMainArea {
-  border-top: 2px solid var(--primary-color);
-  margin-top: 1%; 
-  width: 100%;
+  @apply border-t-2 border-solid mt-2 w-full;
+  border-color: var(--primary-color);
 }
+
 .customTable {
-  display: flex;
-}
-
-
-.customTable > .header {
-  width: 40%;
-  height: 45px;
-  display: flex;
-  line-height: 40px;
-  padding-left: 20px;
-  background-color: #FBFBFB;
-  justify-content :space-between;
-  @apply border border-solid border-gray-200;
-}
-
-
-.customTable .value {
-  width: 60%;
-  height: 45px;
-  line-height: 40px;
-  border: 1px solid var(--gray-300);
-}
-.pipelineUpdateConvertVFT .value {
-  width: 60%;
-  height: 45px;
-  line-height: 40px;
-  @apply border border-solid border-gray-200;
-}
-.customTable select {
-  width: 70%;
-  height: 35px;
-  line-height: 40px;
-  padding-left: 15px;
-  margin-left :12px;
-  margin-top: 3px;
-  @apply border border-solid border-gray-200;
-}
-
-.customTable > .flex > .value div{
-  width: 100%;
-  padding-left: 20px;
-}
-.customTable > .value input {
-  width: 70%;
-  height: 30px;
-  padding-left: 15px;
-  margin-left :12px;
-  margin-top: 5px;
-  @apply border border-solid border-gray-200;
-}
-.customTable  > .value input[type=radio] {
-  width: 70%;
-  padding-left: 20px;
-  @apply border border-solid border-gray-200;
-  width:15px;
-  height: 40px;
-  margin-top: 0 !important;
-  accent-color: var(--primary-color);
+  @apply flex;
+  & .header {
+    width: 40%;
+    height: 45px;
+    display: flex;
+    line-height: 40px;
+    padding-left: 20px;
+    background-color: #FBFBFB;
+    justify-content :space-between;
+    @apply border border-solid border-gray-200;
+  }
+  & .value {
+    width: 60%;
+    height: 45px;
+    line-height: 40px;
+    border: 1px solid var(--gray-300);
+    & input {
+      width: 70%;
+      height: 30px;
+      padding-left: 15px;
+      margin-left :12px;
+      margin-top: 5px;
+      @apply border border-solid border-gray-200;
+    }
+    & input[type=radio] {
+      width: 70%;
+      padding-left: 20px;
+      @apply border border-solid border-gray-200;
+      width:15px;
+      height: 40px;
+      margin-top: 0 !important;
+      accent-color: var(--primary-color);
+    }
+  }
+  & select {
+    width: 70%;
+    height: 35px;
+    line-height: 40px;
+    padding-left: 15px;
+    margin-left :12px;
+    margin-top: 3px;
+    @apply border border-solid border-gray-200;
+  
+  }
+  & .flex > .value div {
+    width: 100%;
+    padding-left: 20px;
+  }
 }
 
 .pipelineUpdateConvertVFT {
   margin-top: 20px;
-}
-.pipelineUpdateConvertVFT  th.text-start{
-  text-align: center !important;
-}
-.pipelineUpdateConvertVFT  td.text-start{
-  text-align: center !important;
-  padding:0 !important;
-  font-size: 12px !important;
-}
-.pipelineUpdateConvertVFT input {
-  width: 70%;
-  padding-left: 10px;
-  height: 70%;
-  margin :12px;
-  @apply border border-solid border-gray-200;
-}
-.pipelineUpdateConvertVFT select {
-  width: 70%;
-  height: 70%;
-  padding-left: 10px;
-  margin :12px;
-  @apply border border-solid border-gray-200;
-}
-.pipelineUpdateConvertVFT th{
-  border-top: 2px solid var(--primary-color);
-  background-color: #FBFBFB !important;
-}
-.pipelineUpdateConvertVFT >.v-data-table__wrapper th:nth-of-type(1),
-.pipelineUpdateConvertVFT >.v-data-table__wrapper td:nth-of-type(1) {
-  width: 40%;
-  @apply border-l border-r border-b border-solid border-gray-200;
-  background-color: #FBFBFB;
-}
-.pipelineUpdateConvertVFT >.v-data-table__wrapper th:nth-of-type(2),
-.pipelineUpdateConvertVFT >.v-data-table__wrapper td:nth-of-type(2) {
-  width: 60%;
-  border-right: 1px solid var(--gray-300);
-  border-bottom: 1px solid var(--gray-300);
-  text-align: left !important;
+  & .value {
+    @apply border border-solid border-gray-200 w-7/12 h-11 leading-10;
+  }
+  & th {
+    border-top: 2px solid var(--primary-color);
+    background-color: #FBFBFB !important;
+    & .text-start{
+      text-align: center !important;
+    }
+  }
+  & td.text-start{
+    text-align: center !important;
+    padding:0 !important;
+    font-size: 12px !important;
+  }
+  & input {
+    width: 70%;
+    padding-left: 10px;
+    height: 70%;
+    margin :12px;
+    @apply border border-solid border-gray-200;
+  }
+  & select {
+    width: 70%;
+    height: 70%;
+    padding-left: 10px;
+    margin :12px;
+    @apply border border-solid border-gray-200;
+  }
+  & .v-data-table__wrapper {
+    & th:nth-of-type(1), td:nth-of-type(1) {
+      width: 40%;
+      @apply border-l border-r border-b border-solid border-gray-200;
+      background-color: #FBFBFB;
+    }
+    & th:nth-of-type(2), td:nth-of-type(2) {
+      width: 60%;
+      border-right: 1px solid var(--gray-300);
+      border-bottom: 1px solid var(--gray-300);
+      text-align: left !important;
+    }
+    & td:nth-of-type(2) {
+      background-color: white;
+    }
+  }
 }
 
-.pipelineUpdateConvertVFT >.v-data-table__wrapper td:nth-of-type(2) {
-  background-color: white;
-}
 
 .pipelineUpdateIdVFT {
   margin-top: 20px;
   text-align: center !important;
   font-size: 12px !important;
+  & th.text-start{
+    text-align: center !important;
+  }
+  & td.text-start {
+    text-align: center !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+  }
+  & input {
+    width: 70%;
+    height: 70%;
+    padding-left: 10px;
+    margin :12px;
+    border: 1px solid var(--gray-300);
+  }
+  & th{
+    border-top: 2px solid var(--primary-color);
+    background-color: #FBFBFB;
+  }
+  & .v-data-table__wrapper {
+    & th:nth-of-type(1), td:nth-of-type(1) {
+      width: 40%;
+      border-left: 1px solid var(--gray-300);
+      border-right: 1px solid var(--gray-300);
+      border-bottom: 1px solid var(--gray-300);
+      background-color: #FBFBFB;
+    }
+    & th:nth-of-type(2), td:nth-of-type(2) {
+      width: 60%;
+      border-right: 1px solid var(--gray-300);
+      border-bottom: 1px solid var(--gray-300);
+      text-align: left !important;
+    }
+    & td:nth-of-type(2) {
+      background-color: white;
+    }
+  }
 }
-.pipelineUpdateIdVFT th.text-start{
-  text-align: center !important;
-}
-.pipelineUpdateIdVFT td.text-start {
-  text-align: center !important;
-  padding: 0 !important;
-  font-size: 12px !important;
 
-}
-.pipelineUpdateIdVFT input {
-  width: 70%;
-  height: 70%;
-  padding-left: 10px;
-  margin :12px;
-  border: 1px solid var(--gray-300);
-}
-.pipelineUpdateIdVFT th{
-  border-top: 2px solid var(--primary-color);
-  background-color: #FBFBFB;
-}
-.pipelineUpdateIdVFT >.v-data-table__wrapper th:nth-of-type(1),
-.pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(1) {
-  width: 40%;
-  border-left: 1px solid var(--gray-300);
-  border-right: 1px solid var(--gray-300);
-  border-bottom: 1px solid var(--gray-300);
-  background-color: #FBFBFB;
-}
-.pipelineUpdateIdVFT >.v-data-table__wrapper th:nth-of-type(2),
-.pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(2) {
-  width: 60%;
-  border-right: 1px solid var(--gray-300);
-  border-bottom: 1px solid var(--gray-300);
-  text-align: left !important;
-}
-.pipelineUpdateIdVFT >.v-data-table__wrapper td:nth-of-type(2) {
-  background-color: white;
-}
+
 .pipelineUpdateButton { 
   background-color: var(--primary-color);
   color: white;
   font-weight: normal !important;
   width: 180px;
-  height: 35px
+  height: 35px;
+  &:disabled {
+    @apply bg-gray-300;
+    color: var(--white);
+    font-weight: normal !important;
+    width: 180px;
+    height: 35px;
+  }
 }
-.pipelineUpdateButton:disabled { 
-  @apply bg-gray-300;
-  color: var(--white);
-  font-weight: normal !important;
-  width: 180px;
-  height: 35px
-}
+
 .pipelineUpdateContentBox{
   width: 95%; 
   margin-top: 5%;
 }
+
 .pipelineUpdateBtnBox {
   width: 95%;
   display: flex; 
   justify-content: flex-end;
 }
+
+
+
+
 .pipelineCreateNavBox {
   display: flex; 
   width: 100%; 
   height: 10%;
   justify-content: center;
-}
-.pipelineCreateNavBox .navBoxBtn {
-  background-color: white;
-  border: 1px solid var(--gray-300);
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  color: black;
-  width:13%;
-  height: 50px;
-  position: relative;
-}
-.pipelineCreateNavBox .lastbtn {
-  background-color: white;
-  border: 1px solid var(--gray-300);
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  color: black;
-  width:13%;
-  height: 50px;
-  position: relative;
+  & .navBoxBtn {
+    background-color: white;
+    border: 1px solid var(--gray-300);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    color: black;
+    width:13%;
+    height: 50px;
+    position: relative;
+  }
+  & .lastbtn {
+    background-color: white;
+    border: 1px solid var(--gray-300);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    color: black;
+    width:13%;
+    height: 50px;
+    position: relative;
+  }
+  & .activationBtn {
+    background-color: var(--primary-color);
+    border: 1px solid var(--gray-300);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    color: white;
+    width:13%;
+    height: 50px;
+    position: relative;
+  }
+  & .activeLastbtn {
+    background-color: var(--primary-color);
+    border: 1px solid var(--gray-300);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    color: white;
+    width:13%;
+    height: 50px;
+    position: relative;
+  }
+  & .activeNavBoxBtn {
+    background-color: var(--primary-color);
+    border: 1px solid var(--gray-300);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    color: white;
+    width:13%;
+    height: 50px;
+    position: relative;
+  }
+  & .activationBtn::before {
+    content: "";
+    right: -15px;
+    border-top: 7px solid transparent; 
+    border-left: 17px solid var(--primary-color);
+    border-right: 0px solid transparent; 
+    border-bottom: 7px solid transparent;
+    z-index: 2;
+    position: absolute;
+  }
+  & .activationBtn >  .numberBox{
+    background-color: rgba( 255, 255, 255 ,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100px;
+    color: white;
+    width:25px;
+    height:25px;
+    margin-right: 10px;
+  }
+  & .navBoxBtn:after {
+    right: -17px;
+    border-top: 7px solid transparent; 
+    border-left: 15px solid var(--gray-300); 
+    border-right: 0px solid transparent; 
+    border-bottom: 7px solid transparent; 
+    z-index: 1;
+    content:""; 
+    position:absolute;
+  }
+  & .navBoxBtn:before {
+    content: "";
+    right: -15px;
+    border-top: 7px solid transparent; 
+    border-left: 17px solid white; 
+    border-right: 0px solid transparent; 
+    border-bottom: 7px solid transparent;
+    z-index: 2;
+    position: absolute;
+  }
 }
 
-.pipelineCreateNavBox .activationBtn {
-  background-color: var(--primary-color);
-  border: 1px solid var(--gray-300);
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  color: white;
-  width:13%;
-  height: 50px;
-  position: relative;
-}
-
-.pipelineCreateNavBox .activeLastbtn {
-  background-color: var(--primary-color);
-  border: 1px solid var(--gray-300);
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  color: white;
-  width:13%;
-  height: 50px;
-  position: relative;
-}
-.pipelineCreateNavBox .activeNavBoxBtn {
-  background-color: var(--primary-color);
-  border: 1px solid var(--gray-300);
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  color: white;
-  width:13%;
-  height: 50px;
-  position: relative;
-}
-.pipelineCreateNavBox .activationBtn::before {
-  content: "";
-  right: -15px;
-  border-top: 7px solid transparent; 
-  border-left: 17px solid var(--primary-color);
-  border-right: 0px solid transparent; 
-  border-bottom: 7px solid transparent;
-  z-index: 2;
-  position: absolute;
-}
 .numberBox{
   border: 1px solid var(--gray-300);
   background-color: rgba( 145, 145, 145, 0.2);
@@ -518,38 +546,6 @@ select {
   height:25px;
   margin-right: 10px;
 }
-.pipelineCreateNavBox .activationBtn >  .numberBox{
-  background-color: rgba( 255, 255, 255 ,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100px;
-  color: white;
-  width:25px;
-  height:25px;
-  margin-right: 10px;
-}
-
-.pipelineCreateNavBox .navBoxBtn:after {
-  right: -17px;
-  border-top: 7px solid transparent; 
-  border-left: 15px solid var(--gray-300); 
-  border-right: 0px solid transparent; 
-  border-bottom: 7px solid transparent; 
-  z-index: 1;
-  content:""; 
-  position:absolute;
-}
-.pipelineCreateNavBox .navBoxBtn:before {
-  content: "";
-  right: -15px;
-  border-top: 7px solid transparent; 
-  border-left: 17px solid white; 
-  border-right: 0px solid transparent; 
-  border-bottom: 7px solid transparent;
-  z-index: 2;
-  position: absolute;
-}
 
 .userAlertTextBox {
   height: 180px;
@@ -560,37 +556,38 @@ select {
   text-align: center;
   padding: 0px !important;
   margin: 0 24px 20px;
+  & .first {
+    display: flex;
+    border-top: 2px solid var(--primary-color);
+    width: 500px; 
+    height: 40px;
+    align-items: center;
+  }
+  & .normal {
+    display: flex; 
+    border-top: 1px solid var(--gray-300);
+    width: 500px;
+    height: 40px; 
+    align-items: center;
+  }
+  & .key {
+    width: 40%;
+    height: 100%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #FBFBFB;
+  }
+  & .value {
+    width: 60%; 
+    height: 100%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid var(--gray-300);
+  }
 }
-.userAlertTextBox .first {
-  display: flex;
-  border-top: 2px solid var(--primary-color);
-  width: 500px; 
-  height: 40px;
-  align-items: center;
-}
-.userAlertTextBox .normal {
-  display: flex; 
-  border-top: 1px solid var(--gray-300);
-  width: 500px;
-  height: 40px; 
-  align-items: center;
-}
-.userAlertTextBox .key {
-  width: 40%;
-  height: 100%;
-  display:flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #FBFBFB;
-}
-.userAlertTextBox .value {
-  width: 60%; 
-  height: 100%;
-  display:flex;
-  align-items: center;
-  justify-content: center;
-  border-left: 1px solid var(--gray-300);
-}
+
 .ofhover {
   overflow: auto;
 }
