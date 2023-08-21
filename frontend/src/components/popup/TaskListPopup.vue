@@ -14,18 +14,6 @@
         <v-card-text
           class="text-sm h-auto flex flex-col justify-center items-center text-center"
         >
-          <!-- <div class="search" style="height: 30px">
-            <select style="width: 10%">
-                <option>
-                  title
-                </option>
-              </select>
-            <input type="text" class="ml-3"/>
-            <select name="" id="" class="ml-3">
-              <option value="5">5개씩 표시</option>
-              <option value="10">10개씩 표시</option>
-            </select>
-          </div> -->
           <v-data-table
             :headers="headers"
             :items="taskdatas"

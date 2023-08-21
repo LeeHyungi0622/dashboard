@@ -15,7 +15,7 @@
           class="text-sm h-auto flex flex-col justify-center items-center text-center"
         >
           <div class="search h-7">
-            <select style="width: 10%" @change="settingFilter('pipelineFilter', $event)">
+            <select @change="settingFilter('pipelineFilter', $event)">
                 <option
                   v-for="([title, val], index) in pipelineListFilterList"
                   :key="index"

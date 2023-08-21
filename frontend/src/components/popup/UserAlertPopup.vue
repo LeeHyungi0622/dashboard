@@ -7,7 +7,7 @@
         </v-card-title>
 
         <v-card-text class="userAlertTextBox">
-          <div style="border: 1px solid #dfdfdf">
+          <div class="border border-solid border-gray-300">
             <div
               v-for="(item, key) in contents.userContent"
               :key="key"

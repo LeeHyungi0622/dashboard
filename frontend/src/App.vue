@@ -40,7 +40,7 @@
         </v-menu>
       </div>
     </v-system-bar>
-    <v-navigation-drawer app style="top: 7%; background-color: #2b4f8c">
+    <v-navigation-drawer app style="background-color: #2b4f8c">
       <custom-navigation
         :activation-route-path="activationRoutePath"
       ></custom-navigation>

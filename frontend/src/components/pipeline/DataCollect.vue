@@ -60,7 +60,7 @@
         </div>
       </div>
     </div>
-    <div class="pipelineUpdateMainTitle text-base font-bold" style="padding: 20px 20px 0px 0px" v-if="selectedCollectValue !='REST Server'">수집 주기 설정</div>
+    <div class="pipelineUpdateMainTitle text-base font-bold pt-5 pr-5" v-if="selectedCollectValue !='REST Server'">수집 주기 설정</div>
     <div class="customTableMainArea" v-if="selectedCollectValue !='REST Server'">
       <div class="customTable">
         <div class="header text-xs font-bold">
