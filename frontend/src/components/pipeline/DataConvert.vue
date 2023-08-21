@@ -188,13 +188,13 @@ export default {
     isCompleted(){
       if(this.convProps.length != 0 && this.convId.length != 0){
         for(let prop of this.convProps){
-          if(prop.inputValue == null || prop.inputValue == ""|| prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+          if(prop.inputValue == null || prop.inputValue == ""|| this.$removeBlank(prop.inputValue)==""){
             return [false,"blank"];
           }
         }
         for(let prop of this.convId){
           if(prop.name == "level1"){
-            if(prop.inputValue == null || prop.inputValue == ""|| prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+            if(prop.inputValue == null || prop.inputValue == ""|| this.$removeBlank(prop.inputValue)==""){
               return  [false,"level"];
             }
           }
@@ -280,13 +280,13 @@ export default {
           if(prop.inputValue == null) {
               return [false, prop];
             }
-          else if(prop.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,prop];
+          else if(this.$removeBlank(prop.inputValue)=="") return [false,prop];
         }
         for(let id of this.convId){
           if(id.name == "level1" && id.inputValue == null) {
               return [false, id];
             }
-          if(id.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,"level"];
+          if(this.$removeBlank(id.inputValue)=="") return [false,"level"];
         }
       }
       return [true, null];

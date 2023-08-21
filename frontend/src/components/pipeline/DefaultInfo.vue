@@ -154,12 +154,10 @@ export default {
       }
     },
     checkSpaceInput(contents){
-      let all_blank_pattern = /[\s]/g;
-      let blank_pattern = /^\s+|\s+$/g;
-      if(all_blank_pattern.test(contents[0].inputValue) == true){
+      if(this.$checkAllBlankPattern(contents[0].inputValue) == true){
         return [false, "title"];
       }
-      if(blank_pattern.test(contents[1].inputValue) == true){
+      if(this.$checkBlankPattern(contents[1].inputValue) == true){
         return [false, "detail"];
       }
       return [true, null];

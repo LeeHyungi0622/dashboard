@@ -58,7 +58,7 @@ export default {
         for(var nifi of this.filterData.nifiComponents){
           if(nifi.requiredProps){
             for(var prop of nifi.requiredProps){
-              if(prop.inputValue == null || prop.inputValue == ""|| prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+              if(prop.inputValue == null || prop.inputValue == ""|| this.$removeBlank(prop.inputValue)==""){
                 return [false, prop, nifi.name];
               }
             }
@@ -80,7 +80,7 @@ export default {
                 if(prop.inputValue == null) {
                   return [false, prop];
                 }
-                if(!prop.inputValue.includes("\"") || prop.inputValue.replace(/^\s+|\s+$/g, '')=="" || prop.inputValue.includes("\"\"")){
+                if(!prop.inputValue.includes("\"") || this.$removeBlank(prop.inputValue)=="" || prop.inputValue.includes("\"\"")){
                   return [false, prop];
                 }
                 else{

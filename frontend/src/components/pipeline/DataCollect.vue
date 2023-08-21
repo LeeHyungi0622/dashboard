@@ -200,7 +200,7 @@ export default {
         for(let nifi of this.getPipeline.collector.nifiComponents){
           if(nifi.requiredProps){
             for(let prop of nifi.requiredProps){
-              if(prop.inputValue == null || prop.inputValue == "" || prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+              if(prop.inputValue == null || prop.inputValue == "" || this.$removeBlank(prop.inputValue)==""){
                 return [false, prop, nifi.name];
               }
             }
@@ -209,7 +209,7 @@ export default {
             for(let prop of nifi.optionalProps){
               if(prop.inputValue == ""){
                 prop.inputValue = null;
-              } else if(prop.inputValue != null && prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
+              } else if(prop.inputValue != null && this.$removeBlank(prop.inputValue)==""){
                 return [false, prop, nifi.name];
               }
             }
@@ -222,10 +222,9 @@ export default {
       }
     },
     isSchedulingVaild(){
-      let timerReg = /^[0-9]+ sec$/g;
       if(this.selectedCollectValue !='REST Server'){
         if(this.schedulingMode == "TIMER_DRIVEN"){
-          return timerReg.test(this.schedulingDetail);
+          return this.$checkTimerPattern(this.schedulingDetail);
         }
         else if(this.schedulingMode == "CRON_DRIVEN"){
           return CronVaildator.isValidCronExpression(this.schedulingDetail);
