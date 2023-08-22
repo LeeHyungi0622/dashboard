@@ -14,13 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
@@ -33,29 +30,16 @@ public class PipelineDraftSVC {
     @Autowired
     private DataSetSVC datasetsvc;
 
-    public ResponseEntity createPipelineDrafts(String name, String creator, String detail) {
+    public PipelineVO createPipelineDrafts(String name, String creator, String detail) {
         int result = pipelineDraftMapper.createPipelineDrafts(name, creator, detail);
         if (result != 1) {
-            return ResponseEntity
-                .status(HttpStatus.SC_BAD_GATEWAY)
-                .body("Create Draft Pipeline error in DB");
-            // throw new BadRequestException(
-            //     DataCoreUiCode.ErrorCode.BAD_REQUEST,
-            //     "Create Draft Pipeline error in DB"
-            // );
+            return null;
         }
-        PipelineVO pipeline = (PipelineVO) getPipelineDrafts(
-            pipelineDraftMapper.getPipelineIDbyName(name)
-        )
-            .getBody();
-        return ResponseEntity.ok().body(pipeline);
+        PipelineVO pipeline = getPipelineDrafts(pipelineDraftMapper.getPipelineIDbyName(name));
+        return pipeline;
     }
 
-    public List<String> getDataCollector() {
-        return pipelineDraftMapper.getDataCollector();
-    }
-
-    public ResponseEntity getPipelineDraftsProperties(
+    public PipelineVO getPipelineDraftsProperties(
         Integer pipelineid,
         String page,
         String adaptorName,
@@ -113,10 +97,10 @@ public class PipelineDraftSVC {
             adaptorVO.getNifiComponents().add(niFiComponentVO);
             pipelineVO.setConverter(adaptorVO);
         } else {
-            return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body("invalid Page name");
+            return null;
         }
 
-        return ResponseEntity.ok().body(pipelineVO);
+        return pipelineVO;
     }
 
     //adaptor의 속성값 가져오기
@@ -178,7 +162,6 @@ public class PipelineDraftSVC {
      * @version 1.2.0
      * @auther Justin
      */
-    @Transactional
     public Boolean deletePipelineDrafts(Integer id) {
         int result = pipelineDraftMapper.deletePipelineDrafts(id);
         if (result != 1) {
@@ -192,7 +175,7 @@ public class PipelineDraftSVC {
         parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_COLLECTOR.getCode());
         parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_FILTER.getCode());
         parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_CONVERTER.getCode());
-        PipelineVO pipeline = (PipelineVO) getPipelineDrafts(jsonObject.getInt("id")).getBody();
+        PipelineVO pipeline = getPipelineDrafts(jsonObject.getInt("id"));
         return pipeline;
     }
 
@@ -289,7 +272,7 @@ public class PipelineDraftSVC {
         }
     }
 
-    public ResponseEntity getPipelineDraftsList() {
+    public List<PipelineDraftsListResponseVO> getPipelineDraftsList() {
         List<PipelineVO> pipelineVO = pipelineDraftMapper.getPipelineDraftsList();
 
         List<PipelineDraftsListResponseVO> pipelineDraftsListResponseVO = new ArrayList<>();
@@ -319,21 +302,15 @@ public class PipelineDraftSVC {
 
             pipelineDraftsListResponseVO.add(draftsResponse);
         }
-        return ResponseEntity.ok().body(pipelineDraftsListResponseVO);
+        return pipelineDraftsListResponseVO;
     }
 
-    public ResponseEntity getPipelineDrafts(Integer id) {
+    public PipelineVO getPipelineDrafts(Integer id) {
         PipelineVO result = pipelineDraftMapper.getPipelineDrafts(id);
         if (ValidateUtil.isEmptyData(result)) {
-            return ResponseEntity
-                .status(HttpStatus.SC_BAD_REQUEST)
-                .body("Pipeline Not Exist in DB");
-            // throw new BadRequestException(
-            //     DataCoreUiCode.ErrorCode.NOT_EXIST_ENTITY,
-            //     "Pipeline Not Exist in DB"
-            // );
+            return null;
         }
-        return ResponseEntity.ok().body(result);
+        return result;
     }
 
     public Boolean isExistsDrafts(Integer id) {

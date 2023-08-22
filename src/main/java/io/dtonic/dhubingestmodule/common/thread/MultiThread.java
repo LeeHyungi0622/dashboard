@@ -27,27 +27,27 @@ public class MultiThread implements Runnable{
     
     @Override
     public void run() {
-        Integer pipelineId = pipelineVO.getId();
+        // Integer pipelineId = pipelineVO.getId();
 
-        /* 의존성 주입 */
-        NiFiController niFiController = ApplicationContextProvider.getBean(NiFiController.class);
-        PipelineSVC pipelineSVC = ApplicationContextProvider.getBean(PipelineSVC.class);
+        // /* 의존성 주입 */
+        // NiFiController niFiController = ApplicationContextProvider.getBean(NiFiController.class);
+        // PipelineSVC pipelineSVC = ApplicationContextProvider.getBean(PipelineSVC.class);
 
-        if (niFiController.deletePipeline(pipelineVO.getProcessorGroupId(), commandId)) {
-            historySVC.updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_SUCCEED.getCode());
-            try {
-                pipelineSVC.changePipelineStatus(pipelineId, PipelineStatusCode.PIPELINE_STATUS_DELETED.getCode());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                historySVC.updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_FAILED.getCode());
-                pipelineSVC.changePipelineStatus(pipelineId, PipelineStatusCode.PIPELINE_STATUS_FAILED.getCode());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            log.error("Delete Pipeline Nifi error");
-        }
+        // if (niFiController.deletePipeline(pipelineVO.getProcessorGroupId(), commandId)) {
+        //     historySVC.updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_SUCCEED.getCode());
+        //     try {
+        //         pipelineSVC.changePipelineStatus(pipelineId, PipelineStatusCode.PIPELINE_STATUS_DELETED.getCode());
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //     }
+        // } else {
+        //     try {
+        //         historySVC.updateCommand(commandId,CommandStatusCode.COMMAND_STATUS_FAILED.getCode());
+        //         pipelineSVC.changePipelineStatus(pipelineId, PipelineStatusCode.PIPELINE_STATUS_FAILED.getCode());
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //     }
+        //     log.error("Delete Pipeline Nifi error");
+        // }
     }
 }

@@ -113,37 +113,17 @@ public class NiFiProcessorSVC {
      *
      * @param transmitterId Transmitter id
      */
-    public void updateProcessor(String processorId, ) {
+    public void updateProcessor(String processorId, ProcessorEntity processor) {
         try {
-            ProcessorEntity transmitter = getProcessorEntity(transmitterId);
-            /* Properties Update */
-            Map<String, String> nifiProperties = transmitter.getComponent().getConfig().getProperties();
-            nifiProperties.replace("HTTP Method", "POST");
-            nifiProperties.replace(
-                "Remote URL",
-                properties.getDatacoreIngestUrl() +
-                "/entityOperations/upsert"
-            );
-
-            /* DownStream Terminated */
-            ProcessorConfigDTO config = transmitter.getComponent().getConfig();
-            List<String> autoTerminatedRelationships = new ArrayList<>();
-            autoTerminatedRelationships.add("Failure");
-            autoTerminatedRelationships.add("No Retry");
-            autoTerminatedRelationships.add("Original");
-            autoTerminatedRelationships.add("Response");
-            autoTerminatedRelationships.add("Retry");
-            config.setAutoTerminatedRelationships(autoTerminatedRelationships);
-
-            niFiClient.getProcessors().updateProcessor(transmitterId, transmitter);
+            niFiClient.getProcessors().updateProcessor(processorId, processor);
             log.info(
-                "Success Update Transmitter Properties : Transmitter ID = [{}]",
-                transmitterId
+                "Success Update Processor Properties : Transmitter ID = [{}]",
+                processorId
             );
         } catch (Exception e) {
             log.info(
-                "Fail to Update Transmitter Properties : Transmitter ID = [{}]",
-                transmitterId
+                "Fail to Update Processor Properties : Transmitter ID = [{}]",
+                processorId
             );
         }
     }

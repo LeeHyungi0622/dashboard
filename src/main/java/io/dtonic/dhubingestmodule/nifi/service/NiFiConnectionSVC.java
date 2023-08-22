@@ -40,40 +40,56 @@ public class NiFiConnectionSVC {
      * @param processGroupId
      * @return success/fail boolean
      */
-    public DropRequestEntity clearQueuesInProcessGroup(String processorGroupId) {
+    @TaskHistory(taskName = MonitoringCode.CLEAR_QUEUE_PROCESSGROUP)
+    public Boolean clearQueuesInProcessGroup(Integer commandId, String processorGroupId) {
         try {
             DropRequestEntity result = niFiClient.getProcessGroups().createEmptyAllConnectionsRequest(processorGroupId);
-
             log.info(
-                "Success Clear Queues in Process Group : Process Group ID = [{}]",
+                "Request Clear Queues in Process Group : Process Group ID = [{}]",
                 processorGroupId
             );
-            return result;
+            if (result != null) {
+                try {
+                    Integer retryCnt = 0;
+                    while (retryCnt < 3) {
+                        Boolean res = checkclearQueuesInProcessGroup(processorGroupId , result.getDropRequest().getId());
+                        if (res){
+                            log.info("Success Clear Queue Pipeline : Processor Group ID = {}", processorGroupId);
+                            return true;
+                        } else {
+                            log.warn("Nifi status exist Run Proccessor or Invalid Proccessor", res);
+                            log.warn("Retry Check {} Pipeline Status : Processor Group ID = {}", retryCnt, processorGroupId);
+                        }
+                        /* Sleep 0.3s */
+                        Thread.sleep(300);
+                        retryCnt++;
+                    } 
+                    return false;
+                } catch (InterruptedException e) {
+                    log.error("Interrupt Exception", e);
+                    return false;
+                }
+            } else {
+                log.error("Fail to Clear Queue Pipeline : Processor Group ID = {}", processorGroupId);
+                return false;
+            }
         } catch (Exception e) {
             log.error(
                 "Fail to Clear Queues in Process Group : Process Group ID = [{}]",
                 processorGroupId,
                 e
             );
-            return null;
+            return false;
         }
     }
 
-
-    public boolean checkclearQueuesInProcessGroup(String processorGroupId, String requestId) {
+    private boolean checkclearQueuesInProcessGroup(String processorGroupId, String requestId) {
         try {
             DropRequestEntity requestResult = niFiClient.getProcessGroups().getDropAllFlowfilesRequest(processorGroupId, requestId);
-
-            log.info(
-                "Success Clear Queues in Process Group : Process Group ID = [{}]",
-                processorGroupId
-            );
-
             return requestResult.getDropRequest().isFinished();
-        
         } catch (Exception e) {
             log.error(
-                "Fail to Clear Queues in Process Group : Process Group ID = [{}]",
+                "Fail to Check Queues in Process Group : Process Group ID = [{}]",
                 processorGroupId,
                 e
             );
@@ -219,7 +235,9 @@ public class NiFiConnectionSVC {
      * @param sourceProcessGroupId from process group id
      * @param destinationProcessGroupId to process group id
      */
+    @TaskHistory(taskName = MonitoringCode.CREATE_CONNECTION_BETWEEN_OUTPUT_FUNNEL)
     public Boolean createConnectionFromOutputToFunnel(
+        Integer commandId, 
         String rootProcessGroupId,
         String sourceProcessGroupId,
         String destProcessGroupId
@@ -266,10 +284,9 @@ public class NiFiConnectionSVC {
      * @param sourceProcessorGroupID pipeline processor group id
      * @return success/fail
      */
-    public boolean deleteConnectionToFunnel(String sourceProcessorGroupID) {
+    @TaskHistory(taskName = MonitoringCode.DELETE_CONNECTION)
+    public boolean deleteConnectionToFunnel(Integer commandId, String connectionId) {
         try {
-            /* Empty Queues In Connection */
-            String connectionId = clearQueuesInConnectionToFunnel(sourceProcessorGroupID);
             /* Get Connection Revision */
             String version = niFiClient
                 .getConnections()
@@ -279,10 +296,10 @@ public class NiFiConnectionSVC {
                 .toString();
             /* delete connection */
             niFiClient.getConnections().deleteConnection(connectionId, version, null,null);
-            log.info("Success Delete Connection From {} To Funnel", sourceProcessorGroupID);
+            log.info("Success Delete Connection {} To Funnel", connectionId);
             return true;
         } catch (Exception e) {
-            log.error("Fail to Delete Connection From {} To Funnel", sourceProcessorGroupID, e);
+            log.error("Fail to Delete Connection {} To Funnel", connectionId, e);
             return false;
         }
     }
@@ -294,7 +311,9 @@ public class NiFiConnectionSVC {
      * @param sourceProcessGroupId from process group id
      * @param destinationProcessGroupId to process group id
      */
+    @TaskHistory(taskName = MonitoringCode.CREATE_CONNECTION_BETWEEN_PROCESSGROUP_OUTPUT)
     public Boolean createConnectionFromProcessGroupToOutput(
+        Integer commandId,
         String rootProcessGroupId,
         String sourceProcessGroupId,
         String destProcessGroupId
@@ -341,7 +360,9 @@ public class NiFiConnectionSVC {
      * @param sourceProcessGroupId from process group id
      * @param destinationProcessGroupId to process group id
      */
+    @TaskHistory(taskName = MonitoringCode.CREATE_CONNECTION_BETWEEN_PROCESSGROUP)
     public Boolean createConnectionBetweenProcessGroup(
+        Integer commandId,
         String rootProcessGroupId,
         String sourceProcessGroupId,
         String destinationProcessGroupId
@@ -390,7 +411,8 @@ public class NiFiConnectionSVC {
      * @param sourceProcessorGroupID pipeline processor group id
      * @return String connectionId
      */
-    public String clearQueuesInConnectionToFunnel(String sourceProcessorGroupID) {
+    @TaskHistory(taskName = MonitoringCode.CLEAR_QUEUE_FUNNEL)
+    public Boolean clearQueuesInConnectionToFunnel(Integer commandId, String sourceProcessorGroupID) {
         ConnectionsEntity connections = searchConnectionsInProcessorGroup(
             niFiProcessGroupSVC.searchProcessGroupInProcessGroup("root", "Ingest Manager")
         );
@@ -401,12 +423,37 @@ public class NiFiConnectionSVC {
             for (ConnectionEntity connection : connections.getConnections()) {
                 if (connection.getSourceGroupId().equals(sourceProcessorGroupID)) {
                     try {
-                        niFiClient.getFlowfileQueues().createDropRequest(connection.getId());
+                        DropRequestEntity result = niFiClient.getFlowfileQueues().createDropRequest(connection.getId());
                         log.info(
-                            "Success Clear Queues In Connection From {} To Transmitter",
+                            "Request Clear Queues In Connection From {} To Transmitter",
                             sourceProcessorGroupID
                         );
-                        return connection.getId();
+                        if (result != null) {
+                            try {
+                                Integer retryCnt = 0;
+                                while (retryCnt < 3) {
+                                    // 다른 메서드 해야함
+                                    Boolean res = checkClearQueueInConnection(connection.getId() , result.getDropRequest().getId());
+                                    if (res){
+                                        log.info("Success Clear Queue Pipeline : Processor Group ID = {}", sourceProcessorGroupID);
+                                        return true;
+                                    } else {
+                                        log.warn("Nifi status exist Run Proccessor or Invalid Proccessor", res);
+                                        log.warn("Retry Check {} Pipeline Status : Processor Group ID = {}", retryCnt, sourceProcessorGroupID);
+                                    }
+                                    /* Sleep 0.3s */
+                                    Thread.sleep(300);
+                                    retryCnt++;
+                                } 
+                                return false;
+                            } catch (InterruptedException e) {
+                                log.error("Interrupt Exception", e);
+                                return false;
+                            }
+                        } else {
+                            log.error("Fail to Clear Queue Pipeline : Processor Group ID = {}", sourceProcessorGroupID);
+                            return false;
+                        }
                     } catch (Exception e) {
                         log.error("Fail to Clear Queues In Connection To Funnel", e);
                         return null;
@@ -415,6 +462,20 @@ public class NiFiConnectionSVC {
             }
             log.error("Not Found Connection Processor Group : Id = [{}]", sourceProcessorGroupID);
             return null;
+        }
+    }
+
+    private Boolean checkClearQueueInConnection(String connectionId, String requestId) {
+        try {
+            DropRequestEntity requestResult = niFiClient.getFlowfileQueues().getDropRequest(connectionId, requestId);
+            return requestResult.getDropRequest().isFinished();
+        } catch (Exception e) {
+            log.error(
+                "Fail to Chect Queues In Connection : Connection ID = [{}]",
+                connectionId,
+                e
+            );
+            return false;
         }
     }
     

@@ -15,15 +15,7 @@ public interface PipelineMapper {
     List<PipelineListResponseVO> getPipelineList();
 
     List<PropertyVO> getPipelineproperties(@Param("adaptorName") String adaptorName);
-    /**
-     * [Mapper Interface Get Pipeline Detail by id]
-     * @param id Pipeline id
-     * @return PipelineVO
-     * 
-     * @since 2023. 8. 16
-     * @version 1.2.0
-     * @auther Justin
-     */
+
     PipelineVO getPipeline(@Param("id") Integer id);
 
     int changePipelineStatus(@Param("id") Integer id, @Param("status") String status);

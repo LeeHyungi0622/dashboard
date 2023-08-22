@@ -41,7 +41,7 @@ public class TaskHistoryAspect {
         }         
         Object proceed = joinPoint.proceed();
         if (taskId != null){
-            if (proceed == null){
+            if (proceed == null || proceed.equals(false)){
                 /* Update Command History */
                 historySVC.updateTask(taskId, TaskStatusCode.TASK_STATUS_FAILED.getCode());
             } else {

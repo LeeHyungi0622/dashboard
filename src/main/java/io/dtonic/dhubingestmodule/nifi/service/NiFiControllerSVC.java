@@ -5,16 +5,15 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
+import io.dtonic.dhubingestmodule.common.code.MonitoringCode;
+import io.dtonic.dhubingestmodule.history.aop.task.TaskHistory;
 import io.dtonic.dhubingestmodule.nifi.client.NiFiApiClient;
-import io.dtonic.dhubingestmodule.nifi.vo.NiFiComponentVO;
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
 import io.swagger.client.model.ActivateControllerServicesEntity;
 import io.swagger.client.model.ControllerServiceEntity;
 import io.swagger.client.model.ControllerServicesEntity;
 import io.swagger.client.model.ActivateControllerServicesEntity.StateEnum;
+import io.swagger.client.model.ControllerServiceStatusDTO.RunStatusEnum;
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
@@ -23,36 +22,12 @@ public class NiFiControllerSVC {
     @Autowired
     private NiFiApiClient niFiClient;
     
-    public void updateControllersInAdaptor(String processorGroupId, NiFiComponentVO properies)
-        throws JsonProcessingException {
-        ControllerServicesEntity controllers = searchControllersInProcessorGroup(processorGroupId);
-        if (controllers.getControllerServices().size() == 0) {
-            log.error(
-                "Empty Controller in Processor Group : Processor Group ID = {}",
-                processorGroupId
-            );
-        } else {
-            for (ControllerServiceEntity controller : controllers.getControllerServices()) {
-                if (controller.getComponent().getName().equals(properies.getName())) {
-                    log.info("Controller name : {}", controller.getComponent().getName());
-                    if (properies.getRequiredProps().size() != 0) {
-                        controller =
-                            updateControllerProperties(controller, properies.getRequiredProps());
-                    } else {
-                        log.error("Empty Required Props Elements In {}", properies.getName());
-                    }
-                    if (properies.getOptionalProps().size() != 0) {
-                        controller =
-                            updateControllerProperties(controller, properies.getOptionalProps());
-                    }
-                    try {
-                        ControllerServiceEntity resultEntity = niFiClient.getControllerServices().updateControllerService(controller.getId(), controller);
-                        log.info("Update Controllers In Adaptor : Controller = {}", resultEntity);
-                    } catch (Exception e) {
-                        log.error("Fail to Update Controllers in Adaptor.", e);
-                    }
-                }
-            }
+    public ControllerServiceEntity updateController(String controllerId, ControllerServiceEntity controllerEntity){
+        try {
+            return niFiClient.getControllerServices().updateControllerService(controllerId, controllerEntity);
+        } catch (Exception e) {
+            log.error("Fail to update Controller id : [{}]", controllerId, e);
+            return null;
         }
     }
 
@@ -86,7 +61,8 @@ public class NiFiControllerSVC {
      * @param processGroupId
      * @return success/fail boolean
      */
-    public boolean disableControllers(String processorGroupId) {
+    @TaskHistory(taskName = MonitoringCode.DISABLE_CONTROLLER)
+    public boolean disableControllers(Integer commandId, String processorGroupId) {
         try {
             ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
             body.setState(StateEnum.DISABLED);
@@ -94,12 +70,33 @@ public class NiFiControllerSVC {
             body.setDisconnectedNodeAcknowledged(false);
             
             niFiClient.getFlow().activateControllerServices(processorGroupId, body);
-
             log.info(
-                "Success Disable Controllers In Process Group : Process Group ID = [{}]",
+                "Request Disable Controllers In Process Group : Process Group ID = [{}]",
                 processorGroupId
             );
-            return true;
+            try {
+                Integer retryCnt = 0;
+                while (retryCnt < 3) {
+                    Integer disableControllerCnt = 0;
+                    ControllerServicesEntity controllers = searchControllersInProcessorGroup(processorGroupId);
+                    for (ControllerServiceEntity controller : controllers.getControllerServices()) {
+                        if (controller.getStatus().getRunStatus().equals(RunStatusEnum.DISABLED)){
+                            disableControllerCnt++;
+                        }
+                    }
+                    if (disableControllerCnt == controllers.getControllerServices().size()) {
+                        log.info("Success Disable Controllers In Process Group : Process Group ID = [{}]", processorGroupId);
+                        return true;
+                    }
+                    /* Sleep 1.0s */
+                    Thread.sleep(500);
+                    retryCnt++;
+                } 
+                return false;
+            } catch (InterruptedException e) {
+                log.error("Interrupt Exception", e);
+                return false;
+            }
         } catch (Exception e) {
             log.error(
                 "Fail to Disable Controllers In Process Group : Process Group ID = [{}]",
@@ -115,14 +112,40 @@ public class NiFiControllerSVC {
      *
      * @param processGroupId
      */
-    public Boolean enableControllers(String processorGroupId) throws Exception{
+    @TaskHistory(taskName = MonitoringCode.ENABLE_CONTROLLER)
+    public Boolean enableControllers(Integer commandId, String processorGroupId) throws Exception{
         ActivateControllerServicesEntity body = new ActivateControllerServicesEntity();
         body.setState(StateEnum.ENABLED);
         body.setId(processorGroupId);
         body.setDisconnectedNodeAcknowledged(false);
 
         niFiClient.getFlow().activateControllerServices(processorGroupId, body);
-        log.info("Success Enable Controllers in {}", processorGroupId);
-        return true;
+        log.info(
+                "Request Enable Controllers In Process Group : Process Group ID = [{}]",
+                processorGroupId
+            );
+        try {
+            Integer retryCnt = 0;
+            while (retryCnt < 3) {
+                Integer enableControllerCnt = 0;
+                ControllerServicesEntity controllers = searchControllersInProcessorGroup(processorGroupId);
+                for (ControllerServiceEntity controller : controllers.getControllerServices()) {
+                    if (controller.getStatus().getRunStatus().equals(RunStatusEnum.ENABLED)){
+                        enableControllerCnt++;
+                    }
+                }
+                if (enableControllerCnt == controllers.getControllerServices().size()) {
+                    log.info("Success Enable Controllers In Process Group : Process Group ID = [{}]", processorGroupId);
+                    return true;
+                }
+                /* Sleep 1.0s */
+                Thread.sleep(500);
+                retryCnt++;
+            } 
+            return false;
+        } catch (InterruptedException e) {
+            log.error("Interrupt Exception", e);
+            return false;
+        }
     }
 }

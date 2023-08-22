@@ -13,6 +13,7 @@ import io.swagger.client.api.FlowApi;
 import io.swagger.client.api.FlowfileQueuesApi;
 import io.swagger.client.api.ProcessGroupsApi;
 import io.swagger.client.api.ProcessorsApi;
+import io.swagger.client.api.RemoteProcessGroupsApi;
 import io.swagger.client.api.TemplatesApi;
 import io.swagger.client.auth.OAuth;
 
@@ -52,6 +53,7 @@ public class NiFiApiClient {
     private FlowApi flow = new FlowApi();
     private ProcessorsApi processors = new ProcessorsApi();
     private ProcessGroupsApi processGroups = new ProcessGroupsApi();
+    private RemoteProcessGroupsApi remoteProcessGroups = new RemoteProcessGroupsApi();
     private FlowfileQueuesApi flowfileQueues = new FlowfileQueuesApi();
     private ConnectionsApi connections = new ConnectionsApi();
     private TemplatesApi templates = new TemplatesApi();
@@ -85,6 +87,7 @@ public class NiFiApiClient {
         flow.setApiClient(nifiSwaggerApiClient);
         processors.setApiClient(nifiSwaggerApiClient);
         processGroups.setApiClient(nifiSwaggerApiClient);
+        remoteProcessGroups.setApiClient(nifiSwaggerApiClient);
         flowfileQueues.setApiClient(nifiSwaggerApiClient);
         connections.setApiClient(nifiSwaggerApiClient);
         templates.setApiClient(nifiSwaggerApiClient);

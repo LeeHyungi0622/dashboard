@@ -12,6 +12,8 @@ import io.dtonic.dhubingestmodule.nifi.client.NiFiApiClient;
 import io.swagger.client.model.ProcessGroupDTO;
 import io.swagger.client.model.ProcessGroupEntity;
 import io.swagger.client.model.ProcessGroupFlowEntity;
+import io.swagger.client.model.RemotePortRunStatusEntity;
+import io.swagger.client.model.RemoteProcessGroupEntity;
 import io.swagger.client.model.RevisionDTO;
 import io.swagger.client.model.ScheduleComponentsEntity;
 import io.swagger.client.model.ScheduleComponentsEntity.StateEnum;
@@ -57,8 +59,8 @@ public class NiFiProcessGroupSVC {
         }
         
     }
-    
-    public boolean deleteProcessGroup(String processGroupId) {
+    @TaskHistory(taskName = MonitoringCode.DELETE_PROCESSGROUP)
+    public boolean deleteProcessGroup(Integer commandId, String processGroupId) {
         try {
             String version = niFiClient
                 .getProcessGroups()
@@ -95,6 +97,33 @@ public class NiFiProcessGroupSVC {
             return false;
         }
     }
+    @TaskHistory(taskName = MonitoringCode.RUN_PIPELINE)
+    public RemoteProcessGroupEntity startProcessorGroup(Integer commandId, String processorGroupId){
+        try {
+            RemotePortRunStatusEntity body = new RemotePortRunStatusEntity();
+            body.setState(RemotePortRunStatusEntity.StateEnum.TRANSMITTING);
+            body.setDisconnectedNodeAcknowledged(false);
+            RemoteProcessGroupEntity res = niFiClient.getRemoteProcessGroups().updateRemoteProcessGroupRunStatus(processorGroupId, body);
+            return res;
+        } catch (Exception e) {
+            log.error("Fail to start Processor Group : [{}]",processorGroupId, e);
+            return null;
+        }
+    }
+    @TaskHistory(taskName = MonitoringCode.STOP_PIPELINE)
+    public RemoteProcessGroupEntity stopProcessorGroup(Integer commandId, String processorGroupId){
+        try {
+            RemotePortRunStatusEntity body = new RemotePortRunStatusEntity();
+            body.setState(RemotePortRunStatusEntity.StateEnum.STOPPED);
+            body.setDisconnectedNodeAcknowledged(false);
+            RemoteProcessGroupEntity res = niFiClient.getRemoteProcessGroups().updateRemoteProcessGroupRunStatus(processorGroupId, body);
+            return res;
+        } catch (Exception e) {
+            log.error("Fail to stop Processor Group : [{}]",processorGroupId, e);
+            return null;
+        }
+    }
+
     
     public Map<String, Integer> getStatusProcessGroup(String processGroupId)
          {
