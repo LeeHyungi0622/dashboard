@@ -35,17 +35,18 @@ public class NiFiTemplateSVC {
             Resource[] resources = new PathMatchingResourcePatternResolver()
             .getResources("classpath:template/*.xml");
             for (Resource template : resources) {
-                TemplateEntity result = niFiClient.getProcessGroups().uploadTemplate("root", template.getFile(), true);
-                if (result == null) {
-                    log.info("Template {} is already Exist", template);
-                } else {
-                    log.info("Upload Template Name : [{}]", template);
+                try {
+                    niFiClient.getProcessGroups().uploadTemplate("root", template.getFile(), false);
+                } catch (Exception e) {
+                    if(e.getMessage().contains("Conflict")) {
+                        log.info("Template {} is already Exist", template.getFilename());
+                    } else {
+                        log.info("Upload Template Name : [{}]", template.getFilename());
+                    }
                 }
             }
         } catch (IOException e) {
             log.error("Not Found Template Files in src/main/resources/template", e);
-        } catch (Exception e) {
-            log.error("Fail to Upload Template", e);
         }
     }
     /**
@@ -69,7 +70,7 @@ public class NiFiTemplateSVC {
             else body.setOriginX(0.0D);
             body.setOriginY(0.0D);
             /* Create Adaptor */
-            FlowEntity resultFlowEntity = niFiClient.getProcessGroups().instantiateTemplate(templateId, body);
+            FlowEntity resultFlowEntity = niFiClient.getProcessGroups().instantiateTemplate(rootProcessorGroupId, body);
             List<ProcessGroupEntity> resultProcessGroup = resultFlowEntity
                 .getFlow()
                 .getProcessGroups();

@@ -218,12 +218,7 @@ export default {
     this.$store.state.overlay = false;
     this.pipelineFilter = "all";
 
-    redirect.getNiFiURL().then((res) => {
-        this.$store.state.redirectNiFiURL = res;
-      })
-      .catch((err) => {
-        console.log("NiFi 주소를 받아오는데에 실패했습니다.", err);
-      });
+
   },
   watch:{
     filteritems(){
@@ -462,7 +457,12 @@ export default {
       }
     },
     redirectNiFi() {
-      window.open(this.$store.state.redirectNiFiURL,"_blank","")
+      redirect.getNiFiURL().then((res) => {
+        window.open(res,"_blank","")
+      })
+      .catch((err) => {
+        console.log("NiFi 주소를 받아오는데에 실패했습니다.", err);
+      });
     },
   },
 };

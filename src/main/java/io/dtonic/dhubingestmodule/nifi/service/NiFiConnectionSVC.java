@@ -285,23 +285,41 @@ public class NiFiConnectionSVC {
      * @return success/fail
      */
     @TaskHistory(taskName = MonitoringCode.DELETE_CONNECTION)
-    public boolean deleteConnectionToFunnel(Integer commandId, String connectionId) {
-        try {
-            /* Get Connection Revision */
-            String version = niFiClient
-                .getConnections()
-                .getConnection(connectionId)
-                .getRevision()
-                .getVersion()
-                .toString();
-            /* delete connection */
-            niFiClient.getConnections().deleteConnection(connectionId, version, null,null);
-            log.info("Success Delete Connection {} To Funnel", connectionId);
-            return true;
-        } catch (Exception e) {
-            log.error("Fail to Delete Connection {} To Funnel", connectionId, e);
+    public boolean deleteConnectionToFunnel(Integer commandId, String sourceProcessorGroupID) {
+        ConnectionsEntity connections = searchConnectionsInProcessorGroup(
+            niFiProcessGroupSVC.searchProcessGroupInProcessGroup("root", "Ingest Manager")
+            );
+        if (connections == null) {
+            log.error("Error Search Connection From Pipeline To Funnel In IngestManager");
             return false;
+        }             
+        if (connections.getConnections().size() == 0) {
+            log.error("Empty Connection From Pipeline To Funnel In IngestManager");
+            return true;
+        }             
+        for (ConnectionEntity connection : connections.getConnections()) {
+            if (connection.getSourceGroupId().equals(sourceProcessorGroupID)) {
+                try {
+                    String connectionId = connection.getId();
+                    String revision = connection.getRevision().getVersion().toString();
+                    String clientId = connection.getRevision().getClientId();
+
+                    ConnectionEntity result = niFiClient.getConnections().deleteConnection(connectionId, revision, clientId,false);
+                    if (result != null) {
+                        log.info("Success Delete Connection {} To Funnel", connectionId);
+                        return true;
+                    } else {
+                        log.error("Fail to Clear Queue Pipeline : Processor Group ID = {}", sourceProcessorGroupID);
+                        return false;
+                    }
+                } catch (Exception e) {
+                    log.error("Fail to Clear Queues In Connection To Funnel", e);
+                    return false;
+                }
+            }
         }
+        log.error("Not Found Connection Processor Group : Id = [{}]", sourceProcessorGroupID);
+        return false;
     }
 
     /**

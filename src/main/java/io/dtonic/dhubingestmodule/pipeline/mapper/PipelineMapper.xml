@@ -62,6 +62,6 @@
     #{pipelineVO.status}, #{pipelineVO.dataSet}, #{pipelineVO.dataModel},
     #{pipelineVO.collectorString}, #{pipelineVO.filterString}, #{pipelineVO.converterString}, now(),
     now()) </insert>
-  <update id="updatePipelineProcessgroupId"> UPDATE pipeline SET processor_group_id =
-    #{processorGroupId}, modified_at = now() WHERE id = #{id} </update>
+  <update id="updatePipelineProcessgroupId"> UPDATE pipeline SET status = #{status},
+    processor_group_id = #{processorGroupId}, modified_at = now() WHERE id = #{id} </update>
 </mapper>

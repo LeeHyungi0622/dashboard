@@ -274,7 +274,7 @@
                     <bundle>
                         <artifact>nifi-record-serialization-services-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <comments></comments>
                     <descriptors>
@@ -294,7 +294,8 @@
                                     <dependentValues>hwx-content-encoded-schema</dependentValues>
                                     <propertyName>schema-access-strategy</propertyName>
                                 </dependencies>
-                                <identifiesControllerService>org.apache.nifi.schemaregistry.services.SchemaRegistry</identifiesControllerService>
+                                <identifiesControllerService>
+                                    org.apache.nifi.schemaregistry.services.SchemaRegistry</identifiesControllerService>
                                 <name>schema-registry</name>
                             </value>
                         </entry>
@@ -351,7 +352,8 @@
                         <entry>
                             <key>schema-inference-cache</key>
                             <value>
-                                <identifiesControllerService>org.apache.nifi.serialization.RecordSchemaCacheService</identifiesControllerService>
+                                <identifiesControllerService>
+                                    org.apache.nifi.serialization.RecordSchemaCacheService</identifiesControllerService>
                                 <name>schema-inference-cache</name>
                             </value>
                         </entry>
@@ -453,7 +455,7 @@
                     <bundle>
                         <artifact>nifi-record-serialization-services-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <descriptors>
                         <entry>
@@ -465,7 +467,8 @@
                         <entry>
                             <key>schema-cache</key>
                             <value>
-                                <identifiesControllerService>org.apache.nifi.serialization.RecordSchemaCacheService</identifiesControllerService>
+                                <identifiesControllerService>
+                                    org.apache.nifi.serialization.RecordSchemaCacheService</identifiesControllerService>
                                 <name>schema-cache</name>
                             </value>
                         </entry>
@@ -496,7 +499,8 @@
                                     <dependentValues>hwx-content-encoded-schema</dependentValues>
                                     <propertyName>schema-access-strategy</propertyName>
                                 </dependencies>
-                                <identifiesControllerService>org.apache.nifi.schemaregistry.services.SchemaRegistry</identifiesControllerService>
+                                <identifiesControllerService>
+                                    org.apache.nifi.schemaregistry.services.SchemaRegistry</identifiesControllerService>
                                 <name>schema-registry</name>
                             </value>
                         </entry>
@@ -674,7 +678,8 @@
                     <name>Collector Output</name>
                     <state>STOPPED</state>
                     <type>OUTPUT_PORT</type>
-                    <validationErrors>'Port 'Collector Output'' is invalid because Port has no outgoing connections</validationErrors>
+                    <validationErrors>'Port 'Collector Output'' is invalid because Port has no
+                        outgoing connections</validationErrors>
                 </outputPorts>
                 <processors>
                     <id>3b354b2b-d4c6-347c-0000-000000000000</id>
@@ -687,7 +692,7 @@
                     <bundle>
                         <artifact>nifi-standard-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -760,7 +765,7 @@
                     <bundle>
                         <artifact>nifi-standard-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -872,7 +877,7 @@
                     <bundle>
                         <artifact>nifi-update-attribute-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -963,7 +968,7 @@
                     <bundle>
                         <artifact>nifi-standard-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -986,7 +991,8 @@
                             <entry>
                                 <key>SSL Context Service</key>
                                 <value>
-                                    <identifiesControllerService>org.apache.nifi.ssl.SSLContextService</identifiesControllerService>
+                                    <identifiesControllerService>
+                                        org.apache.nifi.ssl.SSLContextService</identifiesControllerService>
                                     <name>SSL Context Service</name>
                                 </value>
                             </entry>
@@ -1071,14 +1077,16 @@
                             <entry>
                                 <key>oauth2-access-token-provider</key>
                                 <value>
-                                    <identifiesControllerService>org.apache.nifi.oauth2.OAuth2AccessTokenProvider</identifiesControllerService>
+                                    <identifiesControllerService>
+                                        org.apache.nifi.oauth2.OAuth2AccessTokenProvider</identifiesControllerService>
                                     <name>oauth2-access-token-provider</name>
                                 </value>
                             </entry>
                             <entry>
                                 <key>proxy-configuration-service</key>
                                 <value>
-                                    <identifiesControllerService>org.apache.nifi.proxy.ProxyConfigurationService</identifiesControllerService>
+                                    <identifiesControllerService>
+                                        org.apache.nifi.proxy.ProxyConfigurationService</identifiesControllerService>
                                     <name>proxy-configuration-service</name>
                                 </value>
                             </entry>
@@ -1386,7 +1394,7 @@
                     <bundle>
                         <artifact>nifi-standard-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -1459,7 +1467,7 @@
                     <bundle>
                         <artifact>nifi-standard-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -1470,14 +1478,16 @@
                             <entry>
                                 <key>record-reader</key>
                                 <value>
-                                    <identifiesControllerService>org.apache.nifi.serialization.RecordReaderFactory</identifiesControllerService>
+                                    <identifiesControllerService>
+                                        org.apache.nifi.serialization.RecordReaderFactory</identifiesControllerService>
                                     <name>record-reader</name>
                                 </value>
                             </entry>
                             <entry>
                                 <key>record-writer</key>
                                 <value>
-                                    <identifiesControllerService>org.apache.nifi.serialization.RecordSetWriterFactory</identifiesControllerService>
+                                    <identifiesControllerService>
+                                        org.apache.nifi.serialization.RecordSetWriterFactory</identifiesControllerService>
                                     <name>record-writer</name>
                                 </value>
                             </entry>

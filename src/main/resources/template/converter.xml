@@ -252,7 +252,7 @@
                     <bundle>
                         <artifact>nifi-standard-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -261,28 +261,28 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>Destination</key>
-<value>
-    <name>Destination</name>
-</value>
+                                <key>Destination</key>
+                                <value>
+                                    <name>Destination</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Return Type</key>
-<value>
-    <name>Return Type</name>
-</value>
+                                <key>Return Type</key>
+                                <value>
+                                    <name>Return Type</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Null Value Representation</key>
-<value>
-    <name>Null Value Representation</name>
-</value>
+                                <key>Null Value Representation</key>
+                                <value>
+                                    <name>Null Value Representation</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Path Not Found Behavior</key>
-<value>
-    <name>Path Not Found Behavior</name>
-</value>
+                                <key>Path Not Found Behavior</key>
+                                <value>
+                                    <name>Path Not Found Behavior</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -291,20 +291,20 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>Destination</key>
-<value>flowfile-attribute</value>
+                                <key>Destination</key>
+                                <value>flowfile-attribute</value>
                             </entry>
                             <entry>
-<key>Return Type</key>
-<value>auto-detect</value>
+                                <key>Return Type</key>
+                                <value>auto-detect</value>
                             </entry>
                             <entry>
-<key>Null Value Representation</key>
-<value>empty string</value>
+                                <key>Null Value Representation</key>
+                                <value>empty string</value>
                             </entry>
                             <entry>
-<key>Path Not Found Behavior</key>
-<value>ignore</value>
+                                <key>Path Not Found Behavior</key>
+                                <value>ignore</value>
                             </entry>
                         </properties>
                         <retryCount>10</retryCount>
@@ -331,7 +331,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.standard.EvaluateJsonPath</type>
                 </processors>
                 <processors>
@@ -344,7 +344,7 @@
                     <bundle>
                         <artifact>nifi-standard-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -353,34 +353,34 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>Destination</key>
-<value>
-    <name>Destination</name>
-</value>
+                                <key>Destination</key>
+                                <value>
+                                    <name>Destination</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Return Type</key>
-<value>
-    <name>Return Type</name>
-</value>
+                                <key>Return Type</key>
+                                <value>
+                                    <name>Return Type</name>
+                                </value>
                             </entry>
                             <entry>
-<key>convert_data</key>
-<value>
-    <name>convert_data</name>
-</value>
+                                <key>convert_data</key>
+                                <value>
+                                    <name>convert_data</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Null Value Representation</key>
-<value>
-    <name>Null Value Representation</name>
-</value>
+                                <key>Null Value Representation</key>
+                                <value>
+                                    <name>Null Value Representation</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Path Not Found Behavior</key>
-<value>
-    <name>Path Not Found Behavior</name>
-</value>
+                                <key>Path Not Found Behavior</key>
+                                <value>
+                                    <name>Path Not Found Behavior</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -389,24 +389,24 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>Destination</key>
-<value>flowfile-attribute</value>
+                                <key>Destination</key>
+                                <value>flowfile-attribute</value>
                             </entry>
                             <entry>
-<key>Return Type</key>
-<value>json</value>
+                                <key>Return Type</key>
+                                <value>json</value>
                             </entry>
                             <entry>
-<key>convert_data</key>
-<value>$</value>
+                                <key>convert_data</key>
+                                <value>$</value>
                             </entry>
                             <entry>
-<key>Null Value Representation</key>
-<value>empty string</value>
+                                <key>Null Value Representation</key>
+                                <value>empty string</value>
                             </entry>
                             <entry>
-<key>Path Not Found Behavior</key>
-<value>ignore</value>
+                                <key>Path Not Found Behavior</key>
+                                <value>ignore</value>
                             </entry>
                         </properties>
                         <retryCount>10</retryCount>
@@ -433,7 +433,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.standard.EvaluateJsonPath</type>
                 </processors>
                 <processors>
@@ -446,7 +446,7 @@
                     <bundle>
                         <artifact>nifi-update-attribute-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -455,28 +455,28 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>Delete Attributes Expression</key>
-<value>
-    <name>Delete Attributes Expression</name>
-</value>
+                                <key>Delete Attributes Expression</key>
+                                <value>
+                                    <name>Delete Attributes Expression</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Store State</key>
-<value>
-    <name>Store State</name>
-</value>
+                                <key>Store State</key>
+                                <value>
+                                    <name>Store State</name>
+                                </value>
                             </entry>
                             <entry>
-<key>canonical-value-lookup-cache-size</key>
-<value>
-    <name>canonical-value-lookup-cache-size</name>
-</value>
+                                <key>canonical-value-lookup-cache-size</key>
+                                <value>
+                                    <name>canonical-value-lookup-cache-size</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Stateful Variables Initial Value</key>
-<value>
-    <name>Stateful Variables Initial Value</name>
-</value>
+                                <key>Stateful Variables Initial Value</key>
+                                <value>
+                                    <name>Stateful Variables Initial Value</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -485,18 +485,18 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>Delete Attributes Expression</key>
+                                <key>Delete Attributes Expression</key>
                             </entry>
                             <entry>
-<key>Store State</key>
-<value>Do not store state</value>
+                                <key>Store State</key>
+                                <value>Do not store state</value>
                             </entry>
                             <entry>
-<key>canonical-value-lookup-cache-size</key>
-<value>100</value>
+                                <key>canonical-value-lookup-cache-size</key>
+                                <value>100</value>
                             </entry>
                             <entry>
-<key>Stateful Variables Initial Value</key>
+                                <key>Stateful Variables Initial Value</key>
                             </entry>
                         </properties>
                         <retryCount>10</retryCount>
@@ -513,7 +513,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.attributes.UpdateAttribute</type>
                 </processors>
                 <processors>
@@ -526,7 +526,7 @@
                     <bundle>
                         <artifact>nifi-update-attribute-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -535,28 +535,28 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>Delete Attributes Expression</key>
-<value>
-    <name>Delete Attributes Expression</name>
-</value>
+                                <key>Delete Attributes Expression</key>
+                                <value>
+                                    <name>Delete Attributes Expression</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Store State</key>
-<value>
-    <name>Store State</name>
-</value>
+                                <key>Store State</key>
+                                <value>
+                                    <name>Store State</name>
+                                </value>
                             </entry>
                             <entry>
-<key>canonical-value-lookup-cache-size</key>
-<value>
-    <name>canonical-value-lookup-cache-size</name>
-</value>
+                                <key>canonical-value-lookup-cache-size</key>
+                                <value>
+                                    <name>canonical-value-lookup-cache-size</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Stateful Variables Initial Value</key>
-<value>
-    <name>Stateful Variables Initial Value</name>
-</value>
+                                <key>Stateful Variables Initial Value</key>
+                                <value>
+                                    <name>Stateful Variables Initial Value</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -565,18 +565,18 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>Delete Attributes Expression</key>
+                                <key>Delete Attributes Expression</key>
                             </entry>
                             <entry>
-<key>Store State</key>
-<value>Do not store state</value>
+                                <key>Store State</key>
+                                <value>Do not store state</value>
                             </entry>
                             <entry>
-<key>canonical-value-lookup-cache-size</key>
-<value>100</value>
+                                <key>canonical-value-lookup-cache-size</key>
+                                <value>100</value>
                             </entry>
                             <entry>
-<key>Stateful Variables Initial Value</key>
+                                <key>Stateful Variables Initial Value</key>
                             </entry>
                         </properties>
                         <retryCount>10</retryCount>
@@ -593,7 +593,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.attributes.UpdateAttribute</type>
                 </processors>
                 <processors>
@@ -606,7 +606,7 @@
                     <bundle>
                         <artifact>nifi-update-attribute-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -615,28 +615,28 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>Delete Attributes Expression</key>
-<value>
-    <name>Delete Attributes Expression</name>
-</value>
+                                <key>Delete Attributes Expression</key>
+                                <value>
+                                    <name>Delete Attributes Expression</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Store State</key>
-<value>
-    <name>Store State</name>
-</value>
+                                <key>Store State</key>
+                                <value>
+                                    <name>Store State</name>
+                                </value>
                             </entry>
                             <entry>
-<key>canonical-value-lookup-cache-size</key>
-<value>
-    <name>canonical-value-lookup-cache-size</name>
-</value>
+                                <key>canonical-value-lookup-cache-size</key>
+                                <value>
+                                    <name>canonical-value-lookup-cache-size</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Stateful Variables Initial Value</key>
-<value>
-    <name>Stateful Variables Initial Value</name>
-</value>
+                                <key>Stateful Variables Initial Value</key>
+                                <value>
+                                    <name>Stateful Variables Initial Value</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -645,18 +645,18 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>Delete Attributes Expression</key>
+                                <key>Delete Attributes Expression</key>
                             </entry>
                             <entry>
-<key>Store State</key>
-<value>Do not store state</value>
+                                <key>Store State</key>
+                                <value>Do not store state</value>
                             </entry>
                             <entry>
-<key>canonical-value-lookup-cache-size</key>
-<value>100</value>
+                                <key>canonical-value-lookup-cache-size</key>
+                                <value>100</value>
                             </entry>
                             <entry>
-<key>Stateful Variables Initial Value</key>
+                                <key>Stateful Variables Initial Value</key>
                             </entry>
                         </properties>
                         <retryCount>10</retryCount>
@@ -673,7 +673,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.attributes.UpdateAttribute</type>
                 </processors>
                 <processors>
@@ -686,7 +686,7 @@
                     <bundle>
                         <artifact>nifi-update-attribute-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -695,28 +695,28 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>Delete Attributes Expression</key>
-<value>
-    <name>Delete Attributes Expression</name>
-</value>
+                                <key>Delete Attributes Expression</key>
+                                <value>
+                                    <name>Delete Attributes Expression</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Store State</key>
-<value>
-    <name>Store State</name>
-</value>
+                                <key>Store State</key>
+                                <value>
+                                    <name>Store State</name>
+                                </value>
                             </entry>
                             <entry>
-<key>canonical-value-lookup-cache-size</key>
-<value>
-    <name>canonical-value-lookup-cache-size</name>
-</value>
+                                <key>canonical-value-lookup-cache-size</key>
+                                <value>
+                                    <name>canonical-value-lookup-cache-size</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Stateful Variables Initial Value</key>
-<value>
-    <name>Stateful Variables Initial Value</name>
-</value>
+                                <key>Stateful Variables Initial Value</key>
+                                <value>
+                                    <name>Stateful Variables Initial Value</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -725,18 +725,18 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>Delete Attributes Expression</key>
+                                <key>Delete Attributes Expression</key>
                             </entry>
                             <entry>
-<key>Store State</key>
-<value>Do not store state</value>
+                                <key>Store State</key>
+                                <value>Do not store state</value>
                             </entry>
                             <entry>
-<key>canonical-value-lookup-cache-size</key>
-<value>100</value>
+                                <key>canonical-value-lookup-cache-size</key>
+                                <value>100</value>
                             </entry>
                             <entry>
-<key>Stateful Variables Initial Value</key>
+                                <key>Stateful Variables Initial Value</key>
                             </entry>
                         </properties>
                         <retryCount>10</retryCount>
@@ -753,7 +753,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.attributes.UpdateAttribute</type>
                 </processors>
                 <processors>
@@ -766,7 +766,7 @@
                     <bundle>
                         <artifact>nifi-standard-nar</artifact>
                         <group>org.apache.nifi</group>
-                        <version>1.16.3</version>
+                        <version>1.23.0</version>
                     </bundle>
                     <config>
                         <backoffMechanism>PENALIZE_FLOWFILE</backoffMechanism>
@@ -775,46 +775,46 @@
                         <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                         <descriptors>
                             <entry>
-<key>Regular Expression</key>
-<value>
-    <name>Regular Expression</name>
-</value>
+                                <key>Regular Expression</key>
+                                <value>
+                                    <name>Regular Expression</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Replacement Value</key>
-<value>
-    <name>Replacement Value</name>
-</value>
+                                <key>Replacement Value</key>
+                                <value>
+                                    <name>Replacement Value</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Evaluation Mode</key>
-<value>
-    <name>Evaluation Mode</name>
-</value>
+                                <key>Evaluation Mode</key>
+                                <value>
+                                    <name>Evaluation Mode</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Line-by-Line Evaluation Mode</key>
-<value>
-    <name>Line-by-Line Evaluation Mode</name>
-</value>
+                                <key>Line-by-Line Evaluation Mode</key>
+                                <value>
+                                    <name>Line-by-Line Evaluation Mode</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Character Set</key>
-<value>
-    <name>Character Set</name>
-</value>
+                                <key>Character Set</key>
+                                <value>
+                                    <name>Character Set</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Maximum Buffer Size</key>
-<value>
-    <name>Maximum Buffer Size</name>
-</value>
+                                <key>Maximum Buffer Size</key>
+                                <value>
+                                    <name>Maximum Buffer Size</name>
+                                </value>
                             </entry>
                             <entry>
-<key>Replacement Strategy</key>
-<value>
-    <name>Replacement Strategy</name>
-</value>
+                                <key>Replacement Strategy</key>
+                                <value>
+                                    <name>Replacement Strategy</name>
+                                </value>
                             </entry>
                         </descriptors>
                         <executionNode>ALL</executionNode>
@@ -823,32 +823,32 @@
                         <penaltyDuration>30 sec</penaltyDuration>
                         <properties>
                             <entry>
-<key>Regular Expression</key>
-<value>.*</value>
+                                <key>Regular Expression</key>
+                                <value>.*</value>
                             </entry>
                             <entry>
-<key>Replacement Value</key>
-<value>$1</value>
+                                <key>Replacement Value</key>
+                                <value>$1</value>
                             </entry>
                             <entry>
-<key>Evaluation Mode</key>
-<value>Entire text</value>
+                                <key>Evaluation Mode</key>
+                                <value>Entire text</value>
                             </entry>
                             <entry>
-<key>Line-by-Line Evaluation Mode</key>
-<value>All</value>
+                                <key>Line-by-Line Evaluation Mode</key>
+                                <value>All</value>
                             </entry>
                             <entry>
-<key>Character Set</key>
-<value>UTF-8</value>
+                                <key>Character Set</key>
+                                <value>UTF-8</value>
                             </entry>
                             <entry>
-<key>Maximum Buffer Size</key>
-<value>1 MB</value>
+                                <key>Maximum Buffer Size</key>
+                                <value>1 MB</value>
                             </entry>
                             <entry>
-<key>Replacement Strategy</key>
-<value>Regex Replace</value>
+                                <key>Replacement Strategy</key>
+                                <value>Regex Replace</value>
                             </entry>
                         </properties>
                         <retryCount>0</retryCount>
@@ -870,7 +870,7 @@
                         <retry>false</retry>
                     </relationships>
                     <state>STOPPED</state>
-                    <style/>
+                    <style />
                     <type>org.apache.nifi.processors.standard.ReplaceText</type>
                 </processors>
             </contents>
@@ -880,7 +880,7 @@
             <flowfileConcurrency>UNBOUNDED</flowfileConcurrency>
             <flowfileOutboundPolicy>STREAM_WHEN_AVAILABLE</flowfileOutboundPolicy>
             <name>Convertor</name>
-            <variables/>
+            <variables />
         </processGroups>
     </snippet>
     <timestamp>08/04/2023 12:00:57 KST</timestamp>

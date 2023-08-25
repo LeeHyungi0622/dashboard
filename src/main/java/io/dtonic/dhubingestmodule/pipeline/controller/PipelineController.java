@@ -56,12 +56,21 @@ public class PipelineController {
      */
     @PostMapping("/pipelines/completed/{id}") // PipeLine 생성시 "등록완료"
     public ResponseEntity<Object> createPipeline(
+        HttpServletRequest request,
         @PathVariable Integer id,
         @RequestBody PipelineVO pipelineVO
     ) {
         try {
-            pipelineSVC.createPipeline(id, pipelineVO);
-            return ResponseEntity.ok().build();
+            /* Get User Id */
+            String userId = ingestManagerSVC.getUserId(request).getBody();
+            pipelineVO.setCreator(userId);
+            /* Execute Service */
+            PipelineVO res = pipelineSVC.createPipeline(pipelineVO.getId(), userId, null, pipelineVO, id);
+            if (res != null){
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Create Pipeline failed");
+            }
         } catch (Exception e) {
             log.error("Create Pipeline error {}", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Create Pipeline failed");
@@ -90,7 +99,7 @@ public class PipelineController {
         /* Chech Exist Pipeline */
         if (Boolean.TRUE.equals(pipelineSVC.isExists(id))) {
             /* Update Pipeline */
-            pipelineSVC.updatePipeline(id, pipelineVO, userId);
+            pipelineSVC.updatePipeline(id, userId, null, pipelineVO);
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is Not Exist");
@@ -164,7 +173,12 @@ public class PipelineController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
         }
         /* Execute service */
-        Boolean result = pipelineSVC.changePipelineStatus(id, status);
+        Boolean result = false;
+        if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode())){
+            result = pipelineSVC.runPipeline(id, status, null);
+        } else if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())){
+            result = pipelineSVC.stopPipeline(id, status, null);
+        }
         if (result) {
             return ResponseEntity.ok().build();
         } else {
@@ -187,12 +201,14 @@ public class PipelineController {
         DeferredResult<ResponseEntity<Object>> output = new DeferredResult<>();
         ForkJoinPool.commonPool().submit(() -> {
         try {
+            /* Get User Id */
+            String userId = ingestManagerSVC.getUserId(request).getBody();
             /* Vaildation Pipeline Exist */
             if (Boolean.FALSE.equals(pipelineSVC.isExists(id))) {
                 output.setResult(ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist"));
             } else {
                 /* Execute Service */
-                pipelineSVC.deletePipeline(id, ingestManagerSVC.getUserId(request).getBody());
+                pipelineSVC.deletePipeline(id, userId, null);
                 output.setResult(ResponseEntity.ok().build());
             }
         } catch (Exception e) {

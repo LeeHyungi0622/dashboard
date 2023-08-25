@@ -106,6 +106,11 @@ public class NiFiProcessGroupSVC {
             RemoteProcessGroupEntity res = niFiClient.getRemoteProcessGroups().updateRemoteProcessGroupRunStatus(processorGroupId, body);
             return res;
         } catch (Exception e) {
+            if (e.getMessage().contains("Bad Request")){
+                RemoteProcessGroupEntity alreadyRes = new RemoteProcessGroupEntity();
+                log.info("Already Stopped Processor Group : [{}]",processorGroupId);
+                return alreadyRes;
+            }
             log.error("Fail to start Processor Group : [{}]",processorGroupId, e);
             return null;
         }
@@ -119,6 +124,11 @@ public class NiFiProcessGroupSVC {
             RemoteProcessGroupEntity res = niFiClient.getRemoteProcessGroups().updateRemoteProcessGroupRunStatus(processorGroupId, body);
             return res;
         } catch (Exception e) {
+            if (e.getMessage().contains("Bad Request")){
+                RemoteProcessGroupEntity alreadyRes = new RemoteProcessGroupEntity();
+                log.info("Already Stopped Processor Group : [{}]",processorGroupId);
+                return alreadyRes;
+            }
             log.error("Fail to stop Processor Group : [{}]",processorGroupId, e);
             return null;
         }
@@ -129,7 +139,7 @@ public class NiFiProcessGroupSVC {
          {
             try {
                 ProcessGroupFlowEntity resultEntity = niFiClient.getFlow().getFlow(processGroupId, true);
-                log.info("Success get Status Process Group : Process Group ID = [{}]", processGroupId);
+                log.debug("Success get Status Process Group : Process Group ID = [{}]", processGroupId);
                 return getNumberOfProcessorStatus(resultEntity);
             } catch (Exception e) {
                 log.error("Fail to Get Status Process Group : Process Group ID = [{}]", processGroupId, e);

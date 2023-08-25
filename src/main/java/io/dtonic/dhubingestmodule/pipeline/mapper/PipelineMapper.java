@@ -39,6 +39,7 @@ public interface PipelineMapper {
     );
 
     int updatePipelineProcessgroupId(
+        @Param("status") String status,
         @Param("id") Integer id,
         @Param("processorGroupId") String processorGroupId
     );

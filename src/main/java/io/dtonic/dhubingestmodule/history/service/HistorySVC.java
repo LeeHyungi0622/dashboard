@@ -55,6 +55,14 @@ public class HistorySVC {
             return false;
         }
     }
+    public Boolean updateCommandPipelineId(Integer id, Integer pipelineId) {
+        if(historyMapper.updateCommandPipelineId(id, pipelineId) == 1){
+            return true;
+        } else {
+            log.error("Update Command error");
+            return false;
+        }
+    }
 
     public List<CommandVO> getPipelineCmdHistory(Integer pipelineId){
         return historyMapper.getPipelineCmdHistory(pipelineId);

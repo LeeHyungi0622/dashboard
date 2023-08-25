@@ -110,7 +110,7 @@ public class AdaptorSVC {
                                 niFiComponentVO.getOptionalProps()
                             );
                     }
-                    niFiProcessorSVC.updateProcessor(processorGroupId, processor);
+                    niFiProcessorSVC.updateProcessor(processor.getId(), processor);
                 }
             }
         }

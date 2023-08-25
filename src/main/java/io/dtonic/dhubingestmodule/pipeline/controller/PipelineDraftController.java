@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +28,9 @@ public class PipelineDraftController<T> {
     private PipelineDraftSVC pipelineDraftSVC;
     
     @GetMapping("/pipelines/drafts/create") // 파이프라인 생성 첫 시작 API, (front에서 빈 Pipeline VO가 필요)
-    public ResponseEntity<PipelineVO> createPipelineDrafts(
+    public PipelineVO createPipelineDrafts(
     ) {
-        return ResponseEntity.ok().body(new PipelineVO());
+        return new PipelineVO();
     }
 
     /**
@@ -90,7 +89,6 @@ public class PipelineDraftController<T> {
         return ResponseEntity.ok().body(pipelineVO);
     }
 
-    @Transactional
     @GetMapping("/pipelines/drafts/properties") //<데이터수집, 정제, 변환> 다음버튼 누를시
     public ResponseEntity<Object> getPipelineDraftsProperties(
         @RequestParam(name = "pipelineid", required = false) Integer pipelineid,
@@ -109,7 +107,6 @@ public class PipelineDraftController<T> {
         } else return ResponseEntity.ok().body(result);
     }
     
-    @Transactional
     @DeleteMapping("/pipelines/drafts/{id}") // 임시저장 삭제
     public ResponseEntity<Object> deletePipelineDrafts(
         @PathVariable Integer id

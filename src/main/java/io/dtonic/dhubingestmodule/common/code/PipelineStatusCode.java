@@ -1,6 +1,8 @@
 package io.dtonic.dhubingestmodule.common.code;
 
 public enum PipelineStatusCode {
+    PIPELINE_STATUS_CREATING("CREATING"),
+    PIPELINE_STATUS_CREATED("CREATED"),
     PIPELINE_STATUS_STOPPED("STOPPED"),
     PIPELINE_STATUS_STOPPING("STOPPING"),
     PIPELINE_STATUS_STARTING("STARTING"),

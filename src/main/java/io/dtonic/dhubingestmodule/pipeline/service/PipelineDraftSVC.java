@@ -19,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class PipelineDraftSVC {
@@ -170,7 +169,6 @@ public class PipelineDraftSVC {
         return true;
     }
 
-    @Transactional
     public PipelineVO updatePipelineDrafts(JSONObject jsonObject) {
         parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_COLLECTOR.getCode());
         parseJSON(jsonObject, AdaptorName.ADAPTOR_NAME_FILTER.getCode());
@@ -179,7 +177,6 @@ public class PipelineDraftSVC {
         return pipeline;
     }
 
-    @Transactional
     public void parseJSON(JSONObject jsonObject, String nifiFlowType) {
         // collector, filter, converter를 설정하지 않은 초기 단계 에서는 jsonString을 null로 설정
         if (jsonObject.isNull(nifiFlowType)) {

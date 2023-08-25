@@ -117,13 +117,13 @@ public class NiFiProcessorSVC {
         try {
             niFiClient.getProcessors().updateProcessor(processorId, processor);
             log.info(
-                "Success Update Processor Properties : Transmitter ID = [{}]",
+                "Success Update Processor Properties : Processor ID = [{}]",
                 processorId
             );
         } catch (Exception e) {
-            log.info(
-                "Fail to Update Processor Properties : Transmitter ID = [{}]",
-                processorId
+            log.error(
+                "Fail to Update Processor Properties : Processor ID = [{}]",
+                processorId, e
             );
         }
     }

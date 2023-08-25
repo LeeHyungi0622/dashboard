@@ -18,6 +18,10 @@ public interface HistoryMapper {
         @Param("id") Integer id,
         @Param("status") String status
     );
+    int updateCommandPipelineId(
+        @Param("id") Integer id,
+        @Param("pipelineId") Integer pipelineId
+    );
 
     void createTask(
         @Param("taskVO") TaskVO taskVO

@@ -4,7 +4,6 @@ package io.dtonic.dhubingestmodule.nifi.controller;
 import io.dtonic.dhubingestmodule.adaptor.service.AdaptorSVC;
 import io.dtonic.dhubingestmodule.adaptor.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
-import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * Served Pipeline Service
@@ -57,9 +55,6 @@ public class NiFiController {
 
     @Autowired
     private NiFiClientProperty niFiClientProperty;
-
-    @Autowired
-    private Properties properties;
 
     @Autowired
     DataSetSVC dataSetSVC;
@@ -109,7 +104,7 @@ public class NiFiController {
             niFiControllerSVC.enableControllers(commandId, processGroupId);
 
             /* success create Pipeline */
-            log.info("Success Create Pipeline in NiFi : PipelineVO = {}", pipelineVO);
+            log.info("Success Create Pipeline in NiFi : Processor Group ID [{}]", processGroupId);
             return processGroupId;
         } catch(Exception e){
             return null;
@@ -354,20 +349,6 @@ public class NiFiController {
         }
     }
 
-    /**
-     * Delete Pipeline Process Group Entity and Connection
-     *
-     * @param commandId  using command history aop
-     * @param processorGroupId   processor group id
-     * @return Boolean
-     * 
-     * @since 2023. 8. 21
-     * @version 1.2.0
-     * @auther Jenna
-     */
-    @GetMapping("/redirectNiFiUrl")
-    public String redirectNiFiUrl() {
-        return properties.getNifiUrl();
-    }
+
 
 }
