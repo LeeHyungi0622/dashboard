@@ -25,8 +25,14 @@
 
  *Contributer : Justin* 
 
- ---
+### [Docs] IngestManager Front-end Refactoring
+- 컴포넌트에 적용되어 있는 CSS를 TailwindCSS를 적용하여 통일성 있게 수정 (Common.css, HTML inline-style, component scoped style)
+- 화살표 함수(arrow function)와 일반 함수가 혼재되어 있는 부분을 통일성 있게 수정
+- 사용되지 않는 코드 삭제
+- 정규 표현식 처리 부분을 공통화하여 수정 (입력값에 대한 빈 공백 처리 등)
 
+ *Contributer : Mike* 
+ ---
 # Version 1.1.3 - 2023. 08. 04
 ### [Fix, Perf] NiFi Disk 부하 관련 로직 수정
 - 특정 데이터 수집 시, NiFi에서 데이터 처리 도중 데이터 용량이 급증 (특히, Filter 구성 요소 중 SplitJson Processor에서 발생)하여 정상적인 동작을 하지 않음.

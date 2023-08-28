@@ -2,27 +2,20 @@
   <div class="text-center">
     <v-dialog v-model="dialog" persistent width="1400">
       <v-card>
-        <v-card-title class="lighten-2 fsb14" style="color: #2b4f8c">
+        <v-card-title class="lighten-2 text-sm font-bold primary-color">
           {{ contents.title }}
         </v-card-title>
 
         <v-card-title
-          class="lighten-2 fsb12 mgL12"
-          style="float: left:  !important;"
+          class="lighten-2 text-xs font-bold ml-3 float-left"
         >
           {{ contents.subTitle }}
         </v-card-title>
         <v-card-text
-          style="height: auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;" 
-          class="fs14"
+          class="text-sm h-auto flex flex-col justify-center items-center text-center"
         >
-          <div class="search" style="height: 30px">
-            <select style="width: 10%" @change="settingFilter('pipelineFilter', $event)">
+          <div class="search h-7">
+            <select @change="settingFilter('pipelineFilter', $event)">
                 <option
                   v-for="([title, val], index) in pipelineListFilterList"
                   :key="index"
@@ -31,9 +24,9 @@
                   {{ title }}
                 </option>
               </select>
-            <input type="text" class="mgL12" v-model="pipelineFilterInput" maxlength="300"/>
-            <!-- <button class="mgL12" @click="actionFilter()">검색</button> -->
-            <select name="" id="" class="mgL12" v-model="perPage" @change="resetPage($event)">
+            <input type="text" class="ml-3" v-model="pipelineFilterInput" maxlength="300"/>
+            <!-- <button class="ml-3" @click="actionFilter()">검색</button> -->
+            <select class="ml-3" v-model="perPage" @change="resetPage($event)">
               <option value="5">5개씩 표시</option>
               <option value="10">10개씩 표시</option>
             </select>
@@ -43,10 +36,9 @@
             :items="convVuetifyData"
             :items-per-page="parseInt(perPage)"
             :page="currentPage"
-            class="pipelineTable mgT12"
+            class="pipelineTable mt-3 w-full text-center"
             :search="searchValue"
             :hide-default-footer="true"
-            style="text-align: center; width: 100% "
           >
             <template v-slot:[`item.readAction`]="{ item }">
               <button @click="goPipelineRegister(item)">이동</button>
@@ -55,13 +47,19 @@
               <button @click="deleteTempPipeline(item)">삭제</button>
             </template>
             <template v-slot:[`item.isCollector`]="{ item }">
-              <img :src="imgSrc[getImg(item.isCollector)]" />
+              <div class="flex justify-center">
+                <img :src="imgSrc[getImg(item.isCollector)]" />
+              </div>
             </template>
             <template v-slot:[`item.isFilter`]="{ item }">
-              <img :src="imgSrc[getImg(item.isFilter)]" />
+              <div class="flex justify-center">
+                <img :src="imgSrc[getImg(item.isFilter)]" />
+              </div>
             </template>
             <template v-slot:[`item.isConverter`]="{ item }">
-              <img :src="imgSrc[getImg(item.isConverter)]" />
+              <div class="flex justify-center">
+                <img :src="imgSrc[getImg(item.isConverter)]" />
+              </div>
             </template>
           </v-data-table>
             <div class="paginationBox">
@@ -88,17 +86,15 @@
             </div>
         </v-card-text>
 
-        <v-card-actions style="display: flex; justify-content: center">
+        <v-card-actions class="flex justify-center">
           <button
-            style="width: 15%; padding: 3px"
-            class="fs12"
+            class="text-xs py-3"
             @click="goPipelineRegister(`default`)"
           >
             파이프라인 새로 만들기
           </button>
           <button
-            style="width: 15%; padding: 3px"
-            class="mgL12 fs12"
+            class="ml-3 text-xs w-1/6 py-3"
             @click="close"
           >
             닫기
