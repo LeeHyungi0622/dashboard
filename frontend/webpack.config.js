@@ -58,10 +58,10 @@ module.exports = {
         }
       }, {
         test: /.s[a|c]ss$/,
-        use: ['vue-style-loader', 'css-loader', 'sass-loader']
+        use: ['vue-style-loader', 'css-loader', 'sass-loader', 'postcss-loader']
       }, {
         test: /\.css$/,
-        use: ['vue-style-loader', MiniCssExtractPlugin.loader, 'css-loader'],
+        use: ['vue-style-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
       }, {
         test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: 'file-loader',
