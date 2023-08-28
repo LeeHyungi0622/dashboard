@@ -84,4 +84,4 @@ nifi:
   user: admin
   password: ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
   template:
-    init: false
+    init: true

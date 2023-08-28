@@ -189,29 +189,26 @@ public class NiFiController {
      * @auther Justin
      */
     public boolean runPipeline(Integer commandId, String processorGroupId){
-        if (niFiProcessGroupSVC.startProcessorGroup(commandId, processorGroupId) != null) {
-            try {
-                Integer retryCnt = 0;
-                while (retryCnt < 3) {
-                    Map<String, Integer> nifiStatus = niFiProcessGroupSVC.getStatusProcessGroup(processorGroupId);
-                    if (nifiStatus.get(NifiStatusCode.NIFI_STATUS_STOPPED.getCode()) == 0 && nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0){
-                        log.info("Success Run Pipeline : Processor Group ID = {}", processorGroupId);
-                        return true;
-                    } else {
-                        log.warn("Nifi status exist Run Proccessor or Invalid Proccessor");
-                        log.warn("Retry Check Pipeline Status : Processor Group ID = {}", processorGroupId);
-                    }
-                    /* Sleep 0.3s */
-                    Thread.sleep(300);
-                    retryCnt++;
+        niFiProcessGroupSVC.startProcessorGroup(commandId, processorGroupId);
+        try {
+            Integer retryCnt = 0;
+            while (retryCnt < 3) {
+                Map<String, Integer> nifiStatus = niFiProcessGroupSVC.getStatusProcessGroup(processorGroupId);
+                log.info("nifiStatus : {}", nifiStatus);
+                if (nifiStatus.get(NifiStatusCode.NIFI_STATUS_STOPPED.getCode()) == 0 && nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0){
+                    log.info("Success Run Pipeline : Processor Group ID = {}", processorGroupId);
+                    return true;
+                } else {
+                    log.warn("Nifi status exist Run Proccessor or Invalid Proccessor");
+                    log.warn("Retry Check Pipeline Status : Processor Group ID = {}", processorGroupId);
                 }
-                return false;
-            } catch (InterruptedException e) {
-                log.error("Interrupt Exception", e);
-                return false;
+                /* Sleep 0.3s */
+                Thread.sleep(300);
+                retryCnt++;
             }
-        } else {
-            log.error("Fail to Run Pipeline : Processor Group ID = {}", processorGroupId);
+            return false;
+        } catch (InterruptedException e) {
+            log.error("Interrupt Exception", e);
             return false;
         }
     }
@@ -228,29 +225,25 @@ public class NiFiController {
      * @auther Justin
      */
     public boolean stopPipeline(Integer commandId, String processorGroupId) {
-        if (niFiProcessGroupSVC.stopProcessorGroup(commandId, processorGroupId) != null) {
-            try {
-                Integer retryCnt = 0;
-                while (retryCnt < 3) {
-                    Map<String, Integer> nifiStatus = niFiProcessGroupSVC.getStatusProcessGroup(processorGroupId);
-                    if (nifiStatus.get(NifiStatusCode.NIFI_STATUS_RUNNING.getCode()) == 0 && nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0){
-                        log.info("Success Stop Pipeline : Processor Group ID = {}", processorGroupId);
-                        return true;
-                    } else {
-                        log.warn("Nifi status exist Run Proccessor or Invalid Proccessor", nifiStatus);
-                        log.warn("Retry Check {} Pipeline Status : Processor Group ID = {}", retryCnt, processorGroupId);
-                    }
-                    /* Sleep 0.3s */
-                    Thread.sleep(300);
-                    retryCnt++;
-                } 
-                return false;
-            } catch (InterruptedException e) {
-                log.error("Interrupt Exception", e);
-                return false;
-            }
-        } else {
-            log.error("Fail to Run Pipeline : Processor Group ID = {}", processorGroupId);
+        niFiProcessGroupSVC.stopProcessorGroup(commandId, processorGroupId);
+        try {
+            Integer retryCnt = 0;
+            while (retryCnt < 3) {
+                Map<String, Integer> nifiStatus = niFiProcessGroupSVC.getStatusProcessGroup(processorGroupId);
+                if (nifiStatus.get(NifiStatusCode.NIFI_STATUS_RUNNING.getCode()) == 0 && nifiStatus.get(NifiStatusCode.NIFI_STATUS_INVALID.getCode()) == 0){
+                    log.info("Success Stop Pipeline : Processor Group ID = {}", processorGroupId);
+                    return true;
+                } else {
+                    log.warn("Nifi status exist Run Proccessor or Invalid Proccessor", nifiStatus);
+                    log.warn("Retry Check {} Pipeline Status : Processor Group ID = {}", retryCnt, processorGroupId);
+                }
+                /* Sleep 0.3s */
+                Thread.sleep(300);
+                retryCnt++;
+            } 
+            return false;
+        } catch (InterruptedException e) {
+            log.error("Interrupt Exception", e);
             return false;
         }
     }

@@ -103,15 +103,22 @@ public class NiFiProcessGroupSVC {
             RemotePortRunStatusEntity body = new RemotePortRunStatusEntity();
             body.setState(RemotePortRunStatusEntity.StateEnum.TRANSMITTING);
             body.setDisconnectedNodeAcknowledged(false);
-            RemoteProcessGroupEntity res = niFiClient.getRemoteProcessGroups().updateRemoteProcessGroupRunStatus(processorGroupId, body);
+            ScheduleComponentsEntity bodySchedule = new ScheduleComponentsEntity();
+            bodySchedule.setId(processorGroupId);
+            bodySchedule.setState(ScheduleComponentsEntity.StateEnum.RUNNING);
+            bodySchedule.setDisconnectedNodeAcknowledged(false);
+
+            log.info("Success Request Run Pipeline : Processor Group ID = {}", processorGroupId);
+            RemoteProcessGroupEntity res = niFiClient.getRemoteProcessGroups().updateRemoteProcessGroupRunStatuses(processorGroupId, body);
+            niFiClient.getFlow().scheduleComponents(processorGroupId, bodySchedule);
             return res;
         } catch (Exception e) {
             if (e.getMessage().contains("Bad Request")){
                 RemoteProcessGroupEntity alreadyRes = new RemoteProcessGroupEntity();
-                log.info("Already Stopped Processor Group : [{}]",processorGroupId);
+                log.info("Already Started Processor Group : [{}]",processorGroupId);
                 return alreadyRes;
             }
-            log.error("Fail to start Processor Group : [{}]",processorGroupId, e);
+            log.error("Fail to start Processor Group : [{}]", processorGroupId, e);
             return null;
         }
     }
@@ -121,7 +128,14 @@ public class NiFiProcessGroupSVC {
             RemotePortRunStatusEntity body = new RemotePortRunStatusEntity();
             body.setState(RemotePortRunStatusEntity.StateEnum.STOPPED);
             body.setDisconnectedNodeAcknowledged(false);
-            RemoteProcessGroupEntity res = niFiClient.getRemoteProcessGroups().updateRemoteProcessGroupRunStatus(processorGroupId, body);
+            ScheduleComponentsEntity bodySchedule = new ScheduleComponentsEntity();
+            bodySchedule.setId(processorGroupId);
+            bodySchedule.setState(ScheduleComponentsEntity.StateEnum.STOPPED);
+            bodySchedule.setDisconnectedNodeAcknowledged(false);
+
+            log.info("Success Request Stop Pipeline : Processor Group ID = {}", processorGroupId);
+            RemoteProcessGroupEntity res = niFiClient.getRemoteProcessGroups().updateRemoteProcessGroupRunStatuses(processorGroupId, body);
+            niFiClient.getFlow().scheduleComponents(processorGroupId, bodySchedule);
             return res;
         } catch (Exception e) {
             if (e.getMessage().contains("Bad Request")){

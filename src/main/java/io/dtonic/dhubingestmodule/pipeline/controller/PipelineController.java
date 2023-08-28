@@ -161,9 +161,12 @@ public class PipelineController {
      */
     @PutMapping("/pipelines/run-status/{id}")
     public ResponseEntity<Object> updatePipelineStatus(
+        HttpServletRequest request,
         @PathVariable Integer id,
         @RequestParam(value = "status") String status
     ) {
+        /* Get User Id */
+        String userId = ingestManagerSVC.getUserId(request).getBody();
         /* Validation Status Check */
         if (PipelineStatusCode.parseCode(status) == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status name is invalid");
@@ -173,13 +176,13 @@ public class PipelineController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pipeline is not Exist");
         }
         /* Execute service */
-        Boolean result = false;
+        PipelineVO result = null;
         if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STARTING.getCode())){
-            result = pipelineSVC.runPipeline(id, status, null);
+            result = pipelineSVC.runPipeline(id, userId, null);
         } else if (status.equals(PipelineStatusCode.PIPELINE_STATUS_STOPPING.getCode())){
-            result = pipelineSVC.stopPipeline(id, status, null);
+            result = pipelineSVC.stopPipeline(id, userId, null);
         }
-        if (result) {
+        if (result != null) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fail To Update Pipeline Status");
