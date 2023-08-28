@@ -1,7 +1,14 @@
-# Version 1.2.0 - 2023. 08. 16
+# Version 1.2.0 - 2023. 08. 28
+### [Feature] Object 타입 지원
+- 기존 Object Type에 대해 Ingest를 지원하지 못하였지만, Object Type도 정상 적재할 수 있는 기능 추가
+- 관련 설정 메뉴얼은 [Object Type Ingest Manual]() 참조
+
+ *Contributer : Justin* 
+
 ### [Refactor] 전반적인 코드 개선
 - 기존 `nifi` package 안의 기능 별로 분리되어 있지 않은 코드를 분리하여 repackaging
 - 이러한 이슈로 NiFi UI에 접속하여 템플릿 삭제 후 Ingest Manager를 재 구동하는 불편함 개선.
+- History 기능에 대해 AOP를 이용하는 로직으로 변경
 
  *Contributer : Justin* 
 
@@ -14,6 +21,7 @@
 ### [Feature] NiFi Template 업로드 로직 수정
 - 기존 NiFi Template Upload 시, 삭제 후 업로드 하는 로직이 적용이 되어 있지 않아 템플릿 변경 건에도 반영이 되지 않는 이슈 존재.
 - 이러한 이슈로 NiFi UI에 접속하여 템플릿 삭제 후 Ingest Manager를 재 구동하는 불편함 개선.
+- application.yml의 `nifi.template.init`을 `true`로 할 경우, Ingest Manager 재 구동시, 삭제 후 업로드 하는 로직 동작
 
  *Contributer : Justin* 
 

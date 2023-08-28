@@ -61,15 +61,15 @@ public class IngestManagerViewController implements ErrorController {
         throws IOException {
         return "index.html";
     }
-    // @GetMapping("/pipelineRegister/new")
-    // public String pipelineNewRegisterView(
-    //     HttpSession session,
-    //     HttpServletRequest request,
-    //     HttpServletResponse response
-    // )
-    //     throws IOException {
-    //     return "index.html";
-    // }
+    @GetMapping("/pipelineRegister/new")
+    public String pipelineNewRegisterView(
+        HttpSession session,
+        HttpServletRequest request,
+        HttpServletResponse response
+    )
+        throws IOException {
+        return "index.html";
+    }
 
     @GetMapping("/pipelineUpdate")
     public String pipelineUpdateByIdView(

@@ -34,7 +34,7 @@ public class NiFiConvertPropsSVC {
             if (nifi.getName().equals("DataSetProps")) {
                 for (PropertyVO prop : nifi.getRequiredProps()) {
                     if (prop.getDetail().equals("Property") || prop.getDetail().equals("Relationship")) {
-                        if(!prop.getType().contains("Array")){
+                        if(!prop.getType().contains("Array") && !prop.getType().contains("Object")){
                             PropertyVO newProp = new PropertyVO();
                             newProp.setName(prop.getName());
                             newProp.setDetail(prop.getDetail());
@@ -151,11 +151,49 @@ public class NiFiConvertPropsSVC {
                                 }
                                 input.deleteCharAt(input.length() - 1);
                                 newProp.setInputValue(
-                                    "${convert_data:jsonPath(${root_key:equals(' '):ifElse('$." +
+                                    "${convert_data:jsonPath('$." +
                                     input.toString() +
-                                    "','$.${root_key}." +
+                                    "')}"
+                                );
+                                DataList.add(newProp);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        convertDateTypeProc.setRequiredProps(DataList);
+        return convertDateTypeProc;
+    }
+    public NiFiComponentVO convertObjectTypeProcessor(PipelineVO pipeline)
+        throws JsonProcessingException {
+        DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(pipeline.getDataModel());
+        List<PropertyVO> DataList = new ArrayList<>();
+        NiFiComponentVO convertDateTypeProc = new NiFiComponentVO();
+        convertDateTypeProc.setName("ConvertObjectType");
+        convertDateTypeProc.setType("Processor");
+        for (Attribute a : dataModelInfo.getAttributes()) {
+            
+            if (a.getValueType().contains("Object")){
+                for (NiFiComponentVO nifi : pipeline.getConverter().getNifiComponents()) {
+                    if (nifi.getName().equals("DataSetProps")) {
+                        for (PropertyVO prop : nifi.getRequiredProps()) {
+                            if (prop.getDetail().equals("Property") && prop.getName().equals(a.getName())) {
+                                PropertyVO newProp = new PropertyVO();
+                                newProp.setName(a.getName());
+                                StringBuffer input = new StringBuffer();
+                                for (String p : prop.getInputValue().replaceAll("\"", "").split("[.]")){
+                                    if (p.contains(" ") || p.contains("(")){
+                                        input.append("['").append(p).append("']").append(".");
+                                    } else {
+                                        input.append(p).append(".");
+                                    }
+                                }
+                                input.deleteCharAt(input.length() - 1);
+                                newProp.setInputValue(
+                                    "${convert_data:jsonPath('$." +
                                     input.toString() +
-                                    "')})}"
+                                    "')}"
                                 );
                                 DataList.add(newProp);
                             }
@@ -193,11 +231,9 @@ public class NiFiConvertPropsSVC {
                                 input.deleteCharAt(input.length() - 1);
                                 newProp.setName(a.getName());
                                 newProp.setInputValue(
-                                    "${convert_data:jsonPath(${root_key:equals(' '):ifElse('$." +
+                                    "${convert_data:jsonPath('$." +
                                     input.toString() +
-                                    "','$.${root_key}." +
-                                    input.toString() +
-                                    "')})}"
+                                    "')}"
                                 );
                                 DataList.add(newProp);
                             }
@@ -297,6 +333,7 @@ public class NiFiConvertPropsSVC {
                             if (propertyVO.getDetail().equals("GeoType")) {
                                 input.append("\"type\":\"" + propertyVO.getInputValue() + "\",");
                                 input.append("\"coordinates\":${" + e.getName() + "}");
+                                break;
                             }
                         }
                     }

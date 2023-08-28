@@ -127,6 +127,10 @@ public class NiFiController {
             if (setNgsiLdString != null) {
                 convertorComponents.add(setNgsiLdString);
             }
+            NiFiComponentVO convertObjectType = niFiConvertSVC.convertObjectTypeProcessor(pipeline);
+            if (convertObjectType != null) {
+                convertorComponents.add(convertObjectType);
+            }
             NiFiComponentVO convertDateType = niFiConvertSVC.convertDateTypeProcessor(pipeline);
             if (convertDateType != null) {
                 convertorComponents.add(convertDateType);
