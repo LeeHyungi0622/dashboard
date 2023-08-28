@@ -47,13 +47,19 @@
               <button @click="deleteTempPipeline(item)">삭제</button>
             </template>
             <template v-slot:[`item.isCollector`]="{ item }">
-              <img :src="imgSrc[getImg(item.isCollector)]" />
+              <div class="flex justify-center">
+                <img :src="imgSrc[getImg(item.isCollector)]" />
+              </div>
             </template>
             <template v-slot:[`item.isFilter`]="{ item }">
-              <img :src="imgSrc[getImg(item.isFilter)]" />
+              <div class="flex justify-center">
+                <img :src="imgSrc[getImg(item.isFilter)]" />
+              </div>
             </template>
             <template v-slot:[`item.isConverter`]="{ item }">
-              <img :src="imgSrc[getImg(item.isConverter)]" />
+              <div class="flex justify-center">
+                <img :src="imgSrc[getImg(item.isConverter)]" />
+              </div>
             </template>
           </v-data-table>
             <div class="paginationBox">
