@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="pipelineListTitle">
-      <p class="text-base font-bold">데이터 파이프라인 상세/수정</p>
+      <p class="fsb16">데이터 파이프라인 상세/수정</p>
     </div>
     <div style="margin: 3%">
       <default-info
@@ -19,11 +19,11 @@
         v-if="$store.state.completedPipeline['converter']"
         :contents="getContents('converter')"
       />
-      <div class="pipelineUpdateBtnBox mt-3">
+      <div class="pipelineUpdateBtnBox mgT12">
         <button class="pipelineUpdateButton" @click="goPipelineList()">
           목록으로
         </button>
-        <button class="pipelineUpdateButton ml-3" @click="updatePipeline()">저장</button>
+        <button class="pipelineUpdateButton mgL12" @click="updatePipeline()">저장</button>
       </div>
     </div>
     <Footer/>

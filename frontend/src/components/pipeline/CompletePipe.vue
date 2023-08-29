@@ -1,28 +1,29 @@
 <template>
   <div class="pipelineUpdateContentBox">
-    <div class="text-sm font-bold flex justify-between">
-      <div class="text-base font-bold primary-color">데이터 파이프라인 요약</div>
+    <div style="justify-content: space-between; display: flex" class="fsb14">
+      <div class="fsb16" style="color: #2b4f8c">데이터 파이프라인 요약</div>
     </div>
-    <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 파이프라인 기본 정보
+    <div class="pipelineUpdateSubTitle fsb14">데이터 파이프라인 기본 정보
     </div>
     
     <custom-table :contents="infoContents"/>
 
-    <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 수집 정보
+    <div class="pipelineUpdateSubTitle fsb14">데이터 수집 정보
     </div>
     <custom-table :contents="collectorContents" />
-    <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 정제 정보
+    <div class="pipelineUpdateSubTitle fsb14">데이터 정제 정보
     </div>
     <custom-table :contents="filterContents" />
-    <div class="pipelineUpdateSubTitle text-sm font-bold">데이터 변환 정보
+    <div class="pipelineUpdateSubTitle fsb14">데이터 변환 정보
     </div>
     <custom-table :contents="converterContents" />
     <div
-      class="mt-3 flex justify-end"
+      class="mgT12"
+      style="display: flex; justify-content: right"
     >
-      <button class="pipelineButton ml-3" @click="beforeRoute()">이전</button>
+      <button class="pipelineButton mgL12" @click="beforeRoute()">이전</button>
       <button
-        class="pipelineButton ml-3"
+        class="pipelineButton mgL12"
         @click="saveComplete()"
       >
         등록완료
@@ -40,56 +41,54 @@ export default {
   components: {
     CustomTable,
   },
-  data() {
-    return {
-      infoContents: [        
+  data: () => ({
+    infoContents: [        
+      {
+          name: "파이프라인 이름",
+          inputValue: "",
+        },
         {
-            name: "파이프라인 이름",
-            inputValue: "",
-          },
-          {
-            name: "파이프라인 정의",
-            inputValue: "",
-          }
-      ],
-      collectorContents: [
-        {
-          name: "데이터 수집",
+          name: "파이프라인 정의",
           inputValue: "",
         }
       ],
-      filterContents: [
-        {
-            name: "Base64 Decoder",
-            inputValue: "",
-          },
-          {
-            name: "Message Root",
-            inputValue: "",
-          }
-      ],
-      converterContents: [
-        {
-            name: "DataSet",
-            inputValue: "",
-          },
-          {
-            name: "생성된 ID Key",
-            inputValue: "",
-          }
-      ],
-      alertContent: {
-          title: "파이프라인 등록 완료",
-          text: "파이프라인 등록 완료되었습니다.",
-          url: "default"
-      },
-      alertErrorContent: {
-          title: "파이프라인 등록 실패",
-          text: "일시적인 오류로 파이프라인 등록에 실패하였습니다.",
-          url: "default"
+    collectorContents: [
+      {
+        name: "데이터 수집",
+        inputValue: "",
       }
-    }
-  },
+    ],
+    filterContents: [
+      {
+          name: "Base64 Decoder",
+          inputValue: "",
+        },
+        {
+          name: "Message Root",
+          inputValue: "",
+        }
+    ],
+    converterContents: [
+      {
+          name: "DataSet",
+          inputValue: "",
+        },
+        {
+          name: "생성된 ID Key",
+          inputValue: "",
+        }
+    ],
+    alertContent: {
+        title: "파이프라인 등록 완료",
+        text: "파이프라인 등록 완료되었습니다.",
+        url: "default"
+      },
+    alertErrorContent: {
+        title: "파이프라인 등록 실패",
+        text: "일시적인 오류로 파이프라인 등록에 실패하였습니다.",
+        url: "default"
+      },
+  }),
   created() {
     this.getDraftPl();
     this.$store.state.tableShowMode = 'UPDATE';

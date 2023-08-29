@@ -34,6 +34,7 @@ export const store = new Vuex.Store({
       convertDataSet: "",
       registerPipeId: "",
       overlay: false,
+      redirectNiFiURL: ""
     };
   },
   mutations: {

@@ -3,7 +3,7 @@
     <v-list-group :value="true" no-action sub-group>
       <template v-slot:activator>
         <v-list-item-content>
-          <v-list-item-title class="pipelineManagement text-xs"
+          <v-list-item-title class="pipelineManagement fs12"
             >데이터 파이프라인 관리</v-list-item-title
           >
         </v-list-item-content>
@@ -18,7 +18,8 @@
         :disabled="path == activationRoutePath"
       >
         <v-list-item-title
-          class="text-xs font-bold text-white"
+          style="color: white"
+          class="fsb12"
           v-text="title"
         ></v-list-item-title>
       </v-list-item>
@@ -30,14 +31,12 @@ export default {
   props: {
     activationRoutePath: String,
   },
-  data() {
-    return {
-      admins: [
-        ["파이프라인 목록", "/list"],
-        ["파이프라인 등록", "/pipelineRegister"],
-      ]
-    }
-  },
+  data: () => ({
+    admins: [
+      ["파이프라인 목록", "/list"],
+      ["파이프라인 등록", "/pipelineRegister"],
+    ],
+  }),
   methods: {
     moveRoute(path) {
 
