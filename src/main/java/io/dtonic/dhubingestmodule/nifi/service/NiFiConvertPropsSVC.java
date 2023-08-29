@@ -165,6 +165,7 @@ public class NiFiConvertPropsSVC {
         convertDateTypeProc.setRequiredProps(DataList);
         return convertDateTypeProc;
     }
+    
     public NiFiComponentVO convertObjectTypeProcessor(PipelineVO pipeline)
         throws JsonProcessingException {
         DataModelVO dataModelInfo = dataSetSVC.getDataModelProperties(pipeline.getDataModel());
@@ -174,7 +175,7 @@ public class NiFiConvertPropsSVC {
         convertDateTypeProc.setType("Processor");
         for (Attribute a : dataModelInfo.getAttributes()) {
             
-            if (a.getValueType().contains("Object")){
+            if (a.getValueType().contains("Object") && !a.getValueType().contains("Array")){
                 for (NiFiComponentVO nifi : pipeline.getConverter().getNifiComponents()) {
                     if (nifi.getName().equals("DataSetProps")) {
                         for (PropertyVO prop : nifi.getRequiredProps()) {

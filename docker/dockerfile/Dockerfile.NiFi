@@ -1,4 +1,4 @@
-FROM apache/nifi:1.16.3
+FROM apache/nifi:1.23.0
 WORKDIR /opt/nifi/nifi-current
 # EXPOSE PORT 8443 for NiFi UI
 # EXPOSE PORT 20000-20099 for NiFi ListenHTTP

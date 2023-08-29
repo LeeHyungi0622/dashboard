@@ -4,7 +4,6 @@ package io.dtonic.dhubingestmodule.nifi.controller;
 import io.dtonic.dhubingestmodule.adaptor.service.AdaptorSVC;
 import io.dtonic.dhubingestmodule.adaptor.vo.AdaptorVO;
 import io.dtonic.dhubingestmodule.common.code.NifiStatusCode;
-import io.dtonic.dhubingestmodule.common.thread.MultiThread;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 
 import io.dtonic.dhubingestmodule.nifi.client.NiFiClientProperty;
@@ -163,9 +162,7 @@ public class NiFiController {
             if(processGroupId != null){
                 
                 /* Delete Pipleine using thread */
-                Runnable deletePipeline = new MultiThread(pipelineVO, commandId);
-                Thread thread = new Thread(deletePipeline);
-                thread.start();
+                deletePipeline(commandId, pipelineVO.getProcessorGroupId());
 
                 return processGroupId;
             }else{
