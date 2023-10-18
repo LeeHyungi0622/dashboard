@@ -1,0 +1,95 @@
+# see: https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/deploy-linux-vm?view=azure-devops&tabs=java
+variables:
+  #isRelease: "$[startsWith(variables['Build.SourceBranch'], 'refs/heads/release/1.0.0')]"
+  isDevelop: "$[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]"
+  JAVA_HOME: "/usr/lib/jvm/java-11-openjdk-amd64"
+  DEPLOY_DIR: "/usr/local/lib/develop-pipeline"
+
+trigger:
+  - develop
+# build agent pool default가 dtonic꺼
+# see: https://dev.azure.com/dtonic/_settings/agentpools
+pool:
+  name: default
+# develop branch build
+stages: 
+- stage: AdvancedDevelopIngestManagerService
+  displayName: Build advanced develop IngestManager service
+  jobs:
+    - job: build
+      steps:
+      - task: Maven@3
+        inputs:
+          mavenPomFile: '$(Build.SourcesDirectory)/pom.xml' # Maven Pom.xml 경로
+          publishJUnitResults: false 
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+        displayName: 'IngestManager Packaging'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/docker/develop'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ingest-manager'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/docker/dockerfile'
+          Contents: '**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ingest-manager'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/target'
+          Contents: '**.jar'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ingest-manager'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/deploy'
+          Contents: 'deploy-develop.sh'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ingest-manager'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/src/main/resources'
+          Contents: 'keystore.jks'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ingest-manager'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)'
+          Contents: '**.sql'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ingest-manager'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'IngestManager'
+          publishLocation: 'Container'
+
+# develop branch publish
+- stage: DevelopbedRelease
+  #condition: and(succeeded(), eq(variables.isDevelop, true))
+  jobs:
+    - deployment: Datacore_Dev_72Server
+      environment:
+        # 72번 서버에 deploy
+        name: "Develop_ENV_72server_Datacore"
+        resourceType: VirtualMachine
+      variables:
+        baseFolder: /usr/local/lib/IngestManager
+        AdvancedAnalysisJarFile: $[ stageDependencies.AdvancedAnalysisService.build.outputs['buildResult.jarFileName'] ]
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: CmdLine@2
+                inputs:
+                  script: |
+                    mkdir -p $DEPLOY_DIR/ingest-manager
+                    cp -rf $PWD/IngestManager/ingest-manager/* $DEPLOY_DIR/ingest-manager
+                  workingDirectory: '$(Agent.BuildDirectory)'
+              - task: CmdLine@2
+                inputs:
+                  script: 'chmod 771 $PWD/IngestManager/ingest-manager/deploy-develop.sh'
+                  workingDirectory: '$(Agent.BuildDirectory)'
+              - task: CmdLine@2
+                inputs:
+                  script: 'sh $PWD/IngestManager/ingest-manager/deploy-develop.sh'
+                  workingDirectory: '$(Agent.BuildDirectory)'
