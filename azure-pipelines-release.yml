@@ -8,7 +8,7 @@ variables:
   VERSION: "1.1.3"
 
 trigger:
-  - release/*.*.*
+  - release/v?.?.?
 # build agent pool default가 dtonic꺼
 # see: https://dev.azure.com/dtonic/_settings/agentpools
 pool:
