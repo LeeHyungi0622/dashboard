@@ -16,7 +16,7 @@ pool:
 # develop branch build
 stages:
   - stage: AdvancedDevelopIngestManagerService
-    displayName: Build advanced develop IngestManager service
+    displayName: Build advanced Release IngestManager service
     jobs:
       - job: build
         steps:
@@ -32,7 +32,7 @@ stages:
             displayName: 'IngestManager Packaging'
           - task: CopyFiles@2
             inputs:
-              SourceFolder: '$(Build.SourcesDirectory)/docker/develop'
+              SourceFolder: '$(Build.SourcesDirectory)/docker/release'
               TargetFolder: '$(Build.ArtifactStagingDirectory)/ingest-manager'
           - task: CopyFiles@2
             inputs:
