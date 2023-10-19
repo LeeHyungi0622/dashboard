@@ -70,7 +70,8 @@ stages:
     - deployment: Datacore_Dev_72Server
       environment:
         # 72번 서버에 deploy
-        name: "Develop_ENV_72server_Datacore"
+#        name: "Develop_ENV_72server_Datacore"
+        name: "YJ-TEST-ENV"
         resourceType: VirtualMachine
       variables:
         baseFolder: /usr/local/lib/IngestManager
@@ -85,11 +86,11 @@ stages:
                     mkdir -p $DEPLOY_DIR/ingest-manager
                     cp -rf $PWD/IngestManager/ingest-manager/* $DEPLOY_DIR/ingest-manager
                   workingDirectory: '$(Agent.BuildDirectory)'
-              - task: CmdLine@2
-                inputs:
-                  script: 'chmod 771 $PWD/IngestManager/ingest-manager/deploy-develop.sh'
-                  workingDirectory: '$(Agent.BuildDirectory)'
-              - task: CmdLine@2
-                inputs:
-                  script: 'sh $PWD/IngestManager/ingest-manager/deploy-develop.sh'
-                  workingDirectory: '$(Agent.BuildDirectory)'
+#              - task: CmdLine@2
+#                inputs:
+#                  script: 'chmod 771 $PWD/IngestManager/ingest-manager/deploy-develop.sh'
+#                  workingDirectory: '$(Agent.BuildDirectory)'
+#              - task: CmdLine@2
+#                inputs:
+#                  script: 'sh $PWD/IngestManager/ingest-manager/deploy-develop.sh'
+#                  workingDirectory: '$(Agent.BuildDirectory)'
