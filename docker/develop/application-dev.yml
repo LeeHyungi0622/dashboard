@@ -42,9 +42,8 @@ server:
     key-store-password: srd5wjn9
 
 ## Logging
-logging.config: logback-spring-dev.xml
+logging.config: file:///logback-spring-rel.xml
 logging.base.dir: logs
-
 # HTTP retrieve
 datacore:
   http:

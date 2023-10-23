@@ -39,7 +39,7 @@ server:
     session.timeout: 60m
 
 ## Logging
-logging.config: logback-spring-rel.xml
+logging.config: file:///logback-spring-rel.xml
 logging.base.dir: logs
 
 # HTTP retrieve

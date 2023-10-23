@@ -14,6 +14,7 @@ services:
     volumes:
       - ../application-common.yml:/application-common.yml
       - ./logs/ingestManager:/logs
+      - ./logback-spring-dev.xml:/logback-spring-dev.xml
     networks:
       - datacore_default
 
