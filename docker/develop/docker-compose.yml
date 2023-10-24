@@ -15,6 +15,7 @@ services:
       - ../application-common.yml:/application-common.yml
       - ./logs/ingestManager:/logs
       - ./logback-spring-dev.xml:/logback-spring-dev.xml
+      - ./keystore.jks:/keystore.jks
     networks:
       - datacore_default
 

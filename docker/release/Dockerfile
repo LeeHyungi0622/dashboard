@@ -3,5 +3,4 @@ VOLUME /tmp
 ARG version
 ADD ./d-hub-ingest-module-${version}.jar /app.jar
 ADD ./application-rel.yml /application-rel.yml
-ADD ./keystore.jks /keystore.jks
 ENTRYPOINT ["java","-jar","/app.jar","--spring.profiles.active=rel,common"]

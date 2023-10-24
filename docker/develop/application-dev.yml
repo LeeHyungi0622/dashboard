@@ -37,12 +37,12 @@ server:
   tomcat:
     remote-ip-header: x-forwarded-for
   ssl:
-    key-store: classpath:keystore.jks
+    key-store: file:///keystore.jks
     key-store-type: JKS
     key-store-password: srd5wjn9
 
 ## Logging
-logging.config: file:///logback-spring-rel.xml
+logging.config: file:///logback-spring-dev.xml
 logging.base.dir: logs
 # HTTP retrieve
 datacore:
