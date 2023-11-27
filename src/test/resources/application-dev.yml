@@ -1,6 +1,6 @@
 spring:
   application:
-    name: dh-datacore-ui
+    name: dh-ingest-manager
 
   thymeleaf:
     prefix: classpath:/static/
