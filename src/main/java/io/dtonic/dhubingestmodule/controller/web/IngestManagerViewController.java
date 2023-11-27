@@ -1,6 +1,7 @@
 package io.dtonic.dhubingestmodule.controller.web;
 
-import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
+import io.dtonic.dhubingestmodule.common.component.Properties;
+import io.dtonic.dhubingestmodule.security.service.IngestManagerSecuritySVC;
 import io.dtonic.dhubingestmodule.security.vo.UserVO;
 
 import java.io.IOException;
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class IngestManagerViewController implements ErrorController {
 
     @Autowired
-    private IngestManagerSVC ingestManagerSVC;
+    private IngestManagerSecuritySVC ingestManagerSVC;
+
+    @Autowired
+    private Properties properties;
 
     /**
      * When the page is refreshed In spa development,
@@ -38,15 +42,16 @@ public class IngestManagerViewController implements ErrorController {
         return "index.html";
     }
     
-    // @GetMapping("/list")
-    // public String pipelineListView(
-    //     HttpSession session,
-    //     HttpServletRequest request,
-    //     HttpServletResponse response
-    // )
-    //     throws IOException {
-    //     return "index.html";
-    // }
+    @GetMapping("/list")
+    public String pipelineListView(
+        HttpSession session,
+        HttpServletRequest request,
+        HttpServletResponse response
+    )
+        throws IOException {
+        return "index.html";
+    }
+
     @GetMapping("/pipelineRegister")
     public String pipelineRegisterView(
         HttpSession session,
@@ -75,17 +80,23 @@ public class IngestManagerViewController implements ErrorController {
             throws IOException {
         return "index.html";
     }
-    
-    @GetMapping("/redirectNiFi")
-    public String redirectNiFi(
-        HttpSession session,
+    /**
+     * Redirect to NiFi url
+     *
+     * @param commandId  using command history aop
+     * @param processorGroupId   processor group id
+     * @return Boolean
+     * 
+     * @since 2023. 8. 21
+     * @version 1.2.0
+     * @auther Jenna
+     */
+    @GetMapping("/redirectNiFiUrl")
+    public ResponseEntity<String> redirectNiFiUrl(
         HttpServletRequest request,
-        HttpServletResponse response
-    )
-        throws IOException {
-        return "index.html";
+        HttpServletResponse response) {
+        return ResponseEntity.ok().body(properties.getNifiUrl());
     }
-
     /**
      * When requesting accesstoken url, it responds by obtaining a token.
      *

@@ -18,7 +18,8 @@ public enum CommandStatusCode {
     COMMAND_START("START"),
     COMMAND_DELETE("DELETE"),
     COMMAND_UPDATE("UPDATE"),
-    COMMAND_RUN("RUN");
+    COMMAND_RUN("RUN"),
+    COMMAND_STOP("STOP");
 
 
     private String code;

@@ -3,7 +3,6 @@ package io.dtonic.dhubingestmodule.dataset.service;
 import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.common.service.DataCoreRestSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
-import io.dtonic.dhubingestmodule.dataset.vo.DataSetBaseInfoVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetForDataModelIDVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListBaseInfoVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetListResponseVO;
@@ -13,15 +12,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-@Slf4j
 @Service
 public class DataSetSVC {
 
@@ -32,7 +28,7 @@ public class DataSetSVC {
     private final DataCoreRestSVC dataCoreRestSVC;
 
     //DataSet List 조회
-    public DataSetResponseVO getDataSetList() {
+    public DataSetResponseVO getDataSetList() throws Exception{
         List<String> pathUri = new ArrayList<>();
         pathUri.add(DEFAULT_PATH_URL);
         DataSetListResponseVO dataSetListResponseVO = new DataSetListResponseVO();
@@ -83,9 +79,10 @@ public class DataSetSVC {
             null,
             DataSetForDataModelIDVO.class
         );
+        
         if (response != null) dataModelVO.setId(
             response.getBody().getDatasetBaseInfo().getDataModelId()
-        );
+        ); else dataModelVO.setId(null);
         return dataModelVO;
     }
 

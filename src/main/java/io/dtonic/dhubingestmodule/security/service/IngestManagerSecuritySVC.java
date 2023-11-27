@@ -2,7 +2,6 @@ package io.dtonic.dhubingestmodule.security.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.dtonic.dhubingestmodule.common.component.Properties;
-import io.dtonic.dhubingestmodule.common.exception.DataCoreUIException;
 import io.dtonic.dhubingestmodule.common.service.DataCoreRestSVC;
 import io.dtonic.dhubingestmodule.security.vo.AccessTokenFormVO;
 import io.dtonic.dhubingestmodule.security.vo.RefreshTokenFormVO;
@@ -41,7 +40,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public class IngestManagerSVC {
+public class IngestManagerSecuritySVC {
 
     static final String AUTHORIZATION = "Authorization";
     static final String AUTHORIZATION_CODE = "authorization_code";
@@ -59,8 +58,6 @@ public class IngestManagerSVC {
 
     @Autowired
     private DataCoreRestSVC dataCoreRestSVC;
-
-    private List<String> paths;
 
     /**
      * Create login uri for SSO authentication.

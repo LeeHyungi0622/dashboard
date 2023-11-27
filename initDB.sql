@@ -110,12 +110,8 @@ CREATE TABLE IF NOT EXISTS ingest_manager.command_history
     user_id text COLLATE pg_catalog."default",
     started_at timestamp with time zone NOT NULL,
     finished_at timestamp with time zone,
-    CONSTRAINT command_history_pkey PRIMARY KEY (id),
-    CONSTRAINT command_history_fkey FOREIGN KEY (pipeline_id)
-        REFERENCES ingest_manager.pipeline (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-        NOT VALID
+    CONSTRAINT command_history_pkey PRIMARY KEY (id)
+
 )
 WITH (
     OIDS = FALSE

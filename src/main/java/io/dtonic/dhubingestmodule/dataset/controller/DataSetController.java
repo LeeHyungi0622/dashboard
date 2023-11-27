@@ -3,6 +3,8 @@ package io.dtonic.dhubingestmodule.dataset.controller;
 import io.dtonic.dhubingestmodule.dataset.service.DataSetSVC;
 import io.dtonic.dhubingestmodule.dataset.vo.DataModelVO;
 import io.dtonic.dhubingestmodule.dataset.vo.DataSetResponseVO;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 public class DataSetController {
 
@@ -26,10 +29,15 @@ public class DataSetController {
      */
     @GetMapping(value = "/datasets/list")
     public ResponseEntity<DataSetResponseVO> getDatasets(HttpServletRequest request, HttpServletResponse response)
-        throws Exception {
-        DataSetResponseVO datasetList = datasetsvc.getDataSetList();
-
-        return ResponseEntity.ok(datasetList);
+         {
+            DataSetResponseVO dataSetResponseVO = new DataSetResponseVO();
+            try {
+                dataSetResponseVO = datasetsvc.getDataSetList();
+                return ResponseEntity.ok(dataSetResponseVO);
+            } catch (Exception e) {
+                log.error("Fail to Get Dataset list from Datacore Manager", e);
+                return ResponseEntity.badRequest().body(dataSetResponseVO);
+            }
     }
 
     /**
@@ -40,18 +48,22 @@ public class DataSetController {
      * @return
      * @throws Exception
      */
-    @GetMapping(value = "/dataset/properties/{datasetid}")
-    public DataModelVO getDatasetProperties(
+    @GetMapping(value = "/dataset/properties/{datasetId}")
+    public ResponseEntity<DataModelVO> getDatasetProperties(
         HttpServletRequest request,
         HttpServletResponse response,
-        @PathVariable String datasetid
+        @PathVariable String datasetId
     )
-        throws Exception {
-        DataModelVO dataModelVO = datasetsvc.getDataModelId( //model ID 가져오기
-            datasetid
-        );
-        dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId()); // 해당 Model의 속성값 가져오기
+        {
+        DataModelVO dataModelVO = new DataModelVO();
+        try {
+            dataModelVO = datasetsvc.getDataModelId(datasetId);
+            dataModelVO = datasetsvc.getDataModelProperties(dataModelVO.getId());
+            return ResponseEntity.ok(dataModelVO);
+        } catch (Exception e) {
+            log.error("Fail to Get Dataset Properties from Datacore Manager", e);
+            return ResponseEntity.badRequest().body(dataModelVO);
+        }
 
-        return dataModelVO;
     }
 }

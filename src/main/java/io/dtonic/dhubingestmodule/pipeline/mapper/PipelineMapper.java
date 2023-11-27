@@ -1,11 +1,8 @@
 package io.dtonic.dhubingestmodule.pipeline.mapper;
 
 import io.dtonic.dhubingestmodule.nifi.vo.PropertyVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.CommandVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineListResponseVO;
 import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.TaskVO;
-import io.dtonic.dhubingestmodule.pipeline.vo.PipelineVOtoDB;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -32,49 +29,19 @@ public interface PipelineMapper {
 
     Boolean isExists(@Param("id") Integer id);
 
-    void createCommand(
-        @Param("commandVO") CommandVO commandVO
-    );
-
-    int updateCommand(
-        @Param("id") Integer id,
-        @Param("status") String status
-    );
-
-    void createTask(
-        @Param("taskVO") TaskVO taskVO
-    );
-
-    int updateTask(
-        @Param("id") Integer id,
-        @Param("status") String status
-    );
 
     void createPipeline(
-        @Param("pipelineVOtoDB") PipelineVOtoDB pipelineVOtoDB
+        @Param("pipelineVO") PipelineVO pipelineVO
     );
 
     int updatePipeline(
-        @Param("id") Integer id,
-        @Param("name") String name,
-        @Param("detail") String detail,
-        @Param("dataSet") String dataSet,
-        @Param("dataModel") String dataModel,
-        @Param("processorGroupId") String processorGroupId,
-        @Param("collector") String collector,
-        @Param("filter") String filter,
-        @Param("converter") String converter
+        @Param("pipelineVO") PipelineVO pipelineVO
     );
 
     int updatePipelineProcessgroupId(
+        @Param("status") String status,
         @Param("id") Integer id,
         @Param("processorGroupId") String processorGroupId
     );
 
-    List<CommandVO> getPipelineCmdHistory(
-        @Param("pipelineId") Integer pipelineId
-    );
-    List<TaskVO> getPipelineTaskHistory(
-        @Param("commandId") Integer commandId
-    );
 }

@@ -1,4 +1,30 @@
-# Version 1.1.4 - 2023. 08. 22
+# Version 1.2.0 - 2023. 08. 28
+### [Feature] Object 타입 지원
+- 기존 Object Type에 대해 Ingest를 지원하지 못하였지만, Object Type도 정상 적재할 수 있는 기능 추가
+- 관련 설정 메뉴얼은 [Object Type Ingest Manual]() 참조
+
+ *Contributer : Justin* 
+
+### [Refactor] 전반적인 코드 개선
+- 기존 `nifi` package 안의 기능 별로 분리되어 있지 않은 코드를 분리하여 repackaging
+- 이러한 이슈로 NiFi UI에 접속하여 템플릿 삭제 후 Ingest Manager를 재 구동하는 불편함 개선.
+- History 기능에 대해 AOP를 이용하는 로직으로 변경
+
+ *Contributer : Justin* 
+
+### [Feature] NiFi Version 1.23.0 Migration
+- 기존 Ingest Manager에서 사용하고 있던 NiFi의 Version은 `1.16.3`에서 `1.23.0`으로 업데이트.
+- **Developer** NiFi Version Up migration Guide는 [링크]()참조.
+
+ *Contributer : Justin* 
+
+### [Feature] NiFi Template 업로드 로직 수정
+- 기존 NiFi Template Upload 시, 삭제 후 업로드 하는 로직이 적용이 되어 있지 않아 템플릿 변경 건에도 반영이 되지 않는 이슈 존재.
+- 이러한 이슈로 NiFi UI에 접속하여 템플릿 삭제 후 Ingest Manager를 재 구동하는 불편함 개선.
+- application.yml의 `nifi.template.init`을 `true`로 할 경우, Ingest Manager 재 구동시, 삭제 후 업로드 하는 로직 동작
+
+ *Contributer : Justin* 
+
 ### [Docs] IngestManager Front-end Refactoring
 - 컴포넌트에 적용되어 있는 CSS를 TailwindCSS를 적용하여 통일성 있게 수정 (Common.css, HTML inline-style, component scoped style)
 - 화살표 함수(arrow function)와 일반 함수가 혼재되어 있는 부분을 통일성 있게 수정
@@ -43,6 +69,7 @@
 
  *Contributer : Justin* 
 
+---
 # Version 1.1.1 - 2023. 06. 28
 ### [Feature] 원천 데이터 변환 규칙, 데이터 정제 Root Key 공백 입력 지원
 - 기존 원천 데이터 변환 시 공백 및 특수문자(`(,)`) 입력을 지원하지 않아 공공데이터포털 등 타 API 서비스에서 key값에 공백 및 특수문자(`(,)`)가 포함되어 있는 경우 NiFi UI에 직접 접근하여 공백 및 특수문자(`(,)`)를 처리 할 수 있도록 수정했던 번거로움 개선

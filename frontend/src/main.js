@@ -4,9 +4,7 @@ import Axios from "axios";
 import router from "./router";
 import vuetify from "@/plugins/vuetify.js";
 import css from "@/assets/css/common.css";
-import './index.css';
 import { store } from "./vuex/store";
-import common from "@/assets/js/common.js";
 
 const NODE_ENV = process.env.NODE_ENV;
 let servicePort = "";
@@ -39,7 +37,6 @@ Vue.config.productionTip = false;
 Vue.prototype.$axios = Axios;
 Vue.use(vuetify);
 Vue.prototype.$ws = ws;
-Vue.use(common);
 
 new Vue({
   css,

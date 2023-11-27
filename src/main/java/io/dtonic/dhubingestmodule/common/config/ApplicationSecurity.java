@@ -4,13 +4,12 @@ import io.dtonic.dhubingestmodule.common.component.Properties;
 import io.dtonic.dhubingestmodule.security.filter.JwtAuthenticationFilter;
 import io.dtonic.dhubingestmodule.security.filter.JwtAuthorizationFilter;
 import io.dtonic.dhubingestmodule.security.handler.IngestManagerAuthenticationEntryPoint;
-import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
+import io.dtonic.dhubingestmodule.security.service.IngestManagerSecuritySVC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -38,7 +37,7 @@ public class ApplicationSecurity {
     @Bean
     public SecurityFilterChain filterChain(
         HttpSecurity http,
-        IngestManagerSVC ingestManagerSVC,
+        IngestManagerSecuritySVC ingestManagerSVC,
         Properties properties
     )
         throws Exception {
@@ -50,23 +49,8 @@ public class ApplicationSecurity {
                 .anyRequest()
                 .authenticated()
                 .and()
-                // .formLogin()
-                // .disable()
                 .csrf()
                 .disable()
-                // .headers()
-                // .disable()
-                // .httpBasic()
-                // .disable()
-                // .rememberMe()
-                // .disable()
-                // .logout()
-                // .disable()
-                // .sessionManagement()
-                // .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                // .and()
-                // .exceptionHandling()
-                // .and()
                 .addFilterAfter(
                     new JwtAuthenticationFilter(authenticationEntryPoint(), ingestManagerSVC),
                     BasicAuthenticationFilter.class

@@ -1,22 +1,24 @@
 <template>
   <v-app
     id="inspire"
-    class="font-sans"
-    style="font-family: 'Nanum Gothic' !important"  >
+    style="font-family: 'Nanum Gothic', sans-serif !important"  >
     <v-system-bar
       app
-      style="height: 7%; background-color: white; border-bottom: 1px solid #2b4f8c;"
+      style="height: 7%; 
+        background-color: #ffff; 
+        border-bottom: 1px solid #2b4f8c;
+      "
     >
-      <div class="appTitle text-base">Ingest Manager</div>
+      <p class="appTitle fs16">Ingest Manager</p>
       <v-spacer></v-spacer>
       <div class="text-center">
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
             <div class="userBox">
-              <button class="pl-3" v-bind="attrs" v-on="on">
-                <div class="flex">
+              <button style="padding: 0 0 0 12px" v-bind="attrs" v-on="on">
+                <div style="display: flex">
                   <img src="@/assets/img/user.svg" alt="user" />
-                  <div class="px-3">{{ `${userInfo['name']}(${userInfo['userId']})` }} 님</div>
+                  <div style="padding: 0 10px 0 10px">{{ `${userInfo['name']}(${userInfo['userId']})` }} 님</div>
                   <img src="@/assets/img/drop-down.svg" alt="user" />
                 </div>
               </button>
@@ -27,11 +29,12 @@
               v-for="([title, mode], key) in menu"
               :key="key"
               @click="menuAction(mode)"
-              class="pl-3 cursor-pointer"
+              style="cursor: pointer; padding-left: 12px"
             >
               <img src="@/assets/img/user.svg" alt="user" />
               <v-list-item-title
-                class="text-xs text-black pl-3"
+                class="fs12"
+                style="color: #000000; padding-left: 12px"
               >
               {{ title }}
               </v-list-item-title>
@@ -40,15 +43,15 @@
         </v-menu>
       </div>
     </v-system-bar>
-    <v-navigation-drawer app style="background-color: #2b4f8c">
+    <v-navigation-drawer app style="top: 7%; background-color: #2b4f8c">
       <custom-navigation
         :activation-route-path="activationRoutePath"
       ></custom-navigation>
     </v-navigation-drawer>
 
     <v-main>
-      <v-container fluid fill-height class="p-0">
-        <v-layout justify-center class="block">
+      <v-container fluid fill-height style="padding: 0">
+        <v-layout justify-center style="display: block">
           <router-view :key="$route.fullPath"></router-view>
         </v-layout>
       </v-container>

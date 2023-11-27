@@ -2,7 +2,7 @@ package io.dtonic.dhubingestmodule.security.filter;
 
 import io.dtonic.dhubingestmodule.security.exception.JwtAuthentioncationException;
 import io.dtonic.dhubingestmodule.security.exception.JwtExpiredException;
-import io.dtonic.dhubingestmodule.security.service.IngestManagerSVC;
+import io.dtonic.dhubingestmodule.security.service.IngestManagerSecuritySVC;
 import io.dtonic.dhubingestmodule.util.ConvertUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHTOKEN = "authToken";
 
     private AuthenticationEntryPoint entryPoint;
-    private IngestManagerSVC ingestManagerSVC;
+    private IngestManagerSecuritySVC ingestManagerSVC;
 
     /**
      * Constructor of JwtAuthenticationFilter
@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     public JwtAuthenticationFilter(
         AuthenticationEntryPoint entryPoint,
-        IngestManagerSVC ingestManagerSVC
+        IngestManagerSecuritySVC ingestManagerSVC
     ) {
         this.entryPoint = entryPoint;
         this.ingestManagerSVC = ingestManagerSVC;

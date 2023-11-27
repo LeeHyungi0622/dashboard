@@ -1,4 +1,4 @@
-package io.dtonic.dhubingestmodule.pipeline.vo;
+package io.dtonic.dhubingestmodule.history.vo;
 
 import java.util.Date;
 

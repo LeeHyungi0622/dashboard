@@ -1,7 +1,7 @@
 <template>
   <div class="pipelineUpdateContentBox">
-    <div class="flex justify-between">
-      <div class="pipelineUpdateMainTitle text-base font-bold">데이터 변환</div>
+    <div style="justify-content: space-between; display: flex">
+      <div class="pipelineUpdateMainTitle fsb16">데이터 변환</div>
       <button class="pipelineUpdateButton" 
       v-if="$store.state.tableShowMode == `UPDATE`"
       @click="changeUpdateFlag" 
@@ -12,26 +12,26 @@
     </div>
     <div class="customTableMainArea" v-if="$store.state.tableShowMode != `UPDATE`">
       <div class="customTable">
-        <div class="header text-xs font-bold">
+        <div class="header fsb12">
           <p>Root Key</p>
         </div>
         <div class="value ">
-          <div class="px-5">
+          <div style="padding: 0px 20px 0px 20px">
             {{ $store.state.filterRootKey }}
           </div>
         </div>
       </div>
     </div>
-    <div class="pipelineUpdateSubTitle text-sm font-bold">원천 데이터 변환 규칙 설정</div>
+    <div class="pipelineUpdateSubTitle fsb14">원천 데이터 변환 규칙 설정</div>
     <div class="customTableMainArea">
       <div class="customTable">
-        <div class="header text-xs font-bold">
+        <div class="header fsb12">
           <p>dataSet</p>
         </div>
         <div class="value">
           <div>
             <select
-              class="px-5"
+              style="padding: 0px 20px 0px 20px"
               v-model="selectedConverterValue"
               @change="callConvertorProps($event)"
               :disabled="!$store.state.convertorTableUpdateFlag"
@@ -53,12 +53,13 @@
       :headers="convertHeaders"
       :items="convProps"
       :items-per-page="convProps.length + 1"
-      class="pipelineUpdateConvertVFT text-center"
+      class="pipelineUpdateConvertVFT"
       :hide-default-footer="true"
+      style="text-align: center"
       ><template v-slot:[`item.inputValue`]="{ item }">
 
           <select
-          class="px-5"
+          style="padding: 0px 20px 0px 20px;"
           v-if="($store.state.convertorTableUpdateFlag || $store.state.tableShowMode == 'REGISTER') && item.defaultValue.length > 1"
           v-model="item.inputValue"
         >
@@ -76,19 +77,21 @@
             maxlength="300"
           />
 
-          <div class="pl-3" v-else>{{ item.inputValue }}</div>
+          <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
 
       </template>
     </v-data-table>
 
-    <div class="pipelineUpdateSubTitle text-sm font-bold">ID 생성 규칙 설정</div>
-    <div class="customTableBox text-xs font-bold">{{ generationKey }}</div>
+    <div class="pipelineUpdateSubTitle fsb14">ID 생성 규칙 설정</div>
+    <div class="customTableBox fsb12">{{ generationKey }}</div>
 
     <v-data-table
       :headers="IdHeaders"
       :items="convId"
-      class="pipelineUpdateIdVFT text-center"
+      class="pipelineUpdateIdVFT"
       :hide-default-footer="true"
+      
+      style="text-align: center"
     >
       <template v-slot:[`item.inputValue`]="{ item }">
         <input
@@ -98,7 +101,8 @@
         />
         <div v-else>
           <select
-          class="flex px-5"
+          class="disf"
+          style="padding: 0px 20px 0px 20px;"
           v-if="item.defaultValue.length > 1"
           v-model="item.inputValue"
         >
@@ -110,18 +114,19 @@
             {{ el }}
           </option>
         </select>
-          <div class="pl-3" v-else>{{ item.inputValue }}</div>
+          <div style="padding-left: 10px" v-else>{{ item.inputValue }}</div>
         </div>
         
       </template>
     </v-data-table>
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
-      class="mt-3 flex justify-end"
+      class="mgT12"
+      style="display: flex; justify-content: right"
     >
       <button class="pipelineButton" @click="beforeRoute()" >이전</button>
-      <button class="pipelineButton ml-3" @click="saveDraft()" >임시 저장</button>
-      <button class="pipelineButton ml-3" @click="nextRoute()" :disabled="!isCompleted[0]">다음</button>
+      <button class="pipelineButton mgL12" @click="saveDraft()" >임시 저장</button>
+      <button class="pipelineButton mgL12" @click="nextRoute()" :disabled="!isCompleted[0]">다음</button>
     </div>
   </div>
 </template>
@@ -188,13 +193,13 @@ export default {
     isCompleted(){
       if(this.convProps.length != 0 && this.convId.length != 0){
         for(let prop of this.convProps){
-          if(prop.inputValue == null || prop.inputValue == ""|| this.$removeBlank(prop.inputValue)==""){
+          if(prop.inputValue == null || prop.inputValue == ""|| prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
             return [false,"blank"];
           }
         }
         for(let prop of this.convId){
           if(prop.name == "level1"){
-            if(prop.inputValue == null || prop.inputValue == ""|| this.$removeBlank(prop.inputValue)==""){
+            if(prop.inputValue == null || prop.inputValue == ""|| prop.inputValue.replace(/^\s+|\s+$/g, '')==""){
               return  [false,"level"];
             }
           }
@@ -280,13 +285,13 @@ export default {
           if(prop.inputValue == null) {
               return [false, prop];
             }
-          else if(this.$removeBlank(prop.inputValue)=="") return [false,prop];
+          else if(prop.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,prop];
         }
         for(let id of this.convId){
           if(id.name == "level1" && id.inputValue == null) {
               return [false, id];
             }
-          if(this.$removeBlank(id.inputValue)=="") return [false,"level"];
+          if(id.inputValue.replace(/^\s+|\s+$/g, '')=="") return [false,"level"];
         }
       }
       return [true, null];

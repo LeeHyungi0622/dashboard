@@ -56,9 +56,15 @@ public class Properties {
     @Value("${nifi.url}")
     private String nifiUrl;
 
+    @Value("${nifi.version}")
+    private String nifiVersion;
+
     @Value("${nifi.user}")
     private String nifiUser;
 
     @Value("${nifi.password}")
     private String nifiPassword;
+
+    @Value("${nifi.template.init}")
+    private Boolean isNifiTemplateInit;
 }

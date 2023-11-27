@@ -59,4 +59,14 @@ public class Constants {
         "yyyy-MM-dd HH:mm:ss.SSS",
         "HH:mm:ss z" // 하위 호환
     };
+
+    public static final String[] NIFI_TEMPLATE_NAMES = new String[] {
+        "converter",
+        "Database-MariaDB",
+        "Database-Postgres",
+        "Database-MySQL",
+        "filter",
+        "REST API",
+        "REST Server"
+    };
 }

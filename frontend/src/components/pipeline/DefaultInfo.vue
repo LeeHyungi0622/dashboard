@@ -1,7 +1,7 @@
 <template>
   <div class="pipelineUpdateContentBox">
-    <div class="text-sm font-bold flex justify-between">
-      <div class="text-base font-bold primary-color">데이터 파이프라인 기본정보</div>
+    <div style="justify-content: space-between; display: flex" class="fsb14">
+      <div class="fsb16" style="color: #2b4f8c">데이터 파이프라인 기본정보</div>
       <button
         v-if="$store.state.tableShowMode == `UPDATE`"
         class="pipelineUpdateButton"
@@ -14,17 +14,18 @@
     <custom-table :contents="contents" :table-update-flag="$store.state.infoTableUpdateFlag"/>
     <div
       v-if="$store.state.tableShowMode == `REGISTER`"
-      class="mt-3 flex justify-end"
+      class="mgT12"
+      style="display: flex; justify-content: right"
     >
       <button 
-        class="pipelineButton ml-3" 
+        class="pipelineButton mgL12" 
         @click="saveDraft()" 
         :disabled="!this.contents[0].inputValue"
       >
         임시 저장
       </button>
       <button
-        class="pipelineButton ml-3"
+        class="pipelineButton mgL12"
         @click="nextRoute()"
         :disabled="!this.contents[0].inputValue || !this.contents[1].inputValue"
       >
@@ -154,10 +155,12 @@ export default {
       }
     },
     checkSpaceInput(contents){
-      if(this.$checkAllBlankPattern(contents[0].inputValue) == true){
+      let all_blank_pattern = /[\s]/g;
+      let blank_pattern = /^\s+|\s+$/g;
+      if(all_blank_pattern.test(contents[0].inputValue) == true){
         return [false, "title"];
       }
-      if(this.$checkBlankPattern(contents[1].inputValue) == true){
+      if(blank_pattern.test(contents[1].inputValue) == true){
         return [false, "detail"];
       }
       return [true, null];

@@ -19,7 +19,6 @@ import org.apache.ibatis.type.JdbcType;
 public class JsonListTypeHandler<T extends Object> extends BaseTypeHandler<List<T>> {
 
     ObjectMapper objectMapper = new ObjectMapper();
-    private Class<T> clazz;
 
     @Override
     public void setNonNullParameter(
