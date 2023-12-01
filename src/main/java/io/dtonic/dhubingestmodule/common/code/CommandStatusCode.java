@@ -15,6 +15,7 @@ public enum CommandStatusCode {
     
     /* 동작 이름 */
     COMMAND_CREATE("CREATE"),
+    COMMAND_DUPLICATE("DUPLICATE"),
     COMMAND_START("START"),
     COMMAND_DELETE("DELETE"),
     COMMAND_UPDATE("UPDATE"),

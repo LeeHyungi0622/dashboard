@@ -120,7 +120,7 @@
       </template>
     </v-data-table>
     <div
-      v-if="$store.state.tableShowMode == `REGISTER`"
+      v-if="$store.state.tableShowMode == `REGISTER`  || this.$store.state.tableShowMode == `DUPLICATE`"
       class="mgT12"
       style="display: flex; justify-content: right"
     >

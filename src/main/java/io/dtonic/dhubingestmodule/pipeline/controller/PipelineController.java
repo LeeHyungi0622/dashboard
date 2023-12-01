@@ -79,6 +79,35 @@ public class PipelineController {
     }
 
     /**
+     * @param request    HttpServletRequest
+     * @param id         to delete temporary Pipeline
+     * @param pipelineVO create pipeline object
+     * @return
+     */
+    @PostMapping("/pipelines/completed/duplicate") // PipeLine 생성시 "등록완료"
+    public ResponseEntity<Object> duplicatePipeline(
+        HttpServletRequest request,
+        @RequestBody PipelineVO pipelineVO
+    ) {
+        try {
+            /* Get User Id */
+            String userId = ingestManagerSVC.getUserId(request).getBody();
+            pipelineVO.setCreator(userId);
+            /* Execute Service */
+            PipelineVO res = pipelineSVC.duplicatePipeline(pipelineVO.getId(), userId, null, pipelineVO);
+            if (res != null){
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("duplicate Pipeline failed");
+            }
+        } catch (Exception e) {
+            log.error("Create Pipeline error {}", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("duplicate Pipeline failed");
+        } 
+        
+    }
+
+    /**
      * Update Pipeline
      *
      * @param request  HttpServletRequest

@@ -101,7 +101,7 @@
     :contents="selectedSettingValue.optionalProps" 
     :table-update-flag="$store.state.collectorTableUpdateFlag"/>
     <div
-      v-if="$store.state.tableShowMode == `REGISTER`"
+      v-if="$store.state.tableShowMode == `REGISTER` || this.$store.state.tableShowMode == `DUPLICATE`"
       class="mgT12"
       style="display: flex; justify-content: right"
     >
@@ -130,7 +130,7 @@ export default {
   created() {
 
     this.getCollector();
-    if(this.$store.state.tableShowMode == `UPDATE`){
+    if(this.$store.state.tableShowMode == `UPDATE` || this.$store.state.tableShowMode == `DUPLICATE`){
       this.getPipeline = this.$store.state.completedPipeline;
       this.selectedCollectValue = this.getPipeline.collector.name;
       this.selectedSettingValue = this.getPipeline.collector.nifiComponents[0];

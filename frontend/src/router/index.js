@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import pipelineList from "../views/pipelineList/PipelineList.vue";
 import pipelineUpdate from "../views/pipelineUpdate/PipelineUpdate.vue";
 import PipelineRegister from "../views/pipelineCreate/PipelineRegister.vue";
+import PipelineDuplicate from "../views/pipelineCreate/PipelineDuplicate.vue";
 
 Vue.use(VueRouter);
 
@@ -34,6 +35,12 @@ const routes = [
     path: "/pipelineRegister",
     name: "pipelineRegister",
     component: PipelineRegister,
+    props: true,
+  },
+  {
+    path: "/pipelineRegister/duplicate/:itemId",
+    name: "pipelineDuplicate",
+    component: PipelineDuplicate,
     props: true,
   },
   {
