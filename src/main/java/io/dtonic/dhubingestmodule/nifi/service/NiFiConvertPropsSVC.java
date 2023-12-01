@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,6 +25,15 @@ public class NiFiConvertPropsSVC {
 
     @Autowired
     DataSetSVC dataSetSVC;
+
+    @Value("${nifi.merge.bulk.min.size}")
+    private String mergeBulkMinSize;
+
+    @Value("${nifi.merge.bulk.max.size}")
+    private String mergeBulkMaxSize;
+
+    @Value("${nifi.merge.batch.interval}")
+    private String mergeBatchInterval;
 
     public NiFiComponentVO extractDataSetPropsProcessor(PipelineVO convertor) {
         NiFiComponentVO dataSetPropComp = new NiFiComponentVO();
@@ -278,19 +288,24 @@ public class NiFiConvertPropsSVC {
         return processor;
     }
 
-    public NiFiComponentVO mergeNgsiLdFormatProcessor()
+    public NiFiComponentVO mergeBulkProcessor()
         throws JsonProcessingException {
         NiFiComponentVO processor = new NiFiComponentVO();
-        processor.setName("MergeNgsiLdFormat");
+        processor.setName("MergeContent");
         processor.setType("processor");
         List<PropertyVO> props = new ArrayList<>();
         PropertyVO prop = new PropertyVO();
-        prop.setName("Replacement Value");
-        StringBuilder convertData = new StringBuilder();
-        convertData.append("${init:unescapeJson():append(${merge_content}):append(${end_entity})}");
-
-        prop.setInputValue(convertData.toString());
+        prop.setName("Minimum Number of Entries");
+        prop.setInputValue(mergeBulkMinSize);
         props.add(prop);
+        PropertyVO prop2 = new PropertyVO();
+        prop2.setName("Maximum Number of Entries");
+        prop2.setInputValue(mergeBulkMaxSize);
+        props.add(prop2);
+        PropertyVO prop3 = new PropertyVO();
+        prop3.setName("Max Bin Age");
+        prop3.setInputValue(mergeBatchInterval);
+        props.add(prop3);
         processor.setRequiredProps(props);
 
         return processor;

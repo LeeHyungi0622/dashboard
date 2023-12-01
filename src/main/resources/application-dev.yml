@@ -88,3 +88,4 @@ nifi:
   merge:
     bulk.min.size: 10
     bulk.max.size: 100
+    batch.interval: 1 # sec
