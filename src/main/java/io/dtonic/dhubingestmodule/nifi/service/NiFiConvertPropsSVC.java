@@ -304,7 +304,7 @@ public class NiFiConvertPropsSVC {
         props.add(prop2);
         PropertyVO prop3 = new PropertyVO();
         prop3.setName("Max Bin Age");
-        prop3.setInputValue(mergeBatchInterval);
+        prop3.setInputValue(mergeBatchInterval + " sec");
         props.add(prop3);
         processor.setRequiredProps(props);
 

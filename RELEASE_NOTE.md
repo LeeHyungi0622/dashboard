@@ -1,3 +1,34 @@
+# Version 1.2.1 - 2023. 12. 01
+### [Feature] Bulk/Batch 처리 지원
+- 기존 Ingest Manager의 경우, 요청 한건 당 건별로 Ingest I/F로 하나의 Entity로 요청을 날렸음.
+- 이로 인해, 적재하고자 하는 데이터 셋의 플로우가 빅데이터 저장소로 설정되었을 경우 병목현상이 심하게 나타남.
+- 이에 대한 해결책의 일환으로 Bulk/Batch 처리 로직을 Ingest Manager에 추가하여, 여러 API 요청이 한꺼번에 왔을경우 Bulk 및 Batch 처리하여 Ingest I/F로 요청을 전송.
+- NiFi에 `mergeContent` Processor 로직을 추가하고, 연관 로직을 Bulk/Batch에 맞게 수정함.
+- Bulk 및 Batch 처리 설정 값은 다음과 같음.
+
+|속성 이름|속성 설명|기본 설정 값|
+|---|---|---|
+|nifi.merge.bulk.min.size|벌크 처리시, 최소로 처리할 Bulk 크기|10|
+|nifi.merge.bulk.max.size|벌크 처리시, 최대로 처리할 Bulk 크기|100|
+|nifi.merge.batch.interval|배치 처리시, 배치 처리할 시간 단위(sec)|1|
+```
+nifi:
+  merge:
+    bulk.min.size: 10
+    bulk.max.size: 100
+    batch.interval: 1 # sec
+```
+
+
+ *Contributer : Justin* 
+
+### [Feature] 파이프라인 복제 기능 지원
+- 기존 Ingest Manager에서 파이프라인을 생성하고, 방금 생성한 파이프라인을 복제하고 싶으나, 복제 기능이 존재하지 않았음.
+- 이런 UX를 개선하기 위해 기존 생성한 파이프라인을 복제할 수 있는 기능을 추가 개발.
+- 관련 설정 메뉴얼은 [Pipeline 복제 가이드](https://dev.azure.com/dtonic/D.Hub/_wiki/wikis/D.Hub/5722/Pipeline-%EB%B3%B5%EC%A0%9C-%EA%B0%80%EC%9D%B4%EB%93%9C) 참조
+
+ *Contributer : Justin* 
+
 # Version 1.2.0 - 2023. 08. 28
 ### [Feature] Object 타입 지원
 - 기존 Object Type에 대해 Ingest를 지원하지 못하였지만, Object Type도 정상 적재할 수 있는 기능 추가
