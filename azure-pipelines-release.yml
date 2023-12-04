@@ -1,11 +1,24 @@
 # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/deploy-linux-vm?view=azure-devops&tabs=java
 variables:
   #isRelease: "$[startsWith(variables['Build.SourceBranch'], 'refs/heads/release/1.0.0')]"
-  isDevelop: "$[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]"
-  JAVA_HOME: "/usr/lib/jvm/java-11-openjdk-amd64"
-  NEXUS_USER: "admin"
-  NEXUS_PW: 'dtonic_1!'
-  VERSION: "1.1.3"
+  # isDevelop: "$[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]"
+  - name: isDevelop
+    value: "$[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]"
+  # JAVA_HOME: "/usr/lib/jvm/java-11-openjdk-amd64"
+  # NEXUS_USER: "admin"
+  # NEXUS_PW: 'dtonic_1!'
+  - name: NEXUS_USER
+    value: "admin"
+  - name: NEXUS_PW
+    value: 'dtonic_1!'
+  # VERSION: "1.1.3"
+  - group: 'dhub-variable-group'
+  - name: dhub-apigateway
+    value: $[variables.apigateway]
+  - name: dhub-ingestmanager
+    value: $[variables.ingestmanager]
+  - name: dhub-datacore
+    value: $[variables.datacore]
 
 trigger:
   - release/v?.?.?
@@ -89,10 +102,10 @@ stages:
                     rootFolderOrFile: '$(Agent.BuildDirectory)/IngestManager/ingest-manager'
                     includeRootFolder: true
                     archiveType: 'zip'
-                    archiveFile: '$(Agent.BuildDirectory)/IngestManager/IngestManager-$(VERSION).zip'
+                    archiveFile: '$(Agent.BuildDirectory)/IngestManager/IngestManager-$(dhub-ingestmanager).zip'
                     replaceExistingArchive: true
                 - task: CmdLine@2
                   inputs:
                     script: |
-                      curl -v -u $NEXUS_USER:$NEXUS_PW --upload-file $PWD/IngestManager/IngestManager-$VERSION.zip https://nexus.dtonic.io/repository/products/D.Hub/IngestManager/$VERSION/IngestManager-$VERSION.zip
+                      curl -v -u $NEXUS_USER:$NEXUS_PW --upload-file $PWD/IngestManager/IngestManager-$(dhub-ingestmanager).zip https://nexus.dtonic.io/repository/products/D.Hub/IngestManager/$(dhub-ingestmanager)/IngestManager-$(dhub-ingestmanager).zip
                     workingDirectory: '$(Agent.BuildDirectory)'
