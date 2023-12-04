@@ -29,7 +29,7 @@ trigger:
 # build agent pool default가 dtonic꺼
 # see: https://dev.azure.com/dtonic/_settings/agentpools
 pool:
-  name: default
+  name: Azure Pipelines
 # develop branch build
 stages:
   - stage: AdvancedDevelopIngestManagerService
