@@ -142,6 +142,10 @@ public class NiFiController {
             if (convertGeoJsonType != null) {
                 convertorComponents.add(convertGeoJsonType);
             }
+            NiFiComponentVO mergeBulk = niFiConvertSVC.mergeBulkProcessor();
+            if (mergeBulk != null) {
+                convertorComponents.add(mergeBulk);
+            }
             AdaptorVO convertor = new AdaptorVO();
             
             convertor.setNifiComponents(convertorComponents);

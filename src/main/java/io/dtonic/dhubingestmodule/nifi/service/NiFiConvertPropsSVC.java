@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,6 +25,15 @@ public class NiFiConvertPropsSVC {
 
     @Autowired
     DataSetSVC dataSetSVC;
+
+    @Value("${nifi.merge.bulk.min.size}")
+    private String mergeBulkMinSize;
+
+    @Value("${nifi.merge.bulk.max.size}")
+    private String mergeBulkMaxSize;
+
+    @Value("${nifi.merge.batch.interval}")
+    private String mergeBatchInterval;
 
     public NiFiComponentVO extractDataSetPropsProcessor(PipelineVO convertor) {
         NiFiComponentVO dataSetPropComp = new NiFiComponentVO();
@@ -257,7 +267,7 @@ public class NiFiConvertPropsSVC {
         PropertyVO prop = new PropertyVO();
         prop.setName("Replacement Value");
         StringBuilder convertData = new StringBuilder();
-        convertData.append("${init:unescapeJson()");
+        convertData.append("${start_entity:unescapeJson()");
         convertData.append(":append(${generatedEntityId:append(','):unescapeJson()})");
         convertData.append(":append(${generatedType:append(','):unescapeJson()})");
         convertData.append(":append(${contextString:unescapeJson()})");
@@ -269,10 +279,33 @@ public class NiFiConvertPropsSVC {
             convertData.append(dataModelInfo.getAttributes().get(idx).getName()+"_string");
             convertData.append(":prepend(',')})})");
         }
-        convertData.append(":append(${end})");
+        convertData.append(":append(${end_entity})");
         convertData.append("}");
         prop.setInputValue(convertData.toString());
         props.add(prop);
+        processor.setRequiredProps(props);
+
+        return processor;
+    }
+
+    public NiFiComponentVO mergeBulkProcessor()
+        throws JsonProcessingException {
+        NiFiComponentVO processor = new NiFiComponentVO();
+        processor.setName("MergeContent");
+        processor.setType("processor");
+        List<PropertyVO> props = new ArrayList<>();
+        PropertyVO prop = new PropertyVO();
+        prop.setName("Minimum Number of Entries");
+        prop.setInputValue(mergeBulkMinSize);
+        props.add(prop);
+        PropertyVO prop2 = new PropertyVO();
+        prop2.setName("Maximum Number of Entries");
+        prop2.setInputValue(mergeBulkMaxSize);
+        props.add(prop2);
+        PropertyVO prop3 = new PropertyVO();
+        prop3.setName("Max Bin Age");
+        prop3.setInputValue(mergeBatchInterval + " sec");
+        props.add(prop3);
         processor.setRequiredProps(props);
 
         return processor;
@@ -290,9 +323,13 @@ public class NiFiConvertPropsSVC {
         preProp.setInputValue("{\"datasetId\":\"" + pipeline.getDataSet() + "\",\"entities\":[{");
         props.add(preProp);
         PropertyVO postProp = new PropertyVO();
-        postProp.setName("end");
-        postProp.setInputValue("}]}");
+        postProp.setName("end_entity");
+        postProp.setInputValue("}");
         props.add(postProp);
+        PropertyVO startProp = new PropertyVO();
+        startProp.setName("start_entity");
+        startProp.setInputValue("{}");
+        props.add(startProp);
         PropertyVO generatedEntityId = new PropertyVO();
         generatedEntityId.setName("generatedEntityId");
         generatedEntityId.setInputValue("\"id\":\"" + idGenerater(pipeline) + "\"");

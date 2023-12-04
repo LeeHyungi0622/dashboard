@@ -1,6 +1,6 @@
 application:
   title: D.Hub-Ingest-Manager
-  version: 1.2.0
+  version: 1.2.1
 
 spring:
   application:
@@ -66,9 +66,9 @@ cityhub:
     
   datacore:
     manager:
-      url: http://110.45.181.71:8080
+      url: http://211.253.243.123:8080
     ingestInterface:
-      url: http://110.45.181.71:8081
+      url: http://211.253.243.123:8081
 
 http.pool:
   max.total: 200
@@ -85,3 +85,7 @@ nifi:
   password: ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
   template:
     init: true
+  merge:
+    bulk.min.size: 10
+    bulk.max.size: 100
+    batch.interval: 1 # sec

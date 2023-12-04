@@ -72,6 +72,34 @@ public class PipelineSVC {
             return null;
         }
     }
+    /**
+     * Create NiFi Pipeline
+     * @param pipelineId using command history aop
+     * @param userId using command history aop
+     * @param commandId using command history aop
+     * @param pipelineVO using command history aop
+     * @return String
+     * 
+     * @since 2023. 8. 16
+     * @version 1.2.0
+     * @auther Justin
+     */
+    @CommandHistory(command = CommandStatusCode.COMMAND_DUPLICATE)
+    public PipelineVO duplicatePipeline(Integer pipelineId, String userId, Integer commandId, PipelineVO pipelineVO) {
+        /* Insert Row Pipeline Info */
+        pipelineMapper.createPipeline(pipelineVO);
+        /* Excute NiFi Create Command */
+        String processorGroupId = niFiController.createPipeline(pipelineVO, commandId);
+    
+        if (processorGroupId != null) {
+            /* Delete Row Temperal Pipeline Info */
+            pipelineMapper.updatePipelineProcessgroupId(PipelineStatusCode.PIPELINE_STATUS_STOPPED.getCode(), pipelineVO.getId(), processorGroupId);
+            return pipelineVO;
+        } else {
+            pipelineMapper.changePipelineStatus(pipelineVO.getId(), PipelineStatusCode.PIPELINE_STATUS_FAILED.getCode());
+            return null;
+        }
+    }
  
 
     public List<PipelineListResponseVO> getPipelineList() {

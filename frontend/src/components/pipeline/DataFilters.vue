@@ -20,7 +20,7 @@
     </div>
     
     <div
-      v-if="$store.state.tableShowMode == `REGISTER`"
+      v-if="$store.state.tableShowMode == `REGISTER`  || this.$store.state.tableShowMode == `DUPLICATE`"
       class="mgT12"
       style="display: flex; justify-content: right"
     >
@@ -152,7 +152,7 @@ export default {
               console.error(error);
             });
         }
-      } else if (this.$store.state.tableShowMode == "UPDATE"){
+      } else if (this.$store.state.tableShowMode == "UPDATE"  || this.$store.state.tableShowMode == `DUPLICATE`){
         this.filterData =
               this.$store.state.completedPipeline.filter;
       }

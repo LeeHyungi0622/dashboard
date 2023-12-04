@@ -20,7 +20,10 @@
         :contents="getContents('converter')"
       />
       <div class="pipelineUpdateBtnBox mgT12">
-        <button class="pipelineUpdateButton" @click="goPipelineList()">
+        <button class="pipelineUpdateButton" @click="duplicatePipeline()">
+          파이프라인 복제
+        </button>
+        <button class="pipelineUpdateButton mgL12" @click="goPipelineList()">
           목록으로
         </button>
         <button class="pipelineUpdateButton mgL12" @click="updatePipeline()">저장</button>
@@ -118,6 +121,12 @@ export default {
           });
         EventBus.$emit("show-alert-popup", alertPayload);
       }
+    },
+    duplicatePipeline(){
+      this.$store.state.tableShowMode = "DUPLICATE";
+      this.$router.push({
+          path: "/pipelineRegister/duplicate/" + this.$store.state.completedPipeline.id,
+        });
     },
   },
 };

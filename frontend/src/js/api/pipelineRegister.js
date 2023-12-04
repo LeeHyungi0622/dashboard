@@ -37,6 +37,14 @@ class pipelineRegister {
       })
       .catch((error) => error);
   }
+  postPipelineDuplicated(requestBody) {
+    return axios
+      .post(`/pipelines/completed/duplicate`, requestBody)
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => error);
+  }
   postPipelineDraft(requestBody) {
     return axios
       .post(`/pipelines/drafts`, requestBody)
